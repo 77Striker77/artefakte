@@ -426,13 +426,13 @@ const STROMZ={
 };
 const ZSTAENDE=[
   {titel:"Warmwasser Wohnung",unit:"m³",dec:3,cap:"eigener Warmwasserzähler der Wohnung",abl:[["01.01.2022",24.16],["05.11.2023",37.88],["01.01.2024",52.40],["01.01.2025",71.258],["01.01.2026",91.092]]},
-  {titel:"Warmwasser Haus (ganze Liegenschaft)",unit:"m³",dec:3,cap:"Haus-Warmwasserzähler · Stände aus den Abrechnungen (Excel-Spalte ab 2024 fehlerhaft)",abl:[["01.01.2022",167.26],["31.12.2022",247.97],["31.12.2023",315.472],["31.12.2024",403.289]]},
+  {titel:"Warmwasser Haus (ganze Liegenschaft)",unit:"m³",dec:3,cap:"Haus-Warmwasserzähler · Stände aus den Nebenkostenabrechnungen (§9 HeizkostenV)",abl:[["01.01.2022",167.26],["31.12.2022",247.97],["31.12.2023",315.472],["31.12.2024",403.289]]},
   {titel:"Kaltwasser Wohnung",unit:"m³",dec:2,cap:"eigener Kaltwasserzähler der Wohnung",abl:[["01.01.2022",65.50],["05.11.2023",104.20],["01.01.2024",142.52],["01.01.2025",188.83],["01.01.2026",236.34]]},
   {titel:"Kaltwasser Keller",unit:"m³",dec:3,cap:"Kaltwasserzähler im Keller (dieser Wohnung zugeordnet)",abl:[["01.01.2022",43.321],["05.11.2023",51.348],["01.01.2024",59.758],["01.01.2025",69.704],["01.01.2026",79.111]]},
   {titel:"Wärmemengenzähler",unit:"MWh",dec:3,cap:"Wärmemengenzähler · erste Ablesung 11/2023",abl:[["05.11.2023",6.089],["01.01.2024",7.772],["01.01.2025",10.044],["01.01.2026",12.174]]},
   {titel:"Strom Wohneinheit (OG)",unit:"kWh",dec:0,cap:STROMZ.wohnung.cap,abl:STROMZ.wohnung.abl},
   {titel:"Strom Allgemein",unit:"kWh",dec:0,cap:STROMZ.allgemein.cap,abl:STROMZ.allgemein.abl},
-  {titel:"Strom Keller",unit:"kWh",dec:0,cap:"Kellerstrom-Zähler · erst ab 12/2025 abgelesen (kaum Verbrauch)",abl:[["10.12.2025",1353],["01.01.2026",1365]]}
+  {titel:"Strom Keller",unit:"kWh",dec:0,cap:'Nr. <span data-pii="zaehlernr_keller">XX</span> · Kellerstrom-Zähler · erst ab 12/2025 abgelesen (kaum Verbrauch)',abl:[["10.12.2025",1353],["01.01.2026",1365]]}
 ];
 const METERS=[
   {name:"Warmwasser Wohnung",unit:"m³",col:"#C77D33",v:[13.72,14.52,18.858,19.834]},
