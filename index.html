@@ -333,24 +333,8 @@
     </div>
 
     <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Zählerstände (Ablesungen) — Stand zum Zeitpunkt</h2>
-      <span class="hint">Absolute Ablesewerte: zu Datum X stand der Zähler auf Y · Verbrauch = Differenz zur Vorablesung</span></div>
-    <div class="card" style="padding:18px 22px;margin-bottom:16px">
-      <h3 style="font-size:15px;margin-bottom:2px">Warmwasser Wohnung <span class="dpill flat" data-tip="Stände aus den finalen Nebenkostenabrechnungen — Ablesung jeweils zum Jahreswechsel.">aus Abrechnung</span></h3>
-      <div class="tblwrap"><table class="cmp mini" id="mWW"></table></div>
-      <div class="caption" id="capWW"></div>
-    </div>
-    <div class="fcgrid">
-      <div class="card" style="padding:18px 22px">
-        <h3 style="font-size:15px;margin-bottom:2px">Strom Wohneinheit (OG)</h3>
-        <div class="tblwrap"><table class="cmp mini" id="mWohn"></table></div>
-        <div class="caption" id="capWohn"></div>
-      </div>
-      <div class="card" style="padding:18px 22px">
-        <h3 style="font-size:15px;margin-bottom:2px">Strom Allgemein-Zähler</h3>
-        <div class="tblwrap"><table class="cmp mini" id="mAllg"></table></div>
-        <div class="caption" id="capAllg"></div>
-      </div>
-    </div>
+      <span class="hint">Absolute Ablesewerte aus der eigenen Erfassung: zu Datum X stand der Zähler auf Y · Verbrauch = Differenz zur Vorablesung</span></div>
+    <div class="fcgrid" id="ablGrid"></div>
 
     <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Miete &amp; Vorauszahlung (Historie)</h2>
       <span class="hint">Kaltmiete und NK-Vorauszahlung im Zeitverlauf</span></div>
@@ -440,7 +424,14 @@ const STROMZ={
   wohnung:{titel:"Wohneinheit (OG)",cap:"eigener Haushaltsstrom · ~2.400–2.600 kWh/Jahr",unit:"kWh",dec:0,abl:[["19.03.2023",6330],["29.04.2023",6567],["03.11.2023",7650],["30.04.2024",8786],["06.11.2024",9972],["17.05.2025",11355],["19.11.2025",12505],["10.12.2025",12732],["01.01.2026",12878]]},
   allgemein:{titel:"Allgemein-Zähler",cap:'Nr. <span data-pii="zaehlernr_allgemein">XX</span> · umfasst u. a. die Wallbox-Ladung',unit:"kWh",dec:0,abl:[["29.10.2023",4471],["31.12.2023",5943],["31.01.2024",6707],["10.12.2025",15722],["01.01.2026",16015]]}
 };
-const WWZ={titel:"Warmwasser Wohnung",cap:"Stände aus den finalen Nebenkostenabrechnungen · Ablesung jeweils zum Jahreswechsel",unit:"m³",dec:3,abl:[["Jahresbeginn 2022",167.26],["31.12.2022",247.97],["31.12.2023",315.472],["31.12.2024",403.289]]};
+const ZSTAENDE=[
+  {titel:"Warmwasser Wohnung",unit:"m³",dec:3,cap:"eigener Warmwasserzähler der Wohnung",abl:[["01.01.2022",24.16],["05.11.2023",37.88],["01.01.2024",52.40],["01.01.2025",71.258],["01.01.2026",91.092]]},
+  {titel:"Kaltwasser Wohnung",unit:"m³",dec:2,cap:"eigener Kaltwasserzähler der Wohnung",abl:[["01.01.2022",65.50],["05.11.2023",104.20],["01.01.2024",142.52],["01.01.2025",188.83],["01.01.2026",236.34]]},
+  {titel:"Kaltwasser Keller",unit:"m³",dec:3,cap:"Kaltwasserzähler im Keller (dieser Wohnung zugeordnet)",abl:[["01.01.2022",43.321],["05.11.2023",51.348],["01.01.2024",59.758],["01.01.2025",69.704],["01.01.2026",79.111]]},
+  {titel:"Wärmemengenzähler",unit:"MWh",dec:3,cap:"Wärmemengenzähler · erste Ablesung 11/2023",abl:[["05.11.2023",6.089],["01.01.2024",7.772],["01.01.2025",10.044],["01.01.2026",12.174]]},
+  {titel:"Strom Wohneinheit (OG)",unit:"kWh",dec:0,cap:STROMZ.wohnung.cap,abl:STROMZ.wohnung.abl},
+  {titel:"Strom Allgemein",unit:"kWh",dec:0,cap:STROMZ.allgemein.cap,abl:STROMZ.allgemein.abl}
+];
 const METERS=[
   {name:"Warmwasser Wohnung",unit:"m³",col:"#C77D33",v:[13.72,14.52,18.858,19.834]},
   {name:"Kaltwasser Wohnung",unit:"m³",col:"#2E5C8A",v:[38.70,38.32,46.31,47.51]},
@@ -797,20 +788,21 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
 
 // Zählerstände (Ablese-Logs) — absolute Stände je Datum
 (function(){
-  function log(tid,cid,m){
+  const grid=document.getElementById("ablGrid");if(!grid)return;
+  function card(m){
     const u=m.unit,dec=m.dec;
     const fmt=v=>v.toLocaleString("de-DE",{minimumFractionDigits:dec,maximumFractionDigits:dec});
-    let html='<tr><th>Datum</th><th>Stand ('+u+')</th><th>Verbrauch</th></tr>';
+    let rows='<tr><th>Datum</th><th>Stand ('+u+')</th><th>Verbrauch</th></tr>';
     m.abl.forEach((r,i)=>{const d=i?r[1]-m.abl[i-1][1]:null;
-      html+='<tr><td>'+r[0]+'</td><td>'+fmt(r[1])+'</td><td>'+(d==null?'<span style="color:var(--ink-faint)">Startwert</span>':'+'+fmt(d)+' '+u)+'</td></tr>';});
+      rows+='<tr><td>'+r[0]+'</td><td>'+fmt(r[1])+'</td><td>'+(d==null?'<span style="color:var(--ink-faint)">Startwert</span>':'+'+fmt(d)+' '+u)+'</td></tr>';});
     const first=m.abl[0],last=m.abl[m.abl.length-1];
-    html+='<tr class="sum"><td>seit '+first[0]+'</td><td>'+fmt(last[1])+'</td><td>+'+fmt(last[1]-first[1])+' '+u+'</td></tr>';
-    document.getElementById(tid).innerHTML=html;
-    document.getElementById(cid).innerHTML=m.cap;
+    rows+='<tr class="sum"><td>seit '+first[0]+'</td><td>'+fmt(last[1])+'</td><td>+'+fmt(last[1]-first[1])+' '+u+'</td></tr>';
+    return '<div class="card" style="padding:18px 22px">'+
+      '<h3 style="font-size:15px;margin-bottom:2px">'+m.titel+'</h3>'+
+      '<div class="tblwrap"><table class="cmp mini">'+rows+'</table></div>'+
+      '<div class="caption">'+m.cap+'</div></div>';
   }
-  log("mWW","capWW",WWZ);
-  log("mWohn","capWohn",STROMZ.wohnung);
-  log("mAllg","capAllg",STROMZ.allgemein);
+  grid.innerHTML=ZSTAENDE.map(card).join("");
 })();
 
 document.getElementById("foot").innerHTML="Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer) erscheinen als „XX\" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.";
