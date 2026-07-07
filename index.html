@@ -303,6 +303,20 @@
     </div>
   </section>
 
+  <section id="vertrag">
+    <div class="sechead"><h2>Vertrag &amp; Miete</h2>
+      <span class="hint">Mietvertrag vom 01.04.2020 · Beträge offen dargestellt, personenbezogene Angaben nur per Schlüssel</span></div>
+    <div class="tiles" id="vTiles"></div>
+    <div class="fcgrid" style="margin-top:8px">
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Objekt &amp; Vertrag</h3><div id="vFacts"></div></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Aktuelle Monatszahlung <span style="font-weight:400;color:var(--ink-faint);font-size:13px">· ab 01.01.2025</span></h3><div id="vNow"></div></div>
+    </div>
+    <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Mietentwicklung &amp; Erhöhungen</h2>
+      <span class="hint">Kaltmiete, Vorauszahlungen und Zusatzpositionen im Zeitverlauf</span></div>
+    <div class="card"><div class="tblwrap"><table class="cmp" id="vHist"></table></div>
+      <div class="hintline" style="border:0">Warm gesamt = Kaltmiete + BK-Vorauszahlung + Reinigung + Stellplatz + Internet. Die BK-Vorauszahlung wurde zum 01.01.2024 von 272 € auf 182,60 €/Monat (BK 167,60 + Reinigung 15) gesenkt — bei gleichzeitig steigenden Kosten der Hauptgrund für die Nachzahlung 2024.</div></div>
+  </section>
+
   <section>
     <div class="sechead"><h2>Abrechnungsjahre im Detail</h2>
       <span class="hint">Alle abgeschlossen · aufklappen für Verbrauch &amp; Positionen</span></div>
@@ -343,10 +357,6 @@
       <div class="printonly" id="zPrint" style="padding:18px 22px"></div>
     </div>
 
-    <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Miete &amp; Vorauszahlung (Historie)</h2>
-      <span class="hint">Kaltmiete und NK-Vorauszahlung im Zeitverlauf</span></div>
-    <div class="card"><div class="tblwrap"><table class="cmp mini" id="mieteTable"></table></div>
-      <div class="hintline" style="border:0">Die NK-Vorauszahlung wurde zum 01.01.2024 von 272 € auf 182,60 €/Monat gesenkt — bei gleichzeitig steigenden Kosten der Hauptgrund für die Nachzahlung 2024.</div></div>
   </section>
 
   <section id="prognose">
@@ -452,7 +462,22 @@ const METERS=[
   {name:"Strom Keller",unit:"kWh",col:"#7A8A5A",est:true,v:[null,null,null,12],note:"Nur 10.12.2025–01.01.2026 (22 Tage) gemessen — kein voller Jahreswert."}
 ];
 const MJAHRE=[2022,2023,2024,2025];
-const MIETE=[["01.04.2020",893.00,257.00],["01.04.2021",893.00,272.00],["01.08.2023",893.00,272.00],["01.01.2024",977.00,182.60],["01.01.2025",1047.50,182.60]];
+const VERTRAG={
+  beginn:"01.04.2020", art:"unbefristet", unterzeichnet:"02.03.2020",
+  kaution:2230.00, flaecheV:85, flaecheA:83.8,
+  kuend:"3 Monate (Mieter, §§ 573 ff. BGB) · schriftlich",
+  klein:"bis 95 € je Fall · max. 500 €/Jahr (≤ 8 % Jahreskaltmiete)",
+  schoen:"Mieter · bei Auszug in Weiß",
+  ausstattung:"3 Zimmer · Einbauküche (inkl. Geräte) · Bad/WC · 2 Balkone · Kellerraum · 1 Außenstellplatz",
+  nutzung:"nur zu Wohnzwecken · Untervermietung ausgeschlossen",
+  historie:[
+    {ab:"01.04.2020",an:"—",kalt:893.00,bk:257.00,rein:0,stell:0,net:30.00,anlass:"Mietbeginn — Kaltmiete inkl. Außenstellplatz"},
+    {ab:"01.04.2021",an:"—",kalt:893.00,bk:257.00,rein:15.00,stell:0,net:30.00,anlass:"Anlage: Hausgangreinigung +15 €"},
+    {ab:"01.08.2023",an:"—",kalt:893.00,bk:257.00,rein:15.00,stell:30.00,net:30.00,anlass:"Stellplatz separat erfasst +30 €"},
+    {ab:"01.01.2024",an:"23.10.2023",kalt:977.00,bk:167.60,rein:15.00,stell:30.00,net:30.00,anlass:"Mieterhöhung; BK-VZ auf 167,60 € gesenkt"},
+    {ab:"01.01.2025",an:"21.08.2024",kalt:1047.50,bk:167.60,rein:15.00,stell:30.00,net:30.00,anlass:"Mieterhöhung"}
+  ]
+};
 const BENCH={warmwasser:0.28,heizung:1.00,kaltwasser:0.34,reinigung:0.17,grundstueck:0.10,muell:0.16,allgemeinstrom:0.05,versicherung:0.15,haftpflicht:0.03,grundsteuer:0.19};
 const KAT={waerme:"var(--kat-waerme)",wasser:"var(--kat-wasser)",betrieb:"var(--kat-betrieb)",abgaben:"var(--kat-abgaben)"};
 const shortL=l=>l.replace(/\s*\(.*/,"");
@@ -751,13 +776,6 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
       '<td>'+spark(m.v.filter(x=>x!=null))+'</td></tr>';});
   t.innerHTML=html;bindInfos(t);
 
-  // Miet- & VZ-Historie
-  const mt=document.getElementById("mieteTable");
-  let mh='<tr><th>Gültig ab</th><th>Kaltmiete</th><th>NK-Vorauszahlung / Monat</th></tr>';
-  MIETE.forEach((r,i)=>{const drop=i>0&&r[2]<MIETE[i-1][2];
-    mh+='<tr><td>'+r[0]+'</td><td>'+eur(r[1])+'</td><td>'+eur(r[2])+(drop?' <span class="dpill down" data-tip="gegenüber vorher gesenkt">gesenkt</span>':'')+'</td></tr>';});
-  mt.innerHTML=mh;
-
   // Verbrauch je Einheit — Liniengraph, umschaltbar (gleiche Einheit = gleiche Skala)
   (function(){
     if(!document.getElementById("meterUnitChart"))return;
@@ -867,7 +885,53 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
   render();
 })();
 
-document.getElementById("foot").innerHTML="Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer) erscheinen als „XX\" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.";
+// Vertrag & Miete
+(function(){
+  if(!document.getElementById("vTiles"))return;
+  const H=VERTRAG.historie,cur=H[H.length-1],prev=H[H.length-2];
+  const warm=r=>r.kalt+r.bk+r.rein+r.stell+r.net;
+  const pct=n=>(n>=0?"+":"")+n.toFixed(1).replace(".",",")+" %";
+  const tile=(cap,big,note,cls)=>'<div class="tile '+(cls||"")+'"><div class="cap">'+cap+'</div><div class="big">'+big+'</div><div class="note">'+note+'</div></div>';
+  const dK=cur.kalt-prev.kalt;
+  document.getElementById("vTiles").innerHTML=
+    tile("Mietbeginn",VERTRAG.beginn,VERTRAG.art+" · unterschrieben "+VERTRAG.unterzeichnet,"brand")+
+    tile("Kaltmiete aktuell",eur(cur.kalt),dK>0?"zuletzt +"+eur(dK)+" ("+pct(dK/prev.kalt*100)+")":"unverändert","")+
+    tile("Warmmiete gesamt",eur(warm(cur)),"inkl. VZ, Reinigung, Stellplatz, Internet","")+
+    tile("Kaution",eur(VERTRAG.kaution),"§ 5 Mietsicherheit","");
+  const kv=(k,v)=>'<div class="fc-meta"><span class="k">'+k+'</span><span class="v" style="text-align:right;max-width:64%">'+v+'</span></div>';
+  document.getElementById("vFacts").innerHTML=
+    kv("Objekt",'1. OG · <span data-pii="objekt">XX</span>')+
+    kv("Vermieter",'<span data-pii="vermieter">XX</span>')+
+    kv("Mieter",'<span data-pii="mieter">XX</span>')+
+    kv("Ausstattung",VERTRAG.ausstattung)+
+    kv("Wohnfläche",VERTRAG.flaecheV+" m² (Vertrag) · "+String(VERTRAG.flaecheA).replace(".",",")+" m² (abrechnungsrelevant)")+
+    kv("Nutzung",VERTRAG.nutzung)+
+    kv("Kündigungsfrist",VERTRAG.kuend)+
+    kv("Kaution",eur(VERTRAG.kaution))+
+    kv("Kontoverbindung",'IBAN <span data-pii="iban">XX</span>')+
+    kv("Kleinreparaturen",VERTRAG.klein)+
+    kv("Schönheitsrep.",VERTRAG.schoen);
+  const row=(k,v,strong)=>'<div class="fc-meta'+(strong?" strong":"")+'"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
+  document.getElementById("vNow").innerHTML=
+    row("Kaltmiete",eur(cur.kalt))+
+    row("BK-Vorauszahlung",eur(cur.bk))+
+    row("Hausgangreinigung",eur(cur.rein))+
+    row("Stellplatz *",eur(cur.stell))+
+    row("Internet *",eur(cur.net))+
+    row("Warm gesamt",eur(warm(cur)),true)+
+    '<div class="caption" style="padding-top:10px">* Laut Vertrag ist ein Außenstellplatz bereits in der Kaltmiete enthalten; Stellplatz (ab 08/2023) und Internet werden separat als Zahlungspositionen geführt.</div>';
+  let h='<tr><th>Gültig ab</th><th>Kaltmiete</th><th>Δ Kalt</th><th>BK-VZ</th><th>Reinig.</th><th>Stellpl.</th><th>Internet</th><th>Warm ges.</th><th>Anlass</th></tr>';
+  H.forEach((r,i)=>{
+    const d=i?r.kalt-H[i-1].kalt:0;
+    const dCell=d?'<span class="dpill up" data-tip="'+pct(d/H[i-1].kalt*100)+' gegenüber vorher">+'+eur(d)+'</span>':'<span style="color:var(--ink-faint)">—</span>';
+    const anMark=r.an!=="—"?' <span class="dpill flat" data-tip="Erhöhungsschreiben erhalten am '+r.an+'">angek. '+r.an+'</span>':'';
+    h+='<tr><td>'+r.ab+'</td><td>'+eur(r.kalt)+'</td><td class="dc">'+dCell+'</td><td>'+eur(r.bk)+'</td><td>'+(r.rein?eur(r.rein):'—')+'</td><td>'+(r.stell?eur(r.stell):'—')+'</td><td>'+eur(r.net)+'</td><td>'+eur(warm(r))+'</td><td style="text-align:left">'+r.anlass+anMark+'</td></tr>';
+  });
+  document.getElementById("vHist").innerHTML=h;
+  bindInfos(document.getElementById("vHist"));
+})();
+
+document.getElementById("foot").innerHTML="Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer, Bankverbindung) erscheinen als „XX\" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.";
 
 bindInfos(document);
 
