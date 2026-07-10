@@ -1,0 +1,750 @@
+<title>Cockpit · Vermietung EFH</title>
+<!--
+  Vermieter-Cockpit Vermietung EFH (Quelle-HTML — nie die öffentliche Kopie direkt editieren).
+  Einzelquelle der Zahlen: vermieter-daten.json (gleicher Ordner). PII nur über data-pii/XX.
+  Pflege über den /cockpit-Skill (Register: .claude/skills/cockpit/registry.json).
+-->
+<style>
+  :root{
+    --ground:#EEF1F5; --surface:#FFFFFF; --surface-2:#F7F9FB;
+    --ink:#16233A; --ink-soft:#4A5A72; --ink-faint:#7C8AA0;
+    --line:#DCE3EC; --line-soft:#E8EDF3;
+    --brand:#1F3A5F; --brand-bright:#2E5C8A;
+    --good:#2E7D5B; --good-bg:#E4F1EA;
+    --crit:#A8432E; --crit-bg:#F6E3DC;
+    --warn:#B5791F; --warn-bg:#F8EFDC;
+    --info:#3F5E80; --info-bg:#E7EDF4; --info-line:#CBD8E6;
+    --ochre:#C77D33;
+    --kat-waerme:#C77D33; --kat-wasser:#2E5C8A; --kat-betrieb:#4B8A9A; --kat-abgaben:#8A6D9E;
+    --radius:14px; --radius-s:9px;
+    --serif:"Cambria","Georgia","Times New Roman",serif;
+    --sans:"Calibri","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+    --shadow:0 1px 2px rgba(22,35,58,.04),0 6px 20px rgba(22,35,58,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:clamp(20px,4vw,44px) clamp(16px,3.5vw,40px) 72px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;text-wrap:balance;margin:0}
+  .num{font-variant-numeric:tabular-nums lining-nums}
+  .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--brand-bright)}
+  a{color:var(--brand-bright)}
+
+  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  header.top h1{font-size:clamp(26px,4.2vw,40px);line-height:1.08}
+  header.top .sub{color:var(--ink-soft);margin-top:8px;font-size:15px}
+  .roletag{display:inline-flex;align-items:center;gap:7px;background:var(--brand);color:#fff;padding:6px 13px;border-radius:100px;font-size:12.5px;font-weight:600}
+  .roletag::before{content:"";width:7px;height:7px;border-radius:50%;background:#8FB8E6}
+
+  .secnav{display:flex;gap:4px;margin-top:20px;border-bottom:2px solid var(--line);flex-wrap:wrap}
+  .secnav button{border:0;background:transparent;font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--ink-soft);padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+  .secnav button.on{color:var(--brand);border-bottom-color:var(--brand)}
+  .secnav button:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
+  .tabpanel{display:none}.tabpanel.on{display:block}
+  .domain{margin-top:26px}
+  .domain h2{font-size:24px}
+  .domain p{color:var(--ink-soft);font-size:14.5px;max-width:72ch;margin:6px 0 0}
+
+  .info{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
+    background:var(--info-bg);color:var(--info);font-size:10px;font-weight:800;font-family:var(--serif);
+    cursor:help;vertical-align:middle;border:1px solid var(--info-line);flex:none}
+  .info:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
+
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0 8px}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .tile .cap{font-size:12.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint);font-weight:600;display:flex;align-items:center;gap:6px}
+  .tile .big{font-family:var(--serif);font-size:clamp(24px,3.6vw,33px);line-height:1;margin:12px 0 6px}
+  .tile .note{font-size:13px;color:var(--ink-soft)}
+  .tile::after{content:"";position:absolute;inset:0 auto 0 0;width:5px}
+  .tile.good .big{color:var(--good)} .tile.good::after{background:var(--good)}
+  .tile.brand::after{background:var(--brand)}
+  .tile.warn .big{color:var(--warn)} .tile.warn::after{background:var(--warn)}
+  .tile.crit .big{color:var(--crit)} .tile.crit::after{background:var(--crit)}
+  .tile .big small{font-size:.5em;font-family:var(--sans);color:var(--ink-faint);font-weight:600}
+  .tile.link{cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .tile.link:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(22,35,58,.05),0 12px 28px rgba(22,35,58,.10)}
+
+  section{margin-top:42px}
+  .sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .sechead h2{font-size:22px;display:flex;align-items:center;gap:8px}
+  .sechead .hint{font-size:13.5px;color:var(--ink-soft)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .chartcard{padding:20px 22px 16px}
+  .chart-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+  .chart-head h3{font-size:16px;display:flex;align-items:center;gap:8px}
+  .legend{display:flex;gap:14px;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  .cmpwrap{padding:18px 22px 8px}
+  .rowbar{display:grid;grid-template-columns:230px 1fr 96px;align-items:center;gap:10px;padding:5px 0}
+  .rowbar .rl{font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px;min-width:0}
+  .rowbar .rl b{width:9px;height:9px;border-radius:2px;flex:none}
+  .rowbar .rl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .track{height:20px;background:var(--surface-2);border-radius:5px;overflow:hidden;position:relative}
+  .track i{display:block;height:100%;border-radius:5px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+  .track i.range{position:absolute;top:0;border-radius:5px}
+  .rowbar .rv{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px}
+  .hintline{font-size:12px;color:var(--ink-faint);padding:6px 22px 16px;border-top:1px solid var(--line-soft);margin-top:8px}
+  @media(max-width:640px){.rowbar{grid-template-columns:130px 1fr 80px}}
+
+  .tblwrap{overflow-x:auto;padding:4px 8px 12px}
+  table.cmp{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+  table.cmp th,table.cmp td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line-soft);font-variant-numeric:tabular-nums}
+  table.cmp th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);font-weight:600}
+  table.cmp th:first-child,table.cmp td:first-child{text-align:left;font-variant-numeric:normal}
+  table.cmp td.lbl-td{display:flex;align-items:center;gap:8px} table.cmp td.lbl-td b{width:9px;height:9px;border-radius:2px;flex:none}
+  table.cmp tr.sum td{font-weight:700;border-top:1.5px solid var(--line);border-bottom:none}
+  table.cmp td.tl{text-align:left;font-variant-numeric:normal}
+  table.cmp.mini{min-width:0}
+
+  .pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap}
+  .pill.good{background:var(--good-bg);color:var(--good)} .pill.warn{background:var(--warn-bg);color:var(--warn)}
+  .pill.crit{background:var(--crit-bg);color:var(--crit)} .pill.mut{background:#EDEFF3;color:var(--ink-faint)}
+
+  .fcgrid{display:grid;grid-template-columns:1.05fr 1fr;gap:16px}
+  .fc-meta{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;gap:12px}
+  .fc-meta.strong{font-size:13.5px;font-weight:600;border-top:1px dashed var(--line);margin-top:2px;padding-top:8px}
+  .fc-meta .k{color:var(--ink-soft);display:flex;align-items:center;gap:5px} .fc-meta .v{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+  .notes{padding:18px 22px}
+  .notes h3{font-size:15px;margin-bottom:10px}
+  .notes ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink-soft)} .notes li{margin:5px 0}
+  .fc-reco{margin-top:14px;background:var(--good-bg);border:1px solid #BFE0CD;border-radius:10px;padding:11px 14px;font-size:13px;color:#20563d;line-height:1.5}
+  .fc-reco b{color:var(--good)}
+  .fc-warn{margin-top:14px;background:var(--warn-bg);border:1px solid #E8D3A8;border-radius:10px;padding:11px 14px;font-size:13px;color:#6b4a12;line-height:1.5}
+  .fc-warn b{color:var(--warn)}
+
+  .op{padding:10px 0;border-bottom:1px solid var(--line-soft)} .op:last-child{border-bottom:0}
+  .op .oh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .op .oh b{font-size:13.5px} .op .od{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+  .op .os{font-size:12.5px;color:var(--brand-bright);margin-top:3px}
+  .term{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line-soft)} .term:last-child{border-bottom:0}
+  .term .td{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px}
+  .term .tt{font-size:13px} .term .tt small{display:block;color:var(--ink-soft);font-size:12px;font-weight:400}
+  .stand{font-size:11.5px;color:var(--ink-faint);margin-top:12px}
+
+  .lawbanner{margin-top:14px;background:var(--crit-bg);border:1px solid #E3BBAD;border-radius:12px;padding:12px 16px;font-size:13.5px;color:#7c3322;line-height:1.5}
+  .lawbanner b{color:var(--crit)}
+  .lawbanner.soft{background:var(--warn-bg);border-color:#E8D3A8;color:#6b4a12} .lawbanner.soft b{color:var(--warn)}
+
+  .scale{padding:6px 0 2px}
+  .scale .sc-track{position:relative;height:26px;background:var(--surface-2);border-radius:6px;overflow:visible;margin:26px 8px 30px}
+  .scale .sc-fill{position:absolute;top:0;left:0;height:100%;background:var(--brand);border-radius:6px 0 0 6px}
+  .scale .sc-seg{position:absolute;top:0;height:100%;background:repeating-linear-gradient(45deg,var(--good-bg),var(--good-bg) 5px,#cfe6da 5px,#cfe6da 10px);border-left:2px solid var(--surface)}
+  .scale .sc-mark{position:absolute;top:-6px;bottom:-6px;width:2.5px;background:var(--ink)}
+  .scale .sc-lab{position:absolute;font-size:11.5px;color:var(--ink-soft);white-space:nowrap;transform:translateX(-50%);font-variant-numeric:tabular-nums}
+  .scale .sc-lab.top{top:-22px} .scale .sc-lab.bot{bottom:-24px}
+  .scale .sc-lab b{color:var(--ink)}
+
+  .printbtn{background:var(--surface);border:1px solid var(--line);color:var(--brand);font-family:var(--sans);font-weight:600;font-size:12.5px;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .printbtn:hover{background:var(--surface-2)}
+  .caption{font-size:11.5px;color:var(--ink-faint);padding-top:8px}
+  .pii-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:14px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--ink-soft)}
+  .pii-item b{color:var(--ink);font-weight:600}
+  .pii-lock{margin-left:auto;cursor:pointer;font-weight:600;color:var(--brand-bright);user-select:none;white-space:nowrap}
+  .pii-lock:hover{text-decoration:underline}
+  .pii-panel{margin-top:10px;padding:16px 18px;background:var(--surface);border:1px solid var(--info-line);border-radius:12px}
+  .pii-panel h3{font-size:15px;margin-bottom:4px} .pii-panel p{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+  .pii-drop{border:1.5px dashed var(--line);border-radius:10px;padding:14px;text-align:center;font-size:13px;color:var(--ink-soft);background:var(--surface-2)}
+  .pii-drop.drag{border-color:var(--brand-bright);background:#eef3f8}
+  .pii-btn{display:inline-block;background:var(--surface-2);border:1px solid var(--line);color:var(--brand);font-family:var(--sans);font-weight:600;font-size:13px;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .pii-btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .pii-panel textarea{width:100%;min-height:70px;margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px;font-family:Consolas,"SF Mono",monospace;font-size:12.5px;resize:vertical}
+  .pii-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .pii-err{color:var(--crit);font-size:12.5px;margin-top:8px;min-height:1em}
+  @media print{.pii-lock,.pii-panel{display:none!important}}
+  @media print{
+    body{background:#fff;font-size:12px} .wrap{max-width:none;padding:8px 0 0}
+    .printbtn,.secnav,.info,.tt-pop{display:none!important}
+    .tabpanel{display:block!important}
+    .card,.tile{box-shadow:none;border:1px solid #cfd6df;break-inside:avoid}
+    .tile.link{cursor:default} section{margin-top:18px} a{color:inherit;text-decoration:none}
+  }
+  .callout{background:var(--info-bg);border:1px solid var(--info-line);border-radius:var(--radius);padding:16px 20px;font-size:13.5px;color:#2f4258;margin-top:32px}
+  .callout b{color:var(--brand)}
+  footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-faint);line-height:1.7}
+  .tt-pop{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:7px 10px;border-radius:8px;opacity:0;transition:opacity .1s;z-index:9;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+  .tt-pop.wide{white-space:normal;max-width:290px;line-height:1.45;font-variant-numeric:normal}
+  @media(max-width:980px){.tiles{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:820px){.fcgrid{grid-template-columns:1fr}}
+  @media(max-width:560px){.tiles{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Vermietung Einfamilienhaus · Vermietersicht</div>
+      <h1>Vermieter-Cockpit</h1>
+      <div class="sub"><span data-pii="objekt">XX</span> · EFH Bj. 1969 · 207,4 m² Wohnfläche · vermietet seit 01.06.2026</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+      <div class="roletag">Ich = Vermieter</div>
+      <button class="printbtn" onclick="window.print()">⎙ Drucken / PDF</button>
+    </div>
+  </header>
+
+  <nav class="secnav" aria-label="Bereiche" id="tabbar" role="tablist">
+    <button data-tab="uebersicht" class="on" role="tab" aria-selected="true">Übersicht</button>
+    <button data-tab="vertrag" role="tab" aria-selected="false">Mietverhältnis &amp; Zahlungen</button>
+    <button data-tab="nk" role="tab" aria-selected="false">Nebenkosten &amp; Wirtschaftlichkeit</button>
+    <button data-tab="pflichten" role="tab" aria-selected="false">Pflichten &amp; Termine</button>
+  </nav>
+
+  <div class="pii-strip">
+    <span class="pii-item">Objekt: <b data-pii="objekt">XX</b></span>
+    <span class="pii-item">Vermieterinnen: <b data-pii="vermieter">XX</b></span>
+    <span class="pii-item">Mieter: <b data-pii="mieter">XX</b></span>
+    <span class="pii-lock" id="piiToggle">🔓 Schlüssel laden</span>
+  </div>
+  <div class="pii-panel" id="piiPanel" hidden>
+    <h3>Persönliche Angaben lokal einblenden</h3>
+    <p>Lade deine Schlüssel-Datei (JSON) oder füge sie ein — sie bleibt nur in diesem Browser-Tab, nichts wird hochgeladen oder gespeichert. Beim Neuladen der Seite ist alles wieder „XX".</p>
+    <div class="pii-drop" id="piiDrop">Schlüssel-Datei hierher ziehen oder <label class="pii-btn">Datei wählen<input type="file" id="piiFile" accept=".json,application/json" hidden></label></div>
+    <textarea id="piiText" placeholder='{ "objekt": "…", "ort": "…", "vermieter": "…", "mieter": "…", "iban": "…" }'></textarea>
+    <div class="pii-actions"><button class="pii-btn primary" id="piiApply">Einblenden</button><button class="pii-btn" id="piiClear">Wieder verbergen (XX)</button></div>
+    <div class="pii-err" id="piiErr"></div>
+  </div>
+  <div id="lawBanner"></div>
+
+  <!-- ================= ÜBERSICHT ================= -->
+  <div class="tabpanel on" id="panel-uebersicht" role="tabpanel">
+  <div class="tiles">
+    <div class="tile brand">
+      <div class="cap">Miet-Soll / Monat <span class="info" tabindex="0" data-tip="Kaltmiete 2.100 € + Betriebskosten-Vorauszahlung 475 € (nur kalte BK — Heizöl kauft der Mieter selbst). Fällig bis zum 3. Werktag im Voraus, Samstage zählen nicht mit (§ 5 MV).">i</span></div>
+      <div class="big num">2.575 <small>€</small></div>
+      <div class="note">2.100 € kalt + 475 € BK-VZ · fällig 3. Werktag</div>
+    </div>
+    <div class="tile good">
+      <div class="cap">Mieteingang 2026 <span class="info" tabindex="0" data-tip="Kontoeingänge seit Mietbeginn, vom Vermieter bestätigt am 10.07.2026. Warnschwelle: Rückstand von 2 Monatsmieten erlaubt die fristlose Kündigung (§ 543 BGB).">i</span></div>
+      <div class="big num" id="tPay">–</div>
+      <div class="note" id="tPayNote"></div>
+    </div>
+    <div class="tile good">
+      <div class="cap">Kaution <span class="info" tabindex="0" data-tip="Barkaution 5.000 € (Grenze: 3 Kaltmieten = 6.300 €), in 3 Raten ab Mietbeginn. Vollständig erhalten und getrennt vom eigenen Vermögen insolvenzfest angelegt — die Zinsen stehen dem Mieter zu (§ 551 III BGB).">i</span></div>
+      <div class="big num">5.000 <small>€ ✓</small></div>
+      <div class="note">vollständig · getrennt angelegt (§ 551 III)</div>
+    </div>
+    <div class="tile link warn" id="tRadTile" role="button" tabindex="0">
+      <div class="cap">Miete je m² <span class="info" tabindex="0" data-tip="2.100 € ÷ 207,4 m² = 10,13 €/m². Angebotsmieten für Häuser liegen örtlich bei ~12,9 €/m² — deutliches Erhöhungspotenzial, aber gedeckelt durch Kappungsgrenze 15 %/3 Jahre. Klick öffnet den Erhöhungs-Radar.">i</span></div>
+      <div class="big num">10,13 <small>€/m²</small></div>
+      <div class="note">Markt ~12,9 €/m² · Erhöhung ab 06/2027 → Radar</div>
+    </div>
+  </div>
+
+  <section style="margin-top:24px">
+    <div class="fcgrid">
+      <div class="card notes">
+        <h3>Offene Punkte <span class="info" tabindex="0" data-tip="Konkrete To-dos dieser Vermietung, priorisiert. Kritisch = rechtliches/finanzielles Risiko, jetzt handeln.">i</span></h3>
+        <div id="opList"></div>
+      </div>
+      <div class="card notes">
+        <h3>Nächste Termine <span class="info" tabindex="0" data-tip="Fristen-Wächter: die nächsten Pflichten und Stichtage mit Countdown. Vollständiger Kalender im Bereich „Pflichten &amp; Termine“.">i</span></h3>
+        <div id="termList"></div>
+        <div class="stand" id="standLine"></div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- ================= MIETVERHÄLTNIS & ZAHLUNGEN ================= -->
+  <div class="tabpanel" id="panel-vertrag" role="tabpanel">
+  <div class="domain">
+    <h2>Mietverhältnis &amp; Zahlungen</h2>
+    <p>Konditionen aus dem finalen Mietvertrag V1.0 (28 §§), Zahlungs- und Kautionsstand sowie der Erhöhungs-Radar nach § 558 BGB.</p>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>Vertrag &amp; Konditionen</h2>
+      <span class="hint">Beträge offen dargestellt, personenbezogene Angaben nur per Schlüssel</span></div>
+    <div class="tiles">
+      <div class="tile brand"><div class="cap">Kaltmiete</div><div class="big num">2.100 <small>€</small></div><div class="note">10,13 €/m² · unbefristet ab 01.06.2026</div></div>
+      <div class="tile"><div class="cap">BK-Vorauszahlung <span class="info" tabindex="0" data-tip="Nur kalte Betriebskosten: Heizöl beschafft und bezahlt der Mieter selbst (§ 4 Abs. 2 MV); Strom meldet er selbst an. Umlageschlüssel durchgehend 100 %.">i</span></div><div class="big num">475 <small>€</small></div><div class="note">kalkuliert 444,23 € → Puffer +30,77 €</div></div>
+      <div class="tile"><div class="cap">Gesamt / Monat</div><div class="big num">2.575 <small>€</small></div><div class="note">+ Internet-Kostenanteil ({{Betrag offen}})</div></div>
+      <div class="tile good"><div class="cap">Kaution</div><div class="big num">5.000 <small>€</small></div><div class="note">≤ Grenze 6.300 € (3 Kaltmieten) ✓</div></div>
+    </div>
+    <div class="fcgrid" style="margin-top:8px">
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Objekt &amp; Vertrag</h3>
+        <div class="fc-meta"><span class="k">Mietbeginn / Laufzeit</span><span class="v">01.06.2026 · unbefristet</span></div>
+        <div class="fc-meta"><span class="k">Parteien</span><span class="v">2 Vermieterinnen / 2 Mieter (Gesamtschuldner)</span></div>
+        <div class="fc-meta"><span class="k">Objekt</span><span class="v">EFH Bj. 1969 · 207,4 m² · 7 Zimmer</span></div>
+        <div class="fc-meta"><span class="k">Nebenflächen</span><span class="v">Garage, Stellplatz, Garten, Schuppen</span></div>
+        <div class="fc-meta"><span class="k">Heizung <span class="info" tabindex="0" data-tip="Ölheizung: Der Mieter bestellt und bezahlt das Heizöl selbst — es läuft NICHT über die BK-Abrechnung. Heizölbestand bei Übergabe dokumentiert; bei Rückgabe Füllstand wiederherstellen oder wertmäßig ausgleichen (§ 9 MV). Betriebsbereitschaft der Anlage in der Heizperiode (01.10.–30.04.) bleibt Vermieterpflicht.">i</span></span><span class="v">Öl — Brennstoff kauft Mieter selbst</span></div>
+        <div class="fc-meta"><span class="k">Kleinreparaturen</span><span class="v">150 € je Fall · max. 1.000 €/Jahr</span></div>
+        <div class="fc-meta"><span class="k">Schönheitsreparaturen <span class="info" tabindex="0" data-tip="Übergabe unrenoviert ohne Ausgleich → nach § 16 Abs. 3 MV (BGH-Linie) besteht KEINE Renovierungspflicht des Mieters — bei Auszug nicht einfordern.">i</span></span><span class="v">entfallen (unrenoviert übergeben)</span></div>
+        <div class="fc-meta"><span class="k">Eigenleistungen Mieter <span class="info" tabindex="0" data-tip="Reinigung, Gartenpflege und Winterdienst der Alleinnutzflächen übernimmt der Mieter (§ 20 MV). Die Kontroll- und Überwachungspflicht bleibt trotzdem beim Vermieter — Stichproben dokumentieren, sonst Mithaftung bei Unfällen.">i</span></span><span class="v">Garten · Winterdienst · Reinigung</span></div>
+        <div class="fc-meta"><span class="k">Internet-Mitnutzung</span><span class="v">vereinbart · Betrag {{offen}}</span></div>
+      </div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Zahlung &amp; Verzug</h3>
+        <div class="fc-meta"><span class="k">Fälligkeit</span><span class="v">3. Werktag im Voraus (ohne Samstage)</span></div>
+        <div class="fc-meta"><span class="k">Konto</span><span class="v" data-pii="iban">XX</span></div>
+        <div class="fc-meta"><span class="k">Verzugsfolgen</span><span class="v">5 PP über Basiszins + 5 € je Mahnung</span></div>
+        <div class="fc-meta"><span class="k">Warnschwelle <span class="info" tabindex="0" data-tip="Bei Rückstand von 2 Monatsmieten ist die fristlose Kündigung möglich (§ 543 II Nr. 3 BGB) — gilt auch für Verzug mit der Kaution (§ 569 IIa BGB). Eskalationspfad: Gespräch → nachweisbares Schreiben → Abmahnung mit 2-Wochen-Frist → Kündigung.">i</span></span><span class="v">Rückstand ≥ 2 Monatsmieten</span></div>
+        <div class="fc-meta strong"><span class="k">Rückstand aktuell</span><span class="v" style="color:var(--good)">0,00 €</span></div>
+        <div class="fc-reco"><b>Praxis-Regel:</b> Mieteingang jeweils am Monatsanfang prüfen und hier nachtragen — verspätete Reaktion ist laut Vermieter-Foren der teuerste Standardfehler (Räumung dauert 6–12+ Monate).</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Mieteingang-Tracker</h2>
+      <span class="hint">Soll je Monat 2.575 € · Stand bestätigt 10.07.2026</span></div>
+    <div class="card"><div class="tblwrap"><table class="cmp mini" id="payTable"></table></div>
+      <div class="hintline" style="border:0">„Nachtragen" = Monat ist angelaufen, Eingang aber noch nicht im Cockpit erfasst. Kautionsraten liefen separat: 3 × 1.666,67 € zum 01.06. / 01.07. / 01.08.2026 — alle erhalten.</div></div>
+  </section>
+
+  <section id="radar">
+    <div class="sechead"><h2>Erhöhungs-Wächter (§ 558 BGB)</h2>
+      <span class="hint">Wann darf erhöht werden, bis wohin — und was jetzt zu beobachten ist</span></div>
+    <div class="fcgrid">
+      <div class="card" style="padding:18px 22px">
+        <h3 style="font-size:15px;margin-bottom:12px">Fahrplan &amp; Deckel</h3>
+        <div class="fc-meta"><span class="k">Miete unverändert seit</span><span class="v">01.06.2026 (Mietbeginn)</span></div>
+        <div class="fc-meta"><span class="k">Erhöhungsverlangen (Zugang) ab</span><span class="v" id="mwZugang">01.06.2027</span></div>
+        <div class="fc-meta"><span class="k">Erhöhte Miete wirksam ab <span class="info" tabindex="0" data-tip="§ 558 BGB: Zugang frühestens 12 Monate nach Mietbeginn; die erhöhte Miete gilt ab Beginn des 3. Monats nach Zugang — zusammen die 15-Monats-Regel. Mieter hat Zustimmungsfrist bis Ende des 2. Monats; danach bleiben 3 Monate für die Zustimmungsklage, sonst verfällt das Verlangen.">i</span></span><span class="v">01.09.2027</span></div>
+        <div class="fc-meta"><span class="k">Kappungsgrenze <span class="info" tabindex="0" data-tip="In der BW-Gebietskulisse (130 Kommunen) gilt die abgesenkte Kappung: max. +15 % in 3 Jahren. Die Verordnung ist bis 31.12.2026 befristet — fällt sie weg, gilt wieder +20 %. Zusätzlich deckelt immer die ortsübliche Vergleichsmiete.">i</span></span><span class="v">+15 % / 3 J. → max. 2.415 €</span></div>
+        <div class="fc-meta"><span class="k">Begründung</span><span class="v">Mietspiegel <span data-pii="ort">XX</span> 2025 (qualifiziert)</span></div>
+        <div class="scale" aria-label="Skala von aktueller Kaltmiete 2.100 Euro über Kappungsdeckel 2.415 Euro; Markt-Orientierung für Häuser rund 2.680 Euro liegt darüber">
+          <div class="sc-track">
+            <div class="sc-fill" style="width:14.3%"></div>
+            <div class="sc-seg" style="left:14.3%;width:45.0%"></div>
+            <div class="sc-mark" style="left:14.3%"></div>
+            <div class="sc-mark" style="left:59.3%"></div>
+            <div class="sc-mark" style="left:97.1%;background:var(--ink-faint)"></div>
+            <div class="sc-lab top" style="left:14.3%"><b>2.100 €</b> heute</div>
+            <div class="sc-lab top" style="left:59.3%"><b>2.415 €</b> Kappungsdeckel</div>
+            <div class="sc-lab bot" style="left:88%">~2.680 € Markt-Orientierung</div>
+          </div>
+        </div>
+        <div class="caption">Skala 2.000–2.700 €. Schraffiert = Erhöhungsspielraum (+315 €/Monat in 3 Jahren), sofern die Vergleichsmiete mitspielt. Die Markt-Orientierung (~12,9 €/m² Angebotsmieten Häuser) liegt über dem Kappungsdeckel — bindend ist hier also die Kappung.</div>
+      </div>
+      <div class="card notes"><h3>Rechtsrahmen &amp; Strategie</h3>
+        <ul>
+          <li><b>EFH-Besonderheit:</b> Der qualifizierte Mietspiegel gilt formal nicht für freistehende EFH. BGH: Er darf als Orientierung dienen, ein EFH-Zuschlag ist zulässig und nicht spannengedeckelt. Alternativ: 3 Vergleichsobjekte oder Gutachten.</li>
+          <li><b>Timing:</b> Anfang 2027 erscheint turnusgemäß der neue Mietspiegel — passend zum frühesten Zugang 06/2027 dann mit aktuellen Werten begründen.</li>
+          <li><b>Nicht aufschieben:</b> Jahrelang ausgesetzte Erhöhungen kosten doppelt — laufende Einnahmen und (bei Verkauf) den Faktor auf die Ist-Miete.</li>
+          <li><b>Verfahren:</b> Zustimmungsfrist des Mieters bis Ende des 2. Monats nach Zugang; stimmt er nicht zu → 3 Monate Klagefrist, sonst verfällt das Verlangen.</li>
+          <li><b>Mietpreisbremse:</b> Galt für die Anfangsmiete 06/2026 (Vergleichsmiete +10 %) — bei 10,13 €/m² unkritisch; Herleitung dokumentiert aufbewahren.</li>
+          <li><b>Rechtsstand-Guard:</b> KappVO und Mietpreisbremsen-VO BW sind bis 31.12.2026 befristet, die Verlängerung läuft — Q4/2026 prüfen.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Kaution</h2><span class="hint">§ 551 BGB · Stand bestätigt 10.07.2026</span></div>
+    <div class="card" style="padding:18px 22px;max-width:640px">
+      <div class="fc-meta"><span class="k">Vereinbart (Barkaution)</span><span class="v">5.000,00 €</span></div>
+      <div class="fc-meta"><span class="k">Zulässige Grenze (3 Kaltmieten)</span><span class="v">6.300,00 € ✓</span></div>
+      <div class="fc-meta"><span class="k">Raten</span><span class="v">3 × 1.666,67 € (06 / 07 / 08 2026) — alle erhalten</span></div>
+      <div class="fc-meta"><span class="k">Anlage</span><span class="v">getrennt &amp; insolvenzfest ✓ · Zinsen → Mieter</span></div>
+      <div class="fc-meta"><span class="k">Bei Mietende</span><span class="v">Prüffrist ~6 Monate · Teileinbehalt bis BK-Abrechnung ok</span></div>
+      <div class="fc-reco"><b>Erledigt und sauber:</b> Anlagenachweis (Kontoauszug des Kautionskontos) ablegen — der Mieter kann ihn jederzeit verlangen. Vermieteransprüche verjähren 6 Monate nach Rückgabe (§ 548 BGB).</div>
+    </div>
+  </section>
+  </div>
+
+  <!-- ================= NEBENKOSTEN & WIRTSCHAFTLICHKEIT ================= -->
+  <div class="tabpanel" id="panel-nk" role="tabpanel">
+  <div class="domain">
+    <h2>Nebenkosten &amp; Wirtschaftlichkeit</h2>
+    <p>Kalkulation aus der NK-Vorausschau zum Mietbeginn (03.05.2026), Fahrplan der ersten Abrechnung, die CO₂-Pflicht des Vermieters und die Rücklagen-/Cashflow-Sicht.</p>
+  </div>
+
+  <div class="tiles">
+    <div class="tile brand"><div class="cap">BK-Vorauszahlung <span class="info" tabindex="0" data-tip="475 € = 2,29 €/m²·Monat. Zum Vergleich: DMB-Betriebskostenspiegel 2024 im Schnitt 2,67 €/m² — davon 1,32 € Heizung/Warmwasser, die hier NICHT enthalten sind (Mieter kauft Heizöl selbst).">i</span></div><div class="big num">475 <small>€/M</small></div><div class="note">2,29 €/m²·M · nur kalte Betriebskosten</div></div>
+    <div class="tile good"><div class="cap">Kalkulierte Kosten</div><div class="big num">444,23 <small>€/M</small></div><div class="note">Puffer +30,77 €/M (+369 €/Jahr)</div></div>
+    <div class="tile link warn" id="tAbrTile" role="button" tabindex="0"><div class="cap">1. Abrechnung (2026) <span class="info" tabindex="0" data-tip="Rumpfjahr 01.06.–31.12.2026. Ausschlussfrist: Zugang beim Mieter bis 31.12.2027, sonst ist jede Nachforderung verloren. Interne Deadline 31.10.2027. Klick öffnet den Fahrplan.">i</span></div><div class="big num" id="tAbr">–</div><div class="note">Ausschlussfrist 31.12.2027 · Fahrplan ↓</div></div>
+    <div class="tile warn"><div class="cap">CO₂-Rückstellung <span class="info" tabindex="0" data-tip="Weil der Mieter das Heizöl selbst kauft, muss der VERMIETER ihm seinen CO₂-Kostenanteil erstatten (§ 6 II CO2KostAufG, 10-Stufen-Modell). Größenordnung bei ~3.000 L/Jahr: um 290 €/Jahr — verbrauchs- und preisabhängig.">i</span></div><div class="big num">200–500 <small>€/J</small></div><div class="note">Erstattungspflicht an den Mieter</div></div>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>Kostenpositionen (Kalkulation)</h2>
+      <span class="hint">Jahresbeträge lt. NK-Vorausschau · Umlageschlüssel 100 %</span></div>
+    <div class="card">
+      <div class="cmpwrap" id="nkBars"></div>
+      <div style="padding:0 22px 10px"><div class="legend"><span><i style="background:var(--kat-abgaben)"></i>Abgaben &amp; Versicherung</span><span><i style="background:var(--kat-betrieb)"></i>Betrieb</span><span><i style="background:var(--kat-wasser)"></i>Wasser</span><span><i style="background:var(--kat-waerme)"></i>Wärme-Nebenkosten</span></div></div>
+      <div class="tblwrap"><table class="cmp" id="nkTable"></table></div>
+      <div class="hintline" style="border:0">Grundsteuer + Gebäudeversicherung = 3.330,69 € = <b>62,5 %</b> der Kosten — beide jährlich prüfen (Versicherung ausschreiben, Grundsteuerbescheid kontrollieren) lohnt hier am meisten. DMB-Vergleich (kalte BK Ø ~1,35 €/m²): EFH liegt strukturell darüber — 100-%-Umlage, BW-Landesgrundsteuer und EFH-Gebäudeversicherung verteilen sich nicht auf mehrere Parteien. Kein Alarmsignal, aber Argumentationswissen für Mieter-Rückfragen.</div>
+    </div>
+  </section>
+
+  <section id="abrechnung">
+    <div class="sechead"><h2>Fahrplan: erste Abrechnung 2026</h2>
+      <span class="hint">Rumpfjahr 01.06.–31.12.2026 · § 556 III BGB</span></div>
+    <div class="fcgrid">
+      <div class="card" style="padding:18px 22px">
+        <div class="fc-meta"><span class="k">Abrechnungszeitraum</span><span class="v">01.06.–31.12.2026 (7 Monate)</span></div>
+        <div class="fc-meta"><span class="k">Vorauszahlungen im Zeitraum</span><span class="v">7 × 475 € = 3.325,00 €</span></div>
+        <div class="fc-meta"><span class="k">Jahreskosten anteilig</span><span class="v">Grundsteuer/Versicherungen × 7/12</span></div>
+        <div class="fc-meta"><span class="k">Zähler / Öltank</span><span class="v">Stände exakt zum 31.12. sichern</span></div>
+        <div class="fc-meta"><span class="k">Interne Deadline</span><span class="v">31.10.2027</span></div>
+        <div class="fc-meta strong"><span class="k">AUSSCHLUSSFRIST (Zugang!)</span><span class="v" style="color:var(--crit)">31.12.2027</span></div>
+        <div class="fc-meta"><span class="k">Einwendungsfrist Mieter</span><span class="v">12 Monate ab Zugang</span></div>
+        <div class="fc-warn"><b>Zugang zählt, nicht Absendung.</b> Einwurf am 31.12. abends gilt erst am 2.1. als zugegangen — Frist gerissen, Nachforderung weg. Zustellung nachweisbar machen (Bote + Zeugenprotokoll).</div>
+      </div>
+      <div class="card notes"><h3>Regeln für eine wasserdichte Abrechnung</h3>
+        <ul>
+          <li><b>Ist-Vorauszahlungen</b> gegenüberstellen (tatsächlich gezahlt, nicht Soll) — Formfehler wirkt wie Fristversäumnis.</li>
+          <li>Nur die im Vertrag vereinbarten Kostenarten (§ 4 Nr. 1–11 MV) umlegen; Wirtschaftlichkeitsgebot beachten.</li>
+          <li><b>Keine Brennstoffkosten:</b> Heizöl kauft der Mieter selbst; die HeizkostenV ist nicht anwendbar (EFH, ein Nutzer, Selbstversorgung) — nur Wartung/Schornsteinfeger/Tank laufen über die BK.</li>
+          <li>Eigenleistungs-Positionen (Garten, Winterdienst, Reinigung) tauchen nur auf, wenn fremdvergeben (§ 4 Abs. 9 MV).</li>
+          <li>Nach der Abrechnung: <b>Vorauszahlung anpassen</b> (§ 560 IV BGB — 1/12 des Saldos auf die Monats-VZ) und Beleg-Einsicht in geordneter Form ermöglichen.</li>
+          <li>Belege laufend sammeln (Grundsteuerbescheid, Versicherungsrechnungen, Wartung, Schornsteinfeger, Wasser/Abfall) — nicht erst im Herbst 2027.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>CO₂-Kosten: Zahlungspflicht des Vermieters</h2>
+      <span class="hint">CO2KostAufG — greift, weil der Mieter den Brennstoff selbst beschafft</span></div>
+    <div class="fcgrid">
+      <div class="card notes"><h3>So läuft die Erstattung (§ 6 Abs. 2)</h3>
+        <ul>
+          <li>Der Öllieferant weist CO₂-Kosten und Emissionen auf der Rechnung aus (§ 3).</li>
+          <li>Der <b>Mieter</b> berechnet den Vermieteranteil (Stufenmodell rechts) und fordert ihn <b>in Textform</b> — Ausschlussfrist: <b>12 Monate ab Zugang der Brennstoffrechnung</b> bei ihm.</li>
+          <li>Der <b>Vermieter</b> erstattet spätestens <b>12 Monate nach der Geltendmachung</b> — per Verrechnung in der BK-Abrechnung oder direkt.</li>
+          <li><b>Größenordnung:</b> 3.000 L/Jahr × 2,66 kg CO₂/L ÷ 207,4 m² ≈ 38,5 kg/m² → Stufe 60 % → bei ~60 €/t ≈ <b>290 €/Jahr</b>.</li>
+        </ul>
+        <div class="fc-reco"><b>Prozess mit dem Mieter vereinbaren:</b> Rechnungskopie jeder Öllieferung anfordern (auch fürs eigene Verbrauchs-Monitoring) und jährlich 200–500 € zurückstellen.</div>
+      </div>
+      <div class="card"><div class="tblwrap"><table class="cmp mini" id="co2Table"></table></div>
+        <div class="hintline" style="border:0">10-Stufen-Modell (Anlage CO2KostAufG): je schlechter der energetische Zustand (kg CO₂ je m² Wohnfläche und Jahr), desto höher der Vermieteranteil. Bj. 1969 unsaniert landet typisch bei 50–70 %.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Rücklage &amp; Cashflow</h2>
+      <span class="hint">Kalkulatorische Bewirtschaftungssicht — ohne Kaufpreis/Rendite (Objekt geerbt)</span></div>
+    <div class="fcgrid">
+      <div class="card">
+        <div class="chartcard" style="padding-bottom:6px"><div class="chart-head"><h3>Instandhaltungsrücklage: Soll-Korridore <span class="info" tabindex="0" data-tip="Drei übliche Maßstäbe für ein EFH Baujahr 1969 mit 207,4 m². Der II.-BV-Wert ist die gesetzlich verankerte Untergrenze; Altbau-Ratgeber empfehlen das Doppelte bis Vierfache.">i</span></h3></div></div>
+        <div class="cmpwrap" id="ruecklageBars" style="padding-top:0"></div>
+        <div class="hintline" style="border:0"><b>Ist-Stand: noch nicht erfasst</b> — Rücklagen-Topf definieren und hier pflegen (offener Punkt). Praxis-Lehre aus Foren: Wartungsstau beim Altbau ist die zweitteuerste Falle nach der NK-Frist.</div>
+      </div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Kalkulatorischer Jahres-Cashflow (vor Steuern)</h3>
+        <div class="fc-meta"><span class="k">Kaltmiete (12 × 2.100 €)</span><span class="v">+ 25.200 €</span></div>
+        <div class="fc-meta"><span class="k">Rücklage-Ansatz (II. BV … Altbau 2 €/m²·M)</span><span class="v">− 2.385 … 4.978 €</span></div>
+        <div class="fc-meta"><span class="k">Mietausfallwagnis (2 %, § 29 II. BV)</span><span class="v">− 504 €</span></div>
+        <div class="fc-meta"><span class="k">CO₂-Rückstellung (Mittelwert)</span><span class="v">− ≈ 300 €</span></div>
+        <div class="fc-meta strong"><span class="k">verbleibt kalkulatorisch</span><span class="v">≈ 19.400 – 22.000 €/Jahr</span></div>
+        <div class="fc-meta"><span class="k">Betriebskosten</span><span class="v">laufen bei 100-%-Umlage durch</span></div>
+        <div class="fc-warn"><b>Steuern nicht enthalten:</b> Überschuss aus V+V ist einkommensteuerpflichtig (Anlage V bis 31.07.2027 für 2026); dagegen stehen AfA 2 % (Gebäudeanteil, zeitanteilig ab 06/2026) und Werbungskosten. AfA-Basis nach Erbfall separat mit Steuerberater klären.</div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- ================= PFLICHTEN & TERMINE ================= -->
+  <div class="tabpanel" id="panel-pflichten" role="tabpanel">
+  <div class="domain">
+    <h2>Pflichten &amp; Termine</h2>
+    <p>Der Jahreskalender des Vermieters, Mehrjahres-Prüfzyklen der Technik, ereignisgesteuerte Pflichten und die Versicherungslage — Rechtsgrundlagen am 10.07.2026 gegen Primärquellen verifiziert.</p>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>Jahreskalender</h2><span class="hint">wiederkehrend · ✓ = als Betriebskosten umlagefähig</span></div>
+    <div class="card"><div class="tblwrap"><table class="cmp" id="kalTable"></table></div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Prüfzyklen Technik &amp; Gebäude</h2><span class="hint">Intervalle hängen an Stammdaten — orange = Stammdatum fehlt noch</span></div>
+    <div class="card"><div class="tblwrap"><table class="cmp" id="zykTable"></table></div>
+      <div class="hintline" style="border:0"><b>Geprüft — entfällt für dieses Objekt:</b> Legionellen-Prüfung (EFH ist keine Großanlage, TrinkwV) · landesweite Abwasser-Dichtheitsprüfung BW (nur Wasserschutzgebiet/Anlass — kommunale Satzung einmalig klären) · HeizkostenV-Verteilung (ein Nutzer, Brennstoff-Selbstversorgung).</div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Ereignisgesteuerte Pflichten</h2><span class="hint">werden durch ein Ereignis ausgelöst, nicht durchs Datum</span></div>
+    <div class="card notes">
+      <div class="op"><div class="oh"><span class="pill crit">je Öllieferung</span><b>CO₂-Erstattung an den Mieter</b></div>
+        <div class="od">Mieter fordert binnen 12 Monaten ab Brennstoffrechnung; Vermieter zahlt binnen 12 Monaten nach Geltendmachung (§ 6 II CO2KostAufG). Rückstellung 200–500 €/Jahr.</div></div>
+      <div class="op"><div class="oh"><span class="pill warn">ab 01.06.2027</span><b>Mieterhöhung § 558 möglich</b></div>
+        <div class="od">Zugang ab 01.06.2027, Wirkung ab 01.09.2027; Deckel = min(Vergleichsmiete, 2.415 € Kappung). Vorher neuen Mietspiegel und KappVO-Stand prüfen → Erhöhungs-Wächter.</div></div>
+      <div class="op"><div class="oh"><span class="pill mut">bei Mietende</span><b>Rückgabe-Paket</b></div>
+        <div class="od">Heizöl-Füllstand ausgleichen (§ 9 MV, letzter Einkaufspreis) · Kautionsabrechnung binnen ~6 Monaten (Teileinbehalt bis BK-Abrechnung zulässig) · eigene Ansprüche verjähren 6 Monate nach Rückgabe (§ 548 BGB) · Übergabeprotokoll mit Zählerständen.</div></div>
+      <div class="op"><div class="oh"><span class="pill mut">bei Heizungsdefekt</span><b>GEG-Weichenstellung</b></div>
+        <div class="od">Reparatur bleibt immer erlaubt. Vollersatz ab 01.11.2026: 65-%-EE-Pflicht (§ 71 GEG, Großstadt-Frist); Übergangsfristen bei Havarie bis 5 Jahre. Heizungs-Notfallplan (Fachbetrieb, Optionen) hinterlegen.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Versicherungs-Panel</h2><span class="hint">Öltank macht die Gewässerschaden-Deckung faktisch zur Pflicht</span></div>
+    <div class="card"><div class="tblwrap"><table class="cmp" id="versTable"></table></div>
+      <div class="hintline" style="border:0">§ 89 WHG: Für Gewässerschäden aus dem Öltank haftet der Betreiber <b>unbegrenzt und verschuldensunabhängig</b> — deshalb Gewässerschadenhaftpflicht klären (≈ 35–60 €/Jahr, umlagefähig). Ebenfalls prüfen: Vermietung dem Gebäudeversicherer gemeldet? Haftpflicht-Police = echte Haus- &amp; Grundbesitzerhaftpflicht?</div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Beobachten (Watch-Liste)</h2><span class="hint">Rechtsänderungen, die dieses Mietverhältnis treffen</span></div>
+    <div class="card notes">
+      <div class="op"><div class="oh"><span class="pill warn">Q4/2026</span><b>KappVO + Mietpreisbremsen-VO BW</b></div><div class="od">Beide bis 31.12.2026 befristet. Ohne Verlängerung gilt ab 2027 wieder die 20-%-Kappung — ändert den Erhöhungs-Wächter.</div></div>
+      <div class="op"><div class="oh"><span class="pill warn">laufend</span><b>Mietrechtsreform „Miete II"</b></div><div class="od">Kabinettsbeschluss 29.04.2026, im Bundestag: Indexmieten-Dämpfung, vereinfachte Modernisierungsumlage bis 20.000 €, Schonfristzahlung.</div></div>
+      <div class="op"><div class="oh"><span class="pill mut">halbjährlich</span><b>Kommunale Wärmeplanung <span data-pii="ort">XX</span></b></div><div class="od">Wärmeplan bestätigt, bisher keine Gebietsausweisung per Satzung — eine Ausweisung würde die 65-%-EE-Pflicht vorziehen.</div></div>
+      <div class="op"><div class="oh"><span class="pill mut">Anfang 2027</span><b>Neuer Mietspiegel</b></div><div class="od">Ausgabe 2025 läuft zum 31.12.2026 aus; der neue Spiegel wird Begründungsbasis für das Erhöhungsverlangen ab 06/2027.</div></div>
+    </div>
+  </section>
+  </div>
+
+  <div class="callout"><b>Datenbasis &amp; Vorbehalt.</b> Zahlen aus Mietvertrag V1.0 (final), NK-Vorausschau V1.0 (03.05.2026) und vom Vermieter bestätigten Kontoständen (10.07.2026); Rechtsgrundlagen am 10.07.2026 gegen gesetze-im-internet.de u. a. verifiziert (§§ 551, 556, 558 BGB · CO2KostAufG · GEG · KÜO/BImSchV · LGrStG BW). Kalkulatorische Werte (Rücklage, CO₂, Cashflow, Markt-Orientierung) sind Ansätze, keine Messwerte. Alles allgemeine Information — <b>keine Rechts- oder Steuerberatung</b>.</div>
+  <footer id="foot">Personenbezogene Angaben (Objekt, Ort, Namen, IBAN) erscheinen als „XX" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.</footer>
+</div>
+
+<div class="tt-pop" id="pop"></div>
+
+<script>
+/* ===== Datenmodell — NUR nicht-personenbezogene Daten (Spiegel von vermieter-daten.json). ===== */
+const HEUTE = new Date(); HEUTE.setHours(0,0,0,0);
+const RECHTSSTAND = { geprueft: "10.07.2026", gueltigBis: new Date(2026,11,31) };
+
+const ZAHLUNGEN = { sollMonat: 2575, start: [2026,5], bezahlt: { "2026-06": 2575, "2026-07": 2575 } };
+
+const TERMINE = [
+  { d:[2026,7,15],  t:"Grundsteuer-Rate Q3",                       s:"BW-Landesgrundsteuer, vierteljährlich — umlagefähig (2026 anteilig 7/12)." },
+  { d:[2026,8,30],  t:"Heizungswartung + Objektbegehung",          s:"Fachbetrieb vor der Heizperiode (01.10.); zugleich Dach/Rinnen/Bäume dokumentieren." },
+  { d:[2026,9,31],  t:"GEG-Meilenstein: 65-%-EE ab 01.11.",        s:"Ab 01.11.2026 braucht jede NEU eingebaute Heizung 65 % EE — Bestand + Reparatur bleiben erlaubt." },
+  { d:[2026,10,15], t:"Grundsteuer Q4 · Winterdienst-Saison",      s:"Ab jetzt Stichproben-Kontrollen des Mieter-Winterdiensts dokumentieren." },
+  { d:[2026,11,31], t:"Zähler + Öltank ablesen · RWM-Nachweis · Rechtsstand-Check", s:"Periodenende der 1. Abrechnung; KappVO/Mietpreisbremse BW + Mietspiegel laufen aus." },
+  { d:[2027,1,15],  t:"Grundsteuer-Rate Q1/2027",                  s:"Weitere Raten: 15.05. / 15.08. / 15.11." },
+  { d:[2027,5,1],   t:"Mieterhöhung ab jetzt möglich (Zugang)",    s:"§ 558: Wirkung frühestens 01.09.2027 — vorher neuen Mietspiegel + Kappungs-Stand prüfen." },
+  { d:[2027,6,31],  t:"Anlage V für 2026",                         s:"Ohne Berater (§ 149 AO); mit Berater bis 29.02.2028. AfA 2 % zeitanteilig ab 06/2026." },
+  { d:[2027,9,31],  t:"Interne Deadline: BK-Abrechnung 2026",      s:"2 Monate Puffer; Zugang nachweisbar zustellen (Bote/Zeuge)." },
+  { d:[2027,11,31], t:"AUSSCHLUSSFRIST BK-Abrechnung 2026",        s:"§ 556 III BGB — danach ist jede Nachforderung verloren." }
+];
+
+const OFFENE = [
+  { p:"kritisch", t:"Energieausweis fehlt — Bedarfsausweis erstellen", d:"Vorlagepflicht bei der Vermietung 06/2026 nicht erfüllt (§ 80 GEG, Bußgeld bis 10.000 € möglich). Bj. 1969 < 5 WE → Bedarfsausweis; gilt 10 Jahre, nötig für jede künftige Neuvermietung/Verkauf.", n:"Energieberater beauftragen; Ablaufdatum ins Cockpit." },
+  { p:"wichtig",  t:"Übergabeprotokoll-Daten digital erfassen", d:"Zählerstände, Heizölbestand (Füllstand/Liter/Einkaufspreis) und Schlüsselliste liegen nur auf Papier — Basis für BK-Abrechnung 2026 und Heizöl-Ausgleich (§ 9 MV).", n:"Protokoll scannen, Werte in Daten-JSON + Cockpit nachtragen." },
+  { p:"wichtig",  t:"Heizkessel: Typ + Einbaujahr erfassen", d:"§ 72 GEG: Konstanttemperaturkessel ≥ 30 Jahre = Betriebsverbot (NT/Brennwert ausgenommen) — Status ungeklärt.", n:"Typenschild/Schornsteinfegerprotokoll prüfen; Feuerstättenbescheid übernehmen." },
+  { p:"wichtig",  t:"Öltank-Stammdaten klären", d:"Volumen, ober-/unterirdisch, Wasserschutzgebiet? Bestimmt den AwSV-Prüfzyklus (Kellertank 1.000–10.000 L außerhalb WSG: keine wiederkehrende Prüfung).", n:"Tankdaten + WSG-Status erfassen; letzte Tankreinigung erfragen." },
+  { p:"wichtig",  t:"Versicherungs-Dreifach-Check", d:"Vermietung dem Gebäudeversicherer gemeldet? Haftpflicht = Haus- & Grundbesitzer-Deckung? Gewässerschadenhaftpflicht für den Öltank vorhanden?", n:"Policen prüfen, Lücken schließen (alle umlagefähig)." },
+  { p:"klein",    t:"Internet-Kostenanteil nachtragen", d:"Vereinbarung (Vodafone 100) geschlossen, Betrag im abgelegten PDF nicht ausgefüllt — zusätzliche Monatseinnahme.", n:"Betrag aus unterschriebener Fassung übernehmen." },
+  { p:"klein",    t:"Rücklagen-Konto festlegen", d:"Empfehlung Altbau: 2.400–5.000 €/Jahr. Ohne Ist-Stand bleibt die Rücklagen-Kennzahl leer.", n:"Topf definieren, Startwert + Zuführung eintragen." }
+];
+
+const NK = [
+  { l:"Gebäudeversicherung",     k:"abgaben", j:1699.73, b:"§ 2 Nr. 13" },
+  { l:"Grundsteuer",             k:"abgaben", j:1630.96, b:"§ 2 Nr. 1" },
+  { l:"Abfallentsorgung",        k:"betrieb", j:1008.00, b:"§ 2 Nr. 8" },
+  { l:"Trinkwasser",             k:"wasser",  j:300.00,  b:"§ 2 Nr. 2" },
+  { l:"Wartung Heizung",         k:"waerme",  j:220.00,  b:"§ 2 Nr. 4d" },
+  { l:"Entwässerung",            k:"wasser",  j:216.00,  b:"§ 2 Nr. 3" },
+  { l:"Rauchwarnmelder-Wartung", k:"betrieb", j:100.00,  b:"§ 2 Nr. 17" },
+  { l:"Schornsteinfeger",        k:"waerme",  j:92.25,   b:"§ 2 Nr. 12" },
+  { l:"Haftpflichtversicherung", k:"abgaben", j:63.84,   b:"§ 2 Nr. 13" }
+];
+const FLAECHE = 207.4;
+
+const CO2STUFEN = [["unter 12",0],["12 – <17",10],["17 – <22",20],["22 – <27",30],["27 – <32",40],["32 – <37",50],["37 – <42",60],["42 – <47",70],["47 – <52",80],["52 und mehr",95]];
+
+const RUECKLAGE = [
+  { l:"Untergrenze § 28 II. BV (> 32 J.)", von:2385, bis:2385 },
+  { l:"Faustregel privat 1–1,5 €/m²·M",    von:2489, bis:3733 },
+  { l:"Altbau-Empfehlung 2–4 €/m²·M",      von:4978, bis:9955 }
+];
+
+const KALENDER = [
+  ["15.02. / 15.05. / 15.08. / 15.11.","Grundsteuer-Rate (BW-Landesgrundsteuer)","§ 52 LGrStG BW", true],
+  ["Sept./Okt.","Heizungswartung (Fachbetrieb) + Objektbegehung","§ 60 GEG", true],
+  ["Nov.–März","Winterdienst: dokumentierte Stichproben trotz Übertragung auf Mieter","§ 823 BGB", false],
+  ["1–2× jährlich","Baumkontrolle (Sichtprüfung + Foto-Doku) — bleibt Vermietersache","§ 823 BGB", false],
+  ["jährlich","Rauchwarnmelder-Funktionsprüfung + Nachweis","§ 15 VII LBO BW · § 21 MV", true],
+  ["jährlich","Versicherungs-Check (Deckung, Prämie, Vermietung gemeldet)","—", true],
+  ["31.12.","Zählerstände + Öltank-Füllstand zum Periodenende sichern","Basis § 556 BGB", null],
+  ["31.07. Folgejahr","Anlage V (ohne Berater; mit Berater Ende Feb. übernächstes Jahr)","§ 149 AO", null],
+  ["31.12. Folgejahr","AUSSCHLUSSFRIST Betriebskostenabrechnung (Zugang beim Mieter!)","§ 556 III BGB", null]
+];
+
+const ZYKLEN = [
+  ["Schornsteinfeger / Messung / Feuerstättenschau","Öl i. d. R. 1×/Jahr · Messung alle 2 J. (Anlage > 12 J.) · Schau alle 3–5 J.","KÜO · § 15 1. BImSchV · § 14 SchfHwG","Feuerstättenbescheid erfassen"],
+  ["Öltank: AwSV-Prüfung + Eigenkontrolle","Kellertank 1.000–10.000 L außerhalb WSG: keine wiederkehrende Prüfung · sonst alle 5 J. (WSG 2,5 J.)","§§ 45–47 AwSV","Volumen · Lage · WSG-Status erfassen"],
+  ["Tankreinigung","üblich alle 5–10 Jahre (kein gesetzliches Intervall); regelmäßig → umlagefähig (BGH VIII ZR 221/08)","§ 2 Nr. 4 BetrKV","letzte Reinigung erfragen"],
+  ["Energieausweis (Bedarf)","10 Jahre gültig ab Ausstellung","§§ 79–80 GEG","liegt noch nicht vor → offener Punkt"]
+];
+
+const VERS = [
+  ["Wohngebäudeversicherung","1.699,73 €", true, ["good","vorhanden"], "Vermietung melden · Elementardeckung prüfen"],
+  ["Haftpflichtversicherung","63,84 €", true, ["warn","Art klären"], "Deckt sie Haus- & Grundbesitzerhaftpflicht fürs vermietete Objekt?"],
+  ["Gewässerschadenhaftpflicht (Öltank)","≈ 35–60 €", true, ["crit","ungeklärt"], "Prüfen/abschließen — § 89 WHG haftet unbegrenzt"],
+  ["Mietausfallversicherung","—", false, ["mut","optional"], "Bewusste Entscheidung, kein Muss"]
+];
+
+/* ===== Helfer ===== */
+const eur=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const eur0=n=>Math.round(n).toLocaleString("de-DE")+" €";
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const pop=document.getElementById("pop");
+const posPop=(x,y)=>{pop.style.left=(x+14)+"px";pop.style.top=(y-10)+"px";};
+const showWide=(x,y,html)=>{pop.className="tt-pop wide";pop.innerHTML=html;pop.style.opacity=1;posPop(x,y);};
+const hidePop=()=>{pop.style.opacity=0;};
+function bindInfos(root){
+  (root||document).querySelectorAll(".info,[data-tip]").forEach(n=>{
+    if(n._b)return;n._b=1;const tip=n.dataset.tip;if(!tip)return;
+    n.addEventListener("mousemove",e=>showWide(e.clientX,e.clientY,tip));
+    n.addEventListener("mouseleave",hidePop);
+    n.addEventListener("focus",()=>{const r=n.getBoundingClientRect();showWide(r.right,r.bottom,tip);});
+    n.addEventListener("blur",hidePop);
+    n.addEventListener("click",e=>{e.stopPropagation();const r=n.getBoundingClientRect();showWide(r.right,r.bottom,tip);});
+  });
+}
+const dFmt=d=>d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});
+const tage=d=>Math.round((d-HEUTE)/86400000);
+
+/* ===== Tabs ===== */
+const tabbar=document.getElementById("tabbar");
+function showTab(id){
+  tabbar.querySelectorAll("button").forEach(b=>{const on=b.dataset.tab===id;b.classList.toggle("on",on);b.setAttribute("aria-selected",on);});
+  document.querySelectorAll(".tabpanel").forEach(p=>p.classList.toggle("on",p.id==="panel-"+id));
+}
+tabbar.addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(b)showTab(b.dataset.tab);});
+const jump=(tab,anchor)=>{showTab(tab);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:"smooth",block:"start"}),30);};
+const radTile=document.getElementById("tRadTile");
+radTile.addEventListener("click",()=>jump("vertrag","radar"));
+radTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();jump("vertrag","radar");}});
+const abrTile=document.getElementById("tAbrTile");
+abrTile.addEventListener("click",()=>jump("nk","abrechnung"));
+abrTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();jump("nk","abrechnung");}});
+
+/* ===== Rechtsstand-Guard (nicht entfernen) ===== */
+(function(){
+  const b=document.getElementById("lawBanner");
+  const rest=tage(RECHTSSTAND.gueltigBis);
+  if(rest<0){
+    b.innerHTML='<div class="lawbanner"><b>⚠ Rechtsstand veraltet.</b> Die Rechtslage wurde zuletzt am '+RECHTSSTAND.geprueft+' geprüft und war bis '+dFmt(RECHTSSTAND.gueltigBis)+' belastbar. KappVO/Mietpreisbremsen-VO BW und Mietspiegel 2025 sind inzwischen ausgelaufen — Erhöhungs-Wächter, Kappung (15 % vs. 20 %) und Mietspiegel-Basis neu prüfen, bevor daraus Entscheidungen abgeleitet werden.</div>';
+  } else if(rest<=60){
+    b.innerHTML='<div class="lawbanner soft"><b>Hinweis:</b> Der geprüfte Rechtsstand läuft am '+dFmt(RECHTSSTAND.gueltigBis)+' aus (in '+rest+' Tagen) — KappVO/Mietpreisbremse BW und Mietspiegel 2025 enden dann. Q4-Check einplanen.</div>';
+  }
+})();
+
+/* ===== Übersicht: Mieteingang-Tile ===== */
+(function(){
+  const mm=[];let y=ZAHLUNGEN.start[0],m=ZAHLUNGEN.start[1];
+  while(new Date(y,m,1)<=HEUTE){mm.push(y+"-"+String(m+1).padStart(2,"0"));m++;if(m>11){m=0;y++;}}
+  const paid=mm.filter(k=>ZAHLUNGEN.bezahlt[k]!=null).length;
+  document.getElementById("tPay").textContent=paid+"/"+mm.length+" ✓";
+  document.getElementById("tPayNote").textContent="alle pünktlich · Rückstand 0 € · Stand 10.07.2026";
+})();
+
+/* ===== Übersicht: offene Punkte + Termine ===== */
+(function(){
+  const cls={kritisch:"crit",wichtig:"warn",klein:"mut"};
+  const ol=document.getElementById("opList");
+  OFFENE.forEach(o=>{
+    ol.appendChild(el("div","op",'<div class="oh"><span class="pill '+cls[o.p]+'">'+o.p+'</span><b>'+o.t+'</b></div><div class="od">'+o.d+'</div><div class="os">→ '+o.n+'</div>'));
+  });
+  const tl=document.getElementById("termList");
+  TERMINE.map(t=>({...t,date:new Date(t.d[0],t.d[1],t.d[2])}))
+    .filter(t=>tage(t.date)>=-7).slice(0,6).forEach(t=>{
+      const dd=tage(t.date);
+      const pill=dd<0?'<span class="pill crit">überfällig</span>':dd<=30?'<span class="pill warn">in '+dd+' T.</span>':'<span class="pill mut">in '+dd+' T.</span>';
+      tl.appendChild(el("div","term",'<span class="td num">'+dFmt(t.date)+'</span><span class="tt">'+t.t+'<small>'+t.s+'</small></span>'+pill));
+    });
+  document.getElementById("standLine").textContent="Datenstand: Mietvertrag V1.0 · NK-Vorausschau 03.05.2026 · Zahlungen bestätigt 10.07.2026 · Rechtsstand geprüft 10.07.2026";
+})();
+
+/* ===== Abrechnungs-Countdown-Tile ===== */
+(function(){
+  const frist=new Date(2027,11,31);
+  document.getElementById("tAbr").innerHTML='in '+Math.round(tage(frist)/30)+' <small>Mon.</small>';
+})();
+
+/* ===== Zahlungs-Tabelle (Jun 2026 – Mai 2027) ===== */
+(function(){
+  const t=document.getElementById("payTable");
+  let h='<tr><th>Monat</th><th>Soll</th><th>Ist</th><th style="text-align:left">Status</th></tr>';
+  let y=2026,m=5,sumS=0,sumI=0;
+  for(let i=0;i<12;i++){
+    const key=y+"-"+String(m+1).padStart(2,"0");
+    const name=new Date(y,m,1).toLocaleDateString("de-DE",{month:"long",year:"numeric"});
+    const ist=ZAHLUNGEN.bezahlt[key];
+    const begonnen=new Date(y,m,1)<=HEUTE;
+    let status,istTxt="–";
+    if(ist!=null){status='<span class="pill good">✓ bezahlt</span>';istTxt=eur(ist);sumS+=ZAHLUNGEN.sollMonat;sumI+=ist;}
+    else if(begonnen){status='<span class="pill warn">nachtragen</span>';sumS+=ZAHLUNGEN.sollMonat;}
+    else{status='<span class="pill mut">— offen</span>';}
+    h+='<tr><td>'+name+'</td><td>'+eur(ZAHLUNGEN.sollMonat)+'</td><td>'+istTxt+'</td><td class="tl">'+status+'</td></tr>';
+    m++;if(m>11){m=0;y++;}
+  }
+  h+='<tr class="sum"><td>Aufgelaufen (fällige Monate)</td><td>'+eur(sumS)+'</td><td>'+eur(sumI)+'</td><td class="tl">'+(sumS-sumI<=0?'<span class="pill good">Rückstand 0 €</span>':'<span class="pill crit">Rückstand '+eur(sumS-sumI)+'</span>')+'</td></tr>';
+  t.innerHTML=h;
+})();
+
+/* ===== NK-Positionen: Balken + Tabelle ===== */
+(function(){
+  const wrap=document.getElementById("nkBars");
+  const max=Math.max(...NK.map(p=>p.j));
+  NK.forEach(p=>{
+    const w=(p.j/max*100).toFixed(1);
+    wrap.appendChild(el("div","rowbar",
+      '<span class="rl"><b style="background:var(--kat-'+p.k+')"></b><span>'+p.l+'</span></span>'+
+      '<span class="track"><i style="width:'+w+'%;background:var(--kat-'+p.k+')"></i></span>'+
+      '<span class="rv num">'+eur0(p.j)+'</span>'));
+  });
+  const t=document.getElementById("nkTable");
+  let sum=0,h='<tr><th>Position</th><th>€ / Jahr</th><th>€ / Monat</th><th>€ / m²·Monat</th><th>BetrKV</th></tr>';
+  NK.forEach(p=>{sum+=p.j;h+='<tr><td class="lbl-td"><b style="background:var(--kat-'+p.k+')"></b>'+p.l+'</td><td>'+eur(p.j)+'</td><td>'+eur(p.j/12)+'</td><td>'+(p.j/12/FLAECHE).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+'</td><td>'+p.b+'</td></tr>';});
+  h+='<tr class="sum"><td>Summe (kalkuliert)</td><td>'+eur(sum)+'</td><td>'+eur(sum/12)+'</td><td>'+(sum/12/FLAECHE).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+'</td><td></td></tr>';
+  h+='<tr><td>Vorauszahlung</td><td>'+eur(5700)+'</td><td>'+eur(475)+'</td><td>2,29</td><td></td></tr>';
+  h+='<tr><td>Puffer</td><td style="color:var(--good);font-weight:700">+'+eur(369.22)+'</td><td style="color:var(--good);font-weight:700">+'+eur(30.77)+'</td><td></td><td></td></tr>';
+  t.innerHTML=h;
+})();
+
+/* ===== CO2-Stufenmodell ===== */
+(function(){
+  const t=document.getElementById("co2Table");
+  let h='<tr><th>kg CO₂ / m²·Jahr</th><th>Vermieteranteil</th></tr>';
+  CO2STUFEN.forEach((s,i)=>{const hl=i>=5&&i<=6?' style="background:var(--warn-bg)"':'';h+='<tr'+hl+'><td>'+s[0]+'</td><td>'+s[1]+' %</td></tr>';});
+  t.innerHTML=h;
+})();
+
+/* ===== Rücklage-Korridore ===== */
+(function(){
+  const wrap=document.getElementById("ruecklageBars");
+  const max=10000;
+  RUECKLAGE.forEach(r=>{
+    const l=(r.von/max*100).toFixed(1),w=(Math.max(r.bis-r.von,120)/max*100).toFixed(1);
+    wrap.appendChild(el("div","rowbar",
+      '<span class="rl"><span>'+r.l+'</span></span>'+
+      '<span class="track"><i class="range" style="left:'+l+'%;width:'+w+'%;background:var(--brand-bright)"></i></span>'+
+      '<span class="rv num">'+(r.von===r.bis?eur0(r.von):eur0(r.von)+"–"+eur0(r.bis))+'</span>'));
+  });
+})();
+
+/* ===== Pflichten-Tabellen ===== */
+(function(){
+  const k=document.getElementById("kalTable");
+  let h='<tr><th style="text-align:left">Wann</th><th style="text-align:left">Pflicht</th><th style="text-align:left">Grundlage</th><th>umlagefähig</th></tr>';
+  KALENDER.forEach(r=>{h+='<tr><td>'+r[0]+'</td><td class="tl">'+r[1]+'</td><td class="tl">'+r[2]+'</td><td>'+(r[3]===true?"✓":r[3]===false?"—":"·")+'</td></tr>';});
+  k.innerHTML=h;
+  const z=document.getElementById("zykTable");
+  let h2='<tr><th style="text-align:left">Prüfung</th><th style="text-align:left">Intervall</th><th style="text-align:left">Grundlage</th><th style="text-align:left">Stammdatum</th></tr>';
+  ZYKLEN.forEach(r=>{h2+='<tr><td class="tl"><b style="font-weight:600">'+r[0]+'</b></td><td class="tl">'+r[1]+'</td><td class="tl">'+r[2]+'</td><td class="tl"><span class="pill warn">'+r[3]+'</span></td></tr>';});
+  z.innerHTML=h2;
+  const v=document.getElementById("versTable");
+  let h3='<tr><th style="text-align:left">Police</th><th>€ / Jahr</th><th>umlagefähig</th><th style="text-align:left">Status</th><th style="text-align:left">To-do</th></tr>';
+  VERS.forEach(r=>{h3+='<tr><td class="tl">'+r[0]+'</td><td>'+r[1]+'</td><td>'+(r[2]?"✓":"—")+'</td><td class="tl"><span class="pill '+r[3][0]+'">'+r[3][1]+'</span></td><td class="tl">'+r[4]+'</td></tr>';});
+  v.innerHTML=h3;
+})();
+
+bindInfos(document);
+
+/* ===== PII: nur lokal einblenden (kein Upload, kein Speicher) — NICHT verändern ===== */
+let PII={};
+function applyPII(){document.querySelectorAll("[data-pii]").forEach(n=>{const k=n.getAttribute("data-pii");n.textContent=(PII&&PII[k])?PII[k]:"XX";});}
+(function(){
+  const panel=document.getElementById("piiPanel"),toggle=document.getElementById("piiToggle"),err=document.getElementById("piiErr");
+  toggle.addEventListener("click",()=>{panel.hidden=!panel.hidden;});
+  function load(text){
+    let o;try{o=JSON.parse(text);}catch(e){err.textContent="Kein gültiges JSON. Erwartet wird ein Objekt wie { \"objekt\": \"…\", \"vermieter\": \"…\" }.";return;}
+    if(!o||typeof o!=="object"||Array.isArray(o)){err.textContent="Die Schlüssel-Datei muss ein JSON-Objekt sein (geschweifte Klammern).";return;}
+    PII=o;applyPII();err.textContent="";panel.hidden=true;toggle.textContent="🔒 Angaben eingeblendet";
+  }
+  document.getElementById("piiApply").addEventListener("click",()=>load(document.getElementById("piiText").value));
+  document.getElementById("piiClear").addEventListener("click",()=>{PII={};applyPII();document.getElementById("piiText").value="";err.textContent="";toggle.textContent="🔓 Schlüssel laden";});
+  document.getElementById("piiFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>load(r.result);r.readAsText(f);});
+  const drop=document.getElementById("piiDrop");
+  ["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("drag");}));
+  ["dragleave","dragend"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("drag");}));
+  drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("drag");const f=e.dataTransfer.files[0];if(!f)return;const r=new FileReader();r.onload=()=>load(r.result);r.readAsText(f);});
+})();
+applyPII();
+</script>
