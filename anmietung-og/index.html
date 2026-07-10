@@ -143,11 +143,35 @@
   .pii-panel textarea{width:100%;min-height:70px;margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px;font-family:Consolas,"SF Mono",monospace;font-size:12.5px;resize:vertical}
   .pii-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
   .pii-err{color:var(--crit);font-size:12.5px;margin-top:8px;min-height:1em}
+  /* Tabs (Bereiche als Panels statt einer langen Seite) */
+  nav.secnav button{font-family:var(--sans);border:0;background:transparent;font-size:13px;font-weight:600;color:var(--ink-soft);padding:6px 12px;border-radius:100px;white-space:nowrap;cursor:pointer}
+  nav.secnav button:hover{background:var(--surface);color:var(--brand);box-shadow:0 1px 2px rgba(22,35,58,.10)}
+  nav.secnav button.on{background:var(--brand);color:#fff}
+  nav.secnav button:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
+  .tabpanel{display:none} .tabpanel.on{display:block}
+  .tabpanel>.domain:first-child{margin-top:26px}
+  .nkview{display:none} .nkview.on{display:block}
+
+  /* Übersicht: offene Punkte + Termine + Rechtsstand */
+  .op-status{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:100px;margin-left:8px;vertical-align:1px;white-space:nowrap}
+  .op-status.offen{background:var(--warn-bg);color:var(--warn)} .op-status.geklaert{background:var(--good-bg);color:var(--good)}
+  .op-step{margin-top:5px;font-size:12.5px} .op-step b{color:var(--brand)}
+  .sev-good{background:var(--good)}
+  .term-item{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:13px;align-items:start}
+  .term-item:last-child{border-bottom:none}
+  .term-date{font-variant-numeric:tabular-nums;font-weight:700;color:var(--brand);white-space:nowrap}
+  .term-date small{display:block;font-weight:600;color:var(--ink-faint);font-size:11px}
+  .term-item .tx{color:var(--ink-soft)} .term-item .tx b{color:var(--ink)}
+  .lawwarn{background:var(--warn-bg);border:1px solid #E4CFA4;color:#6b4a12;border-radius:10px;padding:10px 14px;font-size:12.5px;margin:12px 0 0;font-weight:600}
+  .stand{font-size:12px;color:var(--ink-faint);margin-top:12px;padding-top:10px;border-top:1px solid var(--line-soft)}
+  .tile.due .big{color:var(--crit)} .tile.due::after{background:var(--crit)}
+
   @media print{.pii-lock,.pii-panel{display:none!important}}
   @media print{
     body{background:#fff;font-size:12px} .wrap{max-width:none;padding:8px 0 0}
     .printbtn,.controls,.seg,.chips,.expand,.resetbtn,.info,.tt-pop,.sliderrow input,.secnav{display:none!important}
     .breakdown{display:block!important}
+    .tabpanel,.nkview{display:block!important}
     .card,.tile,.ycard{box-shadow:none;border:1px solid #cfd6df;break-inside:avoid}
     .tile.link{cursor:default} section{margin-top:18px} a{color:inherit;text-decoration:none}
     #zDetail{display:none!important} .printonly{display:block!important}
@@ -230,12 +254,11 @@
     </div>
   </header>
 
-  <nav class="secnav" aria-label="Bereiche">
-    <a href="#vertrag">Objekt &amp; Vertrag</a>
-    <a href="#miete">Miete &amp; Erhöhungen</a>
-    <a href="#nk">Nebenkosten</a>
-    <a href="#prognose">Prognose 2025</a>
-    <a href="#zaehler">Zähler &amp; Verbrauch</a>
+  <nav class="secnav" aria-label="Bereiche" id="tabbar" role="tablist">
+    <button data-tab="uebersicht" class="on" role="tab" aria-selected="true">Übersicht</button>
+    <button data-tab="vertrag" role="tab" aria-selected="false">Vertrag &amp; Miete</button>
+    <button data-tab="nk" role="tab" aria-selected="false">Nebenkosten &amp; Prognose</button>
+    <button data-tab="zaehler" role="tab" aria-selected="false">Zähler &amp; Verbrauch</button>
   </nav>
 
   <div class="pii-strip">
@@ -252,7 +275,9 @@
     <div class="pii-actions"><button class="pii-btn primary" id="piiApply">Einblenden</button><button class="pii-btn" id="piiClear">Wieder verbergen (XX)</button></div>
     <div class="pii-err" id="piiErr"></div>
   </div>
+  <div id="lawBanner"></div>
 
+  <div class="tabpanel on" id="panel-uebersicht" role="tabpanel">
   <div class="tiles four">
     <div class="tile brand">
       <div class="cap">Gesamtzahlung / Monat <span class="info" tabindex="0" data-tip="Aktuelle monatliche Überweisung ab 01.01.2025: Kaltmiete + Nebenkosten-Vorauszahlung + Reinigung + Parkplatz + Internet.">i</span></div>
@@ -264,8 +289,8 @@
       <div class="big num" id="tKalt">–</div>
       <div class="note" id="tKaltNote"></div>
     </div>
-    <div class="tile good link" id="tNkTile" role="button" tabindex="0">
-      <div class="cap">NK-Saldo netto 2022–2024 <span class="info" tabindex="0" data-tip="Summe aller Guthaben minus Nachzahlungen der drei abgeschlossenen Nebenkosten-Jahre. Guthaben je Jahr = Vorauszahlung − dein Kostenanteil. Klick springt zum Nebenkosten-Bereich.">i</span></div>
+    <div class="tile link" id="tNkTile" role="button" tabindex="0">
+      <div class="cap">Letzte Abrechnung (2024) <span class="info" tabindex="0" data-tip="Ergebnis des letzten abgeschlossenen NK-Jahres: Vorauszahlung minus dein Kostenanteil. Der Umschwung zur Nachzahlung ist strukturell — die Vorauszahlung wurde zum 01.01.2024 gesenkt, während die Kosten stiegen. Klick springt zum Nebenkosten-Bereich.">i</span></div>
       <div class="big num" id="tNet">–</div>
       <div class="note" id="tNetNote"></div>
     </div>
@@ -276,6 +301,22 @@
     </div>
   </div>
 
+  <section style="margin-top:24px">
+    <div class="fcgrid">
+      <div class="card notes">
+        <h3>Offene Punkte <span class="info" tabindex="0" data-tip="Konkrete Prüf- und Streitpunkte dieser Anmietung mit Betrag und nächstem Schritt. Geklärte Punkte bleiben mit Ergebnis stehen.">i</span></h3>
+        <div id="opList"></div>
+      </div>
+      <div class="card notes">
+        <h3>Nächste Termine</h3>
+        <div id="termList"></div>
+        <div class="stand" id="standLine"></div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <div class="tabpanel" id="panel-vertrag" role="tabpanel">
   <div class="domain" id="vertrag">
     <h2>Objekt &amp; Vertrag</h2>
     <p>Stammdaten und Konditionen der Anmietung — aus dem Mietvertrag vom 01.04.2020, seinen Anlagen und den Mieterhöhungsschreiben.</p>
@@ -304,13 +345,15 @@
       <div class="hintline" style="border:0">Warm gesamt = Kaltmiete + BK-Vorauszahlung + Reinigung + Stellplatz + Internet. Die BK-Vorauszahlung wurde zum 01.01.2024 von 272 € auf 182,60 €/Monat (BK 167,60 + Reinigung 15) gesenkt — bei gleichzeitig steigenden Kosten der Hauptgrund für die Nachzahlung 2024.</div></div>
 
     <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Erhöhungs-Wächter (§ 558 BGB)</h2>
-      <span class="hint">Kappungsgrenze, Vergleichsmieten-Deckel und Sperrfristen — laufend gegen die Historie gerechnet</span></div>
+      <span class="hint">Kappungsgrenze, Vergleichsmieten-Deckel und Sperrfristen — laufend gegen die Historie gerechnet, mit Mietspiegel-Simulator</span></div>
     <div class="fcgrid">
       <div class="card fc-panel" id="mwPanel"></div>
       <div class="card notes"><h3>Rechtsrahmen &amp; Einordnung</h3><div id="mwNotes"></div></div>
     </div>
   </section>
+  </div>
 
+  <div class="tabpanel" id="panel-nk" role="tabpanel">
   <div class="domain" id="nk">
     <h2>Nebenkosten</h2>
     <p>Der größte variable Teilbereich der Anmietung: drei abgeschlossene Abrechnungsjahre, alle Positionen im Vergleich, Benchmark — und unten die Prognose für 2025.</p>
@@ -334,6 +377,18 @@
   </div>
 
   <section>
+    <div class="sechead"><h2>Was Wohnen wirklich kostet</h2>
+      <span class="hint">Kaltmiete + tatsächliche Nebenkosten + Parkplatz/Internet — je abgeschlossenem Jahr</span></div>
+    <div class="card chartcard">
+      <div class="chart-head"><h3>Jahres-Wohnkosten gesamt
+        <span class="info" tabindex="0" data-tip="Gezahlte Kaltmiete + dein NK-Anteil laut finaler Abrechnung + Parkplatz-Zahlungen (ab 08/2023) + Internet. Nicht enthalten: eigener Haushaltsstrom. 2025 folgt, sobald die Abrechnung vorliegt.">i</span></h3>
+        <div class="legend"><span><i style="background:var(--brand-bright)"></i>Kaltmiete</span><span><i style="background:var(--ochre)"></i>NK-Anteil (Ist)</span><span><i style="background:#8A94A8"></i>Parkplatz + Internet</span></div></div>
+      <div id="wohnChart"></div>
+      <div class="caption" id="wohnCap"></div>
+    </div>
+  </section>
+
+  <section>
     <div class="sechead"><h2>Vorauszahlung gegen deinen Anteil</h2>
       <span class="hint">Drei abgeschlossene Jahre — die Differenz ist Guthaben bzw. Nachzahlung</span></div>
     <div class="card chartcard">
@@ -345,45 +400,46 @@
   </section>
 
   <section>
-    <div class="sechead"><h2>Positionen im Vergleich</h2>
-      <span class="hint">Einzelne Kostenarten gegeneinander — Jahr &amp; Ansicht wählbar</span></div>
+    <div class="sechead"><h2>Positionen</h2>
+      <span class="hint">Alle Kostenarten — als Jahresvergleich, Mehrjahres-Tabelle oder Verlauf</span></div>
     <div class="card">
       <div class="controls">
-        <div class="ctl"><span class="lb">Jahr</span><div class="seg" id="segYear"></div></div>
-        <div class="ctl"><span class="lb">Ansicht <span class="info" tabindex="0" data-tip="Mein Anteil €: der auf deine Wohnung entfallende Betrag. €/m²: geteilt durch 83,8 m². Anteil %: wie viel Prozent deiner Jahres-NK diese Position ausmacht. Liegenschaft €: Gesamtkosten der Position fürs ganze Haus (vor Verteilung).">i</span></span><div class="seg" id="segMode"></div></div>
+        <div class="ctl"><span class="lb">Darstellung</span><div class="seg" id="nkViewSeg"></div></div>
         <div class="legend" style="margin-left:auto">
           <span><i style="background:var(--kat-waerme)"></i>Wärme</span><span><i style="background:var(--kat-wasser)"></i>Wasser</span>
           <span><i style="background:var(--kat-betrieb)"></i>Betrieb</span><span><i style="background:var(--kat-abgaben)"></i>Abgaben/Vers.</span></div>
       </div>
-      <div class="cmpwrap" id="cmpBars"></div>
-      <div class="hintline">Verteilerschlüssel: die meisten Positionen nach Fläche — deine <b>83,8 m² von 265,71 m² = 31,5 %</b>. Heizung &amp; Warmwasser dagegen nach gemessenem Verbrauch (§ 9 HeizkostenV, 50 % Grund- / 50 % Verbrauchskosten).</div>
-    </div>
-    <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Mehrjahres-Tabelle</h2>
-      <span class="hint">Dein Anteil je Position, mit Veränderung von Jahr zu Jahr</span></div>
-    <div class="card"><div class="tblwrap"><table class="cmp" id="cmpTable"></table></div>
-      <div class="hintline" style="border-top:1px solid var(--line-soft);margin-top:0">
-        <span class="dpill up">▲ 12 %</span> Position ist gestiegen · <span class="dpill down">▼ 8 %</span> gesunken — Prozent zeigt die Änderung zum Vorjahr, der €-Betrag steht im Tooltip. Jahresspalte anklicken zum Sortieren.</div>
-    </div>
-
-    <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Verlauf im Detail</h2>
-      <span class="hint">Großer Graph — Kennzahl, Darstellung &amp; Positionen frei wählbar</span></div>
-    <div class="card">
-      <div class="controls">
-        <div class="ctl"><span class="lb">Kennzahl <span class="info" tabindex="0" data-tip="Womit die Höhe gemessen wird: dein Anteil in €, € pro m², dein Prozent-Anteil an den Jahres-NK, oder die Gesamtkosten der Liegenschaft.">i</span></span><div class="seg" id="bigMetric"></div></div>
-        <div class="ctl"><span class="lb">Darstellung <span class="info" tabindex="0" data-tip="Gestapelt: alle gewählten Positionen übereinander pro Jahr — zeigt die Zusammensetzung. Linien: jede Position als eigene Linie — zeigt den Verlauf einzelner Kostenarten.">i</span></span><div class="seg" id="bigType"></div></div>
-        <div class="ctl" style="margin-left:auto"><span class="lb">Auswahl</span>
-          <div class="seg"><button id="bgSelAll">Alle</button><button id="bgSelTop">Top 5 (Linien)</button><button id="bgSelNone">Keine</button></div></div>
+      <div class="nkview on" id="nkvBars">
+        <div class="controls" style="background:transparent">
+          <div class="ctl"><span class="lb">Jahr</span><div class="seg" id="segYear"></div></div>
+          <div class="ctl"><span class="lb">Kennzahl <span class="info" tabindex="0" data-tip="Mein Anteil €: der auf deine Wohnung entfallende Betrag. €/m²: geteilt durch 83,8 m². Anteil %: wie viel Prozent deiner Jahres-NK diese Position ausmacht. Liegenschaft €: Gesamtkosten der Position fürs ganze Haus (vor Verteilung).">i</span></span><div class="seg" id="segMode"></div></div>
+        </div>
+        <div class="cmpwrap" id="cmpBars"></div>
+        <div class="hintline">Verteilerschlüssel: die meisten Positionen nach Fläche — deine <b>83,8 m² von 265,71 m² = 31,5 %</b>. Heizung &amp; Warmwasser dagegen nach gemessenem Verbrauch (§ 9 HeizkostenV, 50 % Grund- / 50 % Verbrauchskosten).</div>
       </div>
-      <div style="padding:12px 20px 0"><div class="chips" id="bigChips"></div></div>
-      <div class="bigchart" id="bigChart"></div>
+      <div class="nkview" id="nkvTable">
+        <div class="tblwrap"><table class="cmp" id="cmpTable"></table></div>
+        <div class="hintline" style="border-top:1px solid var(--line-soft);margin-top:0">
+          <span class="dpill up">▲ 12 %</span> Position ist gestiegen · <span class="dpill down">▼ 8 %</span> gesunken — Prozent zeigt die Änderung zum Vorjahr, der €-Betrag steht im Tooltip. Jahresspalte anklicken zum Sortieren.</div>
+      </div>
+      <div class="nkview" id="nkvBig">
+        <div class="controls" style="background:transparent">
+          <div class="ctl"><span class="lb">Kennzahl <span class="info" tabindex="0" data-tip="Womit die Höhe gemessen wird: dein Anteil in €, € pro m², dein Prozent-Anteil an den Jahres-NK, oder die Gesamtkosten der Liegenschaft.">i</span></span><div class="seg" id="bigMetric"></div></div>
+          <div class="ctl"><span class="lb">Chart <span class="info" tabindex="0" data-tip="Gestapelt: alle gewählten Positionen übereinander pro Jahr — zeigt die Zusammensetzung. Linien: jede Position als eigene Linie — zeigt den Verlauf einzelner Kostenarten.">i</span></span><div class="seg" id="bigType"></div></div>
+          <div class="ctl" style="margin-left:auto"><span class="lb">Auswahl</span>
+            <div class="seg"><button id="bgSelAll">Alle</button><button id="bgSelTop">Top 5 (Linien)</button><button id="bgSelNone">Keine</button></div></div>
+        </div>
+        <div style="padding:12px 20px 0"><div class="chips" id="bigChips"></div></div>
+        <div class="bigchart" id="bigChart"></div>
+      </div>
     </div>
   </section>
 
   <section>
-    <div class="sechead"><h2>Benchmark <span class="info" tabindex="0" data-tip="Deine Kosten pro m² und Monat (2024) gegen bundesweite Richtwerte (Betriebskostenspiegel des Deutschen Mieterbunds). Nur grobe Orientierung — regional und je nach Jahr unterschiedlich; Heizung/Warmwasser schwanken energiebedingt stark.">i</span></h2>
-      <span class="hint">Deine €/m²·Monat (2024) gegen bundesweite Durchschnittswerte</span></div>
+    <div class="sechead"><h2>Benchmark <span class="info" tabindex="0" data-tip="Deine Kosten pro m² und Monat (2024) gegen bundesweite Richtwerte aus dem DMB-Betriebskostenspiegel fürs Abrechnungsjahr 2023 (neuester Stand). Nur grobe Orientierung — regional unterschiedlich; Heizung/Warmwasser schwanken energiebedingt stark.">i</span></h2>
+      <span class="hint">Deine €/m²·Monat (2024) gegen bundesweite Durchschnittswerte (DMB 2023)</span></div>
     <div class="card"><div class="tblwrap"><table class="cmp" id="benchTable"></table></div>
-      <div class="hintline" style="border-top:1px solid var(--line-soft);margin-top:0">Richtwerte: Betriebskostenspiegel Deutscher Mieterbund (Abrechnungsjahr 2021, bundesweiter Durchschnitt) — nur Orientierung.
+      <div class="hintline" style="border-top:1px solid var(--line-soft);margin-top:0">Richtwerte: Betriebskostenspiegel Deutscher Mieterbund, <b>Abrechnungsjahr 2023</b> (veröffentlicht 2025; bundesweiter Ø 2,51 €/m²·Monat) — nur Orientierung. Wärme und Versicherungen sind zusammengefasst, weil der DMB sie so ausweist.
         <span class="dpill down">günstig</span> unter · <span class="dpill flat">im Rahmen</span> um · <span class="dpill up">erhöht</span> deutlich über dem Schnitt.</div>
     </div>
   </section>
@@ -432,7 +488,9 @@
       <span class="hint">2024 → geschätzt 2025 nach deinen Annahmen</span></div>
     <div class="card"><div class="tblwrap"><table class="cmp" id="fcTable"></table></div></div>
   </section>
+  </div>
 
+  <div class="tabpanel" id="panel-zaehler" role="tabpanel">
   <div class="domain" id="zaehler">
     <h2>Zähler &amp; Verbrauch</h2>
     <p>Eigene Erfassung aller Zähler der Wohnung — unabhängig von der Vermieter-Abrechnung und die Grundlage, um Abrechnungen und Prognose zu kontrollieren.</p>
@@ -472,6 +530,7 @@
     </div>
 
   </section>
+  </div>
 
   <div class="callout">
     <b>Datenbasis &amp; Vorbehalt.</b> Vertrags- und Mietdaten aus Mietvertrag, Anlagen und Mieterhöhungsschreiben;
@@ -494,9 +553,9 @@ const DATEN = {
   jahr:[
     {jahr:2022,anteil:2097.46,vz:3084.00,saldo:986.54,gesamt:7484.50,erstellt:"21.12.2023",
      v:{gas:2235.13,gasE:1.21,wwHaus:80.71,wwWohn:13.72,z0:167.26,z1:247.97,strom:496.08,eLade:0}},
-    {jahr:2023,anteil:2416.88,vz:3264.00,saldo:847.12,gesamt:8524.06,erstellt:"07.12.2025",
+    {jahr:2023,anteil:2416.88,vz:3264.00,saldo:847.12,gesamt:8524.06,erstellt:"07.12.2025",co2:false,
      v:{gas:1714.30,gasE:1.83,wwHaus:67.502,wwWohn:14.52,z0:247.97,z1:315.472,strom:645.36,eLade:-459.49}},
-    {jahr:2024,anteil:2473.12,vz:2191.20,saldo:-281.92,gesamt:8817.72,erstellt:"15.03.2026",
+    {jahr:2024,anteil:2473.12,vz:2191.20,saldo:-281.92,gesamt:8817.72,erstellt:"15.03.2026",co2:false,
      v:{gas:2125.22,gasE:1.74,wwHaus:87.817,wwWohn:18.86,z0:315.472,z1:403.289,strom:443.85,eLade:-1537.80}}
   ],
   pos:[
@@ -554,9 +613,23 @@ const VERTRAG={
     {ab:"01.01.2025",an:"21.08.2024",kalt:1047.50,bk:167.60,rein:15.00,stell:30.00,net:30.00,anlass:"Mieterhöhung +7,2 %",spiegel:"Mietspiegel 2024: 12,65 €/m²"}
   ]
 };
-const BENCH={warmwasser:0.28,heizung:1.00,kaltwasser:0.34,reinigung:0.17,grundstueck:0.10,muell:0.16,allgemeinstrom:0.05,versicherung:0.15,haftpflicht:0.03,grundsteuer:0.19};
+// DMB-Betriebskostenspiegel Abrechnungsjahr 2023 (veröffentlicht 2025), €/m²·Monat — Wärme und
+// Versicherungen kombiniert, weil der DMB sie als je eine Position ausweist.
+const BENCH23=[
+  {label:"Heizung + Warmwasser",keys:["heizung","warmwasser"],kat:"waerme",ref:1.29,tip:"DMB 2023: Heizung und Warmwasser 1,26 €/m²·Monat (Spanne 0,37–2,15) + Schornsteinreinigung 0,03 — Schornsteinfeger/Wartung stecken in dieser Abrechnung in den Wärmekosten."},
+  {label:"Kalt-/Abwasser",keys:["kaltwasser"],kat:"wasser",ref:0.26},
+  {label:"Gebäudereinigung",keys:["reinigung"],kat:"betrieb",ref:0.20},
+  {label:"Grundstückspflege",keys:["grundstueck"],kat:"betrieb",ref:0.14},
+  {label:"Müllgebühren",keys:["muell"],kat:"betrieb",ref:0.14},
+  {label:"Allgemeinstrom",keys:["allgemeinstrom"],kat:"betrieb",ref:0.06},
+  {label:"Versicherungen (Gebäude + Haftpflicht)",keys:["versicherung","haftpflicht"],kat:"abgaben",ref:0.28,tip:"Der DMB weist Versicherungen als eine Position aus — hier Gebäudeversicherung und Haus-/Grundbesitzerhaftpflicht zusammen."},
+  {label:"Grundsteuer",keys:["grundsteuer"],kat:"abgaben",ref:0.17}
+];
+const HEUTE=new Date();
+const RECHTSSTAND={geprueft:"10.07.2026",bis:new Date(2026,11,31,23,59,59)};
+const DATENSTAND="Abrechnungen final bis 2024 (vom 15.03.2026) · Zählerstände bis 01.01.2026 · Miete Stand 01.01.2025 · Rechtsstand geprüft "+RECHTSSTAND.geprueft;
+const WOHN={jahre:[2022,2023,2024],kalt:[10716,10716,11724],nk:[2097.46,2416.88,2473.12],neben:[360,510,720]};
 const KAT={waerme:"var(--kat-waerme)",wasser:"var(--kat-wasser)",betrieb:"var(--kat-betrieb)",abgaben:"var(--kat-abgaben)"};
-const shortL=l=>l.replace(/\s*\(.*/,"");
 const F=83.8;
 const eur=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const eur0=n=>Math.round(n).toLocaleString("de-DE");
@@ -583,12 +656,12 @@ document.getElementById("subline").innerHTML=DATEN.objekt+" · <span data-pii=\"
 
 // Tiles
 const net=DATEN.jahr.reduce((s,j)=>s+j.saldo,0);
-const credits=DATEN.jahr.filter(j=>j.saldo>0).reduce((s,j)=>s+j.saldo,0);
-const dues=DATEN.jahr.filter(j=>j.saldo<0).reduce((s,j)=>s+Math.abs(j.saldo),0);
 const kosten=DATEN.jahr.reduce((s,j)=>s+j.anteil,0);
 const vzSum=DATEN.jahr.reduce((s,j)=>s+j.vz,0);
-document.getElementById("tNet").innerHTML="+"+eur(net).replace(" €","")+"<small> €</small>";
-document.getElementById("tNetNote").innerHTML="Guthaben "+eur(credits)+" − Nachzahlung "+eur(dues)+".";
+const lastY=DATEN.jahr[DATEN.jahr.length-1], lastDue=lastY.saldo<0;
+document.getElementById("tNkTile").classList.toggle("due",lastDue);
+document.getElementById("tNet").innerHTML=(lastDue?"−":"+")+eur(Math.abs(lastY.saldo)).replace(" €","")+"<small> €</small>";
+document.getElementById("tNetNote").innerHTML=(lastDue?"Nachzahlung":"Guthaben")+" · Verlauf: "+DATEN.jahr.map(j=>(j.saldo>0?"+":"−")+eur0(Math.abs(j.saldo))).join(" → ")+" € · netto 2022–2024 "+(net>=0?"+":"−")+eur0(Math.abs(net))+" €";
 document.getElementById("tCost").innerHTML=eur(kosten).replace(" €","")+"<small> €</small>";
 document.getElementById("tCostNote").innerHTML="Summe deiner Anteile · Vorauszahlungen "+eur(vzSum)+".";
 
@@ -665,8 +738,19 @@ function renderTable(){
 function spark(v){const w=58,h=20,max=Math.max(...v),min=Math.min(...v),rng=max-min||1;
   const pts=v.map((x,i)=>[4+i*(w-8)/(v.length-1),h-3-(x-min)/rng*(h-6)]);
   const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");const up=v[v.length-1]>=v[0];
-  return '<svg class="spark" viewBox="0 0 '+w+' '+h+'"><path d="'+d+'" fill="none" stroke="'+(up?"var(--crit)":"var(--good)")+'" stroke-width="1.6"/><circle cx="'+pts[pts.length-1][0].toFixed(1)+'" cy="'+pts[pts.length-1][1].toFixed(1)+'" r="2.2" fill="'+(up?"var(--crit)":"var(--good)")+'"/></svg>';}
+  return '<svg class="spark" role="presentation" aria-hidden="true" viewBox="0 0 '+w+' '+h+'"><path d="'+d+'" fill="none" stroke="'+(up?"var(--crit)":"var(--good)")+'" stroke-width="1.6"/><circle cx="'+pts[pts.length-1][0].toFixed(1)+'" cy="'+pts[pts.length-1][1].toFixed(1)+'" r="2.2" fill="'+(up?"var(--crit)":"var(--good)")+'"/></svg>';}
 renderTable();
+
+// Positionen: eine Karte, drei Darstellungen (Balken je Jahr / Mehrjahres-Tabelle / Verlauf)
+(function(){
+  const views=[["bars","nkvBars","Balken (je Jahr)"],["table","nkvTable","Tabelle (3 Jahre)"],["chart","nkvBig","Verlauf"]];
+  let cur="bars";
+  function render(){
+    buildSeg("nkViewSeg",views.map(v=>[v[0],v[2]]),cur,v=>{cur=v;render();});
+    views.forEach(v=>document.getElementById(v[1]).classList.toggle("on",v[0]===cur));
+  }
+  render();
+})();
 
 // Big adjustable chart
 (function(){
@@ -706,8 +790,8 @@ renderTable();
         const d=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
         s+='<path d="'+d+'" fill="none" stroke="'+PCOL[p.key]+'" stroke-width="2.4"/>';
         pts.forEach((q,i)=>{s+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4" fill="'+PCOL[p.key]+'" stroke="#fff" stroke-width="1.5" data-svgtip="'+years[i]+' · '+short(p.label)+': '+vFmt(val(p,metric,i))+'"/>';});
-        const last=pts[pts.length-1];
-        s+='<text x="'+(last[0]+9).toFixed(1)+'" y="'+(last[1]+4).toFixed(1)+'" font-size="11.5" font-weight="600" fill="'+PCOL[p.key]+'" class="lbl">'+short(p.label)+'</text>';});
+        if(sels.length<=5){const last=pts[pts.length-1];
+          s+='<text x="'+(last[0]+9).toFixed(1)+'" y="'+(last[1]+4).toFixed(1)+'" font-size="11.5" font-weight="600" fill="'+PCOL[p.key]+'" class="lbl">'+short(p.label)+'</text>';}});
     }
     s+='</svg>';host.innerHTML=s;
     host.querySelectorAll("[data-svgtip]").forEach(nd=>{nd.style.cursor="pointer";
@@ -754,6 +838,7 @@ DATEN.jahr.forEach((j,yi)=>{
         '<div>WW-Zähler Haus <b>'+j.v.z0.toLocaleString("de-DE")+' → '+j.v.z1.toLocaleString("de-DE")+'</b></div>'+
         '<div>Allgemeinstrom netto <b>'+eur(j.v.strom)+'</b> '+ii("Strom für Treppenhaus/Außenanlagen usw., nach Abzug der E-Ladestation-Korrektur.")+'</div>'+
         '<div>E-Lade-Korrektur <b>'+(j.v.eLade?eur(j.v.eLade):"—")+'</b> '+ii("Herausgerechneter Stromverbrauch deiner Wallbox — gehört nicht zum umlagefähigen Allgemeinstrom.")+'</div>'+
+        (j.jahr>=2023?'<div>CO₂-Aufteilung <b style="color:'+(j.co2?'var(--good)':'var(--warn)')+'">'+(j.co2?'ausgewiesen':'fehlt ⚠')+'</b> '+ii("Seit 01.01.2023 muss der Vermieter die CO₂-Kosten nach dem 10-Stufenmodell aufteilen und den Abzug in der Abrechnung ausweisen (§§ 5–7 CO2KostAufG). Fehlt der Ausweis, darfst du deinen Heizkostenanteil um 3 % kürzen (§ 7 IV) — hier ≈ "+eur(heizWW*0.03)+". Siehe Offene Punkte auf der Übersicht.")+'</div>':'')+
       '</div>'+
       '<div class="vert">Verteilung: Fläche 83,8 m² von 265,71 m² (31,5 %); Heizung/Warmwasser nach Verbrauch.</div>'+
       '<div class="bd-scroll"><table class="bd"><tr><th>Position</th><th>€</th></tr>'+posRows+
@@ -802,7 +887,7 @@ function forecast(){
 ["gp","gv","ueb","gs"].forEach(id=>document.getElementById(id).addEventListener("input",forecast));
 document.getElementById("fcReset").onclick=()=>{document.getElementById("gp").value=1.67;document.getElementById("gv").value=2125;document.getElementById("ueb").value=3;document.getElementById("gs").value=138;forecast();};
 [["tFcTile","prognose"],["tNkTile","nk"]].forEach(([tid,sid])=>{
-  const t=document.getElementById(tid), go=()=>document.getElementById(sid).scrollIntoView({behavior:"smooth"});
+  const t=document.getElementById(tid), go=()=>gotoSection(sid);
   t.addEventListener("click",e=>{if(!e.target.closest(".info"))go();});
   t.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});
 });
@@ -825,15 +910,16 @@ const NOTES=[
 const nl=document.getElementById("notesList");
 NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic sev-'+n.s+'">'+(n.s==="crit"?"!":n.s==="warn"?"›":"i")+'</div><div class="tx"><b>'+n.t+'</b><br>'+n.d+'</div>';nl.appendChild(it);});
 
-// Benchmark table
+// Benchmark table — DMB-Betriebskostenspiegel Abrechnungsjahr 2023
 (function(){
   const t=document.getElementById("benchTable");
-  let html='<tr><th>Position</th><th>Dein €/m²·Monat (2024)</th><th>Richtwert</th><th>Bewertung</th></tr>';
+  const byKey={};DATEN.pos.forEach(p=>{byKey[p.key]=p;});
+  let html='<tr><th>Position</th><th>Dein €/m²·Monat (2024)</th><th>Richtwert (DMB 2023)</th><th>Bewertung</th></tr>';
   let sM=0,sR=0;
   const bew=f=>f<0.9?["down","günstig"]:f<1.4?["flat","im Rahmen"]:["up","erhöht"];
-  DATEN.pos.forEach(p=>{const mine=p.mein[2]/F/12,ref=BENCH[p.key],f=ref?mine/ref:1;sM+=mine;sR+=ref;const[c,l]=bew(f);
-    html+='<tr><td class="lbl-td"><b style="background:'+KAT[p.kat]+'"></b>'+shortL(p.label)+'</td>'+
-      '<td>'+mine.toFixed(2).replace(".",",")+' €</td><td>'+ref.toFixed(2).replace(".",",")+' €</td>'+
+  BENCH23.forEach(r=>{const mine=r.keys.reduce((s,k)=>s+byKey[k].mein[2],0)/F/12,f=mine/r.ref;sM+=mine;sR+=r.ref;const[c,l]=bew(f);
+    html+='<tr><td class="lbl-td"><b style="background:'+KAT[r.kat]+'"></b>'+r.label+(r.tip?' <span class="info" tabindex="0" data-tip="'+r.tip+'">i</span>':'')+'</td>'+
+      '<td>'+mine.toFixed(2).replace(".",",")+' €</td><td>'+r.ref.toFixed(2).replace(".",",")+' €</td>'+
       '<td class="dc"><span class="dpill '+c+'" data-tip="Faktor '+f.toFixed(2).replace(".",",")+' — dein Wert '+(f>=1?"über":"unter")+' dem bundesweiten Schnitt.">'+l+'</span></td></tr>';});
   const fT=sM/sR,[cT,lT]=bew(fT);
   html+='<tr class="sum"><td>Gesamt (alle Positionen)</td><td>'+sM.toFixed(2).replace(".",",")+' €</td><td>'+sR.toFixed(2).replace(".",",")+' €</td>'+
@@ -978,7 +1064,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
   document.getElementById("tKaltNote").innerHTML=qm(cur.kalt)+" · +"+eur(dSeit)+" ("+pct(dSeit/first.kalt*100)+") seit 04/2020";
   document.getElementById("vTiles").innerHTML=
     tile("Mietbeginn",VERTRAG.beginn,VERTRAG.art+" · unterschrieben "+VERTRAG.unterzeichnet,"brand")+
-    tile("Kaution",eur(VERTRAG.kaution),"§ 5 Mietsicherheit","")+
+    tile("Kaution",eur(VERTRAG.kaution),"§ 5 · Zinsen stehen dir zu (§ 551 III BGB)","")+
     tile("Wohnfläche",String(VERTRAG.flaecheA).replace(".",",")+" <small>m²</small>","abrechnungsrelevant · laut Vertrag "+VERTRAG.flaecheV+" m²","")+
     tile("Mietniveau",qm(cur.kalt).replace(" €/m²"," <small>€/m²</small>"),"Vergleichsmiete lt. Mietspiegel 2024: 12,65 €/m²","");
   const kv=(k,v)=>'<div class="fc-meta"><span class="k">'+k+'</span><span class="v" style="text-align:right;max-width:64%">'+v+'</span></div>';
@@ -990,7 +1076,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
     kv("Wohnfläche",VERTRAG.flaecheV+" m² (Vertrag) · "+String(VERTRAG.flaecheA).replace(".",",")+" m² (abrechnungsrelevant)")+
     kv("Nutzung",VERTRAG.nutzung)+
     kv("Kündigungsfrist",VERTRAG.kuend)+
-    kv("Kaution",eur(VERTRAG.kaution))+
+    kv('Kaution <span class="info" tabindex="0" data-tip="Getrennt vom Vermögen des Vermieters und insolvenzfest anzulegen; die Zinsen stehen dir zu und erhöhen die Sicherheit (§ 551 III BGB). Nachweis über Anlage und Zinsen kannst du jederzeit verlangen; Rückzahlung nach Auszug (übliche Prüffrist 3–6 Monate).">i</span>',eur(VERTRAG.kaution))+
     kv("Kontoverbindung",'IBAN <span data-pii="iban">XX</span>')+
     kv("Kleinreparaturen",VERTRAG.klein)+
     kv("Schönheitsrep.",VERTRAG.schoen);
@@ -1056,7 +1142,8 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
       nd.addEventListener("mousemove",e=>showPop(e,"<b>"+nd.getAttribute("data-svgtip")+"</b>"));nd.addEventListener("mouseleave",hidePop);});
   })();
 
-  // Erhöhungs-Wächter — § 558 BGB gegen die Historie; rechnet mit dem Anzeigedatum weiter
+  // Erhöhungs-Wächter — § 558 BGB gegen die Historie; rechnet mit dem Anzeigedatum weiter.
+  // Simulator: Vergleichsmiete verschiebbar (künftiger Mietspiegel); Guard warnt nach Ablauf des geprüften Rechtsstands.
   (function(){
     const panel=document.getElementById("mwPanel"),nb=document.getElementById("mwNotes");
     if(!panel||!nb)return;
@@ -1064,43 +1151,140 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
     const pDt=s=>{const p=s.split(".");return new Date(+p[2],+p[1]-1,+p[0]);};
     const addM=(d,m)=>{const x=new Date(d);x.setMonth(x.getMonth()+m);return x;};
     const fmtD=d=>d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});
-    const heute=new Date();
+    const heute=HEUTE, veraltet=heute>RECHTSSTAND.bis;
     const rentAt=d=>{let v=H[0].kalt;H.forEach(r=>{if(pDt(r.ab)<=d)v=r.kalt;});return v;};
-    const spiegelDeckel=MW.spiegel*VERTRAG.flaecheA;
-    const deckelAt=d=>{const basis=rentAt(addM(d,-36));const kapp=basis*(1+MW.kapp);return{basis,kapp,max:Math.min(kapp,spiegelDeckel)};};
-    const now=deckelAt(heute), spielraum=now.max-cur.kalt;
-    let nextD=null;H.forEach(r=>{const t=addM(pDt(r.ab),36);if(t>heute&&r.kalt!==now.basis&&(!nextD||t<nextD))nextD=t;});
-    const next=nextD?deckelAt(nextD):null;
+    const basisHeute=rentAt(addM(heute,-36)), kappHeute=basisHeute*(1+MW.kapp);
+    let nextD=null;H.forEach(r=>{const t=addM(pDt(r.ab),36);if(t>heute&&r.kalt!==basisHeute&&(!nextD||t<nextD))nextD=t;});
     const lastAb=pDt(cur.ab), verlangenAb=addM(lastAb,12), wirksamAb=addM(lastAb,15);
     const kv=(k,v,cls)=>'<div class="fc-meta'+(cls?" "+cls:"")+'"><span class="k">'+k+'</span><span class="v" style="text-align:right;max-width:52%">'+v+'</span></div>';
-    const head=spielraum>0.005
-      ?'<div class="fc-big due">+'+eur(spielraum)+'</div><div class="fc-sub">wäre heute als Erhöhung maximal durchsetzbar (bindender Deckel '+eur(now.max)+')</div>'
-      :'<div class="fc-big credit">0,00 €</div><div class="fc-sub">Erhöhungs-Spielraum heute — der bindende Deckel ('+eur(now.max)+') liegt '+(now.max<cur.kalt?eur(cur.kalt-now.max)+' unter':'auf Höhe')+' der aktuellen Kaltmiete</div>';
     panel.innerHTML=
-      '<div class="cap" style="font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint);font-weight:600">Zulässige Erhöhung heute · Stand '+fmtD(heute)+'</div>'+head+
+      (veraltet?'<div class="lawwarn" style="margin:0 0 12px">⚠ Rechtsstand veraltet — zuletzt geprüft am '+RECHTSSTAND.geprueft+'. Die 15-%-Kulisse war bis 31.12.2026 befristet und der Mietspiegel kann abgelöst sein; die Werte unten sind nicht mehr belastbar. Rechtsrahmen neu prüfen.</div>':'')+
+      '<div class="cap" style="font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint);font-weight:600">Zulässige Erhöhung heute · Stand '+fmtD(heute)+'</div>'+
+      '<div id="mwHead"></div>'+
+      '<div class="sliderrow" style="margin-top:16px"><label><span class="lt">Vergleichsmiete (Simulator) <span class="info" tabindex="0" data-tip="Ortsübliche Vergleichsmiete in €/m². Startwert 12,65 = Mietspiegel 2024 (aus dem Erhöhungsschreiben 2025). Verschieben simuliert einen künftigen Mietspiegel — Deckel und Spielraum rechnen live mit.">i</span></span><span class="rv" id="msimV">12,65 €/m²</span></label>'+
+      '<input type="range" id="msim" min="11.50" max="15.00" step="0.05" value="12.65"></div>'+
       '<div class="fc-derive">'+
-      kv("Kappungsbasis — Kaltmiete am "+fmtD(addM(heute,-36)),eur(now.basis))+
-      kv("Kappungsgrenze 15 % (§ 558 III BGB · seit "+MW.kulisseSeit+")",eur(now.kapp))+
-      kv("Vergleichsmieten-Deckel ("+MW.spiegelStand+": 12,65 €/m² × 83,8 m²)",eur(spiegelDeckel))+
+      kv("Kappungsbasis — Kaltmiete am "+fmtD(addM(heute,-36)),eur(basisHeute))+
+      kv("Kappungsgrenze 15 % (§ 558 III BGB · seit "+MW.kulisseSeit+")",eur(kappHeute))+
+      '<div class="fc-meta"><span class="k" id="mwSpiegelK">Vergleichsmieten-Deckel</span><span class="v" style="text-align:right;max-width:52%" id="mwSpiegel">–</span></div>'+
       kv("Aktuelle Kaltmiete",eur(cur.kalt))+
-      kv("Bindend ist der niedrigere Deckel",eur(now.max),"strong")+
-      (next?kv("Vorschau ab "+fmtD(nextD)+" (neue Basis "+eur(next.basis)+")",(next.max-cur.kalt>0.005?"+"+eur(next.max-cur.kalt)+" möglich":"weiter kein Spielraum")):"")+
+      '<div class="fc-meta strong"><span class="k">Bindend ist der niedrigere Deckel</span><span class="v" style="text-align:right;max-width:52%" id="mwMax">–</span></div>'+
+      (nextD?'<div class="fc-meta"><span class="k" id="mwNextK">Vorschau</span><span class="v" style="text-align:right;max-width:52%" id="mwNext">–</span></div>':"")+
       kv("Sperrfristen (§ 558 I BGB)","Verlangen zulässig seit "+fmtD(verlangenAb)+" · wirksam frühestens "+fmtD(wirksamAb))+
       '</div>'+
-      '<div class="caption" style="padding-top:12px">Rechnet mit dem Anzeigedatum weiter: Basis = Kaltmiete vor 36 Monaten laut Historie. Die 15 % gelten, solange die Gemeinde in der BW-Gebietskulisse liegt (Verordnung zunächst bis Ende 2026); außerhalb der Kulisse gälten 20 % ('+eur(now.basis*1.2)+').</div>';
+      '<div class="caption" style="padding-top:12px">Rechnet mit dem Anzeigedatum weiter: Basis = Kaltmiete vor 36 Monaten laut Historie. Die 15 % gelten, solange die Gemeinde in der BW-Gebietskulisse liegt (Verordnung zunächst bis Ende 2026); außerhalb der Kulisse gälten 20 % ('+eur(basisHeute*1.2)+'). Der Simulator verschiebt nur die Vergleichsmiete — Startwert '+MW.spiegelStand+'. Rechtsstand geprüft am '+RECHTSSTAND.geprueft+'.</div>';
+    function upd(){
+      const sp=+document.getElementById("msim").value, spF=sp.toLocaleString("de-DE",{minimumFractionDigits:2});
+      document.getElementById("msimV").textContent=spF+" €/m²";
+      const spiegelDeckel=sp*VERTRAG.flaecheA, max=Math.min(kappHeute,spiegelDeckel), spielraum=max-cur.kalt;
+      const sim=Math.abs(sp-MW.spiegel)>0.001?' — <b>Simulation</b> mit '+spF+' €/m²':'';
+      document.getElementById("mwSpiegelK").textContent="Vergleichsmieten-Deckel ("+spF+" €/m² × 83,8 m²)";
+      document.getElementById("mwSpiegel").textContent=eur(spiegelDeckel);
+      document.getElementById("mwMax").textContent=eur(max);
+      document.getElementById("mwHead").innerHTML=spielraum>0.005
+        ?'<div class="fc-big due">+'+eur(spielraum)+'</div><div class="fc-sub">wäre heute als Erhöhung maximal durchsetzbar (bindender Deckel '+eur(max)+')'+sim+'</div>'
+        :'<div class="fc-big credit">0,00 €</div><div class="fc-sub">Erhöhungs-Spielraum heute — der bindende Deckel ('+eur(max)+') liegt '+(max<cur.kalt?eur(cur.kalt-max)+' unter':'auf Höhe')+' der aktuellen Kaltmiete'+sim+'</div>';
+      if(nextD){const basisN=rentAt(addM(nextD,-36)),maxN=Math.min(basisN*(1+MW.kapp),spiegelDeckel);
+        document.getElementById("mwNextK").textContent="Vorschau ab "+fmtD(nextD)+" (neue Basis "+eur(basisN)+")";
+        document.getElementById("mwNext").textContent=maxN-cur.kalt>0.005?"+"+eur(maxN-cur.kalt)+" möglich":"weiter kein Spielraum";}
+      bindInfos(panel);
+    }
+    document.getElementById("msim").addEventListener("input",upd);
+    upd();
     const erhBasis=rentAt(addM(pDt(cur.an),-36));
     const erhPct=((cur.kalt/erhBasis-1)*100).toFixed(1).replace(".",",");
     const MWNOTES=[
-      {s:"warn",t:"Erhöhung 2025 prüfenswert",d:"+"+erhPct+" % gegenüber der Kaltmiete drei Jahre vor Zugang des Verlangens ("+cur.an+") — über 15 %, unter 20 %. Damals galt die alte Gebietskulisse (2020–2025, 89 Gemeinden): War die Gemeinde schon darin, wäre alles oberhalb von "+eur(erhBasis*1.15)+" unwirksam gewesen (§ 558 III BGB). Das ist ungeprüft."},
+      {s:"info",t:"Erhöhung 2025 geprüft — kappungskonform",d:"+"+erhPct+" % gegenüber der Kaltmiete drei Jahre vor Zugang des Verlangens ("+cur.an+"). Damals galt hier die Standard-Kappung 20 % — die Gemeinde lag 2020–2025 nicht in der BW-Gebietskulisse: Deckel "+eur(erhBasis*1.2)+" über der neuen Kaltmiete "+eur(cur.kalt)+" ✓. Auch der Vergleichsmieten-Deckel war eingehalten (12,50 &lt; 12,65 €/m²). Geprüft am 10.07.2026 — Details in den Offenen Punkten der Übersicht."},
       {s:"crit",t:"Seit 01.01.2026 gilt hier 15 % statt 20 %",d:"Die Gemeinde liegt in der neuen BW-Gebietskulisse (130 Kommunen, Verordnung zunächst bis 31.12.2026). Zusätzlich gilt die Mietpreisbremse — sie betrifft aber nur Neuvermietungen, nicht den laufenden Vertrag."},
-      {s:"info",t:"Vergleichsmiete ist die zweite Grenze",d:"Jede Erhöhung endet an der ortsüblichen Vergleichsmiete (§ 558 I BGB) — zuletzt "+MW.spiegelStand+" mit 12,65 €/m². Erst ein neuer Mietspiegel verschiebt diesen Deckel; jedes Erhöhungsschreiben daran messen."},
+      {s:"info",t:"Vergleichsmiete ist die zweite Grenze",d:"Jede Erhöhung endet an der ortsüblichen Vergleichsmiete (§ 558 I BGB) — zuletzt "+MW.spiegelStand+" mit 12,65 €/m². Erst ein neuer Mietspiegel verschiebt diesen Deckel — im Simulator oben durchspielbar; jedes Erhöhungsschreiben daran messen."},
       {s:"info",t:"Verfahren &amp; deine Rechte",d:"Textform mit Begründung (§ 558a) · Überlegungsfrist: Zustimmung erst bis Ende des 2. Monats nach Zugang (§ 558b II) · Sonderkündigungsrecht bei jeder Erhöhung (§ 561)."}
     ];
     MWNOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic sev-'+n.s+'">'+(n.s==="crit"?"!":n.s==="warn"?"›":"i")+'</div><div class="tx"><b>'+n.t+'</b><br>'+n.d+'</div>';nb.appendChild(it);});
   })();
 })();
 
-document.getElementById("foot").innerHTML="Vertrag &amp; Miete aus Mietvertrag, Anlagen und Mieterhöhungsschreiben; Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer, Bankverbindung) erscheinen als „XX\" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.";
+document.getElementById("foot").innerHTML="Vertrag &amp; Miete aus Mietvertrag, Anlagen und Mieterhöhungsschreiben; Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer, Bankverbindung) erscheinen als „XX\" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.<br>Datenstand: "+DATENSTAND+".";
+
+// Tabs — Bereiche als Panels; alte Anker (#miete, #prognose, …) werden auf ihren Tab gemappt
+const TABMAP={uebersicht:"panel-uebersicht",vertrag:"panel-vertrag",nk:"panel-nk",zaehler:"panel-zaehler"};
+const SECTAB={uebersicht:"uebersicht",vertrag:"vertrag",miete:"vertrag",nk:"nk",prognose:"nk",zaehler:"zaehler"};
+function showTab(t){
+  document.querySelectorAll(".tabpanel").forEach(p=>p.classList.toggle("on",p.id===TABMAP[t]));
+  document.querySelectorAll("#tabbar button").forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",on);});
+  try{history.replaceState(null,"","#"+t);}catch(e){}
+}
+function gotoSection(id){
+  const t=SECTAB[id]||"uebersicht";showTab(t);
+  if(id!==t){const trg=document.getElementById(id);if(trg)trg.scrollIntoView({behavior:"smooth"});}
+  else window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("#tabbar button").forEach(b=>b.addEventListener("click",()=>{showTab(b.dataset.tab);window.scrollTo({top:0});}));
+(function(){const h=location.hash.replace("#","");if(h&&SECTAB[h]&&h!=="uebersicht")gotoSection(h);})();
+
+// Rechtsstand-Guard — globales Banner, sobald der geprüfte Rechtsstand abgelaufen ist
+if(HEUTE>RECHTSSTAND.bis){document.getElementById("lawBanner").innerHTML='<div class="lawwarn">⚠ Rechtsstand veraltet: zuletzt geprüft am '+RECHTSSTAND.geprueft+' — die BW-Verordnung (15-%-Kappung) war bis 31.12.2026 befristet und der Mietspiegel kann abgelöst sein. Erhöhungs-Wächter und rechtliche Hinweise neu prüfen.</div>';}
+
+// Übersicht: Offene Punkte (aus objekt-daten.json > offene_punkte gespiegelt; Beträge laufen mit dem Datum mit)
+(function(){
+  const host=document.getElementById("opList");if(!host)return;
+  const mon=Math.max(0,(HEUTE.getFullYear()-2023)*12+(HEUTE.getMonth()-7)+1);
+  const OP=[
+    {s:"warn",st:"offen",t:"Parkplatz-Nutzung 30 € — mögliche Doppelberechnung",
+     d:"§ 2 Mietvertrag: Kaltmiete „inklusive einem Außenstellplatz\". Seit 08/2023 läuft zusätzlich eine „Parkplatz-Nutzung\" von 30 €/Monat als Vorauszahlungsposition — bisher "+mon+" Monate ≈ "+eur0(mon*30)+" €.",
+     step:"Beim Vermieter klären: zweiter Stellplatz oder derselbe wie im Vertrag? Falls derselbe: Rückforderung prüfen (§ 812 BGB)."},
+    {s:"warn",st:"offen",t:"CO₂-Kostenaufteilung fehlt (Abrechnungen 2023 + 2024)",
+     d:"Seit 2023 muss der Vermieter die CO₂-Kosten nach dem Stufenmodell aufteilen und in der Abrechnung ausweisen (§§ 5–7 CO2KostAufG) — beide Abrechnungen enthalten keinen Ausweis.",
+     step:"Ausweis nachfordern oder Heizkosten um 3 % kürzen (§ 7 IV CO2KostAufG): 2023 ≈ 21,56 € · 2024 ≈ 25,82 €."},
+    {s:"good",st:"geklaert",t:"Mieterhöhung 2025 war kappungskonform",
+     d:"Die Gemeinde lag 2020–2025 nicht in der BW-Gebietskulisse — es galt die 20-%-Kappung: Deckel 1.071,60 € über der neuen Kaltmiete 1.047,50 €; Vergleichsmiete ebenfalls eingehalten (12,50 &lt; 12,65 €/m²). Kein Rückforderungsanspruch. Geprüft 10.07.2026.",
+     step:"Erledigt — künftige Erhöhungen überwacht der Erhöhungs-Wächter (15 % seit 01.01.2026)."}
+  ];
+  OP.forEach(o=>{const it=el("div","note-item");
+    it.innerHTML='<div class="ic sev-'+o.s+'">'+(o.s==="good"?"✓":o.s==="warn"?"›":"!")+'</div><div class="tx"><b>'+o.t+'</b><span class="op-status '+o.st+'">'+(o.st==="offen"?"offen":"geklärt")+'</span><br>'+o.d+'<div class="op-step"><b>Nächster Schritt:</b> '+o.step+'</div></div>';
+    host.appendChild(it);});
+})();
+
+// Übersicht: nächste Termine + Datenstand
+(function(){
+  const host=document.getElementById("termList");if(!host)return;
+  const T=[
+    ["31.12.2026","Abrechnung 2025 muss zugehen","§ 556 III BGB — nach Fristablauf ist eine Nachforderung ausgeschlossen. Prognose im NK-Bereich mit der echten Abrechnung abgleichen."],
+    ["31.12.2026","Zähler zum Jahreswechsel ablesen","Alle Stände sichern (Warm-/Kaltwasser, Wärmemenge, Strom) — Kontrollbasis für die Abrechnung 2026."],
+    ["31.12.2026","BW-Kappungs-/Mietpreisbremsen-VO läuft aus","Danach den Rechtsstand des Erhöhungs-Wächters neu prüfen (15 % vs. 20 %)."]
+  ];
+  const pD=s=>{const p=s.split(".");return new Date(+p[2],+p[1]-1,+p[0]);};
+  T.forEach(([d,t,tx])=>{const rest=Math.ceil((pD(d)-HEUTE)/864e5);
+    const it=el("div","term-item");
+    it.innerHTML='<div class="term-date">'+d+'<small>'+(rest>=0?"in "+rest+" Tagen":"überfällig")+'</small></div><div class="tx"><b>'+t+'</b><br>'+tx+'</div>';
+    host.appendChild(it);});
+  document.getElementById("standLine").textContent="Datenstand: "+DATENSTAND+".";
+})();
+
+// Wohnkosten gesamt — gestapelte Jahresbalken (Kaltmiete + NK-Ist + Parkplatz/Internet)
+(function(){
+  const host=document.getElementById("wohnChart");if(!host)return;
+  const W=700,Hh=270,padL=52,padR=16,padT=18,padB=42;
+  const tot=WOHN.jahre.map((_,i)=>WOHN.kalt[i]+WOHN.nk[i]+WOHN.neben[i]);
+  const nice=Math.ceil(Math.max(...tot)/2500)*2500;
+  const y=v=>padT+(Hh-padT-padB)*(1-v/nice);
+  const gw=(W-padL-padR)/WOHN.jahre.length;
+  let s='<svg viewBox="0 0 '+W+' '+Hh+'" width="100%" role="img" aria-label="Jahres-Wohnkosten gesamt: Kaltmiete, Nebenkosten und Nebenzahlungen je Jahr">';
+  for(let v=0;v<=nice;v+=2500){const yy=y(v);
+    s+='<line x1="'+padL+'" x2="'+(W-padR)+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="#E8EDF3" stroke-width="'+(v===0?1.5:1)+'"/>';
+    s+='<text x="'+(padL-8)+'" y="'+(yy+3).toFixed(1)+'" text-anchor="end" class="axis">'+(v/1000).toLocaleString("de-DE")+'k</text>';}
+  const SEG=[["Kaltmiete",WOHN.kalt,"var(--brand-bright)"],["NK-Anteil (Ist)",WOHN.nk,"var(--ochre)"],["Parkplatz + Internet",WOHN.neben,"#8A94A8"]];
+  WOHN.jahre.forEach((yr,i)=>{const cx=padL+gw*i+gw/2,bw=Math.min(64,gw*0.4);let acc=0;
+    SEG.forEach(([lab,arr,col])=>{const v=arr[i];if(v<=0)return;const y0=y(acc),y1=y(acc+v);
+      s+='<rect x="'+(cx-bw/2).toFixed(1)+'" y="'+y1.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0,y0-y1-2).toFixed(1)+'" rx="3" fill="'+col+'" data-svgtip="'+yr+' · '+lab+': '+eur(v)+'"/>';acc+=v;});
+    s+='<text x="'+cx+'" y="'+(y(acc)-7).toFixed(1)+'" text-anchor="middle" class="lbl" font-size="11.5" font-weight="700" fill="var(--ink)">'+eur0(acc)+' €</text>';
+    s+='<text x="'+cx+'" y="'+(Hh-22)+'" text-anchor="middle" class="axis" font-size="13" font-weight="700" fill="var(--ink)">'+yr+'</text>';
+    s+='<text x="'+cx+'" y="'+(Hh-7)+'" text-anchor="middle" class="axis" font-size="10.5">'+eur0(acc/12)+' €/Mon. · '+(acc/12/F).toFixed(2).replace(".",",")+' €/m²</text>';});
+  s+='</svg>';host.innerHTML=s;
+  host.querySelectorAll("[data-svgtip]").forEach(nd=>{nd.style.cursor="pointer";
+    nd.addEventListener("mousemove",e=>showPop(e,"<b>"+nd.getAttribute("data-svgtip")+"</b>"));nd.addEventListener("mouseleave",hidePop);});
+  const d=tot[2]/tot[0]-1;
+  document.getElementById("wohnCap").textContent="2024: "+eur(tot[2])+" im Jahr = "+eur(tot[2]/12)+" pro Monat ("+(tot[2]/12/F).toFixed(2).replace(".",",")+" €/m²·Monat). Anstieg 2022→2024: +"+(d*100).toFixed(1).replace(".",",")+" % — getrieben von Mieterhöhung und Wärmekosten. Eigener Haushaltsstrom nicht enthalten.";
+})();
 
 bindInfos(document);
 
