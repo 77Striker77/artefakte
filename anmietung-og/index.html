@@ -293,7 +293,7 @@
   <div class="tabpanel on" id="panel-uebersicht" role="tabpanel">
   <div class="tiles four">
     <div class="tile brand">
-      <div class="cap">Gesamtzahlung / Monat <span class="info" tabindex="0" data-tip="Aktuelle monatliche Überweisung ab 01.01.2025: Kaltmiete + Nebenkosten-Vorauszahlung + Reinigung + Parkplatz + Internet.">i</span></div>
+      <div class="cap">Gesamtzahlung / Monat <span class="info" tabindex="0" data-tip="Aktuelle monatliche Überweisung: Kaltmiete + Nebenkosten-Vorauszahlung + Reinigung + Internet. Der Parkplatz-Posten (30 €, zweiter Stellplatz) entfällt seit 03/2026 nach der Kündigung.">i</span></div>
       <div class="big num" id="tPay">–</div>
       <div class="note" id="tPayNote"></div>
     </div>
@@ -340,7 +340,7 @@
     <div class="tiles four" id="vTiles"></div>
     <div class="fcgrid" style="margin-top:8px">
       <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Objekt &amp; Vertrag</h3><div id="vFacts"></div></div>
-      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Aktuelle Monatszahlung <span style="font-weight:400;color:var(--ink-faint);font-size:13px">· ab 01.01.2025</span></h3><div id="vNow"></div></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:15px;margin-bottom:12px">Aktuelle Monatszahlung <span style="font-weight:400;color:var(--ink-faint);font-size:13px">· ab 01.03.2026</span></h3><div id="vNow"></div></div>
     </div>
   </section>
 
@@ -352,10 +352,10 @@
         <span class="info" tabindex="0" data-tip="Stufenverlauf seit Mietbeginn: jede Stufe ist eine Änderung (Anlage, Mieterhöhung, neue Vorauszahlung). Die Achse beginnt bei 800 € — sonst wären die Stufen kaum erkennbar.">i</span></h3>
         <div class="legend"><span><i style="background:var(--brand-bright)"></i>Kaltmiete</span><span><i style="background:var(--ochre)"></i>Gesamtzahlung (inkl. VZ + Internet)</span></div></div>
       <div id="mietChart"></div>
-      <div class="caption">Gesamtzahlung = Kaltmiete + BK-Vorauszahlung + Reinigung + Parkplatz + Internet. Die Delle 01/2024: BK-Vorauszahlung von 272 € auf 182,60 € gesenkt, während die Kaltmiete stieg.</div>
+      <div class="caption">Gesamtzahlung = Kaltmiete + BK-Vorauszahlung + Reinigung + Parkplatz + Internet. Die Delle 01/2024: BK-Vorauszahlung von 272 € auf 182,60 € gesenkt, während die Kaltmiete stieg. Die Stufe abwärts ab 03/2026: zweiter Stellplatz gekündigt (−30 €).</div>
     </div>
     <div class="card" style="margin-top:16px"><div class="tblwrap"><table class="cmp" id="vHist"></table></div>
-      <div class="hintline" style="border:0">Warm gesamt = Kaltmiete + BK-Vorauszahlung + Reinigung + Stellplatz + Internet. Die BK-Vorauszahlung wurde zum 01.01.2024 von 272 € auf 182,60 €/Monat (BK 167,60 + Reinigung 15) gesenkt — bei gleichzeitig steigenden Kosten der Hauptgrund für die Nachzahlung 2024.</div></div>
+      <div class="hintline" style="border:0">Warm gesamt = Kaltmiete + BK-Vorauszahlung + Reinigung + Stellplatz + Internet. Die BK-Vorauszahlung wurde zum 01.01.2024 von 272 € auf 182,60 €/Monat (BK 167,60 + Reinigung 15) gesenkt — bei gleichzeitig steigenden Kosten der Hauptgrund für die Nachzahlung 2024. Der Stellplatz-Posten (30 €) war der zweite Außenstellplatz mit eigenem Vertrag — 08/2023 bis 02/2026.</div></div>
 
     <div class="sechead" style="margin-top:22px"><h2 style="font-size:17px">Erhöhungs-Wächter (§ 558 BGB)</h2>
       <span class="hint">Kann der Vermieter gerade erhöhen? Urteil, nächster Termin und Deckel-Skala — Rechenweg zum Aufklappen, Mietspiegel simulierbar</span></div>
@@ -623,7 +623,8 @@ const VERTRAG={
     {ab:"01.04.2021",an:"—",kalt:893.00,bk:257.00,rein:15.00,stell:0,net:30.00,anlass:"Anlage: Hausgangreinigung +15 €"},
     {ab:"01.08.2023",an:"—",kalt:893.00,bk:257.00,rein:15.00,stell:30.00,net:30.00,anlass:"Parkplatz-Nutzung separat erfasst (+30 €)"},
     {ab:"01.01.2024",an:"23.10.2023",kalt:977.00,bk:167.60,rein:15.00,stell:30.00,net:30.00,anlass:"Mieterhöhung +9,4 %; Nebenkosten-VZ neu 2,00 €/m²",spiegel:"Mietspiegel 2023: 11,79 €/m²"},
-    {ab:"01.01.2025",an:"21.08.2024",kalt:1047.50,bk:167.60,rein:15.00,stell:30.00,net:30.00,anlass:"Mieterhöhung +7,2 %",spiegel:"Mietspiegel 2024: 12,65 €/m²"}
+    {ab:"01.01.2025",an:"21.08.2024",kalt:1047.50,bk:167.60,rein:15.00,stell:30.00,net:30.00,anlass:"Mieterhöhung +7,2 %",spiegel:"Mietspiegel 2024: 12,65 €/m²"},
+    {ab:"01.03.2026",an:"—",kalt:1047.50,bk:167.60,rein:15.00,stell:0,net:30.00,anlass:"Zweiter Stellplatz gekündigt (Schreiben 13.02.2026, Ende 28.02.2026) — 30-€-Position entfällt"}
   ]
 };
 // DMB-Betriebskostenspiegel Abrechnungsjahr 2023 (veröffentlicht 2025), €/m²·Monat — Wärme und
@@ -640,7 +641,7 @@ const BENCH23=[
 ];
 const HEUTE=new Date();
 const RECHTSSTAND={geprueft:"10.07.2026",bis:new Date(2026,11,31,23,59,59)};
-const DATENSTAND="Abrechnungen final bis 2024 (vom 15.03.2026) · Zählerstände bis 01.01.2026 · Miete Stand 01.01.2025 · Rechtsstand geprüft "+RECHTSSTAND.geprueft;
+const DATENSTAND="Abrechnungen final bis 2024 (vom 15.03.2026) · Zählerstände bis 01.01.2026 · Monatszahlung Stand 01.03.2026 (Stellplatz-Kündigung) · Rechtsstand geprüft "+RECHTSSTAND.geprueft;
 const WOHN={jahre:[2022,2023,2024],kalt:[10716,10716,11724],nk:[2097.46,2416.88,2473.12],neben:[360,510,720]};
 const KAT={waerme:"var(--kat-waerme)",wasser:"var(--kat-wasser)",betrieb:"var(--kat-betrieb)",abgaben:"var(--kat-abgaben)"};
 const F=83.8;
@@ -1072,7 +1073,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
   const tile=(cap,big,note,cls)=>'<div class="tile '+(cls||"")+'"><div class="cap">'+cap+'</div><div class="big">'+big+'</div><div class="note">'+note+'</div></div>';
   const dSeit=cur.kalt-first.kalt;
   document.getElementById("tPay").innerHTML=eur(gesamt(cur)).replace(" €","")+"<small> €</small>";
-  document.getElementById("tPayNote").innerHTML="Warm "+eur(warm(cur))+" + Internet "+eur(cur.net)+" · ab 01.01.2025";
+  document.getElementById("tPayNote").innerHTML="Warm "+eur(warm(cur))+" + Internet "+eur(cur.net)+" · ab "+cur.ab;
   document.getElementById("tKalt").innerHTML=eur(cur.kalt).replace(" €","")+"<small> €</small>";
   document.getElementById("tKaltNote").innerHTML=qm(cur.kalt)+" · +"+eur(dSeit)+" ("+pct(dSeit/first.kalt*100)+") seit 04/2020";
   document.getElementById("vTiles").innerHTML=
@@ -1086,6 +1087,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
     kv("Vermieter",'<span data-pii="vermieter">XX</span>')+
     kv("Mieter",'<span data-pii="mieter">XX</span>')+
     kv("Ausstattung",VERTRAG.ausstattung)+
+    kv('2. Stellplatz <span class="info" tabindex="0" data-tip="Zusätzlicher Außenstellplatz mit eigenem Vertrag (Anlage vom 01.08.2023, 30 €/Monat) — vom Mieter gekündigt zum 28.02.2026, weil ein Fahrzeug verkauft wurde. Abschrift: mietvertrag/anlagen/stellplatz.pdf.">i</span>',"01.08.2023 – 28.02.2026 · 30 €/Mon. (gekündigt)")+
     kv("Wohnfläche",VERTRAG.flaecheV+" m² (Vertrag) · "+String(VERTRAG.flaecheA).replace(".",",")+" m² (abrechnungsrelevant)")+
     kv("Nutzung",VERTRAG.nutzung)+
     kv("Kündigungsfrist",VERTRAG.kuend)+
@@ -1098,11 +1100,11 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
     row("Kaltmiete",eur(cur.kalt))+
     row("Nebenkosten-VZ (2,00 €/m²)",eur(cur.bk))+
     row("Treppenhaus-Reinigung",eur(cur.rein))+
-    row("Parkplatz-Nutzung",eur(cur.stell))+
+    (cur.stell?row("Parkplatz-Nutzung",eur(cur.stell)):row("Parkplatz-Nutzung","entfällt seit 01.03.2026"))+
     row("Warmmiete",eur(warm(cur)),"strong")+
     row("Internet-Nutzung",eur(cur.net))+
     row("Gesamtüberweisung",eur(gesamt(cur)),"strong")+
-    '<div class="caption" style="padding-top:10px">Aufstellung wie im Mieterhöhungsschreiben. Hinweis: § 2 des Mietvertrags nennt die Kaltmiete „inklusive einem Außenstellplatz“ — die zusätzlich als Vorauszahlung geführte „Parkplatz-Nutzung“ (30 €) wäre darauf zu prüfen.</div>';
+    '<div class="caption" style="padding-top:10px">Die frühere „Parkplatz-Nutzung“ (30 €/Mon., 08/2023–02/2026) war ein <b>zweiter</b> Außenstellplatz mit eigenem Vertrag — gekündigt zum 28.02.2026, Beleg: mietvertrag/anlagen/stellplatz.pdf. Der Stellplatz aus § 2 des Mietvertrags ist weiterhin in der Kaltmiete enthalten.</div>';
   let h='<tr><th>Gültig ab</th><th>Kaltmiete</th><th>€/m²</th><th>Δ Kalt</th><th>BK-VZ</th><th>Internet</th><th>Gesamt</th><th>Anlass</th></tr>';
   H.forEach((r,i)=>{
     const d=i?r.kalt-H[i-1].kalt:0;
@@ -1121,7 +1123,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
   (function(){
     const host=document.getElementById("mietChart");if(!host)return;
     const pD=s=>{const p=s.split(".");return new Date(+p[2],+p[1]-1,+p[0]).getTime();};
-    const END=pD("01.07.2026");
+    const END=pD("01.01.2027");
     const series=[
       {name:"Kaltmiete",col:"var(--brand-bright)",vals:H.map(r=>r.kalt)},
       {name:"Gesamt",col:"var(--ochre)",vals:H.map(r=>gesamt(r))}
@@ -1168,7 +1170,9 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
     const rentAt=d=>{let v=H[0].kalt;H.forEach(r=>{if(pDt(r.ab)<=d)v=r.kalt;});return v;};
     const basisHeute=rentAt(addM(heute,-36)), kappHeute=basisHeute*(1+MW.kapp);
     let nextD=null;H.forEach(r=>{const t=addM(pDt(r.ab),36);if(t>heute&&r.kalt!==basisHeute&&(!nextD||t<nextD))nextD=t;});
-    const lastAb=pDt(cur.ab), verlangenAb=addM(lastAb,12);
+    // Sperrfristen knüpfen an die letzte echte Mieterhöhung an, nicht an den letzten Historien-Eintrag
+    const letzteErh=[...H].reverse().find(r=>r.an&&r.an!=="—")||H[0];
+    const verlangenAb=addM(pDt(letzteErh.ab),12);
     const kv=(k,v,cls)=>'<div class="fc-meta'+(cls?" "+cls:"")+'"><span class="k">'+k+'</span><span class="v" style="text-align:right;max-width:52%">'+v+'</span></div>';
     panel.innerHTML=
       (veraltet?'<div class="lawwarn" style="margin:0 0 12px">⚠ Rechtsstand veraltet — zuletzt geprüft am '+RECHTSSTAND.geprueft+'. Die 15-%-Kulisse war bis 31.12.2026 befristet und der Mietspiegel kann abgelöst sein; die Werte unten sind nicht mehr belastbar. Rechtsrahmen neu prüfen.</div>':'')+
@@ -1242,13 +1246,13 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
     document.getElementById("msim").addEventListener("input",upd);
     document.getElementById("mwSimReset").addEventListener("click",()=>{document.getElementById("msim").value=MW.spiegel;upd();});
     upd();
-    const erhBasis=rentAt(addM(pDt(cur.an),-36));
-    const erhPct=((cur.kalt/erhBasis-1)*100).toFixed(1).replace(".",",");
+    const erhBasis=rentAt(addM(pDt(letzteErh.an),-36));
+    const erhPct=((letzteErh.kalt/erhBasis-1)*100).toFixed(1).replace(".",",");
     const MWNOTES=[
       {s:"warn",t:"Wenn ein Erhöhungsschreiben kommt — 4 Schritte",d:"<b>1.</b> Form prüfen: Textform mit Begründung, z. B. Mietspiegel (§ 558a BGB). <b>2.</b> Die verlangte neue Kaltmiete gegen den Deckel im Check links halten — alles darüber ist unwirksam; du kannst auch nur teilweise zustimmen. <b>3.</b> Zeit nehmen: Zustimmung ist erst bis Ende des 2. Monats nach Zugang fällig (§ 558b II) — nichts vorschnell unterschreiben. <b>4.</b> Bei jeder Erhöhung hast du ein Sonderkündigungsrecht (§ 561)."},
       {s:"crit",t:"Seit 01.01.2026 gilt hier 15 % statt 20 %",d:"Die Gemeinde liegt in der neuen BW-Gebietskulisse (130 Kommunen, Verordnung zunächst bis 31.12.2026). Zusätzlich gilt die Mietpreisbremse — sie betrifft aber nur Neuvermietungen, nicht den laufenden Vertrag."},
       {s:"info",t:"So funktioniert der Check: zwei Deckel, der niedrigere zählt",d:"<b>Kappungsgrenze:</b> höchstens +15 % auf die Kaltmiete von vor 36 Monaten (§ 558 III). <b>Vergleichsmiete:</b> Mietspiegel-Wert × Wohnfläche als absolute Obergrenze (§ 558 I) — zuletzt "+MW.spiegelStand+" mit 12,65 €/m². Eine Erhöhung muss unter BEIDEN Deckeln bleiben; die Skala links zeigt alle drei Werte auf einer Achse."},
-      {s:"info",t:"Erhöhung 2025 geprüft — kappungskonform",d:"+"+erhPct+" % gegenüber der Kaltmiete drei Jahre vor Zugang des Verlangens ("+cur.an+"). Damals galt hier die Standard-Kappung 20 % — die Gemeinde lag 2020–2025 nicht in der BW-Gebietskulisse: Deckel "+eur(erhBasis*1.2)+" über der neuen Kaltmiete "+eur(cur.kalt)+" ✓. Auch der Vergleichsmieten-Deckel war eingehalten (12,50 &lt; 12,65 €/m²). Geprüft am 10.07.2026 — Details in den Offenen Punkten der Übersicht."}
+      {s:"info",t:"Erhöhung 2025 geprüft — kappungskonform",d:"+"+erhPct+" % gegenüber der Kaltmiete drei Jahre vor Zugang des Verlangens ("+letzteErh.an+"). Damals galt hier die Standard-Kappung 20 % — die Gemeinde lag 2020–2025 nicht in der BW-Gebietskulisse: Deckel "+eur(erhBasis*1.2)+" über der neuen Kaltmiete "+eur(cur.kalt)+" ✓. Auch der Vergleichsmieten-Deckel war eingehalten (12,50 &lt; 12,65 €/m²). Geprüft am 10.07.2026 — Details in den Offenen Punkten der Übersicht."}
     ];
     MWNOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic sev-'+n.s+'">'+(n.s==="crit"?"!":n.s==="warn"?"›":"i")+'</div><div class="tx"><b>'+n.t+'</b><br>'+n.d+'</div>';nb.appendChild(it);});
   })();
@@ -1278,14 +1282,17 @@ if(HEUTE>RECHTSSTAND.bis){document.getElementById("lawBanner").innerHTML='<div c
 // Übersicht: Offene Punkte (aus objekt-daten.json > offene_punkte gespiegelt; Beträge laufen mit dem Datum mit)
 (function(){
   const host=document.getElementById("opList");if(!host)return;
-  const mon=Math.max(0,(HEUTE.getFullYear()-2023)*12+(HEUTE.getMonth()-7)+1);
+  const monSeit0326=Math.max(0,(HEUTE.getFullYear()-2026)*12+HEUTE.getMonth()-2+1);
   const OP=[
-    {s:"warn",st:"offen",t:"Parkplatz-Nutzung 30 € — mögliche Doppelberechnung",
-     d:"§ 2 Mietvertrag: Kaltmiete „inklusive einem Außenstellplatz\". Seit 08/2023 läuft zusätzlich eine „Parkplatz-Nutzung\" von 30 €/Monat als Vorauszahlungsposition — bisher "+mon+" Monate ≈ "+eur0(mon*30)+" €.",
-     step:"Beim Vermieter klären: zweiter Stellplatz oder derselbe wie im Vertrag? Falls derselbe: Rückforderung prüfen (§ 812 BGB)."},
+    {s:"warn",st:"offen",t:"Überweisung seit 03/2026 um 30 € reduziert?",
+     d:"Der Vertrag über den zweiten Stellplatz endete am 28.02.2026 — seit März sind nur noch <b>1.260,10 €</b>/Monat geschuldet (statt 1.290,10 €). Falls der Dauerauftrag noch nicht angepasst ist, sind bisher "+monSeit0326+" × 30 € = "+eur0(monSeit0326*30)+" € zu viel geflossen.",
+     step:"Kontoauszüge ab 03/2026 prüfen; zu viel Gezahltes zurückfordern (§ 812 BGB) und den Dauerauftrag anpassen."},
     {s:"warn",st:"offen",t:"CO₂-Kostenaufteilung fehlt (Abrechnungen 2023 + 2024)",
      d:"Seit 2023 muss der Vermieter die CO₂-Kosten nach dem Stufenmodell aufteilen und in der Abrechnung ausweisen (§§ 5–7 CO2KostAufG) — beide Abrechnungen enthalten keinen Ausweis.",
      step:"Ausweis nachfordern oder Heizkosten um 3 % kürzen (§ 7 IV CO2KostAufG): 2023 ≈ 21,56 € · 2024 ≈ 25,82 €."},
+    {s:"good",st:"geklaert",t:"Parkplatz-Nutzung 30 € war ein zweiter Stellplatz — keine Doppelberechnung",
+     d:"Eigener Kfz-Stellplatz-Vertrag (Anlage vom 01.08.2023, 30 €/Mon.) über einen <b>zweiten</b> Außenstellplatz, zusätzlich zu dem aus § 2 des Mietvertrags. Die Zahlungen 08/2023–02/2026 (31 Monate = 930 €) waren geschuldet; gekündigt zum 28.02.2026 (Fahrzeug verkauft). Geklärt 10.07.2026.",
+     step:"Erledigt — Belege: stellplatz.pdf (Abschrift), stellplatz-original.pdf, stellplatz-kuendigung.pdf unter mietvertrag/anlagen/."},
     {s:"good",st:"geklaert",t:"Mieterhöhung 2025 war kappungskonform",
      d:"Die Gemeinde lag 2020–2025 nicht in der BW-Gebietskulisse — es galt die 20-%-Kappung: Deckel 1.071,60 € über der neuen Kaltmiete 1.047,50 €; Vergleichsmiete ebenfalls eingehalten (12,50 &lt; 12,65 €/m²). Kein Rückforderungsanspruch. Geprüft 10.07.2026.",
      step:"Erledigt — künftige Erhöhungen überwacht der Erhöhungs-Wächter (15 % seit 01.01.2026)."}
