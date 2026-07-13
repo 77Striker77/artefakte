@@ -166,6 +166,10 @@
   .chk:last-child{border-bottom:0}
   .chk input{accent-color:var(--good);margin-top:3px;flex:none;width:15px;height:15px;cursor:pointer}
   .chk label{cursor:pointer} .chk small{display:block;color:var(--ink-soft);font-weight:400}
+  .spchips{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
+  .spchips button{border:1px solid var(--line);background:var(--surface-2);color:var(--brand);font-family:var(--sans);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer}
+  .spchips button:hover{background:var(--info-bg)}
+  .spchips button:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
 
   .printbtn{background:var(--surface);border:1px solid var(--line);color:var(--brand);font-family:var(--sans);font-weight:600;font-size:12.5px;padding:7px 12px;border-radius:8px;cursor:pointer}
   .printbtn:hover{background:var(--surface-2)}
@@ -410,9 +414,20 @@
           <div class="slnote">heute 2.100 € (10,13 €/m²) · Kappungsdeckel 2.415 € · Markt-Orientierung Häuser ~2.680 €</div>
         </div>
         <div class="ctl">
-          <label class="sl" for="spVM">Angenommene ortsübliche Vergleichsmiete <output id="spVMOut"></output></label>
-          <input type="range" id="spVM" min="8" max="16" step="0.05" value="12" aria-label="Angenommene ortsübliche Vergleichsmiete in Euro je Quadratmeter">
-          <div class="slnote"><b>12,00 €/m² ist nur ein Beispielwert.</b> Den echten Wert nach Erscheinen des Mietspiegels <span data-pii="ort">XX</span> 2027 herleiten (EFH: Orientierung + begründeter Zuschlag). Die Angebotsmieten für Häuser (~12,93 €/m²) sind KEINE Vergleichsmiete i.&nbsp;S.&nbsp;d. § 558 BGB.</div>
+          <label class="sl" for="spSpiegel">Mietspiegel-Ausgangswert (vergleichbare Wohnung) <output id="spSpiegelOut"></output></label>
+          <input type="range" id="spSpiegel" min="8" max="16" step="0.05" value="12" aria-label="Mietspiegel-Ausgangswert in Euro je Quadratmeter">
+          <div class="slnote"><b>12,00 €/m² ist nur ein Beispielwert.</b> Den objektscharfen Wert liefert der amtliche Mietspiegel-Rechner der Stadt (Quellen unten): Baujahr 1969, Größe &gt;120 m², Lage und Ausstattung eingeben, Spannen-Mittelwert übernehmen. Der Mietspiegel <span data-pii="ort">XX</span> 2025 gilt bis 31.12.2026 — fürs echte Verlangen ab 06/2027 mit dem NEUEN Spiegel rechnen.</div>
+        </div>
+        <div class="ctl">
+          <label class="sl" for="spZuschlag">EFH-Zuschlag auf den Spiegelwert <output id="spZuschlagOut"></output></label>
+          <input type="range" id="spZuschlag" min="0" max="30" step="1" value="10" aria-label="EFH-Zuschlag in Prozent auf den Mietspiegel-Ausgangswert">
+          <div class="slnote">BGH VIII ZR 58/08: EFH-Mieten liegen erfahrungsgemäß ÜBER Wohnungsmieten — ein Zuschlag ist begründbar. Aber: Mit dem Mietspiegel allein lässt sich formal nur eine Miete INNERHALB der Wohnungs-Spanne begründen; wer darüber hinaus will, braucht 3 Vergleichsobjekte oder ein Sachverständigen-Gutachten.</div>
+        </div>
+        <div class="spchips" aria-label="Szenarien zum Anklicken">
+          <button type="button" data-s="12" data-z="0">Spiegel pur (12,00)</button>
+          <button type="button" data-s="12" data-z="10">+10 % EFH-Zuschlag</button>
+          <button type="button" data-s="12" data-z="20">+20 % EFH-Zuschlag</button>
+          <button type="button" data-s="12.93" data-z="0">Markt Häuser 12,93 (nur Angebot!)</button>
         </div>
         <div class="kappwahl" role="radiogroup" aria-label="Kappungsgrenze wählen">
           <span style="font-weight:600;color:var(--ink)">Kappungsgrenze:</span>
@@ -422,7 +437,7 @@
         </div>
         <div class="scale" id="spScale" aria-live="polite"></div>
         <div class="fc-meta"><span class="k">Deckel 1 — Kappungsgrenze</span><span class="v num" id="spDkKapp"></span></div>
-        <div class="fc-meta"><span class="k">Deckel 2 — Vergleichsmiete <span class="info" tabindex="0" data-tip="§ 558 I BGB: Die Miete darf höchstens bis zur ortsüblichen Vergleichsmiete steigen — angenommener Wert × 207,4 m². Der Regler simuliert, was verschiedene Mietspiegel-Ergebnisse bedeuten würden.">i</span></span><span class="v num" id="spDkVM"></span></div>
+        <div class="fc-meta"><span class="k">Deckel 2 — Vergleichsmiete <span class="info" tabindex="0" data-tip="§ 558 I BGB: Die Miete darf höchstens bis zur ortsüblichen Vergleichsmiete steigen. Hier hergeleitet als Mietspiegel-Ausgangswert + EFH-Zuschlag, × 207,4 m². Die Regler simulieren, was verschiedene Mietspiegel-Ergebnisse und Zuschläge bedeuten würden.">i</span></span><span class="v num" id="spDkVM"></span></div>
         <div class="fc-meta strong"><span class="k">Maximal zulässige Kaltmiete</span><span class="v num" id="spZul"></span></div>
         <div id="spVerdict" class="verdict ok" aria-live="polite"></div>
         <div class="caption">Spielrechnung auf Basis des Erhöhungs-Wächters (Rechtsstand 10.07.2026) — ersetzt weder die Mietspiegel-Herleitung noch Rechtsberatung.</div>
@@ -439,6 +454,19 @@
         <div class="chk"><input type="checkbox" id="spc6"><label for="spc6"><b>Sonderkündigungsrecht einkalkuliert</b> <small>§ 561 BGB: Die Mieter können nach Zugang bis Ende des 2. Monats außerordentlich zum Ablauf des übernächsten Monats kündigen — dann tritt die Erhöhung nicht ein</small></label></div>
         <div class="caption">Häkchen sind nur zum Durchgehen — sie werden nicht gespeichert.</div>
       </div>
+    </div>
+
+    <div class="card notes" style="margin-top:16px">
+      <h3>Vergleichswerte &amp; Quellen <span class="info" tabindex="0" data-tip="Alle Anker-Werte für die Regler mit Herkunft und Belastbarkeit. Amtlich = ortsübliche Vergleichsmiete im Sinne des § 558 BGB herleitbar; Markt = Angebotsmieten, nur grobe Orientierung; Vertrag = Ist-Zustand.">i</span></h3>
+      <div class="tblwrap"><table class="cmp">
+        <tr><th style="text-align:left">Wert</th><th>€/m²</th><th style="text-align:left">Einordnung</th><th style="text-align:left">Quelle · Stand</th></tr>
+        <tr><td class="tl">Aktuelle Kaltmiete</td><td>10,13</td><td class="tl"><span class="pill mut">Vertrag</span> Ist-Zustand seit 06/2026</td><td class="tl">Mietvertrag V1.0</td></tr>
+        <tr><td class="tl">Mietspiegel <span data-pii="ort">XX</span> 2025 (Wohnungen)</td><td>—</td><td class="tl"><span class="pill good">amtlich</span> qualifiziert § 558d BGB · gültig bis 31.12.2026 · deckt Wohnungen bis &gt;120 m², aber KEINE ganzen EFH — Wert objektscharf im Rechner ermitteln</td><td class="tl"><a href="https://web6.karlsruhe.de/Stadtentwicklung/statistik/mietspiegelrechner/mietspiegel-2025.html" target="_blank" rel="noopener">Amtlicher Rechner</a> · <a href="https://web6.karlsruhe.de/Stadtentwicklung/statistik/pdf/mietspiegel/karlsruher-mietspiegel-2025.pdf" target="_blank" rel="noopener">PDF</a> · geprüft 13.07.2026</td></tr>
+        <tr><td class="tl">Angebotsmieten Häuser ≥ 120 m²</td><td>12,93</td><td class="tl"><span class="pill warn">Markt</span> Inserate — KEINE Vergleichsmiete i.&nbsp;S.&nbsp;d. § 558</td><td class="tl">miet-check.de · 10.07.2026</td></tr>
+        <tr><td class="tl">Angebotsmieten Wohnungen (Schnitt)</td><td>13,86</td><td class="tl"><span class="pill warn">Markt</span> Inserate — KEINE Vergleichsmiete</td><td class="tl">miet-check.de · 10.07.2026</td></tr>
+        <tr><td class="tl">EFH-Grundsatz</td><td>—</td><td class="tl"><span class="pill good">BGH</span> Wohnungs-Mietspiegel darf die EFH-Erhöhung begründen, solange die verlangte Miete in der Wohnungs-Spanne bleibt; EFH-Mieten liegen erfahrungsgemäß darüber</td><td class="tl"><a href="https://dejure.org/dienste/vernetzung/rechtsprechung?Text=VIII+ZR+58/08" target="_blank" rel="noopener">BGH VIII ZR 58/08</a> · 17.09.2008</td></tr>
+      </table></div>
+      <div class="hintline" style="border:0"><b>So kommst du an den echten Ausgangswert:</b> Amtlichen Mietspiegel-Rechner öffnen → Baujahr 1969, Wohnfläche &gt;120 m², Lage/Ausstattung des Hauses eingeben → Spannen-Mittelwert als „Mietspiegel-Ausgangswert" in den Regler übernehmen und den Zuschlag nur so hoch wählen, wie er sich begründen lässt. Kursierende Durchschnittswerte (z.&nbsp;B. ~12 €/m²) stammen aus kommerziellen Portalen — nicht als amtlich zitieren. Fürs echte Erhöhungsverlangen ab 06/2027 gilt dann der NEUE Mietspiegel (erscheint Anfang 2027).</div>
     </div>
   </section>
 
@@ -885,14 +913,15 @@ abrTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preven
 /* ===== Spielbereich: Mieterhöhung (Was-wäre-wenn) — Werte = mieterhoehung_radar.spielbereich im JSON ===== */
 (function(){
   const SPIEL={basis:2100,kapp:{"15":2415,"20":2520},zugang:"01.06.2027",wirksam:"01.09.2027"};
-  const wunschEl=document.getElementById("spWunsch"),vmEl=document.getElementById("spVM");
+  const wunschEl=document.getElementById("spWunsch"),spiegelEl=document.getElementById("spSpiegel"),zuschlagEl=document.getElementById("spZuschlag");
   if(!wunschEl)return;
   const $=id=>document.getElementById(id);
   const m2=n=>(n/FLAECHE).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
   const de2=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2});
   const pz=n=>n.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
   function render(){
-    const wunsch=+wunschEl.value, vm=+vmEl.value;
+    const wunsch=+wunschEl.value, spiegel=+spiegelEl.value, zu=+zuschlagEl.value;
+    const vm=spiegel*(1+zu/100);
     const kappP=document.querySelector('input[name="spKapp"]:checked').value;
     const dkKapp=SPIEL.kapp[kappP];
     const dkVM=Math.round(vm*FLAECHE);
@@ -902,14 +931,15 @@ abrTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preven
     const eff=Math.min(wunsch,zul);
     const plusM=eff-SPIEL.basis;
     $("spWunschOut").textContent=eur0(wunsch)+" · "+m2(wunsch)+" €/m²";
-    $("spVMOut").textContent=de2(vm)+" €/m²";
+    $("spSpiegelOut").textContent=de2(spiegel)+" €/m²";
+    $("spZuschlagOut").textContent="+"+zu+" % → "+de2(vm)+" €/m²";
     $("spDkKapp").textContent=eur0(dkKapp)+" (2.100 € + "+kappP+" %)";
-    $("spDkVM").textContent=eur0(dkVM)+" ("+de2(vm)+" €/m² × 207,4 m²)";
+    $("spDkVM").textContent=eur0(dkVM)+" ("+de2(spiegel)+" €/m² + "+zu+" % = "+de2(vm)+" €/m² × 207,4 m²)";
     $("spZul").textContent=zul<=SPIEL.basis?"keine Erhöhung möglich":eur0(zul)+" · Deckel: "+grenzName;
     const v=$("spVerdict");
     if(zul<=SPIEL.basis){
       v.className="verdict over";
-      v.innerHTML="<b>Keine Erhöhung möglich:</b> Die angenommene Vergleichsmiete ("+eur0(dkVM)+") liegt nicht über der heutigen Kaltmiete (2.100 €). § 558 BGB erlaubt nur die Anhebung <b>bis zur</b> ortsüblichen Vergleichsmiete — Regler „Vergleichsmiete“ höher stellen oder auf den neuen Mietspiegel warten.";
+      v.innerHTML="<b>Keine Erhöhung möglich:</b> Die angenommene Vergleichsmiete ("+eur0(dkVM)+") liegt nicht über der heutigen Kaltmiete (2.100 €). § 558 BGB erlaubt nur die Anhebung <b>bis zur</b> ortsüblichen Vergleichsmiete — Spiegel-Ausgangswert oder Zuschlag höher stellen — oder auf den neuen Mietspiegel 2027 warten.";
     } else if(okay){
       v.className="verdict ok";
       v.innerHTML="<b>✓ Im Rahmen:</b> 2.100 € → <b>"+eur0(wunsch)+"</b> = <b>+"+eur0(plusM)+"/Monat</b> (+"+pz(plusM/SPIEL.basis*100)+" %) bzw. +"+eur0(plusM*12)+"/Jahr. Frühester Zugang des Verlangens "+SPIEL.zugang+", neue Miete ab "+SPIEL.wirksam+".";
@@ -932,8 +962,9 @@ abrTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preven
       +'</div>';
     $("spScale").setAttribute("aria-label","Skala 2.000 bis 2.800 Euro: heute 2.100 Euro, zulässig bis "+eur0(zul)+", Wunsch "+eur0(wunsch));
   }
-  [wunschEl,vmEl].forEach(e=>e.addEventListener("input",render));
+  [wunschEl,spiegelEl,zuschlagEl].forEach(e=>e.addEventListener("input",render));
   document.querySelectorAll('input[name="spKapp"]').forEach(r=>r.addEventListener("change",render));
+  document.querySelectorAll(".spchips button").forEach(b=>b.addEventListener("click",()=>{spiegelEl.value=b.dataset.s;zuschlagEl.value=b.dataset.z;render();}));
   render();
 })();
 
