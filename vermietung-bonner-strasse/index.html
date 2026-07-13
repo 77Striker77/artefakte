@@ -170,6 +170,12 @@
   .spchips button{border:1px solid var(--line);background:var(--surface-2);color:var(--brand);font-family:var(--sans);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer}
   .spchips button:hover{background:var(--info-bg)}
   .spchips button:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
+  .growchart{display:flex;align-items:flex-end;gap:8px;padding:6px 4px 2px;min-height:175px}
+  .growchart .gc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0}
+  .growchart .gc i{display:block;width:100%;background:var(--brand);border-radius:6px 6px 0 0}
+  .growchart .gc.exp i{background:var(--surface-2);border:1.5px dashed var(--line);border-bottom:0}
+  .growchart .gc small{font-size:11px;color:var(--ink-faint)}
+  .growchart .gc .gl{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink-soft);white-space:nowrap}
 
   .printbtn{background:var(--surface);border:1px solid var(--line);color:var(--brand);font-family:var(--sans);font-weight:600;font-size:12.5px;padding:7px 12px;border-radius:8px;cursor:pointer}
   .printbtn:hover{background:var(--surface-2)}
@@ -259,6 +265,15 @@
       <div class="fc-meta"><span class="k">Nächste Miete fällig</span><span class="v" id="heroNext">–</span></div>
     </div>
   </div>
+  <section style="margin-top:24px">
+    <div class="card chartcard">
+      <div class="chart-head"><h3>Es zahlt sich aus: euer Vermietungsjahr 2026 <span class="info" tabindex="0" data-tip="Kumulierte Mieteinnahmen (Kaltmiete + BK-Vorauszahlung) Monat für Monat. Volle Stufen = Geld ist auf dem Gemeinschaftskonto; gestrichelte Stufen = Prognose bei pünktlicher Zahlung. Die Kaution (5.000 €) zählt nicht mit — sie wird nur verwahrt.">i</span></h3>
+        <div class="legend"><span><i style="background:var(--brand)"></i>eingenommen (kumuliert)</span><span><i style="background:var(--surface-2);border:1.5px dashed var(--line)"></i>Prognose</span></div></div>
+      <div class="growchart" id="growChart" role="img"></div>
+      <div class="hintline" style="border:0;padding:8px 0 4px" id="growCaption"></div>
+    </div>
+  </section>
+
   <div class="tiles">
     <div class="tile brand">
       <div class="cap">Miet-Soll / Monat <span class="info" tabindex="0" data-tip="Kaltmiete 2.100 € + Betriebskosten-Vorauszahlung 475 € (nur kalte BK — Heizöl kauft der Mieter selbst). Fällig bis zum 3. Werktag im Voraus, Samstage zählen nicht mit (§ 5 Mietvertrag).">i</span></div>
@@ -953,6 +968,30 @@ abrTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preven
   document.getElementById("heroSub").textContent=keys.length+" von "+keys.length+" fälligen Monaten voll bezahlt · zuletzt "+ln;
   const nx=new Date(+letzter.slice(0,4),+letzter.slice(5,7),1);
   document.getElementById("heroNext").textContent=nx.toLocaleDateString("de-DE",{month:"long",year:"numeric"})+" · 3. Werktag";
+})();
+
+/* ===== Übersicht: Wachstums-Treppe (kumulierte Einnahmen) ===== */
+(function(){
+  const wrap=document.getElementById("growChart");
+  if(!wrap)return;
+  const ziel=18025, H=118;
+  const namen=["Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+  let cum=0, cumPaid=0, paidIdx=-1;
+  const vals=namen.map((n,i)=>{
+    const key="2026-"+String(6+i).padStart(2,"0");
+    const ist=ZAHLUNGEN.bezahlt[key];
+    if(ist!=null){cum+=ist;paidIdx=i;cumPaid=cum;return{n:n,v:cum,paid:true};}
+    cum+=ZAHLUNGEN.sollMonat;
+    return{n:n,v:cum,paid:false};
+  });
+  vals.forEach((m,i)=>{
+    const h=Math.max(8,Math.round(m.v/ziel*H));
+    const lab=(i===paidIdx)?'<span class="gl" style="color:var(--brand)">'+eur0(m.v)+' ✓</span>':(i===vals.length-1)?'<span class="gl">'+eur0(m.v)+'</span>':'';
+    wrap.appendChild(el("div","gc"+(m.paid?"":" exp"),lab+'<i style="height:'+h+'px"></i><small>'+m.n+'</small>'));
+  });
+  wrap.setAttribute("aria-label","Kumulierte Mieteinnahmen 2026: bisher "+eur0(cumPaid)+" eingenommen, Prognose bis Dezember "+eur0(ziel));
+  document.getElementById("growCaption").innerHTML='<b style="color:var(--brand)">'+eur0(cumPaid)+' sind schon da</b> — jeden Monat kommen '+eur0(ZAHLUNGEN.sollMonat)+' dazu, Kurs: '+eur0(ziel)+' bis Silvester. Und ab 09/2027 sind bis zu +315 €/Monat mehr drin (<a href="#" id="growJump">Erhöhungs-Radar</a>).';
+  document.getElementById("growJump").addEventListener("click",e=>{e.preventDefault();jump("vertrag","radar");});
 })();
 
 /* ===== Übersicht: offene Punkte + Termine ===== */
