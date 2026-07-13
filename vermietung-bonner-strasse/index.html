@@ -909,7 +909,7 @@ abrTile.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preven
     const v=$("spVerdict");
     if(zul<=SPIEL.basis){
       v.className="verdict over";
-      v.innerHTML="<b>Keine Erhöhung möglich:</b> Die angenommene Vergleichsmiete ("+eur0(dkVM)+") liegt nicht über der heutigen Kaltmiete (2.100 €). § 558 BGB erlaubt nur die Anhebung <b>bis zur</b> ortsüblichen Vergleichsmiete — Regler „Vergleichsmiete" höher stellen oder auf den neuen Mietspiegel warten.";
+      v.innerHTML="<b>Keine Erhöhung möglich:</b> Die angenommene Vergleichsmiete ("+eur0(dkVM)+") liegt nicht über der heutigen Kaltmiete (2.100 €). § 558 BGB erlaubt nur die Anhebung <b>bis zur</b> ortsüblichen Vergleichsmiete — Regler „Vergleichsmiete“ höher stellen oder auf den neuen Mietspiegel warten.";
     } else if(okay){
       v.className="verdict ok";
       v.innerHTML="<b>✓ Im Rahmen:</b> 2.100 € → <b>"+eur0(wunsch)+"</b> = <b>+"+eur0(plusM)+"/Monat</b> (+"+pz(plusM/SPIEL.basis*100)+" %) bzw. +"+eur0(plusM*12)+"/Jahr. Frühester Zugang des Verlangens "+SPIEL.zugang+", neue Miete ab "+SPIEL.wirksam+".";
