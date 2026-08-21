@@ -618,7 +618,10 @@
     const a = anreiseText(z);
     const fakten = [];
     if (z.oeffnung !== "unbekannt") fakten.push("Geöffnet: " + z.oeffnung);
-    if (z.eintritt !== "unbekannt") fakten.push("Eintritt: " + z.eintritt);
+    // Kein doppeltes Praefix: der Wert kann selbst schon mit "Eintritt" beginnen
+    // ("Eintritt, Höhe unbekannt"), dann stand dort "Eintritt: Eintritt, …".
+    if (z.eintritt !== "unbekannt")
+      fakten.push(/^Eintritt/.test(z.eintritt) ? z.eintritt : "Eintritt: " + z.eintritt);
     if (z.rollstuhl === "yes") fakten.push("barrierefrei");
     else if (z.rollstuhl === "limited") fakten.push("eingeschränkt barrierefrei");
     return `
