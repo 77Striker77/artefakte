@@ -102,8 +102,17 @@
   .zaehler{font-family:var(--zahl); font-size:12px; color:var(--auf-tiefe-leise)}
   .liste{list-style:none; margin:0; padding:0; display:grid;
          grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); gap:var(--sp-2xs)}
+  .zeilenhuelle{display:flex; align-items:stretch; gap:var(--sp-2xs)}
+  .zeilenhuelle .zeile{flex:1; min-width:0}
+  /* Schmal, aber ueber 44 px hoch - er sitzt in einer Liste, die auf dem Handy
+     einspaltig wird, und muss dort noch treffbar sein. */
+  .zumaps{flex:none; display:flex; align-items:center; padding:0 var(--sp-xs);
+          font-family:var(--zahl); font-size:9px; letter-spacing:.04em;
+          text-decoration:none; color:var(--tinte); background:var(--flaeche);
+          border:var(--rand) solid var(--umriss)}
+  .zumaps:hover{background:var(--akzent-weich); color:var(--akzent-text)}
+
   .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
-         color:var(--tinte);
          color:var(--tinte); border:var(--rand) solid var(--umriss); padding:var(--sp-xs) var(--sp-s); display:grid;
          grid-template-columns:auto minmax(0,1fr) auto; gap:var(--sp-s); align-items:center;
          min-height:44px}
@@ -385,7 +394,10 @@
   L.marker([HOTEL.lat, HOTEL.lon], { icon: quadrat("k-hotel", true), zIndexOffset: 500 })
     .bindPopup('<span class="pop-art">Unser Hotel</span><span class="pop-name">'
       + esc(D.hotel.name) + '</span><span class="pop-zeile">' + esc(D.hotel.adresse)
-      + '</span><span class="pop-wege"><a href="hotel.html">Hotel im Detail</a></span>')
+      + '</span><div class="pop-wege"><a href="hotel.html">Hotel im Detail</a>'
+      + '<a href="https://www.google.com/maps/search/?api=1&query='
+      + HOTEL.lat + "," + HOTEL.lon
+      + '" target="_blank" rel="noopener">In Google Maps</a></div>')
     .addTo(karte);
 
   /* ---------- Punkte ---------- */
@@ -408,6 +420,8 @@
     if (o.zeiten) teile.push('<div class="pop-zeiten">'
       + o.zeiten.split(/;\s*/).map((z) => "<div>" + esc(z) + "</div>").join("") + "</div>");
     teile.push('<div class="pop-wege">'
+      + '<a href="https://www.google.com/maps/search/?api=1&query=' + zielK
+      + '" target="_blank" rel="noopener">In Google Maps</a>'
       + '<a class="haupt" href="https://www.google.com/maps/dir/?api=1&destination=' + zielK
       + '&travelmode=walking" target="_blank" rel="noopener">Route ab Standort</a>'
       + '<a href="https://www.google.com/maps/dir/?api=1&origin=' + HOTEL.lat + "," + HOTEL.lon
@@ -507,12 +521,19 @@
       const meta = [o.typ && o.typ !== o.art ? o.typ : o.art,
                     o.bew != null ? o.bew.toFixed(1) + "★" : null, o.preis || null]
         .filter(Boolean).join(" · ");
-      return '<li><button class="zeile" type="button" data-id="' + o.id + '">'
-        + '<span class="punkt" style="background:var(--p-'
-        + o.art.toLowerCase().replace(/[^a-z]/g, "") + ')"></span>'
+      const ziel = o.lat + "," + o.lon;
+      /* Der Maps-Link steht als Geschwister NEBEN dem Knopf, nicht darin: ein
+         <a> in einem <button> ist ungueltiges HTML und per Tastatur kaputt. */
+      return '<li class="zeilenhuelle"><button class="zeile" type="button" data-id="' + o.id + '">'
+        + '<span class="punkt marksym" style="color:var(--p-'
+        + o.art.toLowerCase().replace(/[^a-z]/g, "") + ')">'
+        + symbolSvg(symbolFuer(o.art)) + "</span>"
         + '<span><span class="zname">' + esc(o.name) + '</span><br>'
         + '<span class="zmeta">' + esc(meta) + "</span></span>"
-        + '<span class="zdist">' + o.m + " m</span></button></li>";
+        + '<span class="zdist">' + o.m + " m</span></button>"
+        + '<a class="zumaps" href="https://www.google.com/maps/search/?api=1&query=' + ziel
+        + '" target="_blank" rel="noopener" aria-label="' + esc(o.name)
+        + ' in Google Maps ansehen">Maps</a></li>';
     }).join("");
   }
   $("listeninhalt").addEventListener("click", (e) => {
