@@ -38,10 +38,23 @@
      Marke wirkt schwarz statt farbig. So bleiben volle 14 px Farbe. */
   /* display:block ist Pflicht: <i> ist inline und ignoriert width/height -
      die Marke faellt dann auf null zusammen und man sieht nur den Umriss-Ring. */
-  .pixpin{display:block; width:14px; height:14px; image-rendering:pixelated;
+  /* Die Marke traegt jetzt ein Pixel-Symbol, nicht nur eine Farbe. Farbe allein
+     zwingt zum Nachschlagen in der Legende - bei elf Arten auf engem Raum ist
+     das der Hauptgrund, warum die Karte unuebersichtlich wirkte. Form wird
+     schneller erkannt als Farbton, und beides zusammen ist redundant codiert:
+     wer Farben schlecht unterscheidet, hat weiterhin das Symbol.
+     display:flex ist Pflicht - <i> ist inline und ignoriert width/height. */
+  .pixpin{display:flex; align-items:center; justify-content:center;
+          width:21px; height:21px; image-rendering:pixelated;
           box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.3)}
-  .pixpin.gross{width:22px; height:22px;
+  .pixpin svg{width:15px; height:15px; display:block; fill:var(--umriss)}
+  /* Haltestellen sind mit 75 Stueck die mit Abstand haeufigste Art. Sie bleiben
+     kleiner und ohne Symbol, sonst erschlagen sie alles andere. */
+  .pixpin.klein{width:13px; height:13px; box-shadow:0 0 0 2px var(--umriss), 3px 3px 0 rgba(0,0,0,.28)}
+  .pixpin.klein svg{width:9px; height:9px}
+  .pixpin.gross{width:30px; height:30px;
                 box-shadow:0 0 0 3px var(--umriss), 5px 5px 0 rgba(0,0,0,.38)}
+  .pixpin.gross svg{width:21px; height:21px}
   .k-restaurant{background:var(--p-restaurant)} .k-imbiss{background:var(--p-imbiss)}
   .k-cafe{background:var(--p-cafe)}             .k-baeckerei{background:var(--p-baeckerei)}
   .k-bar{background:var(--p-bar)}               .k-strandbar{background:var(--p-strandbar)}
@@ -51,7 +64,14 @@
   /* Weiss statt Aqua: Aqua lag 4 Hue-Grad neben --p-strandbar, und der eigene
      Standort ist der Marker, der am wenigsten verwechselbar sein darf. */
   .k-ich{background:var(--ich)}
-  .ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.55}
+  /* Die Entfernungsringe sind das nuetzlichste Element der Karte und waren
+     unbeschriftet - man sah drei Kreise und musste raten, wofuer sie stehen. */
+  .ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.5}
+  .leaflet-tooltip.ringmass{
+    background:var(--flaeche); color:var(--tinte-fein);
+    border:2px solid var(--umriss); border-radius:0; box-shadow:2px 2px 0 var(--umriss);
+    font-family:var(--zahl); font-size:9px; padding:1px 4px; white-space:nowrap}
+  .leaflet-tooltip.ringmass::before{display:none}
   .standort-genauigkeit{stroke:var(--akzent); fill:var(--akzent); fill-opacity:.14; stroke-width:2}
 
   /* Popup-Stile stehen jetzt zentral in stil.css - sie waren hier und in
@@ -93,7 +113,7 @@
 </nav>
 
 <main class="huelle">
-  <p class="eyebrow">Vor Ort · Adelianos Kampos</p>
+  <p class="eyebrow" id="tEyebrow">Vor Ort</p>
   <h1>Was in der <em>Nähe</em> liegt</h1>
   <p class="unterzeile">Lokale, Supermärkte und Bushaltestellen zwischen dem Hotel und
     Rethymno, auf echtem Kartenmaterial. Umschaltbar auf Satellitenbild. Der Knopf
@@ -129,6 +149,9 @@
   "use strict";
   const D = window.DATEN;
   const $ = (id) => document.getElementById(id);
+  // Kopfzeile aus dem Bezugsort - dieselbe Quelle wie der Menuepunkt.
+  if (D.bezugOrt && D.bezugOrt !== "unbekannt")
+    $("tEyebrow").textContent = "Vor Ort · " + D.bezugOrt;
   const esc = (s) => String(s == null ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const klasse = (art) => "k-" + art.toLowerCase().replace(/[^a-z]/g, "");
@@ -158,15 +181,188 @@
   L.control.layers({ "Karte": osm, "Satellit": satellit }, null, { position: "topright" }).addTo(karte);
   L.control.scale({ imperial: false, position: "bottomleft" }).addTo(karte);
 
-  // Entfernungsringe um das Hotel - echte Radien in Metern.
-  [500, 1000, 2000].forEach((m) =>
-    L.circle([HOTEL.lat, HOTEL.lon], { radius: m, className: "ring", interactive: false }).addTo(karte));
-
-  const quadrat = (kl, gr) => L.divIcon({
-    className: "", html: '<i class="pixpin ' + kl + (gr ? " gross" : "") + '"></i>',
-    iconSize: gr ? [23, 23] : [15, 15], iconAnchor: gr ? [11, 11] : [7, 7],
-    popupAnchor: [0, gr ? -13 : -9],
+  // Entfernungsringe um das Hotel - echte Radien in Metern, jetzt beschriftet.
+  // Unbeschriftet sah man drei Kreise und musste raten, wofuer sie stehen;
+  // mit Mass sind sie das nuetzlichste Element der Karte: man liest die
+  // Entfernung eines Lokals ab, ohne es anzuklicken.
+  [500, 1000, 2000].forEach((m) => {
+    L.circle([HOTEL.lat, HOTEL.lon], { radius: m, className: "ring", interactive: false })
+      .addTo(karte);
+    // Die Fahne sitzt am noerdlichen Scheitel: dort ist bei dieser Kuestenlage
+    // Wasser, also verdeckt sie keine Orte.
+    const noerdlich = m / 111320;
+    L.marker([HOTEL.lat + noerdlich, HOTEL.lon], {
+      icon: L.divIcon({ className: "", html: "", iconSize: [0, 0] }),
+      interactive: false, keyboard: false,
+    })
+      .bindTooltip(m >= 1000 ? (m / 1000) + " km" : m + " m",
+        { permanent: true, direction: "center", className: "ringmass" })
+      .addTo(karte);
   });
+
+
+  /* ---------- Pixel-Symbole ----------
+     Jedes Symbol steht als 9x9-Raster da, eine Zeile je Textzeile. Das ist der
+     Grund fuer diese Schreibweise: man SIEHT das Symbol im Quelltext und kann
+     es aendern, ohne SVG-Pfade zu rechnen. Daraus wird einmal ein <symbol>-Sprite
+     gebaut; die 108 Marken referenzieren es per <use> und tragen nicht jede ihre
+     eigenen 30 Rechtecke im DOM.
+     shape-rendering="crispEdges" ist Pflicht - ohne das zeichnet der Browser die
+     Pixelkanten weich und der ganze Look ist hin. */
+  const SYMBOLE = {
+    restaurant: [".X.X.X...",
+                 ".X.X.X...",
+                 ".XXXXX...",
+                 "...X.....",
+                 "...X.....",
+                 "...X.....",
+                 "...X.....",
+                 "...X.....",
+                 "........."],
+    imbiss:     [".........",
+                 "..XXXXX..",
+                 ".XXXXXXX.",
+                 ".X.....X.",
+                 ".XXXXXXX.",
+                 ".X.....X.",
+                 ".XXXXXXX.",
+                 "..XXXXX..",
+                 "........."],
+    baeckerei:  [".........",
+                 "..XXXXX..",
+                 ".XXXXXXX.",
+                 "XX.X.X.XX",
+                 "XXXXXXXXX",
+                 "XXXXXXXXX",
+                 ".XXXXXXX.",
+                 "..XXXXX..",
+                 "........."],
+    cafe:       [".........",
+                 ".XXXXX...",
+                 ".X...X.XX",
+                 ".X...X.X.",
+                 ".X...X.XX",
+                 ".XXXXX...",
+                 ".........",
+                 "XXXXXXXXX",
+                 "........."],
+    bar:        [".........",
+                 "XXXXXXXXX",
+                 ".XXXXXXX.",
+                 "..XXXXX..",
+                 "...XXX...",
+                 "....X....",
+                 "....X....",
+                 "..XXXXX..",
+                 "........."],
+    strand:     ["....X....",
+                 ".X..X..X.",
+                 "..XXXXX..",
+                 ".XXXXXXX.",
+                 "..XXXXX..",
+                 ".........",
+                 ".XX...XX.",
+                 "X..XX...X",
+                 "........."],
+    strandbar:  ["....X....",
+                 "..XXXXX..",
+                 ".XXXXXXX.",
+                 "XXXXXXXXX",
+                 "....X....",
+                 "....X....",
+                 "....X....",
+                 "....X....",
+                 "........."],
+    supermarkt: [".........",
+                 "..X...X..",
+                 "..X...X..",
+                 "XXXXXXXXX",
+                 ".X.....X.",
+                 ".X.....X.",
+                 ".X.....X.",
+                 "..XXXXX..",
+                 "........."],
+    bus:        [".........",
+                 ".XXXXXXX.",
+                 ".X.X.X.X.",
+                 ".X.X.X.X.",
+                 ".XXXXXXX.",
+                 ".X.....X.",
+                 ".XXXXXXX.",
+                 "..X...X..",
+                 "........."],
+    hotel:      [".........",
+                 ".X.......",
+                 ".X..XXX..",
+                 ".X.X...X.",
+                 ".XXXXXXXX",
+                 ".X......X",
+                 ".X......X",
+                 ".........",
+                 "........."],
+    ich:        ["....X....",
+                 "....X....",
+                 "..XXXXX..",
+                 ".X..X..X.",
+                 "XXX.X.XXX",
+                 ".X..X..X.",
+                 "..XXXXX..",
+                 "....X....",
+                 "....X...."],
+  };
+
+  /* Aus dem Raster wird ein Sprite. Waagerecht zusammenhaengende Pixel werden zu
+     EINEM Rechteck zusammengefasst - aus 30 Einzelpixeln werden so etwa 12
+     Rechtecke je Symbol. */
+  (function spriteBauen() {
+    let inhalt = "";
+    for (const [name, raster] of Object.entries(SYMBOLE)) {
+      let rects = "";
+      raster.forEach((zeile, y) => {
+        let x = 0;
+        while (x < zeile.length) {
+          if (zeile[x] !== "X") { x++; continue; }
+          let breite = 0;
+          while (zeile[x + breite] === "X") breite++;
+          rects += `<rect x="${x}" y="${y}" width="${breite}" height="1"/>`;
+          x += breite;
+        }
+      });
+      inhalt += `<symbol id="sym-${name}" viewBox="0 0 9 9">${rects}</symbol>`;
+    }
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("style", "position:absolute;width:0;height:0;overflow:hidden");
+    svg.innerHTML = inhalt;
+    document.body.prepend(svg);
+  })();
+
+  const symbolFuer = (art) => {
+    const k = String(art).toLowerCase()
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue")
+      .replace(/[^a-z]/g, "");
+    return SYMBOLE[k] ? k : null;
+  };
+  const symbolSvg = (name) => name
+    ? '<svg shape-rendering="crispEdges" aria-hidden="true"><use href="#sym-' + name + '"/></svg>'
+    : "";
+
+  /* Groessen: gross fuer Hotel und eigenen Standort, klein fuer Haltestellen
+     (75 Stueck - in Normalgroesse erschlagen sie die Karte), normal fuer alles
+     dazwischen. */
+  const marke = (kl, art, groesse) => {
+    const mass = groesse === "gross" ? 30 : groesse === "klein" ? 13 : 21;
+    const rand = groesse === "klein" ? 2 : 3;
+    const kante = mass + 2 * rand;
+    return L.divIcon({
+      className: "",
+      html: '<i class="pixpin ' + kl + (groesse ? " " + groesse : "") + '">'
+        + symbolSvg(symbolFuer(art)) + "</i>",
+      iconSize: [kante, kante], iconAnchor: [kante / 2, kante / 2],
+      popupAnchor: [0, -kante / 2 + 2],
+    });
+  };
+  const quadrat = (kl, gr) => marke(kl, kl.replace(/^k-/, ""), gr ? "gross" : null);
 
   L.marker([HOTEL.lat, HOTEL.lon], { icon: quadrat("k-hotel", true), zIndexOffset: 500 })
     .bindPopup('<span class="pop-art">Unser Hotel</span><span class="pop-name">'
@@ -208,7 +404,8 @@
 
   ARTEN.forEach((art) => { gruppen[art] = L.layerGroup(); });
   D.orte.forEach((o) => {
-    const m = L.marker([o.lat, o.lon], { icon: quadrat(klasse(o.art), false) })
+    const m = L.marker([o.lat, o.lon], {
+      icon: marke(klasse(o.art), o.art, o.art === "Bus" ? "klein" : null) })
       .bindPopup(() => popup(o), { maxWidth: 300 })
       .bindTooltip(o.name, { direction: "top", offset: [0, -8] });
     markerVon.set(o.id, m);
@@ -222,8 +419,11 @@
     const b = document.createElement("button");
     b.className = "knopf"; b.type = "button";
     b.setAttribute("aria-pressed", String(an.has(art)));
-    b.innerHTML = '<span class="punkt" style="background:var(--p-'
-      + art.toLowerCase().replace(/[^a-z]/g, "") + ')"></span>' + esc(art)
+    // Auch der Filterknopf zeigt das Symbol - sonst muss man zwischen Knopf und
+    // Karte uebersetzen, und genau das war der Bruch.
+    b.innerHTML = '<span class="punkt marksym" style="background:var(--p-'
+      + art.toLowerCase().replace(/[^a-z]/g, "") + ')">'
+      + symbolSvg(symbolFuer(art)) + "</span>" + esc(art)
       + ' <span class="zahl">' + n + "</span>";
     b.addEventListener("click", () => {
       if (an.has(art)) { an.delete(art); karte.removeLayer(gruppen[art]); }

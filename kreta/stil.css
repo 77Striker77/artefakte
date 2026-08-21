@@ -287,6 +287,10 @@ h3{font-family:var(--display); font-size:17px}
 .pop-wege a.haupt{background:var(--sonne-flaeche)}
 
 .punkt{width:12px; height:12px; flex:none; display:inline-block; border:2px solid var(--umriss)}
+/* Traegt der Punkt ein Symbol, muss er es zentrieren - inline-block tut das nicht. */
+.punkt.marksym{display:inline-flex; align-items:center; justify-content:center;
+               width:16px; height:16px}
+.punkt.marksym svg{width:11px; height:11px; display:block; fill:var(--umriss)}
 
 .fuss{margin-top:var(--sp-xl); padding:var(--sp-m) 0 var(--sp-xl);
       border-top:var(--rand) solid var(--see); font-size:13px; color:var(--auf-tiefe-leise)}

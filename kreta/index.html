@@ -335,7 +335,6 @@
      Markup erlaubt bleiben. Bewusst KEIN esc(): die Quelle ist reise.json im
      Repo, keine Nutzereingabe. */
   if (TEXTE.unterzeile) $("tUnterzeile").innerHTML = TEXTE.unterzeile;
-  if (TEXTE.marke) document.querySelector(".marke").textContent = TEXTE.marke;
 
   /* ---------- Karte ---------- */
   const karte = L.map("karte", { scrollWheelZoom: true });
