@@ -160,6 +160,7 @@
   .zielart{font-family:var(--zahl); font-size:9px; letter-spacing:.06em;
            text-transform:uppercase; color:var(--tinte);
            border:2px solid var(--umriss); padding:2px 5px; background:var(--ziel)}
+  .zieltext{font-size:12.5px; color:var(--tinte-leise); margin-top:var(--sp-2xs)}
   .zielweg{font-family:var(--zahl); font-size:10px; color:var(--akzent-text);
            padding:var(--sp-2xs) 0; border-top:2px solid var(--linie);
            border-bottom:2px solid var(--linie); display:flex; flex-wrap:wrap;
@@ -532,6 +533,8 @@
       .bindTooltip(z.name, { direction: "top", offset: [0, -12], className: "fahne" })
       .bindPopup('<span class="pop-art">' + esc(z.art) + "</span>"
         + '<span class="pop-name">' + esc(z.name) + "</span>"
+        + (z.beschreibung && z.beschreibung !== "unbekannt"
+          ? '<span class="pop-zeile">' + esc(z.beschreibung) + "</span>" : "")
         + '<span class="pop-zeile">' + esc(wegZiel(z)) + "</span>"
         + '<span class="pop-zeile">' + esc(a.text) + "</span>"
         + (z.oeffnung !== "unbekannt"
@@ -645,6 +648,22 @@
     { bis: 105, titel: "Tagesausflug — 45 bis 105 Minuten" },
     { bis: Infinity, titel: "Weite Fahrt — über 105 Minuten" },
   ];
+  /* Zwei Links je Ort, weil es zwei verschiedene Fragen sind: "wo ist das?"
+     beantwortet die Kartenansicht, "wie komme ich hin?" die Route ab dem
+     Quartier. Der Bezugspunkt der Route ist derselbe, auf den sich auch alle
+     Entfernungen auf dieser Seite beziehen. */
+  const HB = D.hotels && D.hotels[0];
+  const wege = (lat, lon, extra) => {
+    const ziel = lat + "," + lon;
+    let h = '<div class="wege">'
+      + '<a href="https://www.google.com/maps/search/?api=1&query=' + ziel
+      + '" target="_blank" rel="noopener">In Google Maps</a>';
+    if (HB) h += '<a href="https://www.google.com/maps/dir/?api=1&origin='
+      + HB.lat + "," + HB.lon + "&destination=" + ziel
+      + '" target="_blank" rel="noopener">Route ab Quartier</a>';
+    return h + (extra || "") + "</div>";
+  };
+
   const zielKarte = (z) => {
     const a = anreiseText(z);
     const fakten = [];
@@ -661,13 +680,18 @@
           <span class="zielname">${esc(z.name)}</span>
           <span class="zielart">${esc(z.art)}</span>
         </div>
+        ${z.beschreibung && z.beschreibung !== "unbekannt"
+          ? '<p class="zieltext">' + esc(z.beschreibung) + "</p>" : ""}
         <div class="zielweg"><span>${esc(wegZiel(z))}</span></div>
         <p class="anreise ${a.klasse}"><span>${esc(a.text)}</span></p>
         <div class="zielfakt">${fakten.map((f) =>
           '<span class="chip">' + esc(f) + "</span>").join("")}</div>
+        ${wege(z.lat, z.lon, z.website
+          ? '<a href="' + esc(z.website) + '" target="_blank" rel="noopener">Offizielle Seite</a>'
+          : "")}
         <p class="zielquelle">Weg: OSRM · Haltestelle und Zeiten: OpenStreetMap${
-          z.website ? ' · <a href="' + esc(z.website)
-            + '" target="_blank" rel="noopener">Offizielle Seite</a>' : ""}</p>
+          z.beschreibung_quelle && z.beschreibung_quelle !== "unbekannt"
+            ? " · Beschreibung: " + esc(z.beschreibung_quelle) : ""}</p>
       </article>`;
   };
 
@@ -708,9 +732,10 @@
         ? "Charakteristik unbekannt." : esc(s.charakteristik)}</p>
       <div class="stadtmerk">${merkText(s.merkmale).map((t) =>
         '<span class="chip">' + esc(t) + "</span>").join("")}</div>
-      <p class="stadtquelle">Einwohner: Wikidata · Weg: OSRM · Merkmale: OpenStreetMap${
-        s.wikipedia ? ' · <a href="' + esc(s.wikipedia)
-          + '" target="_blank" rel="noopener">Wikipedia</a>' : ""}</p>
+      ${wege(s.lat, s.lon, s.wikipedia
+        ? '<a href="' + esc(s.wikipedia) + '" target="_blank" rel="noopener">Wikipedia</a>'
+        : "")}
+      <p class="stadtquelle">Einwohner: Wikidata · Weg: OSRM · Merkmale: OpenStreetMap</p>
     </article>`).join("");
 
   $("zaehlerFlug").textContent = FLUG.length + " Flughäfen · Luftlinie ab dem gewählten Hotel";
@@ -720,6 +745,7 @@
       <span>
         <span class="flugname">${esc(f.name)}</span>
         <span class="flugweg">${f.luftlinie_hotel_km} km Luftlinie · ICAO ${esc(f.icao)}</span>
+        ${wege(f.lat, f.lon)}
       </span>
     </div>`).join("");
 

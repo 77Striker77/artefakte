@@ -278,13 +278,19 @@ h3{font-family:var(--display); font-size:17px}
             max-height:8.5em; overflow:auto}
 .pop-stand{display:block; margin-top:8px; font-family:var(--zahl); font-size:10px;
            color:var(--tinte-fein)}
-.pop-wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
+/* Die Wege-Leiste gibt es in Popups UND in den Faktenkarten unter der Karte -
+   derselbe Zweck, also derselbe Stil und kein zweiter Satz Regeln. Beide Gruende
+   sind --flaeche, die gemessenen Werte gelten also unveraendert. */
+.pop-wege,.wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
 /* Wie die Knoepfe der Seite: harte Kante, dicker Umriss, kein Radius. */
-.pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
+.pop-wege a,.wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
             border:2px solid var(--umriss); color:var(--tinte); background:var(--flaeche);
             font-weight:600}
-.pop-wege a:hover{background:var(--flaeche-2)}
-.pop-wege a.haupt{background:var(--sonne-flaeche)}
+.pop-wege a:hover,.wege a:hover{background:var(--flaeche-2)}
+.pop-wege a.haupt,.wege a.haupt{background:var(--sonne-flaeche)}
+/* In den Faktenkarten sind es Fusszeilen-Knoepfe: etwas kleiner, damit sie die
+   Karte nicht dominieren, aber weiterhin ueber 44 px Tastflaeche durch padding. */
+.wege a{font-size:11.5px; padding:8px 10px}
 
 .punkt{width:12px; height:12px; flex:none; display:inline-block; border:2px solid var(--umriss)}
 /* Traegt der Punkt ein Symbol, muss er es zentrieren - inline-block tut das nicht. */
