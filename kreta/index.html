@@ -355,6 +355,17 @@
   const STAEDTE = D.staedte || [];
   const FLUG = D.flughaefen || [];
   const ZIELE = D.ziele || [];
+  /* Gesucht wird nach NAMEN, nicht nach Koordinaten: "?query=35.3,25.1" setzt nur
+     einen Pin auf die Stelle, waehrend "?query=Palast+von+Knossos+Kreta" den
+     tatsaechlichen Eintrag mit Fotos, Bewertungen und Zeiten oeffnet. Der Zielname
+     kommt dazu, damit mehrdeutige Namen (es gibt mehr als eine Agia Triada) im
+     richtigen Gebiet landen.
+     Diese Zeile MUSS hier oben stehen: die Popup-Texte der Ziele werden schon
+     beim Anlegen der Marken zusammengesetzt, also lange bevor wege() definiert
+     ist. Stand sie dort, riss ein "Cannot access before initialization" die
+     ganze Initialisierung mit - sichtbar an den Tab-Stopps, die von 141 auf 27
+     fielen, waehrend die Seite auf den ersten Blick nur etwas leer aussah. */
+  const ZIELNAME = D.zielName && D.zielName !== "unbekannt" ? " " + D.zielName : "";
   const TEXTE = D.texte || {};
 
   /* Ueberschriften kommen aus reise.json. Steht dort nichts, bleibt der im
@@ -412,7 +423,8 @@
       + '<div class="pop-wege">'
       + (h.rang === 1 ? '<a class="haupt" href="hotel.html">Hotel im Detail</a>' : "")
       + '<a href="rangfolge.html">In der Rangfolge</a>'
-      + '<a href="https://www.google.com/maps/search/?api=1&query=' + ziel
+      + '<a href="https://www.google.com/maps/search/?api=1&query='
+      + encodeURIComponent(h.name + " " + String(h.lage).split("/")[0].trim())
       + '" target="_blank" rel="noopener">In Google Maps</a></div>';
   }
 
@@ -492,7 +504,8 @@
         + '<span class="pop-zeile">' + f.luftlinie_hotel_km
         + " km Luftlinie zum gewählten Hotel</span>"
         + '<div class="pop-wege"><a href="https://www.google.com/maps/search/?api=1&query='
-        + f.lat + "," + f.lon + '" target="_blank" rel="noopener">In Google Maps</a></div>',
+        + encodeURIComponent(f.name + ZIELNAME)
+        + '" target="_blank" rel="noopener">In Google Maps</a></div>',
         { maxWidth: 300 })
       .addTo(ebeneFlug);
   });
@@ -543,7 +556,8 @@
           ? '<span class="pop-zeile">Eintritt: ' + esc(z.eintritt) + "</span>" : "")
         + '<div class="pop-wege"><a href="#ziele">Fakten unter der Karte</a>'
         + (z.website ? '<a href="' + esc(z.website) + '" target="_blank" rel="noopener">Offizielle Seite</a>' : "")
-        + '<a href="https://www.google.com/maps/search/?api=1&query=' + z.lat + "," + z.lon
+        + '<a href="https://www.google.com/maps/search/?api=1&query='
+        + encodeURIComponent(z.name + ZIELNAME)
         + '" target="_blank" rel="noopener">In Google Maps</a></div>', { maxWidth: 320 })
       .addTo(ebeneZiele);
   });
@@ -653,13 +667,18 @@
      Quartier. Der Bezugspunkt der Route ist derselbe, auf den sich auch alle
      Entfernungen auf dieser Seite beziehen. */
   const HB = D.hotels && D.hotels[0];
-  const wege = (lat, lon, extra) => {
+  const wege = (lat, lon, extra, name) => {
     const ziel = lat + "," + lon;
     let h = '<div class="wege">'
-      + '<a href="https://www.google.com/maps/search/?api=1&query=' + ziel
+      + '<a href="https://www.google.com/maps/search/?api=1&query='
+      + encodeURIComponent(name ? name + ZIELNAME : ziel)
       + '" target="_blank" rel="noopener">In Google Maps</a>';
+    /* Auch die Route traegt Namen: in Google Maps steht dann
+       "Amira Luxury Resort → Palast von Knossos" statt zweier Zahlenpaare.
+       Ohne Namen faellt es auf die Koordinate zurueck - die trifft immer. */
     if (HB) h += '<a href="https://www.google.com/maps/dir/?api=1&origin='
-      + HB.lat + "," + HB.lon + "&destination=" + ziel
+      + encodeURIComponent(HB.name + " " + String(HB.lage).split("/")[0].trim())
+      + "&destination=" + encodeURIComponent(name ? name + ZIELNAME : ziel)
       + '" target="_blank" rel="noopener">Route ab Quartier</a>';
     return h + (extra || "") + "</div>";
   };
@@ -688,7 +707,7 @@
           '<span class="chip">' + esc(f) + "</span>").join("")}</div>
         ${wege(z.lat, z.lon, z.website
           ? '<a href="' + esc(z.website) + '" target="_blank" rel="noopener">Offizielle Seite</a>'
-          : "")}
+          : "", z.name)}
         <p class="zielquelle">Weg: OSRM · Haltestelle und Zeiten: OpenStreetMap${
           z.beschreibung_quelle && z.beschreibung_quelle !== "unbekannt"
             ? " · Beschreibung: " + esc(z.beschreibung_quelle) : ""}</p>
@@ -734,7 +753,7 @@
         '<span class="chip">' + esc(t) + "</span>").join("")}</div>
       ${wege(s.lat, s.lon, s.wikipedia
         ? '<a href="' + esc(s.wikipedia) + '" target="_blank" rel="noopener">Wikipedia</a>'
-        : "")}
+        : "", s.name)}
       <p class="stadtquelle">Einwohner: Wikidata · Weg: OSRM · Merkmale: OpenStreetMap</p>
     </article>`).join("");
 
@@ -745,7 +764,7 @@
       <span>
         <span class="flugname">${esc(f.name)}</span>
         <span class="flugweg">${f.luftlinie_hotel_km} km Luftlinie · ICAO ${esc(f.icao)}</span>
-        ${wege(f.lat, f.lon)}
+        ${wege(f.lat, f.lon, "", f.name)}
       </span>
     </div>`).join("");
 
