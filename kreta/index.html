@@ -64,7 +64,35 @@
   .leaflet-tooltip.fahne::before{display:none}
 
   /* ---------- Legende ---------- */
-  .legende{margin-top:var(--sp-xs); background:var(--flaeche); color:var(--tinte);
+  /* Die Legende steckt hinter einem Ausklapper. <details> statt eines
+     JS-Umschalters: es ist ohne Skript bedienbar, per Tastatur erreichbar und
+     meldet seinen Zustand von sich aus an Screenreader - ein <button> mit
+     aria-expanded muesste all das nachbauen.
+     Zu als Standard: die Symbole tragen ihre Bedeutung inzwischen selbst, die
+     Legende ist Nachschlagewerk, nicht Pflichtlektuere. */
+  .legendenblock{margin-top:var(--sp-xs)}
+  .legendenblock > summary{
+    font-family:var(--display); font-size:15px; font-weight:600;
+    min-height:46px; padding:0 var(--sp-m); cursor:pointer;
+    display:inline-flex; align-items:center; gap:9px;
+    background:var(--flaeche); color:var(--tinte);
+    border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+    list-style:none; width:auto}
+  /* Beide Zeilen sind noetig: die eine fuer Chrome und Safari, die andere fuer
+     Firefox. Ohne sie sitzt links das Standard-Dreieck der Engine im Knopf. */
+  .legendenblock > summary::-webkit-details-marker{display:none}
+  .legendenblock > summary::marker{content:""}
+  .legendenblock > summary:hover{background:var(--flaeche-2)}
+  .legendenblock > summary:active{transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
+  /* Eigener Zustandsanzeiger als Pixel-Dreieck - dreht sich beim Aufklappen. */
+  .legpfeil{width:0; height:0; flex:none;
+            border-left:6px solid var(--tinte); border-top:5px solid transparent;
+            border-bottom:5px solid transparent;
+            transition:transform calc(.12s * var(--bewegung)) steps(3)}
+  .legendenblock[open] > summary .legpfeil{transform:rotate(90deg)}
+  .legendenblock .zahl{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein)}
+
+  .legende{margin-top:var(--sp-2xs); background:var(--flaeche); color:var(--tinte);
            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
            padding:var(--sp-s) var(--sp-m)}
   .legende h2{font-size:15px; margin-bottom:var(--sp-xs)}
@@ -235,7 +263,10 @@
 
   <div id="karte"></div>
 
-  <div class="legende">
+  <details class="legendenblock">
+    <summary><span class="legpfeil" aria-hidden="true"></span>Legende
+      <span class="zahl">5 Markenarten</span></summary>
+    <div class="legende">
     <h2>Was auf der Karte steht</h2>
     <div class="legendenraster">
       <div class="legpunkt">
@@ -264,7 +295,8 @@
           <span>Die Zahl ist die Fahrzeit ab dem Quartier in Minuten.</span></span>
       </div>
     </div>
-  </div>
+    </div>
+  </details>
 
   <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
 
