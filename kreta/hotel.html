@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Hotel — Amira Luxury Resort</title>
+<meta name="description" content="Das gewählte Hotel im Detail: Anlage, Zimmerkategorien, Pools, Strand, Verpflegung und was Gäste loben und kritisieren.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="stil.css">
+<style>
+  .kopfchips{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
+  .urteil{margin:var(--sp-l) 0; padding:var(--sp-m) var(--sp-l); background:var(--gold-flaeche);
+          border-left:3px solid var(--gold); border-radius:var(--radius-s)}
+  .urteil h2{color:var(--gold); font-size:21px}
+  .urteil .meta{font-family:var(--mono); font-size:11.5px; color:var(--gold); margin-top:var(--sp-2xs)}
+  .urteil p.text{margin-top:var(--sp-xs); font-size:14.5px; color:var(--tinte-leise)}
+
+  section{margin-top:var(--sp-xl)}
+  section > h2{margin-bottom:var(--sp-s)}
+  .raster{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:var(--sp-xs)}
+  .fakt{background:var(--flaeche); border:1px solid var(--linie); border-radius:var(--radius-s);
+        padding:var(--sp-s) var(--sp-m)}
+  .fakt dt{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+           color:var(--tinte-fein)}
+  .fakt dd{margin:var(--sp-2xs) 0 0; font-size:14px}
+
+  .tabellenhuelle{overflow-x:auto; border:1px solid var(--linie); border-radius:var(--radius-s);
+                  background:var(--flaeche)}
+  table{border-collapse:collapse; width:100%; min-width:560px; font-size:13.5px}
+  th,td{text-align:left; padding:9px 14px; border-bottom:1px solid var(--linie)}
+  th{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+     color:var(--tinte-fein); background:var(--flaeche-2)}
+  tbody tr:last-child td{border-bottom:0}
+  .poolchip{font-family:var(--mono); font-size:10.5px; font-weight:600; padding:2px 7px;
+            border-radius:99px}
+  .pool-su{background:var(--akzent-weich); color:var(--akzent-text)}
+  .pool-pp{background:var(--gut-bg); color:var(--gut)}
+  .pool-no{background:var(--flaeche-2); color:var(--tinte-fein)}
+
+  .zweispalt{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:var(--sp-m)}
+  .spalte h3{font-size:15px; margin-bottom:var(--sp-xs)}
+  .spalte.lob h3{color:var(--gut)} .spalte.kritik h3{color:var(--krit)}
+  .spalte ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-2xs)}
+  .spalte li{background:var(--flaeche); border:1px solid var(--linie); border-left:3px solid;
+             border-radius:var(--radius-s); padding:var(--sp-xs) var(--sp-s); font-size:13.5px}
+  .spalte.lob li{border-left-color:var(--gut)} .spalte.kritik li{border-left-color:var(--krit)}
+  .thema{font-weight:600} .tenor{color:var(--tinte-leise)}
+  .haeufig{font-family:var(--mono); font-size:10.5px; color:var(--tinte-fein); display:block; margin-top:2px}
+
+  .fitkopf{display:flex; align-items:center; gap:var(--sp-s); margin-bottom:var(--sp-s)}
+  .fitwert{font-family:var(--mono); font-size:30px; font-weight:600; color:var(--gut);
+           font-variant-numeric:tabular-nums}
+  .fitliste{list-style:none; margin:0; padding:0; font-size:13.5px}
+  .fitliste li{padding:3px 0; display:flex; gap:var(--sp-xs)}
+  .gewicht{font-family:var(--mono); font-weight:600; min-width:2.2em; flex:none}
+  .g-plus{color:var(--gut)} .g-minus{color:var(--krit)}
+
+  details{background:var(--flaeche); border:1px solid var(--linie); border-radius:var(--radius-s);
+          margin-bottom:var(--sp-2xs)}
+  summary{cursor:pointer; padding:var(--sp-s) var(--sp-m); font-weight:600; font-size:14.5px;
+          min-height:44px; display:flex; align-items:center}
+  summary::marker{color:var(--tinte-fein)}
+  .inhalt{padding:0 var(--sp-m) var(--sp-m); font-size:13.5px; color:var(--tinte-leise)}
+  .inhalt ul{margin:0 0 var(--sp-xs); padding-left:1.2em}
+  .inhalt li{margin-bottom:3px}
+  .inhalt p{margin-bottom:var(--sp-xs)}
+  .inhalt h3{font-size:14px; color:var(--tinte); margin:var(--sp-s) 0 var(--sp-2xs)}
+  .inhalt code{font-family:var(--mono); font-size:12.5px; background:var(--flaeche-2);
+               padding:1px 5px; border-radius:4px}
+
+  .wege{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
+</style>
+</head>
+<body>
+<a class="skip" href="#inhalt">Zum Inhalt springen</a>
+
+<nav class="leiste">
+  <div class="leiste-innen">
+    <a class="marke" href="index.html">Kreta 2026</a>
+    <div class="menue">
+      <a href="index.html">Übersicht</a>
+      <a href="hotel.html">Das Hotel</a>
+      <a href="karte.html">Vor Ort</a>
+      <button class="themaKnopf" type="button">Dunkel</button>
+    </div>
+  </div>
+</nav>
+
+<main class="huelle" id="inhalt">
+  <p class="eyebrow">Das gewählte Hotel</p>
+  <h1 id="hname"></h1>
+  <p class="unterzeile" id="hlage"></p>
+  <div class="kopfchips" id="hchips"></div>
+  <div class="wege" id="hwege"></div>
+
+  <div class="urteil" id="hurteil"></div>
+
+  <section>
+    <h2>Anlage in Zahlen</h2>
+    <div class="raster" id="hanlage"></div>
+  </section>
+
+  <section>
+    <h2>Zimmerkategorien</h2>
+    <div class="tabellenhuelle">
+      <table>
+        <thead><tr><th>Kategorie</th><th>Größe</th><th>Pool</th><th>Jacuzzi</th><th>Ausblick</th></tr></thead>
+        <tbody id="hkat"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Was Gäste sagen</h2>
+    <p class="unterzeile" id="hquellen" style="margin-bottom:var(--sp-m)"></p>
+    <div class="zweispalt">
+      <div class="spalte lob"><h3>Lob</h3><ul id="hlob"></ul></div>
+      <div class="spalte kritik"><h3>Kritik</h3><ul id="hkritik"></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Erfüllung der Kriterien</h2>
+    <div class="fitkopf"><span class="fitwert" id="hfitwert"></span>
+      <span class="unterzeile" style="margin:0">gemessen gegen die bestätigten Wunschkriterien</span></div>
+    <div class="zweispalt">
+      <div class="spalte"><h3>Spricht dafür</h3><ul class="fitliste" id="hplus"></ul></div>
+      <div class="spalte"><h3>Spricht dagegen</h3><ul class="fitliste" id="hminus"></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Das Hotel im Detail</h2>
+    <div id="hprofil"></div>
+  </section>
+
+  <section>
+    <h2>Umgebung</h2>
+    <div id="humgebung"></div>
+  </section>
+</main>
+
+<footer class="fuss"><div class="huelle" id="fuss"></div></footer>
+
+<script src="daten.js"></script>
+<script src="gemein.js"></script>
+<script>
+(function () {
+  "use strict";
+  const H = window.DATEN.hotel, D = window.DATEN;
+  const $ = (id) => document.getElementById(id);
+  const esc = window.esc, reich = window.reich;
+
+  document.title = H.name + " — Das Hotel";
+  $("hname").textContent = H.name;
+  $("hlage").textContent = H.lage + " · " + H.adresse;
+
+  $("hchips").innerHTML = [
+    ["passt", H.niveau],
+    [H.adults.startsWith("Ja") ? "passt" : "grenz", H.adults],
+    ["grenz", H.zimmer + " Zimmer"],
+    ["passt", H.modern_seit + " · " + H.modern_art],
+  ].map(([k, t]) => '<span class="chip ' + k + '">' + reich(t) + "</span>").join("");
+
+  // Weg in die Google-Maps-App: dort sind Standort und Navigation.
+  const ziel = H.koordinaten.lat + "," + H.koordinaten.lon;
+  $("hwege").innerHTML =
+    '<a class="knopf haupt" href="karte.html">Karte vor Ort öffnen</a>'
+    + '<a class="knopf" href="https://www.google.com/maps/dir/?api=1&destination=' + ziel
+    + '" target="_blank" rel="noopener">Route ab meinem Standort</a>'
+    + '<a class="knopf" href="https://www.google.com/maps/search/?api=1&query=' + ziel
+    + '" target="_blank" rel="noopener">In Google Maps ansehen</a>';
+
+  $("hurteil").innerHTML = "<h2>" + reich(H.urteil.titel) + "</h2>"
+    + '<p class="meta">' + reich(H.urteil.meta) + "</p>"
+    + '<p class="text">' + reich(H.urteil.text) + "</p>";
+
+  $("hanlage").innerHTML = [
+    ["Zimmer &amp; Gelände", H.anlage.zimmer],
+    ["Pools", H.anlage.pools],
+    ["Gastronomie", H.anlage.gastro],
+    ["Spa", H.anlage.spa],
+    ["Strand", H.strand],
+    ["Pool &amp; Verpflegung", H.pool_verpflegung],
+    ["Bewertung", H.bewertung],
+  ].filter(([, v]) => v).map(([k, v]) =>
+    '<dl class="fakt"><dt>' + k + "</dt><dd>" + reich(v) + "</dd></dl>").join("");
+
+  const poolText = { su: "Swim-up", pp: "Privatpool", no: "kein Pool" };
+  $("hkat").innerHTML = H.kategorien.map((k) =>
+    "<tr><td><strong>" + esc(k.name) + "</strong></td><td>" + esc(k.groesse) + "</td>"
+    + '<td><span class="poolchip pool-' + esc(k.pool) + '">'
+    + reich(k.pool_text || poolText[k.pool] || k.pool) + "</span></td>"
+    + "<td>" + esc(k.jacuzzi || "–") + "</td><td>" + esc(k.ausblick || "–") + "</td></tr>").join("");
+
+  const B = H.bewertungen || {};
+  $("hquellen").textContent = B.quellen || "";
+  const stimmen = (arr) => (arr || []).map((e) =>
+    '<li><span class="thema">' + esc(e.thema) + '</span> — <span class="tenor">'
+    + reich(e.tenor) + '</span><span class="haeufig">' + esc(e.haeufigkeit) + "</span></li>").join("");
+  $("hlob").innerHTML = stimmen(B.lob) || '<li class="tenor">keine Angaben</li>';
+  $("hkritik").innerHTML = stimmen(B.kritik) || '<li class="tenor">keine Angaben</li>';
+
+  const F = H.fit || {};
+  $("hfitwert").textContent = (F.prozent != null ? F.prozent + " %" : "–");
+  const punkte = (arr, kl) => (arr || []).map((p) =>
+    '<li><span class="gewicht ' + kl + '">' + esc(p.gewicht) + "</span><span>"
+    + reich(p.punkt) + "</span></li>").join("");
+  $("hplus").innerHTML = punkte(F.plus, "g-plus");
+  $("hminus").innerHTML = punkte(F.minus, "g-minus") || '<li class="tenor">nichts erfasst</li>';
+
+  // Die Abschnitte kommen aus hotel-detail.md und sind bereits zu HTML uebersetzt.
+  $("hprofil").innerHTML = H.abschnitte.map((a, i) =>
+    "<details" + (i === 0 ? " open" : "") + "><summary>" + esc(a.titel) + "</summary>"
+    + '<div class="inhalt">' + a.html + "</div></details>").join("");
+
+  const U = H.umgebung || {};
+  $("humgebung").innerHTML = '<div class="raster">'
+    + (U.hotelnahe ? '<dl class="fakt"><dt>Direkt am Hotel</dt><dd>' + reich(U.hotelnahe) + "</dd></dl>" : "")
+    + (U.ort ? '<dl class="fakt"><dt>Der Ort</dt><dd>' + reich(U.ort) + "</dd></dl>" : "")
+    + "</div>"
+    + (U.stand ? '<p class="unterzeile" style="margin-top:var(--sp-xs);font-size:12px">Recherchestand '
+        + esc(U.stand) + "</p>" : "");
+
+  $("fuss").innerHTML =
+    "<p>Alle Angaben aus eigener Recherche, Stand " + D.stand
+    + ". Wo ein Wert nicht belegbar war, steht <em>unbekannt</em> statt einer Schätzung.</p>"
+    + "<p>Koordinaten: Google Places API, abgerufen 2026-08-21. "
+    + "Gästestimmen sind verdichtete, wiederkehrende Themen mehrerer Portale — keine Einzelzitate.</p>";
+})();
+</script>
+</body>
+</html>

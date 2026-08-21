@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vor Ort — Karte Adelianos Kampos</title>
+<meta name="description" content="Interaktive Karte der Hotelumgebung: Lokale, Supermärkte und Bushaltestellen mit Entfernung, Öffnungszeiten und Route.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="stil.css">
+<style>
+  .warnkasten{display:flex; gap:var(--sp-s); margin:var(--sp-m) 0; padding:var(--sp-s) var(--sp-m);
+              background:var(--warn-bg); color:var(--warn); border-left:3px solid var(--warn);
+              border-radius:var(--radius-s); font-size:13.5px}
+  .leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center; margin-bottom:var(--sp-s)}
+  .leiste-titel{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+                text-transform:uppercase; color:var(--tinte-fein); margin-right:var(--sp-2xs)}
+
+  #karte{height:clamp(380px,62vh,680px); border:1px solid var(--linie-stark);
+         border-radius:var(--radius); background:var(--flaeche-2); z-index:0}
+  .leaflet-container{font-family:var(--sans); background:var(--flaeche-2)}
+  .leaflet-control-attribution{font-size:10.5px}
+
+  /* Markerfarben ueber CSS, nicht ueber Leaflet-Optionen: so ziehen sie beim
+     Themenwechsel automatisch mit, und Attribute verlieren gegen Stylesheet. */
+  .pin{stroke:#FFFFFF; stroke-width:1.6; fill-opacity:1}
+  :root[data-theme="dark"] .pin, :root:not([data-theme="light"]) .pin{stroke:#12242C}
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .pin{stroke:#FFFFFF} }
+  .k-restaurant{fill:var(--p-restaurant)} .k-imbiss{fill:var(--p-imbiss)}
+  .k-cafe{fill:var(--p-cafe)}             .k-baeckerei{fill:var(--p-baeckerei)}
+  .k-bar{fill:var(--p-bar)}               .k-strandbar{fill:var(--p-strandbar)}
+  .k-strand{fill:var(--p-strand)}         .k-supermarkt{fill:var(--p-supermarkt)}
+  .k-bus{fill:var(--p-bus)}
+  .k-hotel{fill:var(--gold); stroke-width:3}
+  .ring{stroke:var(--kueste); fill:none; stroke-dasharray:5 7; stroke-width:1.2; opacity:.7}
+  .standort{fill:var(--akzent); stroke:#FFFFFF; stroke-width:2.5}
+  .standort-genauigkeit{stroke:var(--akzent); fill:var(--akzent); fill-opacity:.12; stroke-width:1}
+
+  .leaflet-popup-content-wrapper{border-radius:var(--radius-s)}
+  .leaflet-popup-content{margin:12px 14px; font-size:13.5px; line-height:1.5; min-width:220px}
+  .pop-art{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+           color:#6b7280; display:block; margin-bottom:2px}
+  .pop-name{font-weight:600; font-size:15px; display:block; margin-bottom:4px}
+  .pop-zeile{display:block; color:#374151}
+  .pop-zeiten{font-size:12px; color:#4b5563; margin-top:6px; max-height:8.5em; overflow:auto}
+  .pop-wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
+  .pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
+              border-radius:5px; border:1px solid #d1d5db; color:#111827; background:#fff}
+  .pop-wege a.haupt{background:#0E6E7D; border-color:#0E6E7D; color:#fff; font-weight:600}
+  .pop-stand{display:block; margin-top:8px; font-family:var(--mono); font-size:10px; color:#6b7280}
+
+  .standleiste{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center;
+               margin-top:var(--sp-xs); font-size:13px; color:var(--tinte-leise)}
+  .standwert{font-family:var(--mono); font-weight:600; color:var(--akzent-text)}
+
+  .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin:var(--sp-xl) 0 var(--sp-s)}
+  .zaehler{font-family:var(--mono); font-size:12px; color:var(--tinte-fein)}
+  .liste{list-style:none; margin:0; padding:0; display:grid;
+         grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); gap:var(--sp-2xs)}
+  .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
+         color:var(--tinte); border:1px solid var(--linie); border-radius:var(--radius-s);
+         padding:var(--sp-xs) var(--sp-s); display:grid;
+         grid-template-columns:auto minmax(0,1fr) auto; gap:var(--sp-s); align-items:center;
+         min-height:44px}
+  .zeile:hover{border-color:var(--linie-stark); background:var(--flaeche-2)}
+  .zname{font-weight:600; font-size:14px; line-height:1.25}
+  .zmeta{color:var(--tinte-leise); font-size:11.5px; font-family:var(--mono)}
+  .zdist{font-family:var(--mono); font-size:12px; color:var(--tinte-fein); text-align:right;
+         font-variant-numeric:tabular-nums; white-space:nowrap}
+</style>
+</head>
+<body>
+<a class="skip" href="#liste">Zur Liste springen</a>
+
+<nav class="leiste">
+  <div class="leiste-innen">
+    <a class="marke" href="index.html">Kreta 2026</a>
+    <div class="menue">
+      <a href="index.html">Übersicht</a>
+      <a href="hotel.html">Das Hotel</a>
+      <a href="karte.html">Vor Ort</a>
+      <button class="themaKnopf" type="button">Dunkel</button>
+    </div>
+  </div>
+</nav>
+
+<main class="huelle">
+  <p class="eyebrow">Vor Ort · Adelianos Kampos</p>
+  <h1>Was in der <em>Nähe</em> liegt</h1>
+  <p class="unterzeile">Lokale, Supermärkte und Bushaltestellen zwischen dem Hotel und
+    Rethymno, auf echtem Kartenmaterial. Umschaltbar auf Satellitenbild. Der Knopf
+    <strong>Mein Standort</strong> zeigt, wo du gerade bist, und rechnet die Entfernung live mit.</p>
+
+  <p class="warnkasten" id="warn"></p>
+
+  <div class="leiste2" id="artenLeiste"><span class="leiste-titel">Zeigen</span></div>
+  <div class="leiste2">
+    <span class="leiste-titel">Ausschnitt</span>
+    <button class="knopf" type="button" id="zHotel">Hotel</button>
+    <button class="knopf" type="button" id="zAlles">Alles</button>
+    <button class="knopf haupt" type="button" id="zStandort">Mein Standort</button>
+  </div>
+  <div class="standleiste" id="standleiste" hidden></div>
+
+  <div id="karte"></div>
+
+  <div class="listenkopf">
+    <h2 id="liste">Nach Entfernung</h2>
+    <span class="zaehler" id="zaehler"></span>
+  </div>
+  <ul class="liste" id="listeninhalt"></ul>
+</main>
+
+<footer class="fuss"><div class="huelle" id="fuss"></div></footer>
+
+<script src="vendor/leaflet.js"></script>
+<script src="daten.js"></script>
+<script src="gemein.js"></script>
+<script>
+(function () {
+  "use strict";
+  const D = window.DATEN;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const klasse = (art) => "k-" + art.toLowerCase().replace(/[^a-z]/g, "");
+
+  const HOTEL = D.hotel.koordinaten;
+
+  $("warn").innerHTML = "<span><strong>Stand der Ortsdaten: 14.06.2026.</strong> "
+    + "Öffnungszeiten, Bewertungen und Preisstufen stammen aus diesem Abruf und sind für "
+    + "Ende August <em>nicht</em> bestätigt. Deshalb steht hier bewusst kein "
+    + "„jetzt geöffnet“ — das wäre eine Juni-Angabe im Gewand einer aktuellen.</span>";
+
+  /* ---------- Karte ---------- */
+  const karte = L.map("karte", { scrollWheelZoom: true })
+    .setView([HOTEL.lat, HOTEL.lon], 15);
+
+  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende',
+  }).addTo(karte);
+
+  const satellit = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: "Luftbild: Esri, Maxar, Earthstar Geographics",
+    });
+
+  L.control.layers({ "Karte": osm, "Satellit": satellit }, null, { position: "topright" }).addTo(karte);
+  L.control.scale({ imperial: false, position: "bottomleft" }).addTo(karte);
+
+  // Entfernungsringe um das Hotel - echte Radien in Metern.
+  [500, 1000, 2000].forEach((m) =>
+    L.circle([HOTEL.lat, HOTEL.lon], { radius: m, className: "ring", interactive: false }).addTo(karte));
+
+  L.circleMarker([HOTEL.lat, HOTEL.lon], { radius: 11, className: "pin k-hotel" })
+    .bindPopup('<span class="pop-art">Unser Hotel</span><span class="pop-name">'
+      + esc(D.hotel.name) + '</span><span class="pop-zeile">' + esc(D.hotel.adresse)
+      + '</span><span class="pop-wege"><a href="hotel.html">Hotel im Detail</a></span>')
+    .addTo(karte);
+
+  /* ---------- Punkte ---------- */
+  const ARTEN = [...new Set(D.orte.map((o) => o.art))]
+    .sort((a, b) => (a === "Bus" ? 1 : b === "Bus" ? -1 : a.localeCompare(b, "de")));
+  const gruppen = {}, markerVon = new Map();
+  const an = new Set(ARTEN.filter((a) => a !== "Bus"));
+
+  function popup(o) {
+    const zielK = o.lat + "," + o.lon;
+    const teile = ['<span class="pop-art">' + esc(o.art) + "</span>",
+                   '<span class="pop-name">' + esc(o.name) + "</span>"];
+    const geh = Math.max(1, Math.round(o.m / 75));
+    teile.push('<span class="pop-zeile">' + o.m + " m vom Hotel · zu Fuß ~" + geh + " Min.</span>");
+    if (o.adresse) teile.push('<span class="pop-zeile">' + esc(o.adresse) + "</span>");
+    if (o.bew != null) teile.push('<span class="pop-zeile">Google ' + o.bew.toFixed(1) + " / 5"
+      + (o.anz ? " (" + o.anz + ")" : "") + (o.preis ? " · " + esc(o.preis) : "") + "</span>");
+    if (o.info) teile.push('<span class="pop-zeile">' + esc(o.info) + "</span>");
+    if (o.tel) teile.push('<span class="pop-zeile">' + esc(o.tel) + "</span>");
+    if (o.zeiten) teile.push('<div class="pop-zeiten">'
+      + o.zeiten.split(/;\s*/).map((z) => "<div>" + esc(z) + "</div>").join("") + "</div>");
+    teile.push('<div class="pop-wege">'
+      + '<a class="haupt" href="https://www.google.com/maps/dir/?api=1&destination=' + zielK
+      + '&travelmode=walking" target="_blank" rel="noopener">Route ab Standort</a>'
+      + '<a href="https://www.google.com/maps/dir/?api=1&origin=' + HOTEL.lat + "," + HOTEL.lon
+      + "&destination=" + zielK + '&travelmode=walking" target="_blank" rel="noopener">Ab Hotel</a>'
+      + (o.web ? '<a href="' + esc(o.web) + '" target="_blank" rel="noopener">Website</a>' : "")
+      + "</div>");
+    teile.push('<span class="pop-stand">' + (o.art === "Bus"
+      ? "OpenStreetMap, 2026-06-14" : "Google Places, 2026-06-14 — für Ende August nicht bestätigt")
+      + "</span>");
+    return teile.join("");
+  }
+
+  ARTEN.forEach((art) => { gruppen[art] = L.layerGroup(); });
+  D.orte.forEach((o) => {
+    const m = L.circleMarker([o.lat, o.lon], { radius: 7, className: "pin " + klasse(o.art) })
+      .bindPopup(() => popup(o), { maxWidth: 300 })
+      .bindTooltip(o.name, { direction: "top", offset: [0, -8] });
+    markerVon.set(o.id, m);
+    gruppen[o.art].addLayer(m);
+  });
+  ARTEN.forEach((art) => { if (an.has(art)) gruppen[art].addTo(karte); });
+
+  /* ---------- Filterleiste ---------- */
+  ARTEN.forEach((art) => {
+    const n = D.orte.filter((o) => o.art === art).length;
+    const b = document.createElement("button");
+    b.className = "knopf"; b.type = "button";
+    b.setAttribute("aria-pressed", String(an.has(art)));
+    b.innerHTML = '<span class="punkt" style="background:var(--p-'
+      + art.toLowerCase().replace(/[^a-z]/g, "") + ')"></span>' + esc(art)
+      + ' <span class="zahl">' + n + "</span>";
+    b.addEventListener("click", () => {
+      if (an.has(art)) { an.delete(art); karte.removeLayer(gruppen[art]); }
+      else { an.add(art); gruppen[art].addTo(karte); }
+      b.setAttribute("aria-pressed", String(an.has(art)));
+      listeZeichnen();
+    });
+    $("artenLeiste").appendChild(b);
+  });
+
+  /* ---------- Ausschnitt ---------- */
+  $("zHotel").addEventListener("click", () => karte.setView([HOTEL.lat, HOTEL.lon], 16));
+  $("zAlles").addEventListener("click", () => {
+    const punkte = D.orte.filter((o) => an.has(o.art)).map((o) => [o.lat, o.lon]);
+    punkte.push([HOTEL.lat, HOTEL.lon]);
+    karte.fitBounds(L.latLngBounds(punkte), { padding: [30, 30] });
+  });
+
+  /* ---------- Mein Standort ---------- */
+  // Braucht HTTPS. Auf GitHub Pages gegeben; als lokale Datei per file:// meist nicht.
+  let ichMarker = null, ichKreis = null;
+  const knopfStand = $("zStandort");
+  knopfStand.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      melde("Dieser Browser gibt keinen Standort heraus.");
+      return;
+    }
+    knopfStand.textContent = "Suche Standort …";
+    karte.locate({ setView: true, maxZoom: 17, enableHighAccuracy: true, watch: true, timeout: 15000 });
+  });
+  function melde(text, wert) {
+    const l = $("standleiste");
+    l.hidden = false;
+    l.innerHTML = wert ? esc(text) + ' <span class="standwert">' + esc(wert) + "</span>"
+                       : esc(text);
+  }
+  karte.on("locationfound", (e) => {
+    knopfStand.textContent = "Mein Standort";
+    if (ichMarker) { karte.removeLayer(ichMarker); karte.removeLayer(ichKreis); }
+    ichKreis = L.circle(e.latlng, { radius: e.accuracy, className: "standort-genauigkeit",
+                                    interactive: false }).addTo(karte);
+    ichMarker = L.circleMarker(e.latlng, { radius: 8, className: "standort" })
+      .bindPopup("Hier bist du gerade").addTo(karte);
+    const zumHotel = Math.round(e.latlng.distanceTo(L.latLng(HOTEL.lat, HOTEL.lon)));
+    const naechste = D.orte.filter((o) => an.has(o.art))
+      .map((o) => ({ o, d: Math.round(e.latlng.distanceTo(L.latLng(o.lat, o.lon))) }))
+      .sort((a, b) => a.d - b.d)[0];
+    melde("Zum Hotel " + (zumHotel >= 1000 ? (zumHotel / 1000).toFixed(1) + " km" : zumHotel + " m")
+      + (naechste ? " · Nächstes: " + naechste.o.name + " (" + naechste.d + " m)" : "")
+      + " · Genauigkeit ±" + Math.round(e.accuracy) + " m", "");
+  });
+  karte.on("locationerror", (e) => {
+    knopfStand.textContent = "Mein Standort";
+    melde("Standort nicht verfügbar: " + e.message
+      + " — auf dem Handy die Ortungsfreigabe für den Browser prüfen.");
+  });
+
+  /* ---------- Liste ---------- */
+  function listeZeichnen() {
+    const sichtbar = D.orte.filter((o) => an.has(o.art)).sort((a, b) => a.m - b.m);
+    $("zaehler").textContent = sichtbar.length + " von " + D.orte.length + " Orten · Stand 2026-06-14";
+    $("listeninhalt").innerHTML = sichtbar.map((o) => {
+      const meta = [o.typ && o.typ !== o.art ? o.typ : o.art,
+                    o.bew != null ? o.bew.toFixed(1) + "★" : null, o.preis || null]
+        .filter(Boolean).join(" · ");
+      return '<li><button class="zeile" type="button" data-id="' + o.id + '">'
+        + '<span class="punkt" style="background:var(--p-'
+        + o.art.toLowerCase().replace(/[^a-z]/g, "") + ')"></span>'
+        + '<span><span class="zname">' + esc(o.name) + '</span><br>'
+        + '<span class="zmeta">' + esc(meta) + "</span></span>"
+        + '<span class="zdist">' + o.m + " m</span></button></li>";
+    }).join("");
+  }
+  $("listeninhalt").addEventListener("click", (e) => {
+    const b = e.target.closest(".zeile");
+    if (!b) return;
+    const o = D.orte.find((x) => x.id === b.dataset.id);
+    const m = markerVon.get(b.dataset.id);
+    if (!o || !m) return;
+    karte.setView([o.lat, o.lon], Math.max(karte.getZoom(), 16));
+    m.openPopup();
+    $("karte").scrollIntoView({ block: "nearest",
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
+  listeZeichnen();
+
+  $("fuss").innerHTML =
+    "<p>Kartenmaterial: &copy; OpenStreetMap-Mitwirkende (ODbL) · Luftbild: Esri, Maxar, "
+    + "Earthstar Geographics. Lokale und Supermärkte: " + esc(D.quellen.lokale)
+    + ". Bushaltestellen: " + esc(D.quellen.haltestellen) + ".</p>"
+    + "<p>Entfernungen sind Luftlinie vom Hotel, gerundet auf ganze Meter; die Gehzeit ist "
+    + "daraus mit 4,5 km/h gerechnet — eine Schätzung, kein gemessener Weg. Der eigene "
+    + "Standort wird nur im Browser verarbeitet und nirgends gespeichert oder gesendet.</p>";
+})();
+</script>
+</body>
+</html>
