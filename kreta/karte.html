@@ -8,40 +8,47 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="stil.css">
 <style>
   .warnkasten{display:flex; gap:var(--sp-s); margin:var(--sp-m) 0; padding:var(--sp-s) var(--sp-m);
-              background:var(--warn-bg); color:var(--warn); border-left:3px solid var(--warn);
-              border-radius:var(--radius-s); font-size:13.5px}
+              background:var(--warn-bg); color:var(--warn); border-left:6px solid var(--warn);
+              font-size:13.5px}
   .leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center; margin-bottom:var(--sp-s)}
-  .leiste-titel{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+  .leiste-titel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
                 text-transform:uppercase; color:var(--tinte-fein); margin-right:var(--sp-2xs)}
 
-  #karte{height:clamp(380px,62vh,680px); border:1px solid var(--linie-stark);
-         border-radius:var(--radius); background:var(--flaeche-2); z-index:0}
+  #karte{height:clamp(380px,62vh,680px); border:var(--rand) solid var(--umriss);
+         background:var(--flaeche-2); z-index:0}
   .leaflet-container{font-family:var(--sans); background:var(--flaeche-2)}
   .leaflet-control-attribution{font-size:10.5px}
 
-  /* Markerfarben ueber CSS, nicht ueber Leaflet-Optionen: so ziehen sie beim
-     Themenwechsel automatisch mit, und Attribute verlieren gegen Stylesheet. */
-  .pin{stroke:#FFFFFF; stroke-width:1.6; fill-opacity:1}
-  :root[data-theme="dark"] .pin, :root:not([data-theme="light"]) .pin{stroke:#12242C}
-  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .pin{stroke:#FFFFFF} }
-  .k-restaurant{fill:var(--p-restaurant)} .k-imbiss{fill:var(--p-imbiss)}
-  .k-cafe{fill:var(--p-cafe)}             .k-baeckerei{fill:var(--p-baeckerei)}
-  .k-bar{fill:var(--p-bar)}               .k-strandbar{fill:var(--p-strandbar)}
-  .k-strand{fill:var(--p-strand)}         .k-supermarkt{fill:var(--p-supermarkt)}
-  .k-bus{fill:var(--p-bus)}
-  .k-hotel{fill:var(--gold); stroke-width:3}
-  .ring{stroke:var(--kueste); fill:none; stroke-dasharray:5 7; stroke-width:1.2; opacity:.7}
-  .standort{fill:var(--akzent); stroke:#FFFFFF; stroke-width:2.5}
-  .standort-genauigkeit{stroke:var(--akzent); fill:var(--akzent); fill-opacity:.12; stroke-width:1}
+  /* Pixelquadrate statt Kreise. Als divIcon sind die Marken normale
+     HTML-Elemente und gehorchen demselben Stylesheet wie der Rest der Seite -
+     inklusive Themenwechsel und hartem Schlagschatten. */
+  /* Der Umriss liegt als box-shadow AUSSEN, nicht als border innen: bei 15 px
+     Kantenlaenge frisst ein 3-px-Rahmen zwei Drittel der Farbflaeche, und die
+     Marke wirkt schwarz statt farbig. So bleiben volle 14 px Farbe. */
+  /* display:block ist Pflicht: <i> ist inline und ignoriert width/height -
+     die Marke faellt dann auf null zusammen und man sieht nur den Umriss-Ring. */
+  .pixpin{display:block; width:14px; height:14px; image-rendering:pixelated;
+          box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.3)}
+  .pixpin.gross{width:22px; height:22px;
+                box-shadow:0 0 0 3px var(--umriss), 5px 5px 0 rgba(0,0,0,.38)}
+  .k-restaurant{background:var(--p-restaurant)} .k-imbiss{background:var(--p-imbiss)}
+  .k-cafe{background:var(--p-cafe)}             .k-baeckerei{background:var(--p-baeckerei)}
+  .k-bar{background:var(--p-bar)}               .k-strandbar{background:var(--p-strandbar)}
+  .k-strand{background:var(--p-strand)}         .k-supermarkt{background:var(--p-supermarkt)}
+  .k-bus{background:var(--p-bus)}
+  .k-hotel{background:var(--sonne-flaeche); border-color:var(--umriss)}
+  .k-ich{background:var(--akzent)}
+  .ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.55}
+  .standort-genauigkeit{stroke:var(--akzent); fill:var(--akzent); fill-opacity:.14; stroke-width:2}
 
-  .leaflet-popup-content-wrapper{border-radius:var(--radius-s)}
+  .leaflet-popup-content-wrapper{}
   .leaflet-popup-content{margin:12px 14px; font-size:13.5px; line-height:1.5; min-width:220px}
-  .pop-art{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  .pop-art{font-family:var(--zahl); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
            color:#6b7280; display:block; margin-bottom:2px}
   .pop-name{font-weight:600; font-size:15px; display:block; margin-bottom:4px}
   .pop-zeile{display:block; color:#374151}
@@ -50,25 +57,24 @@
   .pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
               border-radius:5px; border:1px solid #d1d5db; color:#111827; background:#fff}
   .pop-wege a.haupt{background:#0E6E7D; border-color:#0E6E7D; color:#fff; font-weight:600}
-  .pop-stand{display:block; margin-top:8px; font-family:var(--mono); font-size:10px; color:#6b7280}
+  .pop-stand{display:block; margin-top:8px; font-family:var(--zahl); font-size:10px; color:#6b7280}
 
   .standleiste{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center;
                margin-top:var(--sp-xs); font-size:13px; color:var(--tinte-leise)}
-  .standwert{font-family:var(--mono); font-weight:600; color:var(--akzent-text)}
+  .standwert{font-family:var(--zahl); font-weight:600; color:var(--akzent-text)}
 
   .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin:var(--sp-xl) 0 var(--sp-s)}
-  .zaehler{font-family:var(--mono); font-size:12px; color:var(--tinte-fein)}
+  .zaehler{font-family:var(--zahl); font-size:12px; color:var(--tinte-fein)}
   .liste{list-style:none; margin:0; padding:0; display:grid;
          grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); gap:var(--sp-2xs)}
   .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
-         color:var(--tinte); border:1px solid var(--linie); border-radius:var(--radius-s);
-         padding:var(--sp-xs) var(--sp-s); display:grid;
+         color:var(--tinte); border:var(--rand) solid var(--umriss); padding:var(--sp-xs) var(--sp-s); display:grid;
          grid-template-columns:auto minmax(0,1fr) auto; gap:var(--sp-s); align-items:center;
          min-height:44px}
   .zeile:hover{border-color:var(--linie-stark); background:var(--flaeche-2)}
   .zname{font-weight:600; font-size:14px; line-height:1.25}
-  .zmeta{color:var(--tinte-leise); font-size:11.5px; font-family:var(--mono)}
-  .zdist{font-family:var(--mono); font-size:12px; color:var(--tinte-fein); text-align:right;
+  .zmeta{color:var(--tinte-leise); font-size:11.5px; font-family:var(--zahl)}
+  .zdist{font-family:var(--zahl); font-size:12px; color:var(--tinte-fein); text-align:right;
          font-variant-numeric:tabular-nums; white-space:nowrap}
 </style>
 </head>
@@ -157,7 +163,13 @@
   [500, 1000, 2000].forEach((m) =>
     L.circle([HOTEL.lat, HOTEL.lon], { radius: m, className: "ring", interactive: false }).addTo(karte));
 
-  L.circleMarker([HOTEL.lat, HOTEL.lon], { radius: 11, className: "pin k-hotel" })
+  const quadrat = (kl, gr) => L.divIcon({
+    className: "", html: '<i class="pixpin ' + kl + (gr ? " gross" : "") + '"></i>',
+    iconSize: gr ? [23, 23] : [15, 15], iconAnchor: gr ? [11, 11] : [7, 7],
+    popupAnchor: [0, gr ? -13 : -9],
+  });
+
+  L.marker([HOTEL.lat, HOTEL.lon], { icon: quadrat("k-hotel", true), zIndexOffset: 500 })
     .bindPopup('<span class="pop-art">Unser Hotel</span><span class="pop-name">'
       + esc(D.hotel.name) + '</span><span class="pop-zeile">' + esc(D.hotel.adresse)
       + '</span><span class="pop-wege"><a href="hotel.html">Hotel im Detail</a></span>')
@@ -197,7 +209,7 @@
 
   ARTEN.forEach((art) => { gruppen[art] = L.layerGroup(); });
   D.orte.forEach((o) => {
-    const m = L.circleMarker([o.lat, o.lon], { radius: 7, className: "pin " + klasse(o.art) })
+    const m = L.marker([o.lat, o.lon], { icon: quadrat(klasse(o.art), false) })
       .bindPopup(() => popup(o), { maxWidth: 300 })
       .bindTooltip(o.name, { direction: "top", offset: [0, -8] });
     markerVon.set(o.id, m);
@@ -254,7 +266,7 @@
     if (ichMarker) { karte.removeLayer(ichMarker); karte.removeLayer(ichKreis); }
     ichKreis = L.circle(e.latlng, { radius: e.accuracy, className: "standort-genauigkeit",
                                     interactive: false }).addTo(karte);
-    ichMarker = L.circleMarker(e.latlng, { radius: 8, className: "standort" })
+    ichMarker = L.marker(e.latlng, { icon: quadrat("k-ich", true), zIndexOffset: 900 })
       .bindPopup("Hier bist du gerade").addTo(karte);
     const zumHotel = Math.round(e.latlng.distanceTo(L.latLng(HOTEL.lat, HOTEL.lon)));
     const naechste = D.orte.filter((o) => an.has(o.art))

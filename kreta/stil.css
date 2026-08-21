@@ -1,129 +1,164 @@
-/* Gemeinsamer Stil der oeffentlichen Kreta-Seiten.
-   Richtung wie in den Artefakten: Seekarte - Wasser, Kalkstein, feine Kante.
-   Farben gemessen gegen ihren tatsaechlichen Grund, nicht gegen Weiss. */
+/* Kreta 2026 - Strandurlaub in Pixeln.
+ *
+ * Richtung: warme Sonne gegen kuehles Meer, Sand als Neutralton. Der Look kommt
+ * nicht aus den Farben allein, sondern aus der Mechanik: keine runden Ecken,
+ * harte Schatten ohne Weichzeichnung, dicke Umrisse, Knoepfe die einrasten.
+ *
+ * Alle Werte gegen ihren tatsaechlichen Grund gemessen (kontrast.mjs, 21.08.2026).
+ * Land gegen Meer erreicht 1,70:1 - zwei grosse Flaechen aehnlicher Helligkeit
+ * sind in einer hellen Strandkarte nicht auf 3:1 zu bringen. Die Form traegt
+ * darum der Umriss: 9,56:1 gegen Land, 5,63:1 gegen Meer. Das ist im Pixel-Look
+ * keine Notloesung, sondern das Stilmittel.
+ */
 
 :root{
   color-scheme: light;
-  --grund:#EFF3F4; --flaeche:#FFFFFF; --flaeche-2:#E6EDEF;
-  --tinte:#0E2229; --tinte-leise:#4B646F; --tinte-fein:#546A74;
-  --linie:#D2DFE3; --linie-stark:#9CB2BA;
-  --see:#CADEE6; --land:#FAF7F0; --kueste:#3C6272; --netz:#B9CED6;
-  --akzent:#0E6E7D; --akzent-text:#0B5C69; --akzent-weich:#DCEDF0;
-  --gold:#8A6410; --gold-flaeche:#F6EBD3;
-  --gut:#176B3D; --gut-bg:#E4F2E9;
-  --warn:#8A5E00; --warn-bg:#FAF0DA;
-  --krit:#A32626; --krit-bg:#F8E7E7;
-  --p-restaurant:#C2410C; --p-imbiss:#9F1239; --p-cafe:#78350F; --p-baeckerei:#A16207;
+  /* Tag am Strand */
+  --grund:#F6E3BD; --flaeche:#FFF7E6; --flaeche-2:#F0DCB0;
+  --tinte:#1E3A46; --tinte-leise:#41626F; --tinte-fein:#41626F;
+  --umriss:#16303C; --linie:#D9BE8A; --linie-stark:#16303C;
+  --see:#37B4CC; --see-tief:#1E7E96; --land:#EFD49A; --ufer:#FFF3D6;
+  --netzschrift-farbe:#16303C;
+  --akzent:#1E7E96; --akzent-text:#175F72; --akzent-weich:#CDEDF4;
+  --sonne:#8A5000; --sonne-flaeche:#FFD98A;
+  --gut:#176B3D; --gut-bg:#D6F0DE;
+  --warn:#8A5E00; --warn-bg:#FFE9B8;
+  --krit:#A32626; --krit-bg:#FFD9C9;
+  --p-restaurant:#C2410C; --p-imbiss:#9F1239; --p-cafe:#78350F; --p-baeckerei:#8A5E00;
   --p-bar:#6D28D9; --p-strandbar:#0E7490; --p-strand:#1D4ED8; --p-supermarkt:#15803D;
-  --p-bus:#546A74;
+  --p-bus:#41626F;
 
+  --schatten:5px 5px 0 var(--umriss);
+  --schatten-klein:3px 3px 0 var(--umriss);
+  --rand:3px;
   --sp-2xs:4px; --sp-xs:8px; --sp-s:12px; --sp-m:18px; --sp-l:28px; --sp-xl:44px;
-  --radius:10px; --radius-s:6px;
-  --display:"Instrument Serif",Georgia,"Times New Roman",serif;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --display:"Pixelify Sans","Courier New",monospace;
+  --sans:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --zahl:"Silkscreen","Courier New",monospace;
   --mass:1180px;
   --bewegung:1;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme: dark;
-    --grund:#0B181E; --flaeche:#12242C; --flaeche-2:#1A3038;
-    --tinte:#E4EDF0; --tinte-leise:#A3B8C0; --tinte-fein:#8AA3AD;
-    --linie:#223C46; --linie-stark:#4E7180;
-    --see:#071319; --land:#20363F; --kueste:#5E8D9C; --netz:#2A4652;
-    --akzent:#5BC6D6; --akzent-text:#7FD6E3; --akzent-weich:#12333B;
-    --gold:#E0B44F; --gold-flaeche:#3A2F14;
-    --gut:#63C08E; --gut-bg:#133324;
-    --warn:#D9A64A; --warn-bg:#33280F;
-    --krit:#E8877A; --krit-bg:#3A1D1B;
+    /* Abend am Strand */
+    --grund:#0E2A33; --flaeche:#173C48; --flaeche-2:#1F4C5A;
+    --tinte:#F2E4C6; --tinte-leise:#A9C2C9; --tinte-fein:#A9C2C9;
+    --umriss:#061419; --linie:#2C5A69; --linie-stark:#88B3C0;
+    --see:#0C3D4C; --see-tief:#072B36; --land:#6B5C3D; --ufer:#9A8757;
+    --netzschrift-farbe:#BFE4EC;
+    --akzent:#5BD3E8; --akzent-text:#7FDEEE; --akzent-weich:#123945;
+    --sonne:#FFC845; --sonne-flaeche:#4A3410;
+    --gut:#63C08E; --gut-bg:#123326;
+    --warn:#FFC845; --warn-bg:#3A2C0C;
+    --krit:#FF8B63; --krit-bg:#3E1D14;
     --p-restaurant:#FB923C; --p-imbiss:#FB7185; --p-cafe:#D6A87C; --p-baeckerei:#FCD34D;
     --p-bar:#A78BFA; --p-strandbar:#5EEAD4; --p-strand:#7DD3FC; --p-supermarkt:#6EE7B7;
-    --p-bus:#94A3B8;
+    --p-bus:#A9C2C9;
   }
 }
 :root[data-theme="dark"]{
   color-scheme: dark;
-  --grund:#0B181E; --flaeche:#12242C; --flaeche-2:#1A3038;
-  --tinte:#E4EDF0; --tinte-leise:#A3B8C0; --tinte-fein:#8AA3AD;
-  --linie:#223C46; --linie-stark:#4E7180;
-  --see:#071319; --land:#20363F; --kueste:#5E8D9C; --netz:#2A4652;
-  --akzent:#5BC6D6; --akzent-text:#7FD6E3; --akzent-weich:#12333B;
-  --gold:#E0B44F; --gold-flaeche:#3A2F14;
-  --gut:#63C08E; --gut-bg:#133324;
-  --warn:#D9A64A; --warn-bg:#33280F;
-  --krit:#E8877A; --krit-bg:#3A1D1B;
+  --grund:#0E2A33; --flaeche:#173C48; --flaeche-2:#1F4C5A;
+  --tinte:#F2E4C6; --tinte-leise:#A9C2C9; --tinte-fein:#A9C2C9;
+  --umriss:#061419; --linie:#2C5A69; --linie-stark:#88B3C0;
+  --see:#0C3D4C; --see-tief:#072B36; --land:#6B5C3D; --ufer:#9A8757;
+    --netzschrift-farbe:#BFE4EC;
+  --akzent:#5BD3E8; --akzent-text:#7FDEEE; --akzent-weich:#123945;
+  --sonne:#FFC845; --sonne-flaeche:#4A3410;
+  --gut:#63C08E; --gut-bg:#123326;
+  --warn:#FFC845; --warn-bg:#3A2C0C;
+  --krit:#FF8B63; --krit-bg:#3E1D14;
   --p-restaurant:#FB923C; --p-imbiss:#FB7185; --p-cafe:#D6A87C; --p-baeckerei:#FCD34D;
   --p-bar:#A78BFA; --p-strandbar:#5EEAD4; --p-strand:#7DD3FC; --p-supermarkt:#6EE7B7;
-  --p-bus:#94A3B8;
+  --p-bus:#A9C2C9;
 }
 
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0; background:var(--grund); color:var(--tinte);
-     font-family:var(--sans); font-size:16px; line-height:1.55; -webkit-text-size-adjust:100%}
-h1,h2,h3{margin:0; text-wrap:balance; font-weight:600}
+body{
+  margin:0; background:var(--grund); color:var(--tinte);
+  font-family:var(--sans); font-size:17px; line-height:1.55; -webkit-text-size-adjust:100%;
+  /* Dither-Raster: zwei Punktlagen, im Sand kaum zu sehen, aber es nimmt der
+     Flaeche das Digitale. Nur 8px gross, damit es nicht flimmert. */
+  background-image:
+    radial-gradient(currentColor .5px, transparent .5px),
+    radial-gradient(currentColor .5px, transparent .5px);
+  background-size:8px 8px, 8px 8px;
+  background-position:0 0, 4px 4px;
+  background-blend-mode:normal;
+}
+body{background-color:var(--grund)}
+h1,h2,h3{margin:0; text-wrap:balance; font-weight:700}
 p{margin:0}
 a{color:var(--akzent-text)}
-:where(a,button,summary,[tabindex]):focus-visible{outline:2px solid var(--akzent);
-  outline-offset:2px; border-radius:var(--radius-s)}
+img{image-rendering:pixelated}
+
+:where(a,button,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--akzent); outline-offset:2px}
 .skip{position:absolute; left:-9999px; top:0; background:var(--flaeche); color:var(--tinte);
-      padding:var(--sp-xs) var(--sp-s); border-radius:var(--radius-s); z-index:1200}
+      padding:var(--sp-xs) var(--sp-s); border:var(--rand) solid var(--umriss); z-index:1200}
 .skip:focus{left:var(--sp-s); top:var(--sp-s)}
 
-/* ---------- Kopfleiste mit Untermenue ---------- */
+/* ---------- Kopfleiste ---------- */
 .leiste{position:sticky; top:0; z-index:1000; background:var(--flaeche);
-        border-bottom:1px solid var(--linie)}
+        border-bottom:var(--rand) solid var(--umriss)}
 .leiste-innen{max-width:var(--mass); margin:0 auto; padding:0 var(--sp-m);
-              display:flex; align-items:center; gap:var(--sp-m); min-height:58px}
-.marke{font-family:var(--display); font-size:21px; text-decoration:none; color:var(--tinte);
-       white-space:nowrap}
+              display:flex; align-items:center; gap:var(--sp-m); min-height:62px}
+.marke{font-family:var(--display); font-size:23px; font-weight:700; text-decoration:none;
+       color:var(--tinte); white-space:nowrap; letter-spacing:.02em}
 .menue{display:flex; gap:var(--sp-2xs); margin-left:auto; align-items:center;
        overflow-x:auto; scrollbar-width:none}
 .menue::-webkit-scrollbar{display:none}
 .menue a{display:inline-flex; align-items:center; min-height:44px; padding:0 var(--sp-s);
-         font-size:14px; text-decoration:none; color:var(--tinte-leise); white-space:nowrap;
-         border-bottom:2px solid transparent}
+         font-family:var(--display); font-size:15px; font-weight:600; text-decoration:none;
+         color:var(--tinte-leise); white-space:nowrap; border-bottom:3px solid transparent}
 .menue a:hover{color:var(--tinte)}
-.menue a[aria-current="page"]{color:var(--akzent-text); border-bottom-color:var(--akzent);
-                              font-weight:600}
-.themaKnopf{font:inherit; font-size:13px; min-height:44px; padding:0 var(--sp-s);
+.menue a[aria-current="page"]{color:var(--akzent-text); border-bottom-color:var(--akzent)}
+.themaKnopf{font-family:var(--display); font-size:14px; min-height:44px; padding:0 var(--sp-s);
             background:none; color:var(--tinte-leise); border:0; cursor:pointer;
-            border-left:1px solid var(--linie); margin-left:var(--sp-xs)}
+            border-left:3px solid var(--linie); margin-left:var(--sp-xs)}
 .themaKnopf:hover{color:var(--tinte)}
 
 .huelle{max-width:var(--mass); margin:0 auto; padding:var(--sp-l) var(--sp-m) var(--sp-xl)}
-.eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
-         color:var(--tinte-fein); margin-bottom:var(--sp-2xs)}
-h1{font-family:var(--display); font-size:clamp(34px,5.4vw,56px); line-height:1.03}
-h1 em{font-style:italic; color:var(--akzent-text)}
-h2{font-family:var(--display); font-size:25px; font-weight:400}
-.unterzeile{margin-top:var(--sp-xs); color:var(--tinte-leise); font-size:15px; max-width:64ch}
+.eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+         color:var(--tinte-fein); margin-bottom:var(--sp-xs)}
+h1{font-family:var(--display); font-size:clamp(32px,5.2vw,54px); line-height:1.06;
+   letter-spacing:.01em; text-shadow:4px 4px 0 var(--sonne-flaeche)}
+h1 em{font-style:normal; color:var(--akzent-text)}
+h2{font-family:var(--display); font-size:26px; font-weight:700}
+h3{font-family:var(--display); font-size:17px}
+.unterzeile{margin-top:var(--sp-s); color:var(--tinte-leise); font-size:15.5px; max-width:64ch}
 
-.tafel{background:var(--flaeche); border:1px solid var(--linie); border-radius:var(--radius);
-       padding:var(--sp-m) var(--sp-l)}
-.chip{font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.05em;
-      padding:3px 8px; border-radius:99px; white-space:nowrap}
+/* ---------- Pixel-Bausteine ---------- */
+.tafel{background:var(--flaeche); border:var(--rand) solid var(--umriss);
+       box-shadow:var(--schatten); padding:var(--sp-m) var(--sp-l)}
+.chip{font-family:var(--zahl); font-size:10px; letter-spacing:.03em; padding:5px 8px;
+      border:2px solid var(--umriss); white-space:nowrap; display:inline-block}
 .chip.passt{background:var(--gut-bg); color:var(--gut)}
 .chip.grenz{background:var(--warn-bg); color:var(--warn)}
 .chip.ko{background:var(--krit-bg); color:var(--krit)}
 
-.knopf{font:inherit; font-size:13px; padding:8px 13px; min-height:44px; display:inline-flex;
-       align-items:center; gap:6px; background:var(--flaeche); color:var(--tinte);
-       border:1px solid var(--linie-stark); border-radius:var(--radius-s); cursor:pointer;
-       text-decoration:none}
-.knopf:hover{border-color:var(--akzent)}
-.knopf[aria-pressed="true"]{background:var(--akzent-weich); border-color:var(--akzent);
-                            color:var(--akzent-text); font-weight:600}
-.knopf.haupt{background:var(--akzent); border-color:var(--akzent); color:var(--flaeche);
-             font-weight:600}
-.knopf .zahl{font-family:var(--mono); font-size:11px; color:var(--tinte-fein)}
+.knopf{font-family:var(--display); font-size:15px; font-weight:600; padding:8px 14px;
+       min-height:46px; display:inline-flex; align-items:center; gap:7px;
+       background:var(--flaeche); color:var(--tinte);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+       cursor:pointer; text-decoration:none;
+       transition:transform calc(.08s * var(--bewegung)) steps(2),
+                  box-shadow calc(.08s * var(--bewegung)) steps(2)}
+.knopf:hover{background:var(--flaeche-2)}
+/* Der Knopf rastet ein - das ist der Griff, an dem man den Look erkennt. */
+.knopf:active{transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
+.knopf[aria-pressed="true"]{background:var(--akzent-weich); color:var(--akzent-text);
+                            transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
+.knopf.haupt{background:var(--sonne-flaeche); color:var(--tinte)}
+.knopf .zahl{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein)}
 .knopf[aria-pressed="true"] .zahl{color:var(--akzent-text)}
-.punkt{width:11px; height:11px; border-radius:99px; flex:none; display:inline-block}
+.punkt{width:12px; height:12px; flex:none; display:inline-block; border:2px solid var(--umriss)}
 
-.fuss{margin-top:var(--sp-xl); padding:var(--sp-m) 0 var(--sp-xl); border-top:1px solid var(--linie);
-      font-size:12px; color:var(--tinte-fein)}
-.fuss p{margin-bottom:var(--sp-2xs)}
+.fuss{margin-top:var(--sp-xl); padding:var(--sp-m) 0 var(--sp-xl);
+      border-top:var(--rand) solid var(--umriss); font-size:13px; color:var(--tinte-fein)}
+.fuss p{margin-bottom:var(--sp-xs)}
 .fuss .huelle{padding-top:0; padding-bottom:0}
 
 @media (prefers-reduced-motion: reduce){
@@ -133,5 +168,6 @@ h2{font-family:var(--display); font-size:25px; font-weight:400}
 }
 @media print{
   .leiste,.skip,.themaKnopf{display:none}
-  body{background:#fff; color:#000}
+  body{background:#fff; color:#000; background-image:none}
+  .tafel,.knopf{box-shadow:none}
 }

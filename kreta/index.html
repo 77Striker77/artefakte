@@ -8,41 +8,55 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="stil.css">
 <style>
-  .karte-rahmen{background:var(--see); border:1px solid var(--linie-stark);
-                border-radius:var(--radius); overflow:hidden}
+  .karte-rahmen{background:var(--see); border:var(--rand) solid var(--umriss);
+                overflow:hidden}
   .karte-rahmen svg{display:block; width:100%; height:auto}
-  .netzlinie{stroke:var(--netz); stroke-width:.8; stroke-dasharray:3 5; fill:none}
-  .netzschrift{font-family:var(--mono); fill:var(--kueste); letter-spacing:.06em;
-               paint-order:stroke; stroke:var(--see); stroke-width:2.5; stroke-linejoin:round}
-  .insel{fill:var(--land); stroke:var(--kueste); stroke-width:1.3; stroke-linejoin:round}
-  .leitlinie{stroke:var(--linie-stark); stroke-width:.9}
-  .echt{fill:var(--kueste)}
-  .marke circle{fill:var(--flaeche); stroke:var(--linie-stark); stroke-width:1.4}
-  .marke text{font-family:var(--mono); font-size:12px; font-weight:600; fill:var(--tinte);
+  .netzlinie{stroke:var(--see-tief); stroke-width:1; stroke-dasharray:2 6; fill:none; opacity:.5}
+  /* Im Hellen steht die Beschriftung dunkel auf hellem Meer, im Dunklen hell auf
+     dunklem - ein fester Wert waere in einem der beiden Themes unlesbar. */
+  .netzschrift{font-family:var(--zahl); fill:var(--netzschrift-farbe); letter-spacing:.04em;
+               paint-order:stroke; stroke:var(--see); stroke-width:3; stroke-linejoin:round}
+  /* Die Insel ist ein Gitter: dunkles Band aussen, heller Sandsaum, tieferer
+     Sand innen. Kein shape-rendering:crispEdges noetig - die Kanten liegen
+     ohnehin auf ganzen Einheiten. */
+  /* crispEdges ist hier Pflicht, nicht Geschmack: die Zeilen-Rechtecke landen
+     beim Skalieren auf gebrochenen Geraetepixeln, und der Browser zeichnet
+     dazwischen Haarfugen. Im Bild sah die Insel dadurch waagerecht gestreift aus -
+     keine Textpruefung haette das gefunden. */
+  .z-umriss,.z-ufer,.z-innen{shape-rendering:crispEdges}
+  .z-umriss{fill:var(--umriss)}
+  .z-ufer{fill:var(--ufer)}
+  .z-innen{fill:var(--land)}
+  .leitlinie{stroke:var(--umriss); stroke-width:2}
+  .echt{fill:var(--umriss)}
+  .marke rect{fill:var(--flaeche); stroke:var(--umriss); stroke-width:3}
+  .marke .schlag{fill:var(--umriss)}
+  .marke text{font-family:var(--zahl); font-size:11px; fill:var(--tinte);
               text-anchor:middle; dominant-baseline:central}
-  .marke.sieger circle{fill:var(--gold-flaeche); stroke:var(--gold); stroke-width:2}
-  .marke.sieger text{fill:var(--gold)}
+  .marke.sieger rect{fill:var(--sonne-flaeche)}
+  .marke.sieger text{fill:var(--umriss)}
   .marke,.leitlinie,.echt{transition:opacity calc(.18s * var(--bewegung)) ease}
   .karte-rahmen.fokus .marke:not(.aktiv),
   .karte-rahmen.fokus .leitlinie:not(.aktiv),
   .karte-rahmen.fokus .echt:not(.aktiv){opacity:.28}
-  .marke.aktiv circle{stroke:var(--akzent); stroke-width:2.6; fill:var(--akzent-weich)}
+  .marke.aktiv rect{fill:var(--akzent-weich)}
   .marke.aktiv text{fill:var(--akzent-text)}
-  .massstab line{stroke:var(--kueste); stroke-width:1.2}
-  .massschrift{font-family:var(--mono); fill:var(--kueste)}
+  .massstab line{stroke:var(--umriss); stroke-width:2.5}
+  .massschrift{font-family:var(--zahl); fill:var(--umriss); paint-order:stroke;
+               stroke:var(--see); stroke-width:3; stroke-linejoin:round}
 
   .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
               justify-content:space-between; margin:var(--sp-xs) 0 var(--sp-xl);
-              font-size:11.5px; color:var(--tinte-fein); font-family:var(--mono)}
+              font-size:11.5px; color:var(--tinte-fein); font-family:var(--zahl)}
   .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin-bottom:var(--sp-s)}
-  .zaehler{font-family:var(--mono); font-size:12px; color:var(--tinte-fein)}
+  .zaehler{font-family:var(--zahl); font-size:12px; color:var(--tinte-fein)}
   .liste{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-2xs)}
   .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
-         color:var(--tinte); border:1px solid var(--linie); border-left:3px solid transparent;
-         border-radius:var(--radius-s); padding:var(--sp-s) var(--sp-m);
+         color:var(--tinte); border:var(--rand) solid var(--umriss); border-left:6px solid transparent;
+         padding:var(--sp-s) var(--sp-m);
          display:grid; gap:var(--sp-2xs) var(--sp-m);
          grid-template-columns:2.2rem minmax(0,1fr) auto; align-items:center;
          transition:border-color calc(.16s * var(--bewegung)) ease,
@@ -50,24 +64,24 @@
   .zeile:hover{border-color:var(--linie-stark); background:var(--flaeche-2)}
   .zeile[aria-pressed="true"]{border-color:var(--akzent); border-left-color:var(--akzent);
                               background:var(--akzent-weich)}
-  .zeile.sieger{border-left-color:var(--gold)}
-  .rang{font-family:var(--mono); font-size:19px; font-weight:600; color:var(--tinte-fein);
+  .zeile.sieger{border-left-color:var(--sonne)}
+  .rang{font-family:var(--zahl); font-size:19px; font-weight:600; color:var(--tinte-fein);
         font-variant-numeric:tabular-nums}
-  .zeile.sieger .rang{color:var(--gold)}
+  .zeile.sieger .rang{color:var(--sonne)}
   .name{font-weight:600; font-size:15.5px; line-height:1.25}
   .ort{color:var(--tinte-leise); font-size:12.5px; margin-top:1px}
   .werte{display:flex; align-items:center; gap:var(--sp-s); flex-wrap:wrap;
          font-variant-numeric:tabular-nums}
-  .fit{font-family:var(--mono); font-size:13px; font-weight:600; min-width:3.4rem; text-align:right}
-  .preis{font-family:var(--mono); font-size:12.5px; color:var(--tinte-leise);
+  .fit{font-family:var(--zahl); font-size:13px; font-weight:600; min-width:3.4rem; text-align:right}
+  .preis{font-family:var(--zahl); font-size:12.5px; color:var(--tinte-leise);
          min-width:8.5rem; text-align:right}
   .detail{grid-column:1 / -1; margin-top:var(--sp-xs); padding-top:var(--sp-xs);
           border-top:1px solid var(--linie); font-size:13px; color:var(--tinte-leise); display:none}
   .zeile[aria-pressed="true"] .detail{display:block}
   .sieger-hinweis{display:flex; flex-wrap:wrap; gap:var(--sp-s); align-items:center;
                   margin:var(--sp-m) 0 0; padding:var(--sp-s) var(--sp-m);
-                  background:var(--gold-flaeche); border-left:3px solid var(--gold);
-                  border-radius:var(--radius-s); color:var(--gold); font-size:14px}
+                  background:var(--sonne-flaeche); border-left:6px solid var(--sonne);
+                  color:var(--sonne); font-size:14px}
   @media (max-width:640px){
     .zeile{grid-template-columns:2rem minmax(0,1fr)}
     .werte{grid-column:1 / -1; justify-content:flex-start; margin-top:var(--sp-2xs)}
@@ -144,8 +158,15 @@
     netzLinien.appendChild(el("line", { class: "netzlinie", x1: 0, y1: b.y, x2: K.breite, y2: b.y })));
   svg.appendChild(netzLinien);
 
+  // Reihenfolge: Umrissband, dann Sandsaum, dann das Innere. Jedes Rechteck ist
+  // eine Lauflaenge aus dem Rasterer, nicht eine einzelne Zelle - 688 statt 4944.
+  const PI = D.pixelinsel;
   const insel = el("g", { "aria-hidden": "true" });
-  K.pfade.forEach((d) => insel.appendChild(el("path", { class: "insel", d })));
+  const band = (liste, klasse) => liste.forEach((r) =>
+    insel.appendChild(el("rect", { class: klasse, x: r.x, y: r.y, width: r.b, height: r.h })));
+  band(PI.umriss, "z-umriss");
+  band(PI.innen, "z-innen");
+  band(PI.ufer, "z-ufer");
   svg.appendChild(insel);
 
   const netzText = el("g", { "aria-hidden": "true" });
@@ -178,7 +199,10 @@
     const leit = el("line", { class: "leitlinie", x1: h.x, y1: h.y, x2: h.mx, y2: h.my });
     const dot = el("circle", { class: "echt", cx: h.x, cy: h.y, r: 2.6 });
     const marke = el("g", { class: "marke" + (h.rang === 1 ? " sieger" : "") });
-    marke.appendChild(el("circle", { cx: h.mx, cy: h.my, r: 12 }));
+    const s = 13, v = 3;                       // Kantenlaenge und Schlagversatz
+    marke.appendChild(el("rect", { class: "schlag", x: h.mx - s + v, y: h.my - s + v,
+                                   width: s * 2, height: s * 2 }));
+    marke.appendChild(el("rect", { x: h.mx - s, y: h.my - s, width: s * 2, height: s * 2 }));
     const nr = el("text", { x: h.mx, y: h.my });
     nr.textContent = h.rang;
     marke.appendChild(nr);
