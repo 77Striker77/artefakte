@@ -193,6 +193,19 @@
     "https://www.google.com/maps/search/?api=1&query="
     + encodeURIComponent([name, zusatz].filter(Boolean).join(" "));
 
+  /* Der Weg zum Ort in Google Maps, in drei Stufen:
+       1. o.maps - der cid-Link aus der Places-API. Oeffnet den ECHTEN Eintrag
+          mit Fotos, Bewertungen und Zeiten. Haben die 33 Lokale und Maerkte.
+       2. Koordinate - fuer Bushaltestellen. Die haben keinen Google-Eintrag,
+          und ihre Namen sind mehrdeutig ("Adelianos Kampos" gibt es zwoelfmal
+          entlang derselben Strasse). Hier ist die Stelle die Antwort.
+       3. Namenssuche - alles Uebrige. */
+  const mapsZiel = (o) => o.maps
+    ? o.maps
+    : o.art === "Bus"
+      ? "https://www.google.com/maps/search/?api=1&query=" + o.lat + "," + o.lon
+      : mapsSuche(o.name, o.adresse);
+
   const esc = (s) => String(s == null ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const klasse = (art) => "k-" + art.toLowerCase().replace(/[^a-z]/g, "");
@@ -439,7 +452,7 @@
        das stand hier vorher. Nur wenn kein Eintrag hinterlegt ist, faellt es
        auf die Namenssuche zurueck. */
     teile.push('<div class="pop-wege">'
-      + '<a href="' + esc(o.maps || mapsSuche(o.name, o.adresse))
+      + '<a href="' + esc(mapsZiel(o))
       + '" target="_blank" rel="noopener">In Google Maps</a>'
       /* Start und Ziel stehen als NAMEN in der Route, nicht als Zahlenpaare:
          in Google Maps liest man dann "Amira Luxury Resort → Taverna Popi"
@@ -556,7 +569,7 @@
         + '<span><span class="zname">' + esc(o.name) + '</span><br>'
         + '<span class="zmeta">' + esc(meta) + "</span></span>"
         + '<span class="zdist">' + o.m + " m</span></button>"
-        + '<a class="zumaps" href="' + esc(o.maps || mapsSuche(o.name, o.adresse))
+        + '<a class="zumaps" href="' + esc(mapsZiel(o))
         + '" target="_blank" rel="noopener" aria-label="' + esc(o.name)
         + ' in Google Maps ansehen">Maps</a></li>';
     }).join("");
