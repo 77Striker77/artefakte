@@ -12,11 +12,13 @@
 <link rel="stylesheet" href="stil.css">
 <style>
   .kopfchips{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
+  /* Auf der Sonnenflaeche steht die Tinte, nicht ein dunkles Amber - das las
+     sich als Braun. Gemessen: Tinte auf #FFD98A ergibt 8,89:1. */
   .urteil{margin:var(--sp-l) 0; padding:var(--sp-m) var(--sp-l); background:var(--sonne-flaeche);
-          border-left:6px solid var(--sonne); }
-  .urteil h2{color:var(--sonne); font-size:21px}
-  .urteil .meta{font-family:var(--zahl); font-size:11.5px; color:var(--sonne); margin-top:var(--sp-2xs)}
-  .urteil p.text{margin-top:var(--sp-xs); font-size:14.5px; color:var(--tinte-leise)}
+          border:var(--rand) solid var(--umriss); box-shadow:var(--schatten); color:var(--tinte)}
+  .urteil h2{color:var(--tinte); font-size:21px}
+  .urteil .meta{font-family:var(--zahl); font-size:10.5px; color:var(--tinte); margin-top:var(--sp-xs)}
+  .urteil p.text{margin-top:var(--sp-s); font-size:14.5px; color:var(--tinte)}
 
   section{margin-top:var(--sp-xl)}
   section > h2{margin-bottom:var(--sp-s)}

@@ -17,15 +17,16 @@
   --grund:#F6E3BD; --flaeche:#FFF7E6; --flaeche-2:#F0DCB0;
   --tinte:#1E3A46; --tinte-leise:#41626F; --tinte-fein:#41626F;
   --umriss:#16303C; --linie:#D9BE8A; --linie-stark:#16303C;
-  --see:#37B4CC; --see-tief:#1E7E96; --land:#EFD49A; --ufer:#FFF3D6;
-  --netzschrift-farbe:#16303C;
+  --see:#37B4CC; --see-tief:#1E7E96;
   --akzent:#1E7E96; --akzent-text:#175F72; --akzent-weich:#CDEDF4;
-  --sonne:#8A5000; --sonne-flaeche:#FFD98A;
-  --gut:#176B3D; --gut-bg:#D6F0DE;
-  --warn:#8A5E00; --warn-bg:#FFE9B8;
-  --krit:#A32626; --krit-bg:#FFD9C9;
-  --p-restaurant:#C2410C; --p-imbiss:#9F1239; --p-cafe:#78350F; --p-baeckerei:#8A5E00;
-  --p-bar:#6D28D9; --p-strandbar:#0E7490; --p-strand:#1D4ED8; --p-supermarkt:#15803D;
+  /* Die Sonne ist nur noch FLAECHE, nie Textfarbe - ein dunkles Amber liest
+     sich unweigerlich als Braun. Text darauf ist die Tinte (8,89:1). */
+  --sonne-flaeche:#FFD98A;
+  --gut:#15803D; --gut-bg:#D6F0DE;
+  --warn:#A83208; --warn-bg:#FFE4CC;
+  --krit:#B3123C; --krit-bg:#FFD9E2;
+  --p-restaurant:#C2410C; --p-imbiss:#DC2626; --p-baeckerei:#BE185D; --p-cafe:#A21CAF;
+  --p-bar:#7C3AED; --p-strand:#1D4ED8; --p-strandbar:#0E7490; --p-supermarkt:#15803D;
   --p-bus:#41626F;
 
   --schatten:5px 5px 0 var(--umriss);
@@ -45,15 +46,14 @@
     --grund:#0E2A33; --flaeche:#173C48; --flaeche-2:#1F4C5A;
     --tinte:#F2E4C6; --tinte-leise:#A9C2C9; --tinte-fein:#A9C2C9;
     --umriss:#061419; --linie:#2C5A69; --linie-stark:#88B3C0;
-    --see:#0C3D4C; --see-tief:#072B36; --land:#6B5C3D; --ufer:#9A8757;
-    --netzschrift-farbe:#BFE4EC;
+    --see:#0C3D4C; --see-tief:#072B36;
     --akzent:#5BD3E8; --akzent-text:#7FDEEE; --akzent-weich:#123945;
-    --sonne:#FFC845; --sonne-flaeche:#4A3410;
-    --gut:#63C08E; --gut-bg:#123326;
-    --warn:#FFC845; --warn-bg:#3A2C0C;
-    --krit:#FF8B63; --krit-bg:#3E1D14;
-    --p-restaurant:#FB923C; --p-imbiss:#FB7185; --p-cafe:#D6A87C; --p-baeckerei:#FCD34D;
-    --p-bar:#A78BFA; --p-strandbar:#5EEAD4; --p-strand:#7DD3FC; --p-supermarkt:#6EE7B7;
+    --sonne-flaeche:#F5C24B;
+    --gut:#6EE7B7; --gut-bg:#0D3328;
+    --warn:#FDBA74; --warn-bg:#3A2110;
+    --krit:#FDA4AF; --krit-bg:#3A1420;
+    --p-restaurant:#FB923C; --p-imbiss:#FF7A7A; --p-baeckerei:#F9A8D4; --p-cafe:#E879F9;
+    --p-bar:#A78BFA; --p-strand:#7DD3FC; --p-strandbar:#5EEAD4; --p-supermarkt:#6EE7B7;
     --p-bus:#A9C2C9;
   }
 }
@@ -62,15 +62,14 @@
   --grund:#0E2A33; --flaeche:#173C48; --flaeche-2:#1F4C5A;
   --tinte:#F2E4C6; --tinte-leise:#A9C2C9; --tinte-fein:#A9C2C9;
   --umriss:#061419; --linie:#2C5A69; --linie-stark:#88B3C0;
-  --see:#0C3D4C; --see-tief:#072B36; --land:#6B5C3D; --ufer:#9A8757;
-    --netzschrift-farbe:#BFE4EC;
+  --see:#0C3D4C; --see-tief:#072B36;
   --akzent:#5BD3E8; --akzent-text:#7FDEEE; --akzent-weich:#123945;
-  --sonne:#FFC845; --sonne-flaeche:#4A3410;
-  --gut:#63C08E; --gut-bg:#123326;
-  --warn:#FFC845; --warn-bg:#3A2C0C;
-  --krit:#FF8B63; --krit-bg:#3E1D14;
-  --p-restaurant:#FB923C; --p-imbiss:#FB7185; --p-cafe:#D6A87C; --p-baeckerei:#FCD34D;
-  --p-bar:#A78BFA; --p-strandbar:#5EEAD4; --p-strand:#7DD3FC; --p-supermarkt:#6EE7B7;
+  --sonne-flaeche:#F5C24B;
+  --gut:#6EE7B7; --gut-bg:#0D3328;
+  --warn:#FDBA74; --warn-bg:#3A2110;
+  --krit:#FDA4AF; --krit-bg:#3A1420;
+  --p-restaurant:#FB923C; --p-imbiss:#FF7A7A; --p-baeckerei:#F9A8D4; --p-cafe:#E879F9;
+  --p-bar:#A78BFA; --p-strand:#7DD3FC; --p-strandbar:#5EEAD4; --p-supermarkt:#6EE7B7;
   --p-bus:#A9C2C9;
 }
 

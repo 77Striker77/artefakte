@@ -4,84 +4,80 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kreta — Hotelvergleich</title>
-<meta name="description" content="Seekarte von Kreta mit elf geprüften Strandhotels, nach Kriterien-Erfüllung gereiht.">
+<meta name="description" content="Karte von Kreta mit elf geprüften Strandhotels, nach Kriterien-Erfüllung gereiht.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="stil.css">
 <style>
-  .karte-rahmen{background:var(--see); border:var(--rand) solid var(--umriss);
-                overflow:hidden}
-  .karte-rahmen svg{display:block; width:100%; height:auto}
-  .netzlinie{stroke:var(--see-tief); stroke-width:1; stroke-dasharray:2 6; fill:none; opacity:.5}
-  /* Im Hellen steht die Beschriftung dunkel auf hellem Meer, im Dunklen hell auf
-     dunklem - ein fester Wert waere in einem der beiden Themes unlesbar. */
-  .netzschrift{font-family:var(--zahl); fill:var(--netzschrift-farbe); letter-spacing:.04em;
-               paint-order:stroke; stroke:var(--see); stroke-width:3; stroke-linejoin:round}
-  /* Die Insel ist ein Gitter: dunkles Band aussen, heller Sandsaum, tieferer
-     Sand innen. Kein shape-rendering:crispEdges noetig - die Kanten liegen
-     ohnehin auf ganzen Einheiten. */
-  /* crispEdges ist hier Pflicht, nicht Geschmack: die Zeilen-Rechtecke landen
-     beim Skalieren auf gebrochenen Geraetepixeln, und der Browser zeichnet
-     dazwischen Haarfugen. Im Bild sah die Insel dadurch waagerecht gestreift aus -
-     keine Textpruefung haette das gefunden. */
-  .z-umriss,.z-ufer,.z-innen{shape-rendering:crispEdges}
-  .z-umriss{fill:var(--umriss)}
-  .z-ufer{fill:var(--ufer)}
-  .z-innen{fill:var(--land)}
-  .leitlinie{stroke:var(--umriss); stroke-width:2}
-  .echt{fill:var(--umriss)}
-  .marke rect{fill:var(--flaeche); stroke:var(--umriss); stroke-width:3}
-  .marke .schlag{fill:var(--umriss)}
-  .marke text{font-family:var(--zahl); font-size:11px; fill:var(--tinte);
-              text-anchor:middle; dominant-baseline:central}
-  .marke.sieger rect{fill:var(--sonne-flaeche)}
-  .marke.sieger text{fill:var(--umriss)}
-  .marke,.leitlinie,.echt{transition:opacity calc(.18s * var(--bewegung)) ease}
-  .karte-rahmen.fokus .marke:not(.aktiv),
-  .karte-rahmen.fokus .leitlinie:not(.aktiv),
-  .karte-rahmen.fokus .echt:not(.aktiv){opacity:.28}
-  .marke.aktiv rect{fill:var(--akzent-weich)}
-  .marke.aktiv text{fill:var(--akzent-text)}
-  .massstab line{stroke:var(--umriss); stroke-width:2.5}
-  .massschrift{font-family:var(--zahl); fill:var(--umriss); paint-order:stroke;
-               stroke:var(--see); stroke-width:3; stroke-linejoin:round}
+  #karte{height:clamp(360px,56vh,620px); border:var(--rand) solid var(--umriss);
+         box-shadow:var(--schatten); background:var(--flaeche-2); z-index:0}
+  .leaflet-container{font-family:var(--sans); background:var(--flaeche-2)}
+  .leaflet-control-attribution{font-size:10.5px}
 
+  /* Marken sind divIcons - normale HTML-Elemente, damit sie demselben Stylesheet
+     gehorchen wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
+     und wuerde width/height sonst ignorieren. */
+  .pixpin{display:flex; align-items:center; justify-content:center;
+          width:26px; height:26px; image-rendering:pixelated;
+          font-family:var(--zahl); font-size:11px; color:var(--tinte);
+          background:var(--flaeche);
+          box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.3)}
+  .pixpin.sieger{background:var(--sonne-flaeche)}
+  .pixpin.aktiv{background:var(--akzent-weich);
+                box-shadow:0 0 0 4px var(--akzent), 4px 4px 0 rgba(0,0,0,.3)}
+
+  .leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center;
+           margin:var(--sp-l) 0 var(--sp-s)}
   .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
-              justify-content:space-between; margin:var(--sp-xs) 0 var(--sp-xl);
-              font-size:11.5px; color:var(--tinte-fein); font-family:var(--zahl)}
+              justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
+              font-size:11px; color:var(--tinte-fein); font-family:var(--zahl)}
   .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin-bottom:var(--sp-s)}
-  .zaehler{font-family:var(--zahl); font-size:12px; color:var(--tinte-fein)}
-  .liste{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-2xs)}
+  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--tinte-fein)}
+  .liste{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-xs)}
   .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
-         color:var(--tinte); border:var(--rand) solid var(--umriss); border-left:6px solid transparent;
-         padding:var(--sp-s) var(--sp-m);
+         color:var(--tinte); border:var(--rand) solid var(--umriss);
+         box-shadow:var(--schatten-klein); padding:var(--sp-s) var(--sp-m);
          display:grid; gap:var(--sp-2xs) var(--sp-m);
-         grid-template-columns:2.2rem minmax(0,1fr) auto; align-items:center;
-         transition:border-color calc(.16s * var(--bewegung)) ease,
-                    background calc(.16s * var(--bewegung)) ease}
-  .zeile:hover{border-color:var(--linie-stark); background:var(--flaeche-2)}
-  .zeile[aria-pressed="true"]{border-color:var(--akzent); border-left-color:var(--akzent);
-                              background:var(--akzent-weich)}
-  .zeile.sieger{border-left-color:var(--sonne)}
-  .rang{font-family:var(--zahl); font-size:19px; font-weight:600; color:var(--tinte-fein);
-        font-variant-numeric:tabular-nums}
-  .zeile.sieger .rang{color:var(--sonne)}
-  .name{font-weight:600; font-size:15.5px; line-height:1.25}
+         grid-template-columns:2.4rem minmax(0,1fr) auto; align-items:center;
+         transition:transform calc(.08s * var(--bewegung)) steps(2),
+                    box-shadow calc(.08s * var(--bewegung)) steps(2)}
+  .zeile:hover{background:var(--flaeche-2)}
+  .zeile[aria-pressed="true"]{background:var(--akzent-weich);
+                              transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
+  .zeile.sieger{background:var(--sonne-flaeche)}
+  .rang{font-family:var(--zahl); font-size:16px; color:var(--tinte-fein)}
+  .zeile.sieger .rang{color:var(--tinte)}
+  .name{font-weight:700; font-size:15.5px; line-height:1.25}
   .ort{color:var(--tinte-leise); font-size:12.5px; margin-top:1px}
-  .werte{display:flex; align-items:center; gap:var(--sp-s); flex-wrap:wrap;
-         font-variant-numeric:tabular-nums}
-  .fit{font-family:var(--zahl); font-size:13px; font-weight:600; min-width:3.4rem; text-align:right}
-  .preis{font-family:var(--zahl); font-size:12.5px; color:var(--tinte-leise);
+  .zeile.sieger .ort{color:var(--tinte)}
+  .werte{display:flex; align-items:center; gap:var(--sp-s); flex-wrap:wrap}
+  .fit{font-family:var(--zahl); font-size:12px; min-width:3.6rem; text-align:right}
+  .preis{font-family:var(--zahl); font-size:10px; color:var(--tinte-leise);
          min-width:8.5rem; text-align:right}
+  .zeile.sieger .preis{color:var(--tinte)}
   .detail{grid-column:1 / -1; margin-top:var(--sp-xs); padding-top:var(--sp-xs);
-          border-top:1px solid var(--linie); font-size:13px; color:var(--tinte-leise); display:none}
-  .zeile[aria-pressed="true"] .detail{display:block}
+          border-top:2px solid var(--umriss); font-size:13px; color:var(--tinte-leise); display:none}
+  .zeile[aria-pressed="true"] .detail, .zeile.sieger .detail{display:block}
+  .zeile.sieger .detail{color:var(--tinte)}
   .sieger-hinweis{display:flex; flex-wrap:wrap; gap:var(--sp-s); align-items:center;
                   margin:var(--sp-m) 0 0; padding:var(--sp-s) var(--sp-m);
-                  background:var(--sonne-flaeche); border-left:6px solid var(--sonne);
-                  color:var(--sonne); font-size:14px}
+                  background:var(--sonne-flaeche); border:var(--rand) solid var(--umriss);
+                  box-shadow:var(--schatten-klein); color:var(--tinte); font-size:14.5px}
+  .sieger-hinweis a{color:var(--tinte)}
+
+  .leaflet-popup-content{margin:12px 14px; font-size:13.5px; line-height:1.5; min-width:210px}
+  .pop-rang{font-family:var(--zahl); font-size:10px; letter-spacing:.06em; color:#6b7280;
+            display:block; margin-bottom:2px}
+  .pop-name{font-weight:700; font-size:15px; display:block; margin-bottom:4px}
+  .pop-zeile{display:block; color:#374151}
+  .pop-wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
+  .pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
+              border:2px solid #111827; color:#111827; background:#fff}
+  .pop-wege a.haupt{background:#FFD98A}
+
   @media (max-width:640px){
     .zeile{grid-template-columns:2rem minmax(0,1fr)}
     .werte{grid-column:1 / -1; justify-content:flex-start; margin-top:var(--sp-2xs)}
@@ -108,21 +104,17 @@
   <p class="eyebrow">Hotelvergleich · Shortlist</p>
   <h1>Kreta, <em>elf Kandidaten</em></h1>
   <p class="unterzeile">Alle geprüften Strandhotels der Shortlist, verortet und in der
-    Reihenfolge der Kriterien-Erfüllung. Ein Klick auf eine Zeile hebt das Hotel auf der
-    Karte hervor.</p>
+    Reihenfolge der Kriterien-Erfüllung. Ein Klick auf eine Zeile springt zum Hotel
+    auf der Karte.</p>
 
   <p class="sieger-hinweis" id="siegerHinweis"></p>
 
-  <div style="height:var(--sp-l)"></div>
-
-  <div class="karte-rahmen" id="rahmen">
-    <svg id="karte" role="img" aria-labelledby="ktitel kbesch">
-      <title id="ktitel">Karte von Kreta mit den elf Hotels der Shortlist</title>
-      <desc id="kbesch">Umriss der Insel Kreta mit Gradnetz. Jedes Hotel ist als
-        nummerierte Marke eingetragen, die Nummer entspricht dem Rang. Dieselben
-        Angaben stehen als Liste unter der Karte.</desc>
-    </svg>
+  <div class="leiste2">
+    <button class="knopf" type="button" id="zAlles">Ganz Kreta</button>
+    <button class="knopf haupt" type="button" id="zSieger">Zum gewählten Hotel</button>
   </div>
+
+  <div id="karte"></div>
   <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
 
   <div class="listenkopf">
@@ -134,94 +126,83 @@
 
 <footer class="fuss"><div class="huelle" id="fuss"></div></footer>
 
+<script src="vendor/leaflet.js"></script>
 <script src="daten.js"></script>
 <script src="gemein.js"></script>
 <script>
 (function () {
   "use strict";
-  const D = window.DATEN, K = D.insel;
+  const D = window.DATEN;
   const $ = (id) => document.getElementById(id);
-  const NS = "http://www.w3.org/2000/svg";
-  const el = (t, a) => { const n = document.createElementNS(NS, t);
-    for (const k in a) n.setAttribute(k, a[k]); return n; };
   const esc = window.esc, reich = window.reich;
 
-  const svg = $("karte");
-  svg.setAttribute("viewBox", K.viewBox);
+  /* ---------- Karte ---------- */
+  const karte = L.map("karte", { scrollWheelZoom: true });
 
-  /* Reihenfolge: Linien, Insel, Beschriftung. Lagen die Etiketten mit im
-     Linienblock, deckte die spaeter gezeichnete Inselflaeche sie zu. */
-  const netzLinien = el("g", { "aria-hidden": "true" });
-  K.gradnetz.meridiane.forEach((m) =>
-    netzLinien.appendChild(el("line", { class: "netzlinie", x1: m.x, y1: 0, x2: m.x, y2: K.hoehe })));
-  K.gradnetz.breitenkreise.forEach((b) =>
-    netzLinien.appendChild(el("line", { class: "netzlinie", x1: 0, y1: b.y, x2: K.breite, y2: b.y })));
-  svg.appendChild(netzLinien);
+  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende',
+  }).addTo(karte);
+  const satellit = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19, attribution: "Luftbild: Esri, Maxar, Earthstar Geographics" });
+  L.control.layers({ "Karte": osm, "Satellit": satellit }, null, { position: "topright" }).addTo(karte);
+  L.control.scale({ imperial: false, position: "bottomleft" }).addTo(karte);
 
-  // Reihenfolge: Umrissband, dann Sandsaum, dann das Innere. Jedes Rechteck ist
-  // eine Lauflaenge aus dem Rasterer, nicht eine einzelne Zelle - 688 statt 4944.
-  const PI = D.pixelinsel;
-  const insel = el("g", { "aria-hidden": "true" });
-  const band = (liste, klasse) => liste.forEach((r) =>
-    insel.appendChild(el("rect", { class: klasse, x: r.x, y: r.y, width: r.b, height: r.h })));
-  band(PI.umriss, "z-umriss");
-  band(PI.innen, "z-innen");
-  band(PI.ufer, "z-ufer");
-  svg.appendChild(insel);
-
-  const netzText = el("g", { "aria-hidden": "true" });
-  K.gradnetz.meridiane.forEach((m) => {
-    const t = el("text", { class: "netzschrift", x: m.tx, y: 12, "font-size": "9px" });
-    t.textContent = m.label; netzText.appendChild(t);
+  const marke = (h, aktiv) => L.divIcon({
+    className: "",
+    html: '<i class="pixpin' + (h.rang === 1 ? " sieger" : "") + (aktiv ? " aktiv" : "")
+        + '">' + h.rang + "</i>",
+    iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -15],
   });
-  K.gradnetz.breitenkreise.forEach((b) => {
-    const t = el("text", { class: "netzschrift", x: 5, y: b.ty, "font-size": "9px" });
-    t.textContent = b.label; netzText.appendChild(t);
-  });
-  svg.appendChild(netzText);
 
-  const mass = el("g", { class: "massstab", "aria-hidden": "true" });
-  const laenge = K.massstab.svg_einheiten;
-  const mx = K.breite - laenge - 18, my = K.hoehe - 16;
-  mass.appendChild(el("line", { x1: mx, y1: my, x2: mx + laenge, y2: my }));
-  mass.appendChild(el("line", { x1: mx, y1: my - 4, x2: mx, y2: my + 4 }));
-  mass.appendChild(el("line", { x1: mx + laenge, y1: my - 4, x2: mx + laenge, y2: my + 4 }));
-  const mt = el("text", { class: "massschrift", x: mx + laenge / 2, y: my - 7,
-                          "text-anchor": "middle", "font-size": "9px" });
-  mt.textContent = K.massstab.km + " km";
-  mass.appendChild(mt);
-  svg.appendChild(mass);
+  function popup(h) {
+    const ziel = h.lat + "," + h.lon;
+    return '<span class="pop-rang">Rang ' + h.rang + (h.rang === 1 ? " · gewählt" : "") + "</span>"
+      + '<span class="pop-name">' + esc(h.name) + "</span>"
+      + '<span class="pop-zeile">' + esc(h.lage) + "</span>"
+      + '<span class="pop-zeile">' + h.zimmer + " Zimmer · " + esc(h.niveau) + " · "
+      + (h.adults ? "Adults Only" : "kein Adults Only") + "</span>"
+      + '<span class="pop-zeile">' + esc(h.bewertung) + "</span>"
+      + '<span class="pop-zeile">'
+      + (h.preis && h.preis.startsWith("unbekannt") ? "Preis unbekannt" : esc(h.preis))
+      + " · " + esc(h.budget) + "</span>"
+      + '<div class="pop-wege">'
+      + (h.rang === 1 ? '<a class="haupt" href="hotel.html">Hotel im Detail</a>' : "")
+      + '<a href="https://www.google.com/maps/search/?api=1&query=' + ziel
+      + '" target="_blank" rel="noopener">In Google Maps</a></div>';
+  }
 
-  const marken = new Map();
-  const pins = el("g", { "aria-hidden": "true" });
+  const markerVon = new Map();
   D.hotels.forEach((h) => {
-    const g = el("g", {});
-    const leit = el("line", { class: "leitlinie", x1: h.x, y1: h.y, x2: h.mx, y2: h.my });
-    const dot = el("circle", { class: "echt", cx: h.x, cy: h.y, r: 2.6 });
-    const marke = el("g", { class: "marke" + (h.rang === 1 ? " sieger" : "") });
-    const s = 13, v = 3;                       // Kantenlaenge und Schlagversatz
-    marke.appendChild(el("rect", { class: "schlag", x: h.mx - s + v, y: h.my - s + v,
-                                   width: s * 2, height: s * 2 }));
-    marke.appendChild(el("rect", { x: h.mx - s, y: h.my - s, width: s * 2, height: s * 2 }));
-    const nr = el("text", { x: h.mx, y: h.my });
-    nr.textContent = h.rang;
-    marke.appendChild(nr);
-    g.append(leit, dot, marke);
-    pins.appendChild(g);
-    marken.set(h.rang, { leit, dot, marke });
+    const m = L.marker([h.lat, h.lon], { icon: marke(h, false),
+                                         zIndexOffset: h.rang === 1 ? 500 : 0 })
+      .bindPopup(() => popup(h), { maxWidth: 300 })
+      .bindTooltip(h.rang + ". " + h.name, { direction: "top", offset: [0, -12] })
+      .addTo(karte);
+    m.on("click", () => setzen(h.rang, false));
+    markerVon.set(h.rang, m);
   });
-  svg.appendChild(pins);
 
-  $("kartequelle").textContent = "Umriss: " + K.quelle;
-  $("kartedetail").textContent = K.punkte + " Stützpunkte · Gradnetz alle 0,5°";
+  const alleBounds = L.latLngBounds(D.hotels.map((h) => [h.lat, h.lon]));
+  karte.fitBounds(alleBounds, { padding: [40, 40] });
 
+  $("zAlles").addEventListener("click", () => karte.fitBounds(alleBounds, { padding: [40, 40] }));
+  $("zSieger").addEventListener("click", () => {
+    const s = D.hotels[0];
+    karte.setView([s.lat, s.lon], 13);
+    markerVon.get(1).openPopup();
+  });
+
+  $("kartequelle").textContent = "Karte: OpenStreetMap-Mitwirkende · Luftbild: Esri";
+  $("kartedetail").textContent = "Hotelkoordinaten: Google Places, 2026-08-21";
+
+  /* ---------- Liste ---------- */
+  const chipKlasse = (b) => (b === "passt" ? "passt" : b === "KO" ? "ko" : "grenz");
   const sieger = D.hotels[0];
   $("siegerHinweis").innerHTML = "<strong>Gewählt: " + esc(sieger.name) + "</strong> · "
     + esc(sieger.lage) + ' — <a href="hotel.html">Hotel im Detail</a> · '
     + '<a href="karte.html">Karte vor Ort</a>';
-
-  const chipKlasse = (b) => (b === "passt" ? "passt" : b === "KO" ? "ko" : "grenz");
-  const fitFarbe = (p) => (p >= 90 ? "var(--gut)" : p >= 80 ? "var(--warn)" : "var(--krit)");
   $("zaehler").textContent = D.hotels.length + " Hotels · Stand " + D.stand;
 
   $("listeninhalt").innerHTML = D.hotels.map((h) => `
@@ -234,8 +215,7 @@
           <span class="ort">${esc(h.lage)}</span>
         </span>
         <span class="werte">
-          <span class="fit" style="color:${h.fit == null ? "var(--tinte-fein)" : fitFarbe(h.fit)}"
-                title="Kriterien-Erfüllung">${h.fit == null ? "–" : h.fit + " %"}</span>
+          <span class="fit">${h.fit == null ? "–" : h.fit + " %"}</span>
           <span class="preis">${h.preis && h.preis.startsWith("unbekannt") ? "unbekannt" : esc(h.preis)}</span>
           <span class="chip ${chipKlasse(h.budget)}">${esc(h.budget)}</span>
         </span>
@@ -247,33 +227,36 @@
       </button>
     </li>`).join("");
 
-  const rahmen = $("rahmen");
   let aktiv = null;
-  function setzen(rang) {
+  function setzen(rang, springen) {
     if (aktiv !== null) {
-      const alt = marken.get(aktiv);
-      alt.marke.classList.remove("aktiv"); alt.leit.classList.remove("aktiv");
-      alt.dot.classList.remove("aktiv");
+      markerVon.get(aktiv).setIcon(marke(D.hotels[aktiv - 1], false));
       document.querySelector('.zeile[data-rang="' + aktiv + '"]')?.setAttribute("aria-pressed", "false");
     }
     aktiv = rang === aktiv ? null : rang;
-    rahmen.classList.toggle("fokus", aktiv !== null);
     if (aktiv === null) return;
-    const neu = marken.get(aktiv);
-    neu.marke.classList.add("aktiv"); neu.leit.classList.add("aktiv"); neu.dot.classList.add("aktiv");
+    const h = D.hotels[aktiv - 1];
+    const m = markerVon.get(aktiv);
+    m.setIcon(marke(h, true));
     document.querySelector('.zeile[data-rang="' + aktiv + '"]')?.setAttribute("aria-pressed", "true");
+    if (springen) {
+      karte.setView([h.lat, h.lon], Math.max(karte.getZoom(), 11));
+      m.openPopup();
+      $("karte").scrollIntoView({ block: "nearest",
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
   }
   $("listeninhalt").addEventListener("click", (e) => {
     const b = e.target.closest(".zeile");
-    if (b) setzen(Number(b.dataset.rang));
+    if (b) setzen(Number(b.dataset.rang), true);
   });
 
   $("fuss").innerHTML =
     "<p>Quelle aller Hotelangaben: eigene Recherche, Stand " + D.stand
     + ". Preise sind Schätzwerte für die Hochsaison; wo kein Wert abrufbar war, steht "
     + "<em>unbekannt</em> statt einer Schätzung.</p>"
-    + "<p>Inselumriss: OpenStreetMap-Mitwirkende, ODbL. Hotelkoordinaten: Google Places API, "
-    + "abgerufen 2026-08-21.</p>";
+    + "<p>Kartenmaterial: &copy; OpenStreetMap-Mitwirkende (ODbL) · Luftbild: Esri, Maxar, "
+    + "Earthstar Geographics. Hotelkoordinaten: Google Places API, abgerufen 2026-08-21.</p>";
 })();
 </script>
 </body>
