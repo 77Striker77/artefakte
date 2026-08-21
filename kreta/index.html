@@ -49,6 +49,10 @@
      Tinte auf diesem Violett kommt nur auf 2,75:1, Weiss auf 5,38:1. */
   .flugpin{width:36px; height:24px; font-size:10px; letter-spacing:.03em;
            color:#FFFFFF; background:var(--p-cafe)}
+  /* Ausflugsziel: kleines Quadrat, Riffgruen, Fahrzeit in Minuten (7,37:1).
+     Hue 149 - mindestens 36 Grad Abstand zu allen drei anderen Markenarten. */
+  .zielpin{width:28px; height:20px; font-size:9px;
+           color:var(--tinte); background:var(--ziel)}
 
   /* Die Namensfahnen von Staedten und Flughaefen. Leaflet bringt eigene Radien
      und einen weichen Schatten mit - beides muss aktiv weg. */
@@ -76,6 +80,7 @@
   .legmarke.gewaehlt{width:24px; height:24px; background:var(--sonne-flaeche); color:var(--tinte)}
   .legmarke.stadt{width:34px; height:22px; background:var(--koralle); color:var(--tinte)}
   .legmarke.flug{width:34px; height:22px; background:var(--p-cafe); color:#FFFFFF}
+  .legmarke.ziel{width:30px; height:20px; background:var(--ziel); color:var(--tinte)}
   .legtext strong{display:block; font-size:13.5px}
   .legtext span{display:block; font-size:12.5px; color:var(--tinte-leise); margin-top:1px}
 
@@ -87,6 +92,64 @@
   .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
               justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
               font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
+
+  /* ---------- Reiter ----------
+     Echte Tabs mit role=tablist: Pfeiltasten wechseln, Tab springt ins Panel.
+     Ein Satz <button> ohne diese Rollen sieht gleich aus, ist aber fuer die
+     Tastatur eine Reihe zusammenhangloser Knoepfe. */
+  .reiter{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin:var(--sp-xl) 0 0;
+          border-bottom:var(--rand) solid var(--see); padding-bottom:var(--sp-2xs)}
+  .reiter button{font-family:var(--display); font-size:15px; font-weight:600;
+                 min-height:46px; padding:0 var(--sp-m); cursor:pointer;
+                 background:transparent; color:var(--auf-tiefe-leise);
+                 border:var(--rand) solid transparent; border-bottom:0;
+                 display:inline-flex; align-items:center; gap:7px}
+  .reiter button:hover{color:var(--auf-tiefe)}
+  .reiter button[aria-selected="true"]{background:var(--flaeche); color:var(--tinte);
+                                       border-color:var(--umriss)}
+  .reiter .zahl{font-family:var(--zahl); font-size:10px; color:var(--auf-tiefe-leise)}
+  .reiter button[aria-selected="true"] .zahl{color:var(--tinte-fein)}
+  .tafelinhalt{padding-top:var(--sp-m)}
+  .tafelinhalt[hidden]{display:none}
+  .reiterkopf{display:flex; align-items:baseline; gap:var(--sp-s);
+              margin-bottom:var(--sp-s); flex-wrap:wrap}
+
+  /* ---------- Ausflugsziele ---------- */
+  .zielgruppe{margin-bottom:var(--sp-l)}
+  .gruppentitel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
+                text-transform:uppercase; color:var(--auf-tiefe-leise);
+                margin-bottom:var(--sp-xs); display:block}
+  .zielraster{display:grid; gap:var(--sp-xs);
+              grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
+  .ziel{background:var(--flaeche); color:var(--tinte);
+        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+        padding:var(--sp-s) var(--sp-m); display:flex; flex-direction:column; gap:var(--sp-2xs)}
+  .zielkopf{display:flex; align-items:baseline; gap:var(--sp-xs); flex-wrap:wrap}
+  .zielname{font-family:var(--display); font-size:17px; font-weight:700}
+  /* Tinte, nicht tinte-fein: gemessen wurde --tinte auf --ziel (7,37:1);
+     tinte-fein kommt auf derselben Flaeche nur auf 3,43:1. Ein Messwert gilt
+     fuer die Farbe, die man dann auch eintraegt. */
+  .zielart{font-family:var(--zahl); font-size:9px; letter-spacing:.06em;
+           text-transform:uppercase; color:var(--tinte);
+           border:2px solid var(--umriss); padding:2px 5px; background:var(--ziel)}
+  .zielweg{font-family:var(--zahl); font-size:10px; color:var(--akzent-text);
+           padding:var(--sp-2xs) 0; border-top:2px solid var(--linie);
+           border-bottom:2px solid var(--linie); display:flex; flex-wrap:wrap;
+           gap:var(--sp-2xs) var(--sp-s)}
+  /* Die Anreise-Zeile ist der Kern dieser Karte - sie entscheidet, ob das Ziel
+     ohne Mietwagen ueberhaupt in Frage kommt. */
+  .anreise{display:flex; gap:var(--sp-xs); align-items:flex-start; font-size:12.5px;
+           padding:var(--sp-2xs) var(--sp-xs); border:2px solid var(--umriss)}
+  .anreise.auto{background:var(--warn-bg); color:var(--warn)}
+  .anreise.bus{background:var(--gut-bg); color:var(--gut)}
+  .zielfakt{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-2xs)}
+  .zielquelle{font-family:var(--zahl); font-size:9px; color:var(--tinte-fein);
+              margin-top:var(--sp-2xs)}
+  .zielquelle a{color:var(--akzent-text)}
+  .hinweis{background:var(--tiefe-tief); color:var(--auf-tiefe);
+           border-left:6px solid var(--koralle); padding:var(--sp-s) var(--sp-m);
+           font-size:13px; margin-bottom:var(--sp-m)}
+  .hinweis strong{color:var(--koralle)}
 
   /* ---------- Staedte-Fakten ---------- */
   .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin:var(--sp-xl) 0 var(--sp-s)}
@@ -146,11 +209,12 @@
 </nav>
 
 <main class="huelle">
-  <p class="eyebrow">Kreta 2026 · Übersicht</p>
-  <h1>Elf Hotels, <em>sechs Städte</em>, drei Flughäfen</h1>
-  <p class="unterzeile">Die ganze Insel auf einer Karte: alle geprüften Strandhotels der
-    Shortlist, die größten Städte und die drei Flughäfen. Die vollständige Rangfolge der
-    Hotels steht unter <a href="rangfolge.html">Rangfolge</a>.</p>
+  <!-- Der im Markup stehende Text ist der Rueckfall, falls daten.js fehlt.
+       Im Normalfall setzt das Skript ihn aus reise.json - das ist die eine
+       Stelle, an der steht, welche Reise das Cockpit gerade zeigt. -->
+  <p class="eyebrow" id="tEyebrow">Reiseziel · Griechenland</p>
+  <h1 id="tTitel">Kreta, <em>von der Insel bis zum Hotel</em></h1>
+  <p class="unterzeile" id="tUnterzeile">Die ganze Insel auf einer Karte.</p>
 
   <div class="leiste2">
     <span class="leiste-titel">Zeigen</span>
@@ -160,6 +224,8 @@
       <span class="punkt" style="background:var(--koralle)"></span>Städte <span class="zahl" id="nStaedte"></span></button>
     <button class="knopf" type="button" id="eFlug" aria-pressed="true">
       <span class="punkt" style="background:var(--p-cafe)"></span>Flughäfen <span class="zahl" id="nFlug"></span></button>
+    <button class="knopf" type="button" id="eZiele" aria-pressed="true">
+      <span class="punkt" style="background:var(--ziel)"></span>Ausflugsziele <span class="zahl" id="nZiele"></span></button>
   </div>
   <div class="leiste2">
     <span class="leiste-titel">Ausschnitt</span>
@@ -192,22 +258,54 @@
         <span class="legtext"><strong>Flughäfen</strong>
           <span>IATA-Kürzel. Heraklion und Chania international, Sitia regional.</span></span>
       </div>
+      <div class="legpunkt">
+        <span class="legmarke ziel">71'</span>
+        <span class="legtext"><strong>Ausflugsziele</strong>
+          <span>Die Zahl ist die Fahrzeit ab dem Quartier in Minuten.</span></span>
+      </div>
     </div>
   </div>
 
   <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
 
-  <div class="listenkopf">
-    <h2 id="staedte">Die Städte</h2>
-    <span class="zaehler" id="zaehler"></span>
+  <div class="reiter" role="tablist" aria-label="Was es auf der Insel gibt">
+    <button role="tab" type="button" id="r-ziele" aria-selected="true"
+            aria-controls="p-ziele">Ausflugsziele <span class="zahl" id="rnZiele"></span></button>
+    <button role="tab" type="button" id="r-staedte" aria-selected="false" tabindex="-1"
+            aria-controls="p-staedte">Städte <span class="zahl" id="rnStaedte"></span></button>
+    <button role="tab" type="button" id="r-flug" aria-selected="false" tabindex="-1"
+            aria-controls="p-flug">Flughäfen <span class="zahl" id="rnFlug"></span></button>
   </div>
-  <div class="stadtraster" id="stadtinhalt"></div>
 
-  <div class="listenkopf">
-    <h2 id="flughaefen">Die Flughäfen</h2>
-    <span class="zaehler" id="zaehlerFlug"></span>
+  <div class="tafelinhalt" role="tabpanel" id="p-ziele" aria-labelledby="r-ziele" tabindex="0">
+    <div class="reiterkopf">
+      <h2 id="ziele">Lohnende Ziele</h2>
+      <span class="zaehler" id="zaehlerZiele"></span>
+    </div>
+    <p class="hinweis"><span><strong>Zur Anreise:</strong> Die Entfernung zur nächsten
+      Bushaltestelle stammt aus OpenStreetMap und sagt nur, dass dort eine Haltestelle
+      <em>kartiert</em> ist — nicht, ob und wie oft ein Bus fährt. Das ist bei
+      KTEL vor Ort zu prüfen. Öffnungszeiten und Eintritt stehen nur dort, wo sie belegt
+      sind; die offiziellen Seiten des Kulturministeriums waren beim Abruf nicht
+      erreichbar.</span></p>
+    <div id="zielinhalt"></div>
   </div>
-  <div class="flugraster" id="fluginhalt"></div>
+
+  <div class="tafelinhalt" role="tabpanel" id="p-staedte" aria-labelledby="r-staedte" tabindex="0" hidden>
+    <div class="reiterkopf">
+      <h2 id="staedte">Die Städte</h2>
+      <span class="zaehler" id="zaehler"></span>
+    </div>
+    <div class="stadtraster" id="stadtinhalt"></div>
+  </div>
+
+  <div class="tafelinhalt" role="tabpanel" id="p-flug" aria-labelledby="r-flug" tabindex="0" hidden>
+    <div class="reiterkopf">
+      <h2 id="flughaefen">Die Flughäfen</h2>
+      <span class="zaehler" id="zaehlerFlug"></span>
+    </div>
+    <div class="flugraster" id="fluginhalt"></div>
+  </div>
 </main>
 
 <footer class="fuss"><div class="huelle" id="fuss"></div></footer>
@@ -223,6 +321,21 @@
   const esc = window.esc, reich = window.reich;
   const STAEDTE = D.staedte || [];
   const FLUG = D.flughaefen || [];
+  const ZIELE = D.ziele || [];
+  const TEXTE = D.texte || {};
+
+  /* Ueberschriften kommen aus reise.json. Steht dort nichts, bleibt der im
+     Markup hinterlegte Rueckfall stehen - eine Seite ohne Titel waere schlimmer
+     als eine mit einem allgemeinen. */
+  if (TEXTE.eyebrow) $("tEyebrow").textContent = TEXTE.eyebrow;
+  if (TEXTE.titel) $("tTitel").innerHTML = esc(TEXTE.titel)
+    + (TEXTE.titel_betont ? ", <em>" + esc(TEXTE.titel_betont) + "</em>" : "");
+  /* Die Unterzeile darf einen Link enthalten und kommt aus einer Datei, die wir
+     selbst schreiben - reich() laesst genau <b> durch, der Link muss darum als
+     Markup erlaubt bleiben. Bewusst KEIN esc(): die Quelle ist reise.json im
+     Repo, keine Nutzereingabe. */
+  if (TEXTE.unterzeile) $("tUnterzeile").innerHTML = TEXTE.unterzeile;
+  if (TEXTE.marke) document.querySelector(".marke").textContent = TEXTE.marke;
 
   /* ---------- Karte ---------- */
   const karte = L.map("karte", { scrollWheelZoom: true });
@@ -352,11 +465,61 @@
       .addTo(ebeneFlug);
   });
 
+  /* Ausflugsziele. Die Marke traegt die Fahrzeit in Minuten - die Zahl, die
+     ueber Halbtags- oder Ganztagesausflug entscheidet. */
+  const ebeneZiele = L.layerGroup().addTo(karte);
+  const minuten = (z) => typeof z.fahrzeit_hotel_min === "number"
+    ? z.fahrzeit_hotel_min + "'" : "?";
+
+  const ANREISE = {
+    auto: ["auto", "Mietwagen praktisch nötig"],
+    bus_mit_fussweg: ["bus", "Bus plus Fußweg"],
+    bus_gehweite: ["bus", "Haltestelle in Gehweite"],
+    bus_direkt: ["bus", "Haltestelle direkt am Ziel"],
+  };
+  const anreiseText = (z) => {
+    const [klasse, wort] = ANREISE[z.anreise] || ["auto", "unbekannt"];
+    const halt = z.halt_km < 1 ? Math.round(z.halt_km * 1000) + " m"
+      : z.halt_km + " km";
+    return { klasse, text: wort + " — nächste kartierte Haltestelle " + halt
+      + (z.halt_name && z.halt_name !== "unbenannt" ? " (" + z.halt_name + ")" : "") };
+  };
+  const wegZiel = (z) =>
+    (z.strasse_hotel_km === "unbekannt" ? "Entfernung unbekannt"
+      : z.strasse_hotel_km + " km") + " · "
+    + (z.fahrzeit_hotel_min === "unbekannt" ? "Fahrzeit unbekannt"
+      : "rund " + z.fahrzeit_hotel_min + " min")
+    + " · Taxi ab " + (z.taxi_ab_eur === "unbekannt" ? "unbekannt" : z.taxi_ab_eur + " €");
+
+  ZIELE.forEach((z) => {
+    const a = anreiseText(z);
+    L.marker([z.lat, z.lon], {
+      icon: L.divIcon({ className: "", html: '<i class="zielpin">' + minuten(z) + "</i>",
+                        iconSize: [28, 20], iconAnchor: [14, 10], popupAnchor: [0, -12] }),
+      zIndexOffset: 20,
+    })
+      .bindTooltip(z.name, { direction: "top", offset: [0, -12], className: "fahne" })
+      .bindPopup('<span class="pop-art">' + esc(z.art) + "</span>"
+        + '<span class="pop-name">' + esc(z.name) + "</span>"
+        + '<span class="pop-zeile">' + esc(wegZiel(z)) + "</span>"
+        + '<span class="pop-zeile">' + esc(a.text) + "</span>"
+        + (z.oeffnung !== "unbekannt"
+          ? '<span class="pop-zeile">Geöffnet: ' + esc(z.oeffnung) + "</span>" : "")
+        + (z.eintritt !== "unbekannt"
+          ? '<span class="pop-zeile">Eintritt: ' + esc(z.eintritt) + "</span>" : "")
+        + '<div class="pop-wege"><a href="#ziele">Fakten unter der Karte</a>'
+        + (z.website ? '<a href="' + esc(z.website) + '" target="_blank" rel="noopener">Offizielle Seite</a>' : "")
+        + '<a href="https://www.google.com/maps/search/?api=1&query=' + z.lat + "," + z.lon
+        + '" target="_blank" rel="noopener">In Google Maps</a></div>', { maxWidth: 320 })
+      .addTo(ebeneZiele);
+  });
+
   /* ---------- Ebenen schalten ---------- */
   const schalter = [
     ["eHotels", ebeneHotels, "nHotels", D.hotels.length],
     ["eStaedte", ebeneStaedte, "nStaedte", STAEDTE.length],
     ["eFlug", ebeneFlug, "nFlug", FLUG.length],
+    ["eZiele", ebeneZiele, "nZiele", ZIELE.length],
   ];
   schalter.forEach(([id, ebene, zaehlerId, anzahl]) => {
     $(zaehlerId).textContent = anzahl;
@@ -372,7 +535,8 @@
   /* ---------- Ausschnitt ---------- */
   const allePunkte = D.hotels.map((h) => [h.lat, h.lon])
     .concat(STAEDTE.map((s) => [s.lat, s.lon]))
-    .concat(FLUG.map((f) => [f.lat, f.lon]));
+    .concat(FLUG.map((f) => [f.lat, f.lon]))
+    .concat(ZIELE.map((z) => [z.lat, z.lon]));
   const alleBounds = L.latLngBounds(allePunkte);
   karte.fitBounds(alleBounds, { padding: [44, 44] });
 
@@ -410,7 +574,81 @@
 
   $("kartequelle").textContent = "Karte: OpenStreetMap-Mitwirkende · Luftbild: Esri";
   $("kartedetail").textContent = "Hotelkoordinaten: Google Places, 2026-08-21 · "
-    + "Städte und Flughäfen: OpenStreetMap, " + (D.inselStand || "unbekannt");
+    + "Städte, Flughäfen und Ziele: OpenStreetMap, " + (D.inselStand || "unbekannt");
+
+  /* ---------- Reiter ----------
+     role=tablist verlangt die Pfeiltasten-Bedienung: innerhalb der Leiste
+     wechselt man mit Links/Rechts, und immer nur der aktive Reiter ist ein
+     Tab-Stopp (roving tabindex). Ohne das waeren es drei zusammenhanglose
+     Knoepfe, die nur so aussehen wie Reiter. */
+  const REITER = [["r-ziele", "p-ziele"], ["r-staedte", "p-staedte"], ["r-flug", "p-flug"]];
+  function reiterWaehlen(i, fokus) {
+    REITER.forEach(([rid, pid], k) => {
+      const an = k === i;
+      const r = $(rid);
+      r.setAttribute("aria-selected", an ? "true" : "false");
+      r.tabIndex = an ? 0 : -1;
+      $(pid).hidden = !an;
+      if (an && fokus) r.focus();
+    });
+  }
+  REITER.forEach(([rid], i) => {
+    $(rid).addEventListener("click", () => reiterWaehlen(i, false));
+    $(rid).addEventListener("keydown", (e) => {
+      const n = REITER.length;
+      if (e.key === "ArrowRight") { reiterWaehlen((i + 1) % n, true); e.preventDefault(); }
+      else if (e.key === "ArrowLeft") { reiterWaehlen((i - 1 + n) % n, true); e.preventDefault(); }
+      else if (e.key === "Home") { reiterWaehlen(0, true); e.preventDefault(); }
+      else if (e.key === "End") { reiterWaehlen(n - 1, true); e.preventDefault(); }
+    });
+  });
+  $("rnZiele").textContent = ZIELE.length;
+  $("rnStaedte").textContent = STAEDTE.length;
+  $("rnFlug").textContent = FLUG.length;
+
+  /* ---------- Ausflugsziele ----------
+     Gruppiert nach Fahrzeit, weil das die Frage ist, die man beim Planen
+     stellt: passt das in einen halben Tag oder kostet es den ganzen? */
+  const GRUPPEN = [
+    { bis: 45, titel: "Halber Tag — bis 45 Minuten Fahrt" },
+    { bis: 105, titel: "Tagesausflug — 45 bis 105 Minuten" },
+    { bis: Infinity, titel: "Weite Fahrt — über 105 Minuten" },
+  ];
+  const zielKarte = (z) => {
+    const a = anreiseText(z);
+    const fakten = [];
+    if (z.oeffnung !== "unbekannt") fakten.push("Geöffnet: " + z.oeffnung);
+    if (z.eintritt !== "unbekannt") fakten.push("Eintritt: " + z.eintritt);
+    if (z.rollstuhl === "yes") fakten.push("barrierefrei");
+    else if (z.rollstuhl === "limited") fakten.push("eingeschränkt barrierefrei");
+    return `
+      <article class="ziel">
+        <div class="zielkopf">
+          <span class="zielname">${esc(z.name)}</span>
+          <span class="zielart">${esc(z.art)}</span>
+        </div>
+        <div class="zielweg"><span>${esc(wegZiel(z))}</span></div>
+        <p class="anreise ${a.klasse}"><span>${esc(a.text)}</span></p>
+        <div class="zielfakt">${fakten.map((f) =>
+          '<span class="chip">' + esc(f) + "</span>").join("")}</div>
+        <p class="zielquelle">Weg: OSRM · Haltestelle und Zeiten: OpenStreetMap${
+          z.website ? ' · <a href="' + esc(z.website)
+            + '" target="_blank" rel="noopener">Offizielle Seite</a>' : ""}</p>
+      </article>`;
+  };
+
+  $("zaehlerZiele").textContent = ZIELE.length + " Ziele · Auswahl nach Bekanntheit "
+    + "(mindestens 10 Wikipedia-Sprachversionen)";
+  let rest = ZIELE.slice();
+  $("zielinhalt").innerHTML = GRUPPEN.map((g) => {
+    const teil = rest.filter((z) => (typeof z.fahrzeit_hotel_min === "number"
+      ? z.fahrzeit_hotel_min : 1e9) <= g.bis);
+    rest = rest.filter((z) => !teil.includes(z));
+    if (!teil.length) return "";
+    return '<section class="zielgruppe"><span class="gruppentitel">' + esc(g.titel)
+      + " · " + teil.length + '</span><div class="zielraster">'
+      + teil.map(zielKarte).join("") + "</div></section>";
+  }).join("");
 
   /* ---------- Städte-Fakten ---------- */
   const nahste = STAEDTE.reduce((a, b) =>

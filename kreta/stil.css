@@ -58,6 +58,7 @@
 
   /* --- Die warmen Toene: nur noch Punkte --- */
   --sonne-flaeche:#FFD447;  /* Tinte darauf 10,42:1 */
+  --ziel:#2FD07E;           /* Ausflugsziele, Tinte darauf 7,37:1 */
   --koralle:#FF6B4A;        /* Tinte darauf  5,26:1 */
 
   /* --- Status, alle gegen ihren eigenen Chipgrund gemessen --- */
