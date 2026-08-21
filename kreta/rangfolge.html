@@ -49,11 +49,12 @@
      darum als Geschwister neben der Zeile, nicht darin. */
   .zeilenhuelle{display:flex; align-items:stretch; gap:var(--sp-2xs)}
   .zeilenhuelle .zeile{flex:1; min-width:0}
-  .aufkarte{flex:none; display:flex; align-items:center; padding:0 var(--sp-s);
-            font-family:var(--zahl); font-size:9.5px; letter-spacing:.06em; text-align:center;
+  .zeilenwege{flex:none; display:flex; flex-direction:column; gap:2px}
+  .aufkarte{flex:1; display:flex; align-items:center; justify-content:center;
+            padding:0 var(--sp-xs); min-width:4.4rem; min-height:22px;
+            font-family:var(--zahl); font-size:9px; letter-spacing:.05em; text-align:center;
             text-decoration:none; color:var(--tinte); background:var(--flaeche);
-            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
-            max-width:5.6rem}
+            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
   .aufkarte:hover{background:var(--akzent-weich); color:var(--akzent-text)}
 
   .sieger-hinweis{display:flex; flex-wrap:wrap; gap:var(--sp-s); align-items:center;
@@ -67,7 +68,7 @@
     .zeile{grid-template-columns:2rem minmax(0,1fr)}
     .werte{grid-column:1 / -1; justify-content:flex-start; margin-top:var(--sp-2xs)}
     .preis,.fit{text-align:left; min-width:0}
-    .aufkarte{display:none}
+    .zeilenwege{flex-direction:row; width:100%}
   }
 </style>
 </head>
@@ -90,8 +91,8 @@
   <p class="eyebrow">Hotelvergleich · Shortlist</p>
   <h1>Die <em>Rangfolge</em></h1>
   <p class="unterzeile">Alle geprüften Strandhotels in der Reihenfolge der Kriterien-Erfüllung.
-    Ein Klick auf eine Zeile klappt die Details auf; <em>Auf der Karte</em> springt zur
-    Übersichtskarte und öffnet dort das Hotel.</p>
+    Ein Klick auf eine Zeile klappt die Details auf. <em>Karte</em> springt zur
+    Übersichtskarte und öffnet dort das Hotel, <em>Maps</em> zeigt es in Google Maps.</p>
 
   <p class="sieger-hinweis" id="siegerHinweis"></p>
 
@@ -141,8 +142,13 @@
           <br>Strand: ${reich(h.strand)}
         </span>
       </button>
-      <a class="aufkarte" href="index.html#h${h.rang}"
-         aria-label="${esc(h.name)} auf der Karte zeigen">Auf der<br>Karte</a>
+      <span class="zeilenwege">
+        <a class="aufkarte" href="index.html#h${h.rang}"
+           aria-label="${esc(h.name)} auf unserer Übersichtskarte zeigen">Karte</a>
+        <a class="aufkarte" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/search/?api=1&query=${h.lat},${h.lon}"
+           aria-label="${esc(h.name)} in Google Maps ansehen">Maps</a>
+      </span>
     </li>`).join("");
 
   $("listeninhalt").addEventListener("click", (e) => {
