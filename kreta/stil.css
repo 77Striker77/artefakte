@@ -4,6 +4,10 @@
  * nicht aus den Farben allein, sondern aus der Mechanik: keine runden Ecken,
  * harte Schatten ohne Weichzeichnung, dicke Umrisse, Knoepfe die einrasten.
  *
+ * EINE Palette, kein Umschalter. Die Seite malt ihren Grund selbst und sieht
+ * auf jedem Geraet gleich aus - was bei einer Karte, die man in der Sonne
+ * liest, mehr wert ist als ein zweites Theme.
+ *
  * Alle Werte gegen ihren tatsaechlichen Grund gemessen (kontrast.mjs, 21.08.2026).
  * Land gegen Meer erreicht 1,70:1 - zwei grosse Flaechen aehnlicher Helligkeit
  * sind in einer hellen Strandkarte nicht auf 3:1 zu bringen. Die Form traegt
@@ -38,39 +42,6 @@
   --zahl:"Silkscreen","Courier New",monospace;
   --mass:1180px;
   --bewegung:1;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme: dark;
-    /* Abend am Strand */
-    --grund:#0E2A33; --flaeche:#173C48; --flaeche-2:#1F4C5A;
-    --tinte:#F2E4C6; --tinte-leise:#A9C2C9; --tinte-fein:#A9C2C9;
-    --umriss:#061419; --linie:#2C5A69; --linie-stark:#88B3C0;
-    --see:#0C3D4C; --see-tief:#072B36;
-    --akzent:#5BD3E8; --akzent-text:#7FDEEE; --akzent-weich:#123945;
-    --sonne-flaeche:#F5C24B;
-    --gut:#6EE7B7; --gut-bg:#0D3328;
-    --warn:#FDBA74; --warn-bg:#3A2110;
-    --krit:#FDA4AF; --krit-bg:#3A1420;
-    --p-restaurant:#FB923C; --p-imbiss:#FF7A7A; --p-baeckerei:#F9A8D4; --p-cafe:#E879F9;
-    --p-bar:#A78BFA; --p-strand:#7DD3FC; --p-strandbar:#5EEAD4; --p-supermarkt:#6EE7B7;
-    --p-bus:#A9C2C9;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme: dark;
-  --grund:#0E2A33; --flaeche:#173C48; --flaeche-2:#1F4C5A;
-  --tinte:#F2E4C6; --tinte-leise:#A9C2C9; --tinte-fein:#A9C2C9;
-  --umriss:#061419; --linie:#2C5A69; --linie-stark:#88B3C0;
-  --see:#0C3D4C; --see-tief:#072B36;
-  --akzent:#5BD3E8; --akzent-text:#7FDEEE; --akzent-weich:#123945;
-  --sonne-flaeche:#F5C24B;
-  --gut:#6EE7B7; --gut-bg:#0D3328;
-  --warn:#FDBA74; --warn-bg:#3A2110;
-  --krit:#FDA4AF; --krit-bg:#3A1420;
-  --p-restaurant:#FB923C; --p-imbiss:#FF7A7A; --p-baeckerei:#F9A8D4; --p-cafe:#E879F9;
-  --p-bar:#A78BFA; --p-strand:#7DD3FC; --p-strandbar:#5EEAD4; --p-supermarkt:#6EE7B7;
-  --p-bus:#A9C2C9;
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -114,10 +85,6 @@ img{image-rendering:pixelated}
          color:var(--tinte-leise); white-space:nowrap; border-bottom:3px solid transparent}
 .menue a:hover{color:var(--tinte)}
 .menue a[aria-current="page"]{color:var(--akzent-text); border-bottom-color:var(--akzent)}
-.themaKnopf{font-family:var(--display); font-size:14px; min-height:44px; padding:0 var(--sp-s);
-            background:none; color:var(--tinte-leise); border:0; cursor:pointer;
-            border-left:3px solid var(--linie); margin-left:var(--sp-xs)}
-.themaKnopf:hover{color:var(--tinte)}
 
 .huelle{max-width:var(--mass); margin:0 auto; padding:var(--sp-l) var(--sp-m) var(--sp-xl)}
 .eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
@@ -166,7 +133,7 @@ h3{font-family:var(--display); font-size:17px}
   *{animation-duration:.001ms !important; transition-duration:.001ms !important}
 }
 @media print{
-  .leiste,.skip,.themaKnopf{display:none}
+  .leiste,.skip{display:none}
   body{background:#fff; color:#000; background-image:none}
   .tafel,.knopf{box-shadow:none}
 }
