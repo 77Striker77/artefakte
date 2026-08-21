@@ -12,13 +12,21 @@
 <link rel="stylesheet" href="stil.css">
 <style>
   .kopfchips{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
-  /* Auf der Sonnenflaeche steht die Tinte, nicht ein dunkles Amber - das las
-     sich als Braun. Gemessen: Tinte auf #FFD98A ergibt 8,89:1. */
-  .urteil{margin:var(--sp-l) 0; padding:var(--sp-m) var(--sp-l); background:var(--sonne-flaeche);
-          border:var(--rand) solid var(--umriss); box-shadow:var(--schatten); color:var(--tinte)}
-  .urteil h2{color:var(--tinte); font-size:21px}
-  .urteil .meta{font-family:var(--zahl); font-size:10.5px; color:var(--tinte); margin-top:var(--sp-xs)}
-  .urteil p.text{margin-top:var(--sp-s); font-size:14.5px; color:var(--tinte)}
+  /* "Gewaehlt" ist ein TIEFES Panel mit Goldrahmen, keine gelbe Flaeche.
+     Flaechig gelb war der groesste Block der Seite und zog die Waerme zurueck,
+     die dieser Umbau gerade herausgenommen hat - genau der Fehler, den der
+     Kopf von stil.css ausschliesst: Sonne ist Punkt und Kante, nie Flaeche.
+     Als einziges dunkles Panel zwischen hellen Tafeln sticht es staerker
+     heraus als vorher. Rahmen 10,42:1 gegen den Grund, Titel 12,96:1. */
+  .urteil{margin:var(--sp-l) 0; padding:var(--sp-m) var(--sp-l); background:var(--tiefe-tief);
+          border:var(--rand) solid var(--sonne-flaeche); box-shadow:var(--schatten);
+          color:var(--auf-tiefe)}
+  .urteil h2{color:var(--sonne-flaeche); font-size:21px}
+  .urteil .meta{font-family:var(--zahl); font-size:10.5px; color:var(--auf-tiefe-leise);
+                margin-top:var(--sp-xs)}
+  .urteil p.text{margin-top:var(--sp-s); font-size:14.5px; color:var(--auf-tiefe)}
+  .urteil a{color:var(--akzent-hell)}
+  .urteil strong{color:var(--sonne-flaeche)}
 
   section{margin-top:var(--sp-xl)}
   section > h2{margin-bottom:var(--sp-s)}
@@ -41,7 +49,10 @@
 
   .zweispalt{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:var(--sp-m)}
   .spalte h3{font-size:15px; margin-bottom:var(--sp-xs)}
-  .spalte.lob h3{color:var(--gut)} .spalte.kritik h3{color:var(--krit)}
+  /* Die Ueberschriften stehen frei auf dem Wasser, nicht auf einem Chip -
+     darum die hellen Stufen. Die border-left-Streifen unten bleiben dunkel:
+     die sitzen an einer hellen Tafel. */
+  .spalte.lob h3{color:var(--gut-hell)} .spalte.kritik h3{color:var(--krit-hell)}
   .spalte ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-2xs)}
   .spalte li{background:var(--flaeche); border:var(--rand) solid var(--umriss); border-left:6px solid;
              padding:var(--sp-xs) var(--sp-s); font-size:13.5px}
@@ -50,11 +61,15 @@
   .haeufig{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-fein); display:block; margin-top:2px}
 
   .fitkopf{display:flex; align-items:center; gap:var(--sp-s); margin-bottom:var(--sp-s)}
-  .fitwert{font-family:var(--zahl); font-size:30px; font-weight:600; color:var(--gut);
+  .fitwert{font-family:var(--zahl); font-size:30px; font-weight:600; color:var(--gut-hell);
            font-variant-numeric:tabular-nums}
   .fitliste{list-style:none; margin:0; padding:0; font-size:13.5px}
   .fitliste li{padding:3px 0; display:flex; gap:var(--sp-xs)}
   .gewicht{font-family:var(--zahl); font-weight:600; min-width:2.2em; flex:none}
+  /* Diese beiden stehen NICHT auf dem Wasser: .fitliste li erbt background
+     var(--flaeche) von der Regel .spalte li darueber - also helle Tafel, also
+     die dunklen Stufen. Gemessen im Browser gegen den echten Grund, nicht
+     geschaetzt: mit den hellen Stufen kamen 1,54:1 bzw. 2,35:1 heraus. */
   .g-plus{color:var(--gut)} .g-minus{color:var(--krit)}
 
   details{background:var(--flaeche); border:var(--rand) solid var(--umriss); margin-bottom:var(--sp-2xs)}
@@ -67,7 +82,7 @@
   .inhalt p{margin-bottom:var(--sp-xs)}
   .inhalt h3{font-size:14px; color:var(--tinte); margin:var(--sp-s) 0 var(--sp-2xs)}
   .inhalt code{font-family:var(--zahl); font-size:12.5px; background:var(--flaeche-2);
-               padding:1px 5px; border-radius:4px}
+               padding:1px 5px}
 
   .wege{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
 </style>

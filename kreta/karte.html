@@ -12,16 +12,22 @@
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="stil.css">
 <style>
+  /* Tiefes Panel mit Koralle-Kante statt pfirsichfarbener Flaeche - dieselbe
+     Mechanik wie das Sieger-Panel und der letzte grosse warme Block, der nach
+     dem Umbau noch stand. Als einziges dunkles Feld zwischen hellen Tafeln
+     faellt es staerker auf als vorher. Kante 5,26:1 gegen den Seitengrund. */
   .warnkasten{display:flex; gap:var(--sp-s); margin:var(--sp-m) 0; padding:var(--sp-s) var(--sp-m);
-              background:var(--warn-bg); color:var(--warn); border-left:6px solid var(--warn);
-              font-size:13.5px}
+              background:var(--tiefe-tief); color:var(--auf-tiefe);
+              border-left:6px solid var(--koralle); font-size:13.5px}
+  .warnkasten strong{color:var(--koralle)}
   .leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center; margin-bottom:var(--sp-s)}
   .leiste-titel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
-                text-transform:uppercase; color:var(--tinte-fein); margin-right:var(--sp-2xs)}
+                text-transform:uppercase; color:var(--auf-tiefe-leise); margin-right:var(--sp-2xs)}
 
   #karte{height:clamp(380px,62vh,680px); border:var(--rand) solid var(--umriss);
-         background:var(--flaeche-2); z-index:0}
-  .leaflet-container{font-family:var(--sans); background:var(--flaeche-2)}
+         background:var(--tiefe); z-index:0}
+  /* Der Grund unter den Kacheln ist bei einer Kuestenkarte ohnehin Wasser. */
+  .leaflet-container{font-family:var(--sans); background:var(--tiefe)}
   .leaflet-control-attribution{font-size:10.5px}
 
   /* Pixelquadrate statt Kreise. Als divIcon sind die Marken normale
@@ -42,32 +48,25 @@
   .k-strand{background:var(--p-strand)}         .k-supermarkt{background:var(--p-supermarkt)}
   .k-bus{background:var(--p-bus)}
   .k-hotel{background:var(--sonne-flaeche); border-color:var(--umriss)}
-  .k-ich{background:var(--akzent)}
+  /* Weiss statt Aqua: Aqua lag 4 Hue-Grad neben --p-strandbar, und der eigene
+     Standort ist der Marker, der am wenigsten verwechselbar sein darf. */
+  .k-ich{background:var(--ich)}
   .ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.55}
   .standort-genauigkeit{stroke:var(--akzent); fill:var(--akzent); fill-opacity:.14; stroke-width:2}
 
-  .leaflet-popup-content-wrapper{}
-  .leaflet-popup-content{margin:12px 14px; font-size:13.5px; line-height:1.5; min-width:220px}
-  .pop-art{font-family:var(--zahl); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
-           color:#6b7280; display:block; margin-bottom:2px}
-  .pop-name{font-weight:600; font-size:15px; display:block; margin-bottom:4px}
-  .pop-zeile{display:block; color:#374151}
-  .pop-zeiten{font-size:12px; color:#4b5563; margin-top:6px; max-height:8.5em; overflow:auto}
-  .pop-wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
-  .pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
-              border-radius:5px; border:1px solid #d1d5db; color:#111827; background:#fff}
-  .pop-wege a.haupt{background:#0E6E7D; border-color:#0E6E7D; color:#fff; font-weight:600}
-  .pop-stand{display:block; margin-top:8px; font-family:var(--zahl); font-size:10px; color:#6b7280}
+  /* Popup-Stile stehen jetzt zentral in stil.css - sie waren hier und in
+     index.html doppelt definiert und auseinandergelaufen. */
 
   .standleiste{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center;
-               margin-top:var(--sp-xs); font-size:13px; color:var(--tinte-leise)}
-  .standwert{font-family:var(--zahl); font-weight:600; color:var(--akzent-text)}
+               margin-top:var(--sp-xs); font-size:13px; color:var(--auf-tiefe-leise)}
+  .standwert{font-family:var(--zahl); font-weight:600; color:var(--akzent-hell)}
 
   .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin:var(--sp-xl) 0 var(--sp-s)}
-  .zaehler{font-family:var(--zahl); font-size:12px; color:var(--tinte-fein)}
+  .zaehler{font-family:var(--zahl); font-size:12px; color:var(--auf-tiefe-leise)}
   .liste{list-style:none; margin:0; padding:0; display:grid;
          grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); gap:var(--sp-2xs)}
   .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
+         color:var(--tinte);
          color:var(--tinte); border:var(--rand) solid var(--umriss); padding:var(--sp-xs) var(--sp-s); display:grid;
          grid-template-columns:auto minmax(0,1fr) auto; gap:var(--sp-s); align-items:center;
          min-height:44px}

@@ -13,8 +13,9 @@
 <link rel="stylesheet" href="stil.css">
 <style>
   #karte{height:clamp(360px,56vh,620px); border:var(--rand) solid var(--umriss);
-         box-shadow:var(--schatten); background:var(--flaeche-2); z-index:0}
-  .leaflet-container{font-family:var(--sans); background:var(--flaeche-2)}
+         box-shadow:var(--schatten); background:var(--tiefe); z-index:0}
+  /* Der Grund unter den Kacheln ist bei einer Kuestenkarte ohnehin Wasser. */
+  .leaflet-container{font-family:var(--sans); background:var(--tiefe)}
   .leaflet-control-attribution{font-size:10.5px}
 
   /* Marken sind divIcons - normale HTML-Elemente, damit sie demselben Stylesheet
@@ -33,11 +34,12 @@
            margin:var(--sp-l) 0 var(--sp-s)}
   .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
               justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
-              font-size:11px; color:var(--tinte-fein); font-family:var(--zahl)}
+              font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
   .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin-bottom:var(--sp-s)}
-  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--tinte-fein)}
+  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--auf-tiefe-leise)}
   .liste{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-xs)}
   .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
+         color:var(--tinte);
          color:var(--tinte); border:var(--rand) solid var(--umriss);
          box-shadow:var(--schatten-klein); padding:var(--sp-s) var(--sp-m);
          display:grid; gap:var(--sp-2xs) var(--sp-m);
@@ -47,36 +49,37 @@
   .zeile:hover{background:var(--flaeche-2)}
   .zeile[aria-pressed="true"]{background:var(--akzent-weich);
                               transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
-  .zeile.sieger{background:var(--sonne-flaeche)}
+  /* "Gewaehlt" ist ein TIEFES Panel mit Goldrahmen, keine gelbe Flaeche.
+     Flaechig gelb war der groesste Block der Seite und zog die Waerme zurueck,
+     die dieser Umbau gerade herausgenommen hat - genau der Fehler, den der
+     Kopf von stil.css ausschliesst: Sonne ist Punkt und Kante, nie Flaeche.
+     Als einziges dunkles Panel zwischen hellen Tafeln sticht es staerker
+     heraus als vorher. Rahmen 10,42:1 gegen den Grund, Titel 12,96:1. */
+  .zeile.sieger{background:var(--tiefe-tief); color:var(--auf-tiefe);
+                border-color:var(--sonne-flaeche)}
   .rang{font-family:var(--zahl); font-size:16px; color:var(--tinte-fein)}
-  .zeile.sieger .rang{color:var(--tinte)}
+  .zeile.sieger .rang{color:var(--sonne-flaeche)}
   .name{font-weight:700; font-size:15.5px; line-height:1.25}
   .ort{color:var(--tinte-leise); font-size:12.5px; margin-top:1px}
-  .zeile.sieger .ort{color:var(--tinte)}
+  .zeile.sieger .ort{color:var(--auf-tiefe-leise)}
   .werte{display:flex; align-items:center; gap:var(--sp-s); flex-wrap:wrap}
   .fit{font-family:var(--zahl); font-size:12px; min-width:3.6rem; text-align:right}
   .preis{font-family:var(--zahl); font-size:10px; color:var(--tinte-leise);
          min-width:8.5rem; text-align:right}
-  .zeile.sieger .preis{color:var(--tinte)}
+  .zeile.sieger .preis{color:var(--auf-tiefe)}
   .detail{grid-column:1 / -1; margin-top:var(--sp-xs); padding-top:var(--sp-xs);
           border-top:2px solid var(--umriss); font-size:13px; color:var(--tinte-leise); display:none}
   .zeile[aria-pressed="true"] .detail, .zeile.sieger .detail{display:block}
-  .zeile.sieger .detail{color:var(--tinte)}
+  .zeile.sieger .detail{color:var(--auf-tiefe-leise); border-top-color:var(--sonne-flaeche)}
   .sieger-hinweis{display:flex; flex-wrap:wrap; gap:var(--sp-s); align-items:center;
                   margin:var(--sp-m) 0 0; padding:var(--sp-s) var(--sp-m);
-                  background:var(--sonne-flaeche); border:var(--rand) solid var(--umriss);
-                  box-shadow:var(--schatten-klein); color:var(--tinte); font-size:14.5px}
-  .sieger-hinweis a{color:var(--tinte)}
+                  background:var(--tiefe-tief); border:var(--rand) solid var(--sonne-flaeche);
+                  box-shadow:var(--schatten-klein); color:var(--auf-tiefe); font-size:14.5px}
+  .sieger-hinweis strong{color:var(--sonne-flaeche)}
+  .sieger-hinweis a{color:var(--akzent-hell)}
 
-  .leaflet-popup-content{margin:12px 14px; font-size:13.5px; line-height:1.5; min-width:210px}
-  .pop-rang{font-family:var(--zahl); font-size:10px; letter-spacing:.06em; color:#6b7280;
-            display:block; margin-bottom:2px}
-  .pop-name{font-weight:700; font-size:15px; display:block; margin-bottom:4px}
-  .pop-zeile{display:block; color:#374151}
-  .pop-wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
-  .pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
-              border:2px solid #111827; color:#111827; background:#fff}
-  .pop-wege a.haupt{background:#FFD98A}
+  /* Popup-Stile stehen jetzt zentral in stil.css - sie waren hier und in
+     karte.html doppelt definiert und auseinandergelaufen. */
 
   @media (max-width:640px){
     .zeile{grid-template-columns:2rem minmax(0,1fr)}

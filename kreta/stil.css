@@ -1,40 +1,101 @@
-/* Kreta 2026 - Strandurlaub in Pixeln.
+/* Kreta 2026 - Tauchgang statt Strandtuch.
  *
- * Richtung: warme Sonne gegen kuehles Meer, Sand als Neutralton. Der Look kommt
- * nicht aus den Farben allein, sondern aus der Mechanik: keine runden Ecken,
- * harte Schatten ohne Weichzeichnung, dicke Umrisse, Knoepfe die einrasten.
+ * Richtung: der Grund IST das Meer. Die Inhalte sind helle Fenster, die darauf
+ * liegen - dicker Umriss, harter Versatz, keine runden Ecken. Sonne und Koralle
+ * sind Punkte, nie Flaechen. Sand kommt nicht mehr vor.
  *
- * EINE Palette, kein Umschalter. Die Seite malt ihren Grund selbst und sieht
- * auf jedem Geraet gleich aus - was bei einer Karte, die man in der Sonne
- * liest, mehr wert ist als ein zweites Theme.
+ * Warum der Umbau: gemessen am 21.08.2026 sassen FUENF der sechs Flaechen-Token
+ * auf Hue 39-41 - Grund, Tafel, Tafel-2, Linie und Sonne. Das ist die Ocker-Achse,
+ * und deshalb liess sich "zu braun" nicht durch einen kuehleren Sandton beheben:
+ * das Problem war die ROLLE, nicht der Ton. Jetzt traegt Hue 195 die Flaeche und
+ * die warmen Toene sind auf Knopf, Marke und Chip zurueckgezogen.
  *
- * Alle Werte gegen ihren tatsaechlichen Grund gemessen (kontrast.mjs, 21.08.2026).
- * Land gegen Meer erreicht 1,70:1 - zwei grosse Flaechen aehnlicher Helligkeit
- * sind in einer hellen Strandkarte nicht auf 3:1 zu bringen. Die Form traegt
- * darum der Umriss: 9,56:1 gegen Land, 5,63:1 gegen Meer. Das ist im Pixel-Look
- * keine Notloesung, sondern das Stilmittel.
+ * EINE Palette, kein Umschalter. Die Seite malt ihren Grund selbst und sieht auf
+ * jedem Geraet gleich aus.
+ *
+ * ZWEI Rollen-Saetze, das ist hier der Kern: --tinte* steht auf hellen Tafeln,
+ * --auf-tiefe* steht direkt auf dem dunklen Grund. Wer die verwechselt, schreibt
+ * dunkel auf dunkel. Alle Paare gemessen (kontrast.mjs, 21.08.2026), jeweils
+ * gegen den Grund, auf dem sie TATSAECHLICH stehen - der Scan ueber die ganze
+ * Datei taugt hier nicht, weil zwei Gruende im Spiel sind.
  */
 
 :root{
-  color-scheme: light;
-  /* Tag am Strand */
-  --grund:#F6E3BD; --flaeche:#FFF7E6; --flaeche-2:#F0DCB0;
-  --tinte:#1E3A46; --tinte-leise:#41626F; --tinte-fein:#41626F;
-  --umriss:#16303C; --linie:#D9BE8A; --linie-stark:#16303C;
-  --see:#37B4CC; --see-tief:#1E7E96;
-  --akzent:#1E7E96; --akzent-text:#175F72; --akzent-weich:#CDEDF4;
-  /* Die Sonne ist nur noch FLAECHE, nie Textfarbe - ein dunkles Amber liest
-     sich unweigerlich als Braun. Text darauf ist die Tinte (8,89:1). */
-  --sonne-flaeche:#FFD98A;
-  --gut:#15803D; --gut-bg:#D6F0DE;
-  --warn:#A83208; --warn-bg:#FFE4CC;
-  --krit:#B3123C; --krit-bg:#FFD9E2;
-  --p-restaurant:#C2410C; --p-imbiss:#DC2626; --p-baeckerei:#BE185D; --p-cafe:#A21CAF;
-  --p-bar:#7C3AED; --p-strand:#1D4ED8; --p-strandbar:#0E7490; --p-supermarkt:#15803D;
-  --p-bus:#41626F;
+  color-scheme: dark;
 
-  --schatten:5px 5px 0 var(--umriss);
-  --schatten-klein:3px 3px 0 var(--umriss);
+  /* --- Das Wasser: Flaeche --- */
+  --tiefe:#0B2B38;          /* Seitengrund */
+  --tiefe-tief:#04161E;     /* Kopfleiste, Umriss, tiefste Lage */
+
+  /* --- Die Fenster: helle Tafeln --- */
+  --flaeche:#F2FBFD; --flaeche-2:#D9EEF4;
+
+  /* --- Rollensatz 1: Text auf HELLER Tafel --- */
+  --tinte:#0B2B38;          /* 14,11:1 */
+  --tinte-leise:#34606F;    /*  6,56:1 */
+  --tinte-fein:#34606F;     /*  6,56:1 */
+
+  /* --- Rollensatz 2: Text auf DUNKLEM Grund --- */
+  --auf-tiefe:#EAF7FA;      /* 13,54:1 auf --tiefe · 16,85:1 auf --tiefe-tief */
+  --auf-tiefe-leise:#9FC7D4;/*  8,18:1 auf --tiefe · 10,18:1 auf --tiefe-tief */
+
+  /* --- Kanten --- */
+  --umriss:#04161E;         /* 17,56:1 auf der hellen Tafel */
+  --linie:#A8CFDB;          /* dekorative Trennlinie, WCAG 1.4.11 ausgenommen */
+  --linie-stark:#04161E;
+  /* Der Versatzblock ist auf dunklem Grund HELLER als der Grund - ein dunkler
+     Schatten faellt hier auf 1,24:1 und verschwindet. 2,11:1 traegt als Flaeche;
+     er ist Dekoration, keine Information. */
+  --schattenfarbe:#17607A;
+
+  /* --- Akzent, zweistufig plus eine dritte Stufe fuer den dunklen Grund --- */
+  --see:#2ED9E8;            /* Flaeche, Marke, Rand */
+  --see-tief:#0E9BB5;
+  --akzent:#2ED9E8;
+  --akzent-text:#14647A;    /* 6,38:1 - Text auf heller Tafel */
+  --akzent-hell:#6FE3EE;    /* 9,81:1 - Text auf dunklem Grund */
+  --akzent-weich:#CDEDF4;   /* Chipgrund, hell */
+
+  /* --- Die warmen Toene: nur noch Punkte --- */
+  --sonne-flaeche:#FFD447;  /* Tinte darauf 10,42:1 */
+  --koralle:#FF6B4A;        /* Tinte darauf  5,26:1 */
+
+  /* --- Status, alle gegen ihren eigenen Chipgrund gemessen --- */
+  --gut:#136E35;  --gut-bg:#D6F0DE;   /* 5,25:1 - war 4,15:1, Bestandsfehler */
+  /* Dritte Stufe: Lob/Kritik stehen in hotel.html nicht auf einem Chip, sondern
+     frei in der <section> - also auf dem Wasser. Die dunklen Werte kamen dort auf
+     2,34:1 bzw. 2,17:1. Das war schon vor dem Umbau angelegt und faellt erst auf
+     dem dunklen Grund auf. */
+  --gut-hell:#5FE39B;  /* 9,14:1 auf --tiefe */
+  --krit-hell:#FF7A9C; /* 6,01:1 auf --tiefe */
+  --warn:#B03214; --warn-bg:#FFE2DA;  /* 5,18:1 */
+  --krit:#B3123C; --krit-bg:#FFD9E2;  /* 5,30:1 */
+
+  /* --- Ortsarten: reine FLAECHEN mit dickem Umriss, nie Textfarbe.
+         Der Umriss traegt die Abgrenzung zum Grund; diese Werte muessen sich
+         darum voneinander unterscheiden, nicht vom Untergrund. Hue-Abstand
+         zum jeweiligen Nachbarn gemessen, Minimum 19 Grad. --- */
+  --p-restaurant:#E5482B;  /* H  9 - war #C2410C, Hue 17 bei L 40%: Rost */
+  --p-imbiss:#F0356B;      /* H343 */
+  --p-baeckerei:#C026A8;   /* H309 */
+  --p-cafe:#9333EA;        /* H271 */
+  --p-bar:#6D4AFF;         /* H252 */
+  --p-strand:#2563EB;      /* H221 */
+  --p-strandbar:#0E9BB5;   /* H189 */
+  --p-supermarkt:#16A34A;  /* H142 */
+  --p-bus:#5B8296;         /* H200, entsaettigt - liegt nah an strandbar, wird
+                              aber ueber S 24 statt S 86 unterschieden */
+  /* Der eigene Standort ist der wichtigste Marker und darf mit keiner Ortsart
+     kollidieren. Aqua lag 4 Grad neben strandbar - deshalb Weiss, unverwechselbar,
+     zusammen mit dem Aqua-Genauigkeitsring. */
+  --ich:#FFFFFF;
+
+  --schatten:5px 5px 0 var(--schattenfarbe);
+  --schatten-klein:3px 3px 0 var(--schattenfarbe);
+  /* Kein einzelner Ring erfuellt 3:1 gegen BEIDE Gruende: Aqua schafft 8,62:1
+     auf dem Grund, aber nur 1,64:1 auf der hellen Tafel; Petrol genau umgekehrt.
+     Darum zweilagig - innen dunkel fuer die Tafel, aussen Aqua fuer den Grund. */
+  --fokus-innen:#04161E; --fokus-aussen:#2ED9E8;
   --rand:3px;
   --sp-2xs:4px; --sp-xs:8px; --sp-s:12px; --sp-m:18px; --sp-l:28px; --sp-xl:44px;
   --display:"Pixelify Sans","Courier New",monospace;
@@ -47,58 +108,101 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  margin:0; background:var(--grund); color:var(--tinte);
+  margin:0; background-color:var(--tiefe); color:var(--auf-tiefe);
   font-family:var(--sans); font-size:17px; line-height:1.55; -webkit-text-size-adjust:100%;
-  /* Dither-Raster: zwei Punktlagen, im Sand kaum zu sehen, aber es nimmt der
-     Flaeche das Digitale. Nur 8px gross, damit es nicht flimmert. */
+  /* Dither bleibt als Stilmittel, aber jetzt hell auf dunkel statt currentColor:
+     auf dem Sand war currentColor die Tinte und kaum zu sehen - auf dem Wasser
+     waere sie schwarz und wuerde die Flaeche verdrecken. */
   background-image:
-    radial-gradient(currentColor .5px, transparent .5px),
-    radial-gradient(currentColor .5px, transparent .5px);
+    radial-gradient(rgba(234,247,250,.06) .5px, transparent .5px),
+    radial-gradient(rgba(234,247,250,.06) .5px, transparent .5px);
   background-size:8px 8px, 8px 8px;
   background-position:0 0, 4px 4px;
-  background-blend-mode:normal;
 }
-body{background-color:var(--grund)}
+
+/* Licht von der Oberflaeche. Fixiert, damit die Strahlen beim Scrollen stehen
+   bleiben statt mit der Seitenlaenge zu kacheln - Licht faellt ein, es scrollt
+   nicht mit. z-index:-1 legt beides hinter den Inhalt; die background-color des
+   body propagiert ans Wurzelelement und bleibt darunter sichtbar. */
+body::before{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    repeating-linear-gradient(101deg, transparent 0 62px,
+      rgba(110,227,238,.055) 62px 80px, transparent 80px 196px),
+    repeating-linear-gradient(96deg, transparent 0 118px,
+      rgba(110,227,238,.035) 118px 146px, transparent 146px 308px),
+    linear-gradient(to bottom, rgba(45,140,170,.30), transparent 62%);
+}
+
+/* Blasen. Ein einziges Pixelquadrat plus box-shadow-Kopien - kein Canvas, kein
+   JS, kostet nichts. Die y-Versaetze in den Kopien lassen sie zeitversetzt
+   erscheinen, obwohl alle dieselbe Animation teilen. */
+body::after{
+  content:""; position:fixed; z-index:-1; pointer-events:none;
+  left:0; bottom:-8vh; width:5px; height:5px;
+  background:rgba(143,227,240,.42);
+  box-shadow:
+     7vw -12vh 0 rgba(143,227,240,.30), 16vw -46vh 0 rgba(143,227,240,.22),
+    23vw -74vh 0 rgba(143,227,240,.34), 38vw  -9vh 0 rgba(143,227,240,.20),
+    46vw -58vh 0 rgba(143,227,240,.30), 61vw -31vh 0 rgba(143,227,240,.24),
+    69vw -81vh 0 rgba(143,227,240,.18), 78vw -21vh 0 rgba(143,227,240,.32),
+    88vw -63vh 0 rgba(143,227,240,.22), 95vw -39vh 0 rgba(143,227,240,.28);
+  animation:aufsteigen 26s linear infinite;
+}
+@keyframes aufsteigen{ to{ transform:translateY(-118vh) } }
 h1,h2,h3{margin:0; text-wrap:balance; font-weight:700}
 p{margin:0}
 a{color:var(--akzent-text)}
 img{image-rendering:pixelated}
 
 :where(a,button,summary,[tabindex]):focus-visible{
-  outline:3px solid var(--akzent); outline-offset:2px}
+  outline:3px solid var(--fokus-aussen); outline-offset:2px;
+  box-shadow:0 0 0 2px var(--fokus-innen)}
+/* Der Knopf traegt schon einen Versatzblock - der darf beim Fokus nicht
+   verschwinden, sonst springt er. Also beide Lagen komponieren. */
+.knopf:focus-visible{box-shadow:0 0 0 2px var(--fokus-innen), var(--schatten-klein)}
 .skip{position:absolute; left:-9999px; top:0; background:var(--flaeche); color:var(--tinte);
       padding:var(--sp-xs) var(--sp-s); border:var(--rand) solid var(--umriss); z-index:1200}
 .skip:focus{left:var(--sp-s); top:var(--sp-s)}
 
 /* ---------- Kopfleiste ---------- */
-.leiste{position:sticky; top:0; z-index:1000; background:var(--flaeche);
-        border-bottom:var(--rand) solid var(--umriss)}
+/* Die Leiste ist keine Inhaltstafel, sondern die Wasseroberflaeche ueber der
+   Seite - darum tief statt hell, sonst steht oben wieder eine grosse helle
+   Flaeche und der Tauchgang faengt erst darunter an. */
+.leiste{position:sticky; top:0; z-index:1000; background:var(--tiefe-tief);
+        border-bottom:var(--rand) solid var(--see)}
 .leiste-innen{max-width:var(--mass); margin:0 auto; padding:0 var(--sp-m);
               display:flex; align-items:center; gap:var(--sp-m); min-height:62px}
 .marke{font-family:var(--display); font-size:23px; font-weight:700; text-decoration:none;
-       color:var(--tinte); white-space:nowrap; letter-spacing:.02em}
+       color:var(--auf-tiefe); white-space:nowrap; letter-spacing:.02em}
 .menue{display:flex; gap:var(--sp-2xs); margin-left:auto; align-items:center;
        overflow-x:auto; scrollbar-width:none}
 .menue::-webkit-scrollbar{display:none}
 .menue a{display:inline-flex; align-items:center; min-height:44px; padding:0 var(--sp-s);
          font-family:var(--display); font-size:15px; font-weight:600; text-decoration:none;
-         color:var(--tinte-leise); white-space:nowrap; border-bottom:3px solid transparent}
-.menue a:hover{color:var(--tinte)}
-.menue a[aria-current="page"]{color:var(--akzent-text); border-bottom-color:var(--akzent)}
+         color:var(--auf-tiefe-leise); white-space:nowrap; border-bottom:3px solid transparent}
+.menue a:hover{color:var(--auf-tiefe)}
+.menue a[aria-current="page"]{color:var(--akzent-hell); border-bottom-color:var(--see)}
 
 .huelle{max-width:var(--mass); margin:0 auto; padding:var(--sp-l) var(--sp-m) var(--sp-xl)}
 .eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
-         color:var(--tinte-fein); margin-bottom:var(--sp-xs)}
+         color:var(--auf-tiefe-leise); margin-bottom:var(--sp-xs)}
 h1{font-family:var(--display); font-size:clamp(32px,5.2vw,54px); line-height:1.06;
    letter-spacing:.01em; text-shadow:4px 4px 0 var(--sonne-flaeche)}
-h1 em{font-style:normal; color:var(--akzent-text)}
+h1,h2{color:var(--auf-tiefe)}
+h1 em{font-style:normal; color:var(--akzent-hell)}
 h2{font-family:var(--display); font-size:26px; font-weight:700}
 h3{font-family:var(--display); font-size:17px}
-.unterzeile{margin-top:var(--sp-s); color:var(--tinte-leise); font-size:15.5px; max-width:64ch}
+.unterzeile{margin-top:var(--sp-s); color:var(--auf-tiefe-leise); font-size:15.5px; max-width:64ch}
 
 /* ---------- Pixel-Bausteine ---------- */
-.tafel{background:var(--flaeche); border:var(--rand) solid var(--umriss);
+/* Jede helle Flaeche schaltet auf Rollensatz 1 zurueck. Das ist die Stelle, die
+   verhindert, dass irgendwo helle Tinte auf heller Tafel landet. */
+.tafel{background:var(--flaeche); color:var(--tinte);
+       border:var(--rand) solid var(--umriss);
        box-shadow:var(--schatten); padding:var(--sp-m) var(--sp-l)}
+.tafel h2,.tafel h3{color:var(--tinte)}
+.tafel:focus-visible{box-shadow:0 0 0 2px var(--fokus-innen), var(--schatten)}
 .chip{font-family:var(--zahl); font-size:10px; letter-spacing:.03em; padding:5px 8px;
       border:2px solid var(--umriss); white-space:nowrap; display:inline-block}
 .chip.passt{background:var(--gut-bg); color:var(--gut)}
@@ -120,20 +224,84 @@ h3{font-family:var(--display); font-size:17px}
 .knopf.haupt{background:var(--sonne-flaeche); color:var(--tinte)}
 .knopf .zahl{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein)}
 .knopf[aria-pressed="true"] .zahl{color:var(--akzent-text)}
+/* ---------- Rollensatz-Umschaltung ----------
+ * Der body traegt jetzt HELLE Tinte, weil er auf dem Wasser steht. Jede helle
+ * Flaeche muss darum aktiv zurueckschalten, sonst erbt sie diese helle Tinte und
+ * schreibt hell auf hell. Das ist der teuerste Fehler dieses Umbaus, und er
+ * faellt beim Rendern nur dort auf, wo man gerade hinsieht - deshalb steht die
+ * Liste hier zentral und nicht verstreut in den drei Seiten.
+ * Wer eine neue helle Flaeche baut, traegt sie hier ein.
+ * NICHT hier stehen duerfen die tiefen Panels (.urteil, .zeile.sieger,
+ * .sieger-hinweis) - die sind dunkel und setzen ihre helle Tinte selbst. */
+.tafel, .zeile, .fakt, .urteil, .tabellenhuelle, .spalte li, details,
+.chip, .knopf,
+.leaflet-popup-content-wrapper, .leaflet-popup-content{color:var(--tinte)}
+
+/* ---------- Karten-Popups ----------
+ * Standen bis hierher zweimal getrennt in index.html und karte.html und waren
+ * dabei auseinandergelaufen: einmal 2px-Rahmen in Tailwind-Grau, einmal 1px mit
+ * border-radius:5px. Beide widersprachen der Mechanik der Seite (keine runden
+ * Ecken, dicker Umriss) und keine der Grautoene stand in der Palette.
+ * Leaflet setzt Radius und Schatten am Wrapper - beides muss aktiv weg. */
+.leaflet-popup-content-wrapper{
+  background:var(--flaeche); border:var(--rand) solid var(--umriss);
+  border-radius:0; box-shadow:var(--schatten); padding:0}
+.leaflet-popup-content{margin:12px 14px; font-size:13.5px; line-height:1.5; min-width:214px}
+.leaflet-popup-tip{background:var(--flaeche); border:var(--rand) solid var(--umriss);
+                   box-shadow:none}
+/* Leaflets eigener Kontrollstil: Attribution und Massstab liegen auf
+   rgba(255,255,255,.7). Ueber dem dunklen Kartencontainer komponiert das zu
+   einem Graublau, auf dem Leaflets Linkfarbe #0078A8 nur 3,32:1 erreicht.
+   Deckender Streifen plus Palettenfarbe macht den Grund vorhersagbar. */
+.leaflet-control-attribution,.leaflet-control-scale-line{
+  background:var(--flaeche) !important; color:var(--tinte-leise) !important;
+  border-color:var(--umriss) !important}
+.leaflet-control-attribution a{color:var(--akzent-text) !important}
+
+.leaflet-popup-close-button{color:var(--tinte-leise) !important; font-size:20px !important;
+                            width:30px !important; height:30px !important}
+.leaflet-popup-close-button:hover{color:var(--tinte) !important}
+.pop-art,.pop-rang{font-family:var(--zahl); font-size:10px; letter-spacing:.08em;
+                   text-transform:uppercase; color:var(--tinte-fein);
+                   display:block; margin-bottom:2px}
+.pop-name{font-weight:700; font-size:15px; display:block; margin-bottom:4px; color:var(--tinte)}
+.pop-zeile{display:block; color:var(--tinte-leise)}
+.pop-zeiten{font-size:12px; color:var(--tinte-leise); margin-top:6px;
+            max-height:8.5em; overflow:auto}
+.pop-stand{display:block; margin-top:8px; font-family:var(--zahl); font-size:10px;
+           color:var(--tinte-fein)}
+.pop-wege{display:flex; flex-wrap:wrap; gap:5px; margin-top:9px}
+/* Wie die Knoepfe der Seite: harte Kante, dicker Umriss, kein Radius. */
+.pop-wege a{display:inline-block; padding:7px 10px; font-size:12px; text-decoration:none;
+            border:2px solid var(--umriss); color:var(--tinte); background:var(--flaeche);
+            font-weight:600}
+.pop-wege a:hover{background:var(--flaeche-2)}
+.pop-wege a.haupt{background:var(--sonne-flaeche)}
+
 .punkt{width:12px; height:12px; flex:none; display:inline-block; border:2px solid var(--umriss)}
 
 .fuss{margin-top:var(--sp-xl); padding:var(--sp-m) 0 var(--sp-xl);
-      border-top:var(--rand) solid var(--umriss); font-size:13px; color:var(--tinte-fein)}
+      border-top:var(--rand) solid var(--see); font-size:13px; color:var(--auf-tiefe-leise)}
+.fuss a{color:var(--akzent-hell)}
 .fuss p{margin-bottom:var(--sp-xs)}
 .fuss .huelle{padding-top:0; padding-bottom:0}
 
 @media (prefers-reduced-motion: reduce){
   :root{--bewegung:0}
+  /* Blasen ganz weg statt auf .001ms gestaucht - eine Animation mit infinite und
+     Restdauer flackert, sie steht nicht still. */
+  body::after{display:none}
   html{scroll-behavior:auto}
   *{animation-duration:.001ms !important; transition-duration:.001ms !important}
 }
 @media print{
   .leiste,.skip{display:none}
   body{background:#fff; color:#000; background-image:none}
+  body::before,body::after{display:none}
+  /* Auf Papier gibt es nur einen Grund - beide Rollensaetze auf dunkel ziehen,
+     sonst druckt der Grund-Text weiss auf weiss. */
+  :root{--auf-tiefe:#000; --auf-tiefe-leise:#333; --tinte:#000; --tinte-leise:#333}
+  h1,h2,.eyebrow,.unterzeile{color:#000}
+  h1{text-shadow:none}
   .tafel,.knopf{box-shadow:none}
 }
