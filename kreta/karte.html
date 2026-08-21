@@ -38,32 +38,49 @@
      Marke wirkt schwarz statt farbig. So bleiben volle 14 px Farbe. */
   /* display:block ist Pflicht: <i> ist inline und ignoriert width/height -
      die Marke faellt dann auf null zusammen und man sieht nur den Umriss-Ring. */
-  /* Die Marke traegt jetzt ein Pixel-Symbol, nicht nur eine Farbe. Farbe allein
-     zwingt zum Nachschlagen in der Legende - bei elf Arten auf engem Raum ist
-     das der Hauptgrund, warum die Karte unuebersichtlich wirkte. Form wird
-     schneller erkannt als Farbton, und beides zusammen ist redundant codiert:
-     wer Farben schlecht unterscheidet, hat weiterhin das Symbol.
-     display:flex ist Pflicht - <i> ist inline und ignoriert width/height. */
+  /* Die Marke IST das Symbol - kein Symbol in einem Kaestchen. Die Pixelform
+     selbst traegt die Kategoriefarbe und steht frei auf der Karte.
+     Das geht nur mit einer Kontur, und zwar zwingend: als freie Flaeche fallen
+     vier der Kategoriefarben gegen helle Kacheln durch (Strandbar und Supermarkt
+     2,87:1, das Sonnengelb des Hotels sogar 1,24:1 - es waere schlicht
+     unsichtbar). Der dunkle Umriss dagegen schafft 16,07:1 auf Kacheln und
+     5,05:1 auf dem Satellitenbild. Wie schon beim Quadrat gilt: die Form traegt
+     der Umriss, nicht die Fuellfarbe.
+     Vier verkettete drop-shadows ohne Weichzeichnung ergeben eine geschlossene
+     Kontur - jeder Schatten sieht bereits das Ergebnis des vorigen, deshalb
+     schliessen sich auch die Diagonalen. Ein SVG-stroke ginge nicht: die
+     Pixelrechtecke grenzen aneinander und wuerden Innenlinien bekommen. */
   .pixpin{display:flex; align-items:center; justify-content:center;
-          width:21px; height:21px; image-rendering:pixelated;
-          box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.3)}
-  .pixpin svg{width:15px; height:15px; display:block; fill:var(--umriss)}
-  /* Haltestellen sind mit 75 Stueck die mit Abstand haeufigste Art. Sie bleiben
-     kleiner und ohne Symbol, sonst erschlagen sie alles andere. */
-  .pixpin.klein{width:13px; height:13px; box-shadow:0 0 0 2px var(--umriss), 3px 3px 0 rgba(0,0,0,.28)}
-  .pixpin.klein svg{width:9px; height:9px}
-  .pixpin.gross{width:30px; height:30px;
-                box-shadow:0 0 0 3px var(--umriss), 5px 5px 0 rgba(0,0,0,.38)}
-  .pixpin.gross svg{width:21px; height:21px}
-  .k-restaurant{background:var(--p-restaurant)} .k-imbiss{background:var(--p-imbiss)}
-  .k-cafe{background:var(--p-cafe)}             .k-baeckerei{background:var(--p-baeckerei)}
-  .k-bar{background:var(--p-bar)}               .k-strandbar{background:var(--p-strandbar)}
-  .k-strand{background:var(--p-strand)}         .k-supermarkt{background:var(--p-supermarkt)}
-  .k-bus{background:var(--p-bus)}
-  .k-hotel{background:var(--sonne-flaeche); border-color:var(--umriss)}
+          width:26px; height:26px; image-rendering:pixelated}
+  .pixpin svg{width:26px; height:26px; display:block; fill:currentColor;
+              filter:drop-shadow(2px 0 0 var(--umriss)) drop-shadow(-2px 0 0 var(--umriss))
+                     drop-shadow(0 2px 0 var(--umriss)) drop-shadow(0 -2px 0 var(--umriss))
+                     drop-shadow(3px 3px 0 rgba(0,0,0,.32))}
+  /* Haltestellen sind mit 75 Stueck die haeufigste Art und bleiben kleiner,
+     sonst erschlagen sie alles andere. Duennere Kontur, sonst frisst sie die
+     Form auf. */
+  .pixpin.klein{width:17px; height:17px}
+  .pixpin.klein svg{width:17px; height:17px;
+              filter:drop-shadow(1.5px 0 0 var(--umriss)) drop-shadow(-1.5px 0 0 var(--umriss))
+                     drop-shadow(0 1.5px 0 var(--umriss)) drop-shadow(0 -1.5px 0 var(--umriss))
+                     drop-shadow(2px 2px 0 rgba(0,0,0,.28))}
+  .pixpin.gross{width:38px; height:38px}
+  .pixpin.gross svg{width:38px; height:38px;
+              filter:drop-shadow(2.5px 0 0 var(--umriss)) drop-shadow(-2.5px 0 0 var(--umriss))
+                     drop-shadow(0 2.5px 0 var(--umriss)) drop-shadow(0 -2.5px 0 var(--umriss))
+                     drop-shadow(4px 4px 0 rgba(0,0,0,.38))}
+
+  /* Die Farbe sitzt jetzt am Text, nicht am Hintergrund - das SVG fuellt mit
+     currentColor. Die alten k-*-Regeln setzten background und sind damit hin. */
+  .k-restaurant{color:var(--p-restaurant)} .k-imbiss{color:var(--p-imbiss)}
+  .k-cafe{color:var(--p-cafe)}             .k-baeckerei{color:var(--p-baeckerei)}
+  .k-bar{color:var(--p-bar)}               .k-strandbar{color:var(--p-strandbar)}
+  .k-strand{color:var(--p-strand)}         .k-supermarkt{color:var(--p-supermarkt)}
+  .k-bus{color:var(--p-bus)}
+  .k-hotel{color:var(--sonne-flaeche)}
+  .k-ich{color:var(--ich)}
   /* Weiss statt Aqua: Aqua lag 4 Hue-Grad neben --p-strandbar, und der eigene
      Standort ist der Marker, der am wenigsten verwechselbar sein darf. */
-  .k-ich{background:var(--ich)}
   /* Die Entfernungsringe sind das nuetzlichste Element der Karte und waren
      unbeschriftet - man sah drei Kreise und musste raten, wofuer sie stehen. */
   .ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.5}
@@ -351,7 +368,8 @@
      (75 Stueck - in Normalgroesse erschlagen sie die Karte), normal fuer alles
      dazwischen. */
   const marke = (kl, art, groesse) => {
-    const mass = groesse === "gross" ? 30 : groesse === "klein" ? 13 : 21;
+    // Die Kantenlaenge ist jetzt die Symbolgroesse plus Platz fuer die Kontur.
+    const mass = groesse === "gross" ? 38 : groesse === "klein" ? 17 : 26;
     const rand = groesse === "klein" ? 2 : 3;
     const kante = mass + 2 * rand;
     return L.divIcon({
@@ -421,7 +439,7 @@
     b.setAttribute("aria-pressed", String(an.has(art)));
     // Auch der Filterknopf zeigt das Symbol - sonst muss man zwischen Knopf und
     // Karte uebersetzen, und genau das war der Bruch.
-    b.innerHTML = '<span class="punkt marksym" style="background:var(--p-'
+    b.innerHTML = '<span class="punkt marksym" style="color:var(--p-'
       + art.toLowerCase().replace(/[^a-z]/g, "") + ')">'
       + symbolSvg(symbolFuer(art)) + "</span>" + esc(art)
       + ' <span class="zahl">' + n + "</span>";

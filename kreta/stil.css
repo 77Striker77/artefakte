@@ -293,10 +293,15 @@ h3{font-family:var(--display); font-size:17px}
 .wege a{font-size:11.5px; padding:8px 10px}
 
 .punkt{width:12px; height:12px; flex:none; display:inline-block; border:2px solid var(--umriss)}
-/* Traegt der Punkt ein Symbol, muss er es zentrieren - inline-block tut das nicht. */
+/* Traegt der Punkt ein Symbol, zeigt er GENAU das, was auch auf der Karte steht:
+   die freie Pixelform in der Kategoriefarbe mit dunkler Kontur. Ein andersartiges
+   Musterstueck im Knopf zwingt zum Uebersetzen zwischen Knopf und Karte - und
+   genau das sollte die Symbolik ja abschaffen. Kein Rahmen, kein Hintergrund. */
 .punkt.marksym{display:inline-flex; align-items:center; justify-content:center;
-               width:16px; height:16px}
-.punkt.marksym svg{width:11px; height:11px; display:block; fill:var(--umriss)}
+               width:18px; height:18px; border:0; background:none}
+.punkt.marksym svg{width:18px; height:18px; display:block; fill:currentColor;
+  filter:drop-shadow(1.5px 0 0 var(--umriss)) drop-shadow(-1.5px 0 0 var(--umriss))
+         drop-shadow(0 1.5px 0 var(--umriss)) drop-shadow(0 -1.5px 0 var(--umriss))}
 
 .fuss{margin-top:var(--sp-xl); padding:var(--sp-m) 0 var(--sp-xl);
       border-top:var(--rand) solid var(--see); font-size:13px; color:var(--auf-tiefe-leise)}
