@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Rangfolge — elf geprüfte Hotels</title>
+<meta name="description" content="Die elf geprüften Strandhotels der Shortlist in der Reihenfolge der Kriterien-Erfüllung, mit Preis, Bewertung und Budget-Einordnung.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="stil.css">
+<style>
+  .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin:var(--sp-l) 0 var(--sp-s)}
+  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--auf-tiefe-leise)}
+  .liste{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-xs)}
+
+  .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
+         color:var(--tinte); border:var(--rand) solid var(--umriss);
+         box-shadow:var(--schatten-klein); padding:var(--sp-s) var(--sp-m);
+         display:grid; gap:var(--sp-2xs) var(--sp-m);
+         grid-template-columns:2.4rem minmax(0,1fr) auto; align-items:center;
+         transition:transform calc(.08s * var(--bewegung)) steps(2),
+                    box-shadow calc(.08s * var(--bewegung)) steps(2)}
+  .zeile:hover{background:var(--flaeche-2)}
+  .zeile[aria-pressed="true"]{background:var(--akzent-weich);
+                              transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
+  /* "Gewaehlt" ist ein TIEFES Panel mit Goldrahmen, keine gelbe Flaeche -
+     dieselbe Mechanik wie das Urteil auf der Hotelseite. */
+  .zeile.sieger{background:var(--tiefe-tief); color:var(--auf-tiefe);
+                border-color:var(--sonne-flaeche)}
+  .rang{font-family:var(--zahl); font-size:16px; color:var(--tinte-fein)}
+  .zeile.sieger .rang{color:var(--sonne-flaeche)}
+  .name{font-weight:700; font-size:15.5px; display:block}
+  .ort{color:var(--tinte-leise); font-size:12.5px; margin-top:1px; display:block}
+  .zeile.sieger .ort{color:var(--auf-tiefe-leise)}
+  .werte{display:flex; align-items:center; gap:var(--sp-s); justify-content:flex-end}
+  .fit{font-family:var(--zahl); font-size:12px; min-width:3.6rem; text-align:right}
+  .preis{font-family:var(--zahl); font-size:10px; color:var(--tinte-leise);
+         min-width:6.6rem; text-align:right}
+  .zeile.sieger .preis{color:var(--auf-tiefe)}
+  .detail{grid-column:1 / -1; margin-top:var(--sp-xs); padding-top:var(--sp-xs);
+          border-top:2px solid var(--umriss); font-size:13px; color:var(--tinte-leise); display:none}
+  .zeile[aria-pressed="true"] .detail, .zeile.sieger .detail{display:block}
+  .zeile.sieger .detail{color:var(--auf-tiefe-leise); border-top-color:var(--sonne-flaeche)}
+
+  /* Der Sprung zur Karte ist ein eigener Link, KEIN Knopf im Knopf: <button>
+     oder <a> in <button> ist ungueltiges HTML und per Tastatur kaputt. Er steht
+     darum als Geschwister neben der Zeile, nicht darin. */
+  .zeilenhuelle{display:flex; align-items:stretch; gap:var(--sp-2xs)}
+  .zeilenhuelle .zeile{flex:1; min-width:0}
+  .aufkarte{flex:none; display:flex; align-items:center; padding:0 var(--sp-s);
+            font-family:var(--zahl); font-size:9.5px; letter-spacing:.06em; text-align:center;
+            text-decoration:none; color:var(--tinte); background:var(--flaeche);
+            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+            max-width:5.6rem}
+  .aufkarte:hover{background:var(--akzent-weich); color:var(--akzent-text)}
+
+  .sieger-hinweis{display:flex; flex-wrap:wrap; gap:var(--sp-s); align-items:center;
+                  margin:var(--sp-m) 0 0; padding:var(--sp-s) var(--sp-m);
+                  background:var(--tiefe-tief); border:var(--rand) solid var(--sonne-flaeche);
+                  box-shadow:var(--schatten-klein); color:var(--auf-tiefe); font-size:14.5px}
+  .sieger-hinweis strong{color:var(--sonne-flaeche)}
+  .sieger-hinweis a{color:var(--akzent-hell)}
+
+  @media (max-width:640px){
+    .zeile{grid-template-columns:2rem minmax(0,1fr)}
+    .werte{grid-column:1 / -1; justify-content:flex-start; margin-top:var(--sp-2xs)}
+    .preis,.fit{text-align:left; min-width:0}
+    .aufkarte{display:none}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#liste">Zur Hotelliste springen</a>
+
+<nav class="leiste">
+  <div class="leiste-innen">
+    <a class="marke" href="index.html">Kreta 2026</a>
+    <div class="menue">
+      <a href="index.html">Übersicht</a>
+      <a href="rangfolge.html">Rangfolge</a>
+      <a href="hotel.html">Das Hotel</a>
+      <a href="karte.html">Vor Ort</a>
+    </div>
+  </div>
+</nav>
+
+<main class="huelle">
+  <p class="eyebrow">Hotelvergleich · Shortlist</p>
+  <h1>Die <em>Rangfolge</em></h1>
+  <p class="unterzeile">Alle geprüften Strandhotels in der Reihenfolge der Kriterien-Erfüllung.
+    Ein Klick auf eine Zeile klappt die Details auf; <em>Auf der Karte</em> springt zur
+    Übersichtskarte und öffnet dort das Hotel.</p>
+
+  <p class="sieger-hinweis" id="siegerHinweis"></p>
+
+  <div class="listenkopf">
+    <h2 id="liste">Elf Kandidaten</h2>
+    <span class="zaehler" id="zaehler"></span>
+  </div>
+  <ul class="liste" id="listeninhalt"></ul>
+</main>
+
+<footer class="fuss"><div class="huelle" id="fuss"></div></footer>
+
+<script src="daten.js"></script>
+<script src="gemein.js"></script>
+<script>
+(function () {
+  "use strict";
+  const D = window.DATEN;
+  const $ = (id) => document.getElementById(id);
+  const esc = window.esc, reich = window.reich;
+
+  const chipKlasse = (b) => (b === "passt" ? "passt" : b === "KO" ? "ko" : "grenz");
+  const sieger = D.hotels[0];
+
+  $("siegerHinweis").innerHTML = "<strong>Gewählt: " + esc(sieger.name) + "</strong> · "
+    + esc(sieger.lage) + ' — <a href="hotel.html">Hotel im Detail</a> · '
+    + '<a href="karte.html">Karte vor Ort</a>';
+  $("zaehler").textContent = D.hotels.length + " Hotels · Stand " + D.stand;
+
+  $("listeninhalt").innerHTML = D.hotels.map((h) => `
+    <li class="zeilenhuelle">
+      <button class="zeile${h.rang === 1 ? " sieger" : ""}" type="button"
+              aria-pressed="false" data-rang="${h.rang}">
+        <span class="rang">${h.rang}</span>
+        <span>
+          <span class="name">${esc(h.name)}</span>
+          <span class="ort">${esc(h.lage)}</span>
+        </span>
+        <span class="werte">
+          <span class="fit">${h.fit == null ? "–" : h.fit + " %"}</span>
+          <span class="preis">${h.preis && h.preis.startsWith("unbekannt") ? "unbekannt" : esc(h.preis)}</span>
+          <span class="chip ${chipKlasse(h.budget)}">${esc(h.budget)}</span>
+        </span>
+        <span class="detail">
+          ${h.titel ? reich(h.titel) + " · " : ""}${h.zimmer} Zimmer · ${esc(h.niveau)} ·
+          ${h.adults ? "Adults Only" : "kein Adults Only"} · Bewertung ${reich(h.bewertung)}
+          <br>Strand: ${reich(h.strand)}
+        </span>
+      </button>
+      <a class="aufkarte" href="index.html#h${h.rang}"
+         aria-label="${esc(h.name)} auf der Karte zeigen">Auf der<br>Karte</a>
+    </li>`).join("");
+
+  $("listeninhalt").addEventListener("click", (e) => {
+    const b = e.target.closest(".zeile");
+    if (!b) return;
+    const auf = b.getAttribute("aria-pressed") === "true";
+    b.setAttribute("aria-pressed", auf ? "false" : "true");
+  });
+
+  $("fuss").innerHTML =
+    "<p>Quelle aller Hotelangaben: eigene Recherche, Stand " + D.stand
+    + ". Preise sind Schätzwerte für die Hochsaison; wo kein Wert abrufbar war, steht "
+    + "<em>unbekannt</em> statt einer Schätzung.</p>";
+})();
+</script>
+</body>
+</html>

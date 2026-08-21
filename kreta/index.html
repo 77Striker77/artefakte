@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kreta — Hotelvergleich</title>
-<meta name="description" content="Karte von Kreta mit elf geprüften Strandhotels, nach Kriterien-Erfüllung gereiht.">
+<title>Kreta 2026 — Übersichtskarte</title>
+<meta name="description" content="Karte von Kreta mit elf geprüften Strandhotels, den sechs größten Städten und den drei Flughäfen der Insel.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,90 +12,133 @@
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="stil.css">
 <style>
-  #karte{height:clamp(360px,56vh,620px); border:var(--rand) solid var(--umriss);
+  /* Die Karte ist der Inhalt dieser Seite - aber nicht beliebig hoch: Kreta ist
+     rund 260 km breit und 60 km hoch, also begrenzt bei voller Seitenbreite die
+     BREITE den Zoom. Jede zusaetzliche Hoehe wird dann leeres Meer, nicht mehr
+     Insel. 56vh ist der Punkt, an dem die Insel die Flaeche noch fuellt. */
+  #karte{height:clamp(400px,56vh,640px); border:var(--rand) solid var(--umriss);
          box-shadow:var(--schatten); background:var(--tiefe); z-index:0}
-  /* Der Grund unter den Kacheln ist bei einer Kuestenkarte ohnehin Wasser. */
   .leaflet-container{font-family:var(--sans); background:var(--tiefe)}
   .leaflet-control-attribution{font-size:10.5px}
 
-  /* Marken sind divIcons - normale HTML-Elemente, damit sie demselben Stylesheet
-     gehorchen wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
-     und wuerde width/height sonst ignorieren. */
-  .pixpin{display:flex; align-items:center; justify-content:center;
-          width:26px; height:26px; image-rendering:pixelated;
-          font-family:var(--zahl); font-size:11px; color:var(--tinte);
-          background:var(--flaeche);
-          box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.3)}
-  .pixpin.sieger{background:var(--sonne-flaeche)}
-  .pixpin.aktiv{background:var(--akzent-weich);
-                box-shadow:0 0 0 4px var(--akzent), 4px 4px 0 rgba(0,0,0,.3)}
+  /* ---------- Drei Markenarten, drei Formen, drei Farben ----------
+     Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben
+     Stylesheet wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
+     und wuerde width/height sonst ignorieren.
+     Der Umriss liegt als box-shadow AUSSEN, nicht als border innen - bei diesen
+     Kantenlaengen frisst ein 3-px-Rahmen sonst einen Grossteil der Farbflaeche.
+     Jede Marke traegt ihre wichtigste Zahl: Hotel den Rang, Stadt die Einwohner
+     in Tausend, Flughafen sein IATA-Kuerzel. Alle drei Textfarben gegen ihre
+     eigene Flaeche gemessen. */
+  .pixpin,.stadtpin,.flugpin{
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--zahl); font-style:normal; image-rendering:pixelated;
+    box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34)}
+
+  /* Hotel: Quadrat, Aqua, Rangzahl (8,62:1) */
+  .pixpin{width:26px; height:26px; font-size:11px;
+          color:var(--tinte); background:var(--see)}
+  /* Das gewaehlte Hotel: groesser und in Gold (10,42:1) */
+  .pixpin.sieger{width:32px; height:32px; font-size:13px; background:var(--sonne-flaeche)}
+  .pixpin.aktiv{box-shadow:0 0 0 4px var(--akzent-text), 4px 4px 0 rgba(0,0,0,.34)}
+
+  /* Stadt: breites Rechteck, Koralle, Einwohner in Tausend (5,26:1) */
+  .stadtpin{width:38px; height:24px; font-size:10px; letter-spacing:.02em;
+            color:var(--tinte); background:var(--koralle)}
+  /* Flughafen: Rechteck, Violett, IATA-Kuerzel. Hier WEISS statt Tinte -
+     Tinte auf diesem Violett kommt nur auf 2,75:1, Weiss auf 5,38:1. */
+  .flugpin{width:36px; height:24px; font-size:10px; letter-spacing:.03em;
+           color:#FFFFFF; background:var(--p-cafe)}
+
+  /* Die Namensfahnen von Staedten und Flughaefen. Leaflet bringt eigene Radien
+     und einen weichen Schatten mit - beides muss aktiv weg. */
+  .leaflet-tooltip.fahne{
+    background:var(--flaeche); color:var(--tinte);
+    border:2px solid var(--umriss); border-radius:0; box-shadow:2px 2px 0 var(--umriss);
+    font-family:var(--display); font-size:12px; font-weight:600; padding:2px 6px;
+    white-space:nowrap}
+  .leaflet-tooltip.fahne::before{display:none}
+
+  /* ---------- Legende ---------- */
+  .legende{margin-top:var(--sp-xs); background:var(--flaeche); color:var(--tinte);
+           border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+           padding:var(--sp-s) var(--sp-m)}
+  .legende h2{font-size:15px; margin-bottom:var(--sp-xs)}
+  .legendenraster{display:grid; gap:var(--sp-s) var(--sp-m);
+                  grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+  .legpunkt{display:flex; gap:var(--sp-s); align-items:flex-start}
+  /* Die Musterstuecke tragen denselben Umriss wie auf der Karte - er ist es,
+     der die Marke gegen den Grund abgrenzt, nicht die Fuellfarbe. */
+  .legmarke{flex:none; display:flex; align-items:center; justify-content:center;
+            font-family:var(--zahl); font-size:10px; margin:3px 4px 0 3px;
+            box-shadow:0 0 0 3px var(--umriss)}
+  .legmarke.hotel{width:24px; height:24px; background:var(--see); color:var(--tinte)}
+  .legmarke.gewaehlt{width:24px; height:24px; background:var(--sonne-flaeche); color:var(--tinte)}
+  .legmarke.stadt{width:34px; height:22px; background:var(--koralle); color:var(--tinte)}
+  .legmarke.flug{width:34px; height:22px; background:var(--p-cafe); color:#FFFFFF}
+  .legtext strong{display:block; font-size:13.5px}
+  .legtext span{display:block; font-size:12.5px; color:var(--tinte-leise); margin-top:1px}
 
   .leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center;
-           margin:var(--sp-l) 0 var(--sp-s)}
+           margin:var(--sp-m) 0 var(--sp-xs)}
+  .leiste-titel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
+                text-transform:uppercase; color:var(--auf-tiefe-leise);
+                margin-right:var(--sp-2xs)}
   .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
               justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
               font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
-  .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin-bottom:var(--sp-s)}
-  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--auf-tiefe-leise)}
-  .liste{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--sp-xs)}
-  .zeile{width:100%; text-align:left; font:inherit; cursor:pointer; background:var(--flaeche);
-         color:var(--tinte);
-         color:var(--tinte); border:var(--rand) solid var(--umriss);
-         box-shadow:var(--schatten-klein); padding:var(--sp-s) var(--sp-m);
-         display:grid; gap:var(--sp-2xs) var(--sp-m);
-         grid-template-columns:2.4rem minmax(0,1fr) auto; align-items:center;
-         transition:transform calc(.08s * var(--bewegung)) steps(2),
-                    box-shadow calc(.08s * var(--bewegung)) steps(2)}
-  .zeile:hover{background:var(--flaeche-2)}
-  .zeile[aria-pressed="true"]{background:var(--akzent-weich);
-                              transform:translate(3px,3px); box-shadow:0 0 0 var(--umriss)}
-  /* "Gewaehlt" ist ein TIEFES Panel mit Goldrahmen, keine gelbe Flaeche.
-     Flaechig gelb war der groesste Block der Seite und zog die Waerme zurueck,
-     die dieser Umbau gerade herausgenommen hat - genau der Fehler, den der
-     Kopf von stil.css ausschliesst: Sonne ist Punkt und Kante, nie Flaeche.
-     Als einziges dunkles Panel zwischen hellen Tafeln sticht es staerker
-     heraus als vorher. Rahmen 10,42:1 gegen den Grund, Titel 12,96:1. */
-  .zeile.sieger{background:var(--tiefe-tief); color:var(--auf-tiefe);
-                border-color:var(--sonne-flaeche)}
-  .rang{font-family:var(--zahl); font-size:16px; color:var(--tinte-fein)}
-  .zeile.sieger .rang{color:var(--sonne-flaeche)}
-  .name{font-weight:700; font-size:15.5px; line-height:1.25}
-  .ort{color:var(--tinte-leise); font-size:12.5px; margin-top:1px}
-  .zeile.sieger .ort{color:var(--auf-tiefe-leise)}
-  .werte{display:flex; align-items:center; gap:var(--sp-s); flex-wrap:wrap}
-  .fit{font-family:var(--zahl); font-size:12px; min-width:3.6rem; text-align:right}
-  .preis{font-family:var(--zahl); font-size:10px; color:var(--tinte-leise);
-         min-width:8.5rem; text-align:right}
-  .zeile.sieger .preis{color:var(--auf-tiefe)}
-  .detail{grid-column:1 / -1; margin-top:var(--sp-xs); padding-top:var(--sp-xs);
-          border-top:2px solid var(--umriss); font-size:13px; color:var(--tinte-leise); display:none}
-  .zeile[aria-pressed="true"] .detail, .zeile.sieger .detail{display:block}
-  .zeile.sieger .detail{color:var(--auf-tiefe-leise); border-top-color:var(--sonne-flaeche)}
-  .sieger-hinweis{display:flex; flex-wrap:wrap; gap:var(--sp-s); align-items:center;
-                  margin:var(--sp-m) 0 0; padding:var(--sp-s) var(--sp-m);
-                  background:var(--tiefe-tief); border:var(--rand) solid var(--sonne-flaeche);
-                  box-shadow:var(--schatten-klein); color:var(--auf-tiefe); font-size:14.5px}
-  .sieger-hinweis strong{color:var(--sonne-flaeche)}
-  .sieger-hinweis a{color:var(--akzent-hell)}
 
-  /* Popup-Stile stehen jetzt zentral in stil.css - sie waren hier und in
-     karte.html doppelt definiert und auseinandergelaufen. */
+  /* ---------- Staedte-Fakten ---------- */
+  .listenkopf{display:flex; align-items:baseline; gap:var(--sp-s); margin:var(--sp-xl) 0 var(--sp-s)}
+  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--auf-tiefe-leise)}
+  .stadtraster{display:grid; gap:var(--sp-xs);
+               grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))}
+  .stadt{background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+         padding:var(--sp-s) var(--sp-m); display:flex; flex-direction:column; gap:var(--sp-2xs)}
+  .stadtkopf{display:flex; align-items:baseline; gap:var(--sp-xs); flex-wrap:wrap}
+  .stadtname{font-family:var(--display); font-size:19px; font-weight:700}
+  .stadtgr{font-size:12px; color:var(--tinte-leise)}
+  .stadtew{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein);
+           margin-left:auto; text-align:right}
+  .stadtweg{display:flex; flex-wrap:wrap; gap:var(--sp-2xs) var(--sp-s);
+            font-family:var(--zahl); font-size:10px; color:var(--akzent-text);
+            padding:var(--sp-2xs) 0; border-top:2px solid var(--linie);
+            border-bottom:2px solid var(--linie)}
+  .stadttext{font-size:13px; color:var(--tinte-leise)}
+  .stadtmerk{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-2xs)}
+  .stadtquelle{font-family:var(--zahl); font-size:9px; color:var(--tinte-fein); margin-top:var(--sp-2xs)}
+  .stadtquelle a{color:var(--akzent-text)}
+  /* Die naechste Stadt zum Hotel wird hervorgehoben - sie ist die einzige, die
+     ohne Tagesausflug erreichbar ist. */
+  .stadt.nah{border-color:var(--sonne-flaeche)}
+  .stadt.nah .stadtname{color:var(--akzent-text)}
+
+  .flugraster{display:grid; gap:var(--sp-xs); margin-top:var(--sp-s);
+              grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr))}
+  .flug{background:var(--flaeche); color:var(--tinte);
+        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+        padding:var(--sp-s) var(--sp-m); display:flex; align-items:center; gap:var(--sp-s)}
+  .flugcode{flex:none; display:flex; align-items:center; justify-content:center;
+            width:44px; height:28px; font-family:var(--zahl); font-size:11px;
+            background:var(--p-cafe); color:#FFFFFF; box-shadow:0 0 0 3px var(--umriss)}
+  .flugname{font-size:13.5px; font-weight:600}
+  .flugweg{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein); display:block; margin-top:1px}
 
   @media (max-width:640px){
-    .zeile{grid-template-columns:2rem minmax(0,1fr)}
-    .werte{grid-column:1 / -1; justify-content:flex-start; margin-top:var(--sp-2xs)}
-    .preis,.fit{text-align:left; min-width:0}
+    .stadtew{margin-left:0; text-align:left; width:100%}
   }
 </style>
 </head>
 <body>
-<a class="skip" href="#liste">Zur Hotelliste springen</a>
+<a class="skip" href="#karte">Zur Karte springen</a>
 
 <nav class="leiste">
   <div class="leiste-innen">
     <a class="marke" href="index.html">Kreta 2026</a>
     <div class="menue">
       <a href="index.html">Übersicht</a>
+      <a href="rangfolge.html">Rangfolge</a>
       <a href="hotel.html">Das Hotel</a>
       <a href="karte.html">Vor Ort</a>
     </div>
@@ -103,27 +146,68 @@
 </nav>
 
 <main class="huelle">
-  <p class="eyebrow">Hotelvergleich · Shortlist</p>
-  <h1>Kreta, <em>elf Kandidaten</em></h1>
-  <p class="unterzeile">Alle geprüften Strandhotels der Shortlist, verortet und in der
-    Reihenfolge der Kriterien-Erfüllung. Ein Klick auf eine Zeile springt zum Hotel
-    auf der Karte.</p>
-
-  <p class="sieger-hinweis" id="siegerHinweis"></p>
+  <p class="eyebrow">Kreta 2026 · Übersicht</p>
+  <h1>Elf Hotels, <em>sechs Städte</em>, drei Flughäfen</h1>
+  <p class="unterzeile">Die ganze Insel auf einer Karte: alle geprüften Strandhotels der
+    Shortlist, die größten Städte und die drei Flughäfen. Die vollständige Rangfolge der
+    Hotels steht unter <a href="rangfolge.html">Rangfolge</a>.</p>
 
   <div class="leiste2">
+    <span class="leiste-titel">Zeigen</span>
+    <button class="knopf" type="button" id="eHotels" aria-pressed="true">
+      <span class="punkt" style="background:var(--see)"></span>Hotels <span class="zahl" id="nHotels"></span></button>
+    <button class="knopf" type="button" id="eStaedte" aria-pressed="true">
+      <span class="punkt" style="background:var(--koralle)"></span>Städte <span class="zahl" id="nStaedte"></span></button>
+    <button class="knopf" type="button" id="eFlug" aria-pressed="true">
+      <span class="punkt" style="background:var(--p-cafe)"></span>Flughäfen <span class="zahl" id="nFlug"></span></button>
+  </div>
+  <div class="leiste2">
+    <span class="leiste-titel">Ausschnitt</span>
     <button class="knopf" type="button" id="zAlles">Ganz Kreta</button>
     <button class="knopf haupt" type="button" id="zSieger">Zum gewählten Hotel</button>
   </div>
 
   <div id="karte"></div>
+
+  <div class="legende">
+    <h2>Was auf der Karte steht</h2>
+    <div class="legendenraster">
+      <div class="legpunkt">
+        <span class="legmarke gewaehlt">1</span>
+        <span class="legtext"><strong>Das gewählte Hotel</strong>
+          <span>Gold und größer als die übrigen. Rang 1 der Kriterien-Erfüllung.</span></span>
+      </div>
+      <div class="legpunkt">
+        <span class="legmarke hotel">7</span>
+        <span class="legtext"><strong>Hotels der Shortlist</strong>
+          <span>Die Zahl ist der Rang. Klick öffnet Zimmerzahl, Bewertung und Preis.</span></span>
+      </div>
+      <div class="legpunkt">
+        <span class="legmarke stadt">34k</span>
+        <span class="legtext"><strong>Städte</strong>
+          <span>Die Zahl sind die Einwohner in Tausend, Volkszählung 2021.</span></span>
+      </div>
+      <div class="legpunkt">
+        <span class="legmarke flug">HER</span>
+        <span class="legtext"><strong>Flughäfen</strong>
+          <span>IATA-Kürzel. Heraklion und Chania international, Sitia regional.</span></span>
+      </div>
+    </div>
+  </div>
+
   <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
 
   <div class="listenkopf">
-    <h2 id="liste">Die Rangfolge</h2>
+    <h2 id="staedte">Die Städte</h2>
     <span class="zaehler" id="zaehler"></span>
   </div>
-  <ul class="liste" id="listeninhalt"></ul>
+  <div class="stadtraster" id="stadtinhalt"></div>
+
+  <div class="listenkopf">
+    <h2 id="flughaefen">Die Flughäfen</h2>
+    <span class="zaehler" id="zaehlerFlug"></span>
+  </div>
+  <div class="flugraster" id="fluginhalt"></div>
 </main>
 
 <footer class="fuss"><div class="huelle" id="fuss"></div></footer>
@@ -137,6 +221,8 @@
   const D = window.DATEN;
   const $ = (id) => document.getElementById(id);
   const esc = window.esc, reich = window.reich;
+  const STAEDTE = D.staedte || [];
+  const FLUG = D.flughaefen || [];
 
   /* ---------- Karte ---------- */
   const karte = L.map("karte", { scrollWheelZoom: true });
@@ -151,14 +237,23 @@
   L.control.layers({ "Karte": osm, "Satellit": satellit }, null, { position: "topright" }).addTo(karte);
   L.control.scale({ imperial: false, position: "bottomleft" }).addTo(karte);
 
-  const marke = (h, aktiv) => L.divIcon({
+  /* ---------- Drei Ebenen ---------- */
+  const ebeneHotels = L.layerGroup().addTo(karte);
+  const ebeneStaedte = L.layerGroup().addTo(karte);
+  const ebeneFlug = L.layerGroup().addTo(karte);
+
+  const tausend = (n) => (typeof n === "number" ? Math.round(n / 1000) + "k" : "?");
+
+  const hotelMarke = (h, aktiv) => L.divIcon({
     className: "",
     html: '<i class="pixpin' + (h.rang === 1 ? " sieger" : "") + (aktiv ? " aktiv" : "")
         + '">' + h.rang + "</i>",
-    iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -15],
+    iconSize: h.rang === 1 ? [32, 32] : [26, 26],
+    iconAnchor: h.rang === 1 ? [16, 16] : [13, 13],
+    popupAnchor: [0, -16],
   });
 
-  function popup(h) {
+  function hotelPopup(h) {
     const ziel = h.lat + "," + h.lon;
     return '<span class="pop-rang">Rang ' + h.rang + (h.rang === 1 ? " · gewählt" : "") + "</span>"
       + '<span class="pop-name">' + esc(h.name) + "</span>"
@@ -171,92 +266,200 @@
       + " · " + esc(h.budget) + "</span>"
       + '<div class="pop-wege">'
       + (h.rang === 1 ? '<a class="haupt" href="hotel.html">Hotel im Detail</a>' : "")
+      + '<a href="rangfolge.html">In der Rangfolge</a>'
       + '<a href="https://www.google.com/maps/search/?api=1&query=' + ziel
       + '" target="_blank" rel="noopener">In Google Maps</a></div>';
   }
 
   const markerVon = new Map();
   D.hotels.forEach((h) => {
-    const m = L.marker([h.lat, h.lon], { icon: marke(h, false),
-                                         zIndexOffset: h.rang === 1 ? 500 : 0 })
-      .bindPopup(() => popup(h), { maxWidth: 300 })
-      .bindTooltip(h.rang + ". " + h.name, { direction: "top", offset: [0, -12] })
-      .addTo(karte);
-    m.on("click", () => setzen(h.rang, false));
+    const m = L.marker([h.lat, h.lon], { icon: hotelMarke(h, false),
+                                         zIndexOffset: h.rang === 1 ? 600 : 200 })
+      .bindPopup(() => hotelPopup(h), { maxWidth: 300 })
+      .bindTooltip(h.rang + ". " + h.name, { direction: "top", offset: [0, -14] })
+      .addTo(ebeneHotels);
+    m.on("click", () => setzen(h.rang));
     markerVon.set(h.rang, m);
   });
 
-  const alleBounds = L.latLngBounds(D.hotels.map((h) => [h.lat, h.lon]));
-  karte.fitBounds(alleBounds, { padding: [40, 40] });
+  /* Staedte: Namensfahne dauerhaft sichtbar - sie sind wenige, und eine Stadt
+     ohne Namen ist auf einer Uebersichtskarte wertlos. */
+  const wegText = (s) =>
+    (s.strasse_hotel_km === "unbekannt" ? "Entfernung unbekannt"
+      : s.strasse_hotel_km + " km über Straße")
+    + " · " + (s.fahrzeit_hotel_min === "unbekannt" ? "Fahrzeit unbekannt"
+      : "rund " + s.fahrzeit_hotel_min + " min");
 
-  $("zAlles").addEventListener("click", () => karte.fitBounds(alleBounds, { padding: [40, 40] }));
-  $("zSieger").addEventListener("click", () => {
-    const s = D.hotels[0];
-    karte.setView([s.lat, s.lon], 13);
-    markerVon.get(1).openPopup();
+  /* Singular und Plural stehen ausgeschrieben. Ein Versuch, den Singular per
+     Endungsregel abzuleiten, ergab "1 Ausgrabungum" und "1 Festungum" - deutsche
+     Pluralformen sind zu unregelmaessig fuer eine Ersetzung, und der Fehler
+     steht dann sichtbar auf der Seite. */
+  const NAMEN = {
+    museen:       ["Museum", "Museen"],
+    festungen:    ["Festung", "Festungen"],
+    ausgrabungen: ["Ausgrabung", "Ausgrabungen"],
+    faehranleger: ["Fähranleger", "Fähranleger"],
+    marinas:      ["Marina", "Marinas"],
+  };
+  const merkText = (m) => Object.entries(m || {})
+    .filter(([k, v]) => v > 0 && NAMEN[k])
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => v + " " + NAMEN[k][v === 1 ? 0 : 1]);
+
+  STAEDTE.forEach((s) => {
+    L.marker([s.lat, s.lon], {
+      icon: L.divIcon({ className: "", html: '<i class="stadtpin">' + tausend(s.einwohner) + "</i>",
+                        iconSize: [38, 24], iconAnchor: [19, 12], popupAnchor: [0, -14] }),
+      zIndexOffset: 100,
+    })
+      .bindTooltip(s.name, { permanent: true, direction: "top", offset: [0, -14], className: "fahne" })
+      .bindPopup('<span class="pop-art">Stadt · ' + esc(s.name_gr) + "</span>"
+        + '<span class="pop-name">' + esc(s.name) + "</span>"
+        + '<span class="pop-zeile">'
+        + (s.einwohner === "unbekannt" ? "Einwohner unbekannt"
+          : s.einwohner.toLocaleString("de-DE") + " Einwohner (" + esc(s.einwohner_jahr) + ")")
+        + "</span>"
+        + '<span class="pop-zeile">' + esc(wegText(s)) + "</span>"
+        + (s.charakteristik === "unbekannt" ? ""
+          : '<span class="pop-zeile">' + esc(s.charakteristik) + "</span>")
+        + (merkText(s.merkmale).length
+          ? '<span class="pop-zeile">' + esc(merkText(s.merkmale).join(" · ")) + "</span>" : "")
+        + '<div class="pop-wege"><a href="#staedte">Fakten unter der Karte</a>'
+        + (s.wikipedia ? '<a href="' + esc(s.wikipedia) + '" target="_blank" rel="noopener">Wikipedia</a>' : "")
+        + "</div>", { maxWidth: 320 })
+      .addTo(ebeneStaedte);
   });
 
-  $("kartequelle").textContent = "Karte: OpenStreetMap-Mitwirkende · Luftbild: Esri";
-  $("kartedetail").textContent = "Hotelkoordinaten: Google Places, 2026-08-21";
+  FLUG.forEach((f) => {
+    L.marker([f.lat, f.lon], {
+      icon: L.divIcon({ className: "", html: '<i class="flugpin">' + esc(f.iata) + "</i>",
+                        iconSize: [36, 24], iconAnchor: [18, 12], popupAnchor: [0, -14] }),
+      zIndexOffset: 50,
+    })
+      /* KEINE dauerhafte Fahne: "Internationaler Flughafen Iraklio Nikos
+         Kazantzakis" ist 50 Zeichen lang und lag als Balken quer ueber der
+         halben Insel - er verdeckte drei Hotelmarken. Das IATA-Kuerzel steht
+         auf der Marke selbst, die Legende erklaert es, der volle Name kommt
+         beim Ueberfahren und in den Fakten unter der Karte. */
+      .bindTooltip(f.name, { direction: "bottom", offset: [0, 14], className: "fahne" })
+      .bindPopup('<span class="pop-art">Flughafen · ' + esc(f.iata) + " / " + esc(f.icao) + "</span>"
+        + '<span class="pop-name">' + esc(f.name) + "</span>"
+        + '<span class="pop-zeile">' + f.luftlinie_hotel_km
+        + " km Luftlinie zum gewählten Hotel</span>"
+        + '<div class="pop-wege"><a href="https://www.google.com/maps/search/?api=1&query='
+        + f.lat + "," + f.lon + '" target="_blank" rel="noopener">In Google Maps</a></div>',
+        { maxWidth: 300 })
+      .addTo(ebeneFlug);
+  });
 
-  /* ---------- Liste ---------- */
-  const chipKlasse = (b) => (b === "passt" ? "passt" : b === "KO" ? "ko" : "grenz");
-  const sieger = D.hotels[0];
-  $("siegerHinweis").innerHTML = "<strong>Gewählt: " + esc(sieger.name) + "</strong> · "
-    + esc(sieger.lage) + ' — <a href="hotel.html">Hotel im Detail</a> · '
-    + '<a href="karte.html">Karte vor Ort</a>';
-  $("zaehler").textContent = D.hotels.length + " Hotels · Stand " + D.stand;
+  /* ---------- Ebenen schalten ---------- */
+  const schalter = [
+    ["eHotels", ebeneHotels, "nHotels", D.hotels.length],
+    ["eStaedte", ebeneStaedte, "nStaedte", STAEDTE.length],
+    ["eFlug", ebeneFlug, "nFlug", FLUG.length],
+  ];
+  schalter.forEach(([id, ebene, zaehlerId, anzahl]) => {
+    $(zaehlerId).textContent = anzahl;
+    const b = $(id);
+    if (!anzahl) { b.disabled = true; b.setAttribute("aria-pressed", "false"); return; }
+    b.addEventListener("click", () => {
+      const an = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", an ? "false" : "true");
+      if (an) karte.removeLayer(ebene); else karte.addLayer(ebene);
+    });
+  });
 
-  $("listeninhalt").innerHTML = D.hotels.map((h) => `
-    <li>
-      <button class="zeile${h.rang === 1 ? " sieger" : ""}" type="button"
-              aria-pressed="false" data-rang="${h.rang}">
-        <span class="rang">${h.rang}</span>
-        <span>
-          <span class="name">${esc(h.name)}</span>
-          <span class="ort">${esc(h.lage)}</span>
-        </span>
-        <span class="werte">
-          <span class="fit">${h.fit == null ? "–" : h.fit + " %"}</span>
-          <span class="preis">${h.preis && h.preis.startsWith("unbekannt") ? "unbekannt" : esc(h.preis)}</span>
-          <span class="chip ${chipKlasse(h.budget)}">${esc(h.budget)}</span>
-        </span>
-        <span class="detail">
-          ${h.titel ? reich(h.titel) + " · " : ""}${h.zimmer} Zimmer · ${esc(h.niveau)} ·
-          ${h.adults ? "Adults Only" : "kein Adults Only"} · Bewertung ${reich(h.bewertung)}
-          <br>Strand: ${reich(h.strand)}
-        </span>
-      </button>
-    </li>`).join("");
+  /* ---------- Ausschnitt ---------- */
+  const allePunkte = D.hotels.map((h) => [h.lat, h.lon])
+    .concat(STAEDTE.map((s) => [s.lat, s.lon]))
+    .concat(FLUG.map((f) => [f.lat, f.lon]));
+  const alleBounds = L.latLngBounds(allePunkte);
+  karte.fitBounds(alleBounds, { padding: [44, 44] });
+
+  $("zAlles").addEventListener("click", () => karte.fitBounds(alleBounds, { padding: [44, 44] }));
+  $("zSieger").addEventListener("click", () => zeigeHotel(1));
+
+  function zeigeHotel(rang) {
+    const h = D.hotels[rang - 1];
+    if (!h) return;
+    if (!karte.hasLayer(ebeneHotels)) {
+      karte.addLayer(ebeneHotels);
+      $("eHotels").setAttribute("aria-pressed", "true");
+    }
+    karte.setView([h.lat, h.lon], Math.max(karte.getZoom(), 12));
+    markerVon.get(rang).openPopup();
+    setzen(rang);
+  }
 
   let aktiv = null;
-  function setzen(rang, springen) {
-    if (aktiv !== null) {
-      markerVon.get(aktiv).setIcon(marke(D.hotels[aktiv - 1], false));
-      document.querySelector('.zeile[data-rang="' + aktiv + '"]')?.setAttribute("aria-pressed", "false");
-    }
+  function setzen(rang) {
+    if (aktiv !== null && markerVon.has(aktiv))
+      markerVon.get(aktiv).setIcon(hotelMarke(D.hotels[aktiv - 1], false));
     aktiv = rang === aktiv ? null : rang;
-    if (aktiv === null) return;
-    const h = D.hotels[aktiv - 1];
-    const m = markerVon.get(aktiv);
-    m.setIcon(marke(h, true));
-    document.querySelector('.zeile[data-rang="' + aktiv + '"]')?.setAttribute("aria-pressed", "true");
-    if (springen) {
-      karte.setView([h.lat, h.lon], Math.max(karte.getZoom(), 11));
-      m.openPopup();
-      $("karte").scrollIntoView({ block: "nearest",
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-    }
+    if (aktiv !== null) markerVon.get(aktiv).setIcon(hotelMarke(D.hotels[aktiv - 1], true));
   }
-  $("listeninhalt").addEventListener("click", (e) => {
-    const b = e.target.closest(".zeile");
-    if (b) setzen(Number(b.dataset.rang), true);
-  });
+
+  /* Die Rangfolge-Seite verlinkt hierher mit #h3 - das ist die Bruecke zwischen
+     den beiden Seiten, seit die Liste nicht mehr auf dieser Seite steht. */
+  function ausHash() {
+    const m = /^#h(\d+)$/.exec(location.hash);
+    if (m) zeigeHotel(Number(m[1]));
+  }
+  addEventListener("hashchange", ausHash);
+  ausHash();
+
+  $("kartequelle").textContent = "Karte: OpenStreetMap-Mitwirkende · Luftbild: Esri";
+  $("kartedetail").textContent = "Hotelkoordinaten: Google Places, 2026-08-21 · "
+    + "Städte und Flughäfen: OpenStreetMap, " + (D.inselStand || "unbekannt");
+
+  /* ---------- Städte-Fakten ---------- */
+  const nahste = STAEDTE.reduce((a, b) =>
+    (typeof b.strasse_hotel_km === "number"
+      && (typeof a.strasse_hotel_km !== "number" || b.strasse_hotel_km < a.strasse_hotel_km)) ? b : a,
+    STAEDTE[0] || {});
+
+  $("zaehler").textContent = STAEDTE.length + " Städte · Einwohner Volkszählung 2021";
+  $("stadtinhalt").innerHTML = STAEDTE.map((s) => `
+    <article class="stadt${s.name === nahste.name ? " nah" : ""}">
+      <div class="stadtkopf">
+        <span class="stadtname">${esc(s.name)}</span>
+        <span class="stadtgr">${esc(s.name_gr)}</span>
+        <span class="stadtew">${s.einwohner === "unbekannt" ? "Einwohner unbekannt"
+          : s.einwohner.toLocaleString("de-DE") + " EW"}<br>${
+          s.einwohner === "unbekannt" ? "" : "Zählung " + esc(s.einwohner_jahr)}</span>
+      </div>
+      <div class="stadtweg">
+        <span>${esc(wegText(s))}</span>
+        <span>${s.luftlinie_hotel_km} km Luftlinie</span>
+      </div>
+      <p class="stadttext">${s.charakteristik === "unbekannt"
+        ? "Charakteristik unbekannt." : esc(s.charakteristik)}</p>
+      <div class="stadtmerk">${merkText(s.merkmale).map((t) =>
+        '<span class="chip">' + esc(t) + "</span>").join("")}</div>
+      <p class="stadtquelle">Einwohner: Wikidata · Weg: OSRM · Merkmale: OpenStreetMap${
+        s.wikipedia ? ' · <a href="' + esc(s.wikipedia)
+          + '" target="_blank" rel="noopener">Wikipedia</a>' : ""}</p>
+    </article>`).join("");
+
+  $("zaehlerFlug").textContent = FLUG.length + " Flughäfen · Luftlinie ab dem gewählten Hotel";
+  $("fluginhalt").innerHTML = FLUG.map((f) => `
+    <div class="flug">
+      <span class="flugcode">${esc(f.iata)}</span>
+      <span>
+        <span class="flugname">${esc(f.name)}</span>
+        <span class="flugweg">${f.luftlinie_hotel_km} km Luftlinie · ICAO ${esc(f.icao)}</span>
+      </span>
+    </div>`).join("");
 
   $("fuss").innerHTML =
     "<p>Quelle aller Hotelangaben: eigene Recherche, Stand " + D.stand
     + ". Preise sind Schätzwerte für die Hochsaison; wo kein Wert abrufbar war, steht "
     + "<em>unbekannt</em> statt einer Schätzung.</p>"
+    + "<p>Städte und Flughäfen: OpenStreetMap über Overpass. Einwohnerzahlen: Wikidata "
+    + "(griechische Volkszählung 2021, Stichjahr je Stadt angegeben). Straßenentfernung "
+    + "und Fahrzeit: OSRM, Fahrprofil <em>driving</em> ab dem gewählten Hotel. "
+    + "Charakteristik: erster Satz der deutschen Wikipedia. Alle abgerufen "
+    + (D.inselStand || "unbekannt") + ".</p>"
     + "<p>Kartenmaterial: &copy; OpenStreetMap-Mitwirkende (ODbL) · Luftbild: Esri, Maxar, "
     + "Earthstar Geographics. Hotelkoordinaten: Google Places API, abgerufen 2026-08-21.</p>";
 })();

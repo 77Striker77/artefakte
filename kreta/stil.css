@@ -193,6 +193,9 @@ h1,h2{color:var(--auf-tiefe)}
 h1 em{font-style:normal; color:var(--akzent-hell)}
 h2{font-family:var(--display); font-size:26px; font-weight:700}
 h3{font-family:var(--display); font-size:17px}
+/* Ein Link in der Unterzeile steht auf dem Wasser, nicht auf einer Tafel -
+   die globale a-Regel gaebe ihm --akzent-text mit 2,21:1. */
+.unterzeile a{color:var(--akzent-hell)}
 .unterzeile{margin-top:var(--sp-s); color:var(--auf-tiefe-leise); font-size:15.5px; max-width:64ch}
 
 /* ---------- Pixel-Bausteine ---------- */
@@ -233,9 +236,13 @@ h3{font-family:var(--display); font-size:17px}
  * Wer eine neue helle Flaeche baut, traegt sie hier ein.
  * NICHT hier stehen duerfen die tiefen Panels (.urteil, .zeile.sieger,
  * .sieger-hinweis) - die sind dunkel und setzen ihre helle Tinte selbst. */
-.tafel, .zeile, .fakt, .urteil, .tabellenhuelle, .spalte li, details,
-.chip, .knopf,
-.leaflet-popup-content-wrapper, .leaflet-popup-content{color:var(--tinte)}
+:is(.tafel, .zeile, .fakt, .tabellenhuelle, .spalte li, details, .chip, .knopf,
+    .legende, .stadt, .flug,
+    .leaflet-popup-content-wrapper, .leaflet-popup-content){color:var(--tinte)}
+/* Ueberschriften erben nicht: h1,h2 tragen weiter unten die helle Grundtinte.
+   Ohne diese Zeile steht eine h2 in einer hellen Tafel mit 1,04:1 - genau so
+   passiert beim Bau der Legende auf der Uebersichtskarte. */
+:is(.tafel, .legende, .stadt, .flug, .fakt) :is(h2, h3){color:var(--tinte)}
 
 /* ---------- Karten-Popups ----------
  * Standen bis hierher zweimal getrennt in index.html und karte.html und waren
