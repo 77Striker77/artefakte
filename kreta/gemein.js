@@ -28,7 +28,10 @@ window.reich = function (s) {
   "use strict";
   const D = window.DATEN || {};
   const hier = location.pathname.replace(/\/$/, "").split("/").pop() || "index.html";
-  document.querySelectorAll(".menue a").forEach((a) => {
+  // Auch die Links im Untermenue: das steht seit dem Klipprand-Umbau NEBEN
+  // .menue, nicht mehr darin - ein Selektor nur auf ".menue a" liesse die
+  // Hotelseite so aussehen, als waere man nirgends.
+  document.querySelectorAll(".menue a, .untermenue-tafel a").forEach((a) => {
     const ziel = a.getAttribute("href").replace(/\/$/, "").split("/").pop() || "index.html";
     if (ziel === hier) a.setAttribute("aria-current", "page");
     if (ziel === "karte.html" && D.bezugOrt && D.bezugOrt !== "unbekannt") {
@@ -38,4 +41,26 @@ window.reich = function (s) {
   });
   const marke = document.querySelector(".marke");
   if (marke && D.texte && D.texte.marke) marke.textContent = D.texte.marke;
+
+  /* Liegt die aktuelle Seite im Untermenue, faerbt sich der Aufklapper mit -
+     sonst sieht die Leiste auf der Hotelseite so aus, als waere man nirgends. */
+  const unter = document.querySelector(".untermenue");
+  if (unter) {
+    if (unter.querySelector('a[aria-current="page"]')) unter.classList.add("hier");
+
+    /* Ein Klick daneben schliesst das Menue. <details> tut das von sich aus
+       nicht - es bliebe offen stehen, bis man den Aufklapper erneut trifft. */
+    document.addEventListener("click", (e) => {
+      if (unter.open && !unter.contains(e.target)) unter.open = false;
+    });
+    /* Escape schliesst und gibt den Fokus zurueck auf den Aufklapper. Ohne das
+       landet man mit der Tastatur in einem offenen Menue und kommt nur per Tab
+       wieder heraus. */
+    unter.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && unter.open) {
+        unter.open = false;
+        unter.querySelector("summary").focus();
+      }
+    });
+  }
 })();

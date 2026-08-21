@@ -176,6 +176,11 @@ img{image-rendering:pixelated}
               display:flex; align-items:center; gap:var(--sp-m); min-height:62px}
 .marke{font-family:var(--display); font-size:23px; font-weight:700; text-decoration:none;
        color:var(--auf-tiefe); white-space:nowrap; letter-spacing:.02em}
+/* overflow-x:auto laesst die Menueleiste auf schmalen Geraeten seitlich
+   schieben - klippt dabei aber AUCH SENKRECHT. Ein aufgeklapptes Untermenue
+   innerhalb dieses Containers waere unsichtbar: der Pfeil drehte sich, die
+   Tafel blieb weg. Das Untermenue steht darum als Geschwister daneben, nicht
+   darin. margin-left:auto wandert mit, sonst klebte die Leiste links. */
 .menue{display:flex; gap:var(--sp-2xs); margin-left:auto; align-items:center;
        overflow-x:auto; scrollbar-width:none}
 .menue::-webkit-scrollbar{display:none}
@@ -184,6 +189,43 @@ img{image-rendering:pixelated}
          color:var(--auf-tiefe-leise); white-space:nowrap; border-bottom:3px solid transparent}
 .menue a:hover{color:var(--auf-tiefe)}
 .menue a[aria-current="page"]{color:var(--akzent-hell); border-bottom-color:var(--see)}
+
+/* ---------- Untermenue ----------
+ * <details> statt eines nachgebauten Dropdowns: ohne Skript bedienbar, per
+ * Tastatur erreichbar, meldet seinen Zustand selbst. Die Tafel liegt absolut,
+ * sonst schoebe sie die Leiste beim Aufklappen auseinander.
+ * position:relative sitzt am <details>, nicht an der Leiste - die ist sticky
+ * und wuerde als Bezugsrahmen die Tafel am oberen Rand festnageln. */
+.untermenue{position:relative; display:inline-flex; align-items:center; flex:none}
+.untermenue > summary{
+  display:inline-flex; align-items:center; gap:7px; min-height:44px;
+  padding:0 var(--sp-s); cursor:pointer; white-space:nowrap;
+  font-family:var(--display); font-size:15px; font-weight:600;
+  color:var(--auf-tiefe-leise); border-bottom:3px solid transparent;
+  list-style:none}
+.untermenue > summary::-webkit-details-marker{display:none}
+.untermenue > summary::marker{content:""}
+.untermenue > summary:hover{color:var(--auf-tiefe)}
+/* Traegt eine Seite darunter die aktuelle Marke, faerbt sich auch der Aufklapper. */
+.untermenue.hier > summary{color:var(--akzent-hell); border-bottom-color:var(--see)}
+.mpfeil{width:0; height:0; flex:none;
+        border-top:5px solid currentColor; border-left:4px solid transparent;
+        border-right:4px solid transparent;
+        transition:transform calc(.12s * var(--bewegung)) steps(3)}
+.untermenue[open] > summary .mpfeil{transform:rotate(180deg)}
+.untermenue-tafel{
+  position:absolute; top:calc(100% - 4px); right:0; z-index:1100;
+  display:flex; flex-direction:column; min-width:11rem;
+  background:var(--flaeche); color:var(--tinte);
+  border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.untermenue-tafel a{
+  display:flex; align-items:center; min-height:44px; padding:0 var(--sp-m);
+  font-family:var(--display); font-size:15px; font-weight:600;
+  color:var(--tinte); text-decoration:none; white-space:nowrap;
+  border-bottom:2px solid var(--linie)}
+.untermenue-tafel a:last-child{border-bottom:0}
+.untermenue-tafel a:hover{background:var(--flaeche-2)}
+.untermenue-tafel a[aria-current="page"]{background:var(--akzent-weich); color:var(--akzent-text)}
 
 .huelle{max-width:var(--mass); margin:0 auto; padding:var(--sp-l) var(--sp-m) var(--sp-xl)}
 .eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
@@ -238,12 +280,12 @@ h3{font-family:var(--display); font-size:17px}
  * NICHT hier stehen duerfen die tiefen Panels (.urteil, .zeile.sieger,
  * .sieger-hinweis) - die sind dunkel und setzen ihre helle Tinte selbst. */
 :is(.tafel, .zeile, .fakt, .tabellenhuelle, .spalte li, details, .chip, .knopf,
-    .legende, .stadt, .flug,
+    .legende, .stadt, .flug, .ziel, .bilderhinweis,
     .leaflet-popup-content-wrapper, .leaflet-popup-content){color:var(--tinte)}
 /* Ueberschriften erben nicht: h1,h2 tragen weiter unten die helle Grundtinte.
    Ohne diese Zeile steht eine h2 in einer hellen Tafel mit 1,04:1 - genau so
    passiert beim Bau der Legende auf der Uebersichtskarte. */
-:is(.tafel, .legende, .stadt, .flug, .fakt) :is(h2, h3){color:var(--tinte)}
+:is(.tafel, .legende, .stadt, .flug, .fakt, .ziel, .bilderhinweis) :is(h2, h3){color:var(--tinte)}
 
 /* ---------- Karten-Popups ----------
  * Standen bis hierher zweimal getrennt in index.html und karte.html und waren

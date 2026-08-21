@@ -12,6 +12,15 @@
 <link rel="stylesheet" href="stil.css">
 <style>
   .kopfchips{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
+  /* Bilder liegen bewusst nicht auf dieser Seite - siehe bau-oeffentlich.mjs.
+     Stattdessen der kurze Weg zu den Galerien, die es ohnehin gibt. */
+  .bilderhinweis{margin-top:var(--sp-l); background:var(--flaeche); color:var(--tinte);
+                 border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+                 padding:var(--sp-s) var(--sp-m)}
+  .bilderhinweis h2{font-size:15px; margin-bottom:var(--sp-2xs)}
+  .bilderhinweis p{font-size:13px; color:var(--tinte-leise); margin-bottom:var(--sp-xs)}
+  .portalinfo{font-family:var(--zahl); font-size:9.5px; color:var(--tinte-fein);
+              margin-left:6px}
   /* "Gewaehlt" ist ein TIEFES Panel mit Goldrahmen, keine gelbe Flaeche.
      Flaechig gelb war der groesste Block der Seite und zog die Waerme zurueck,
      die dieser Umbau gerade herausgenommen hat - genau der Fehler, den der
@@ -72,7 +81,13 @@
      geschaetzt: mit den hellen Stufen kamen 1,54:1 bzw. 2,35:1 heraus. */
   .g-plus{color:var(--gut)} .g-minus{color:var(--krit)}
 
-  details{background:var(--flaeche); border:var(--rand) solid var(--umriss); margin-bottom:var(--sp-2xs)}
+  /* NUR die Profil-Aufklapper, nicht jedes <details> der Seite: das Untermenue
+     in der Kopfleiste ist ebenfalls ein <details> und bekam hier sonst einen
+     hellen Hintergrund mitten in der dunklen Leiste - der Menuetext kam damit
+     auf 1,44:1. Ein Elementselektor in einer Seitendatei trifft eben auch, was
+     spaeter dazukommt. */
+  #hprofil details, #humgebung details{background:var(--flaeche);
+          border:var(--rand) solid var(--umriss); margin-bottom:var(--sp-2xs)}
   summary{cursor:pointer; padding:var(--sp-s) var(--sp-m); font-weight:600; font-size:14.5px;
           min-height:44px; display:flex; align-items:center}
   summary::marker{color:var(--tinte-fein)}
@@ -95,10 +110,15 @@
     <a class="marke" href="index.html">Kreta 2026</a>
     <div class="menue">
       <a href="index.html">Übersicht</a>
-      <a href="rangfolge.html">Rangfolge</a>
-      <a href="hotel.html">Das Hotel</a>
       <a href="karte.html">Vor Ort</a>
     </div>
+    <details class="untermenue">
+      <summary aria-label="Weitere Seiten">Mehr<span class="mpfeil" aria-hidden="true"></span></summary>
+      <div class="untermenue-tafel">
+        <a href="hotel.html">Das Hotel</a>
+        <a href="rangfolge.html">Rangfolge</a>
+      </div>
+    </details>
   </div>
 </nav>
 
@@ -110,6 +130,8 @@
   <div class="wege" id="hwege"></div>
 
   <div class="urteil" id="hurteil"></div>
+
+  <div class="bilderhinweis" id="hbilder" hidden></div>
 
   <section>
     <h2>Anlage in Zahlen</h2>
@@ -170,6 +192,22 @@
   document.title = H.name + " — Das Hotel";
   $("hname").textContent = H.name;
   $("hlage").textContent = H.lage + " · " + H.adresse;
+
+  /* Bilder und Bewertungen liegen dort, wo sie hingehoeren: bei den Portalen.
+     Die 244 Aufnahmen im Workspace stammen vom Hotel und werden bewusst nicht
+     auf diese oeffentliche Seite kopiert - das waere eine Veroeffentlichung
+     ohne Lizenz. Verlinkt statt gespiegelt. */
+  const portale = (D.hotel && D.hotel.portale) || [];
+  if (portale.length) {
+    $("hbilder").hidden = false;
+    $("hbilder").innerHTML = "<h2>Bilder und Gästebewertungen</h2>"
+      + "<p>Diese Seite zeigt keine Hotelfotos — die Aufnahmen gehören dem Hotel. "
+      + "Die Galerien liegen hier:</p>"
+      + '<div class="wege">' + portale.map((x) =>
+          '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">'
+          + esc(x.name) + (x.info ? '<span class="portalinfo">' + esc(x.info) + "</span>" : "")
+          + "</a>").join("") + "</div>";
+  }
 
   $("hchips").innerHTML = [
     ["passt", H.niveau],

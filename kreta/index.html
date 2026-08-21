@@ -230,10 +230,15 @@
     <a class="marke" href="index.html">Kreta 2026</a>
     <div class="menue">
       <a href="index.html">Übersicht</a>
-      <a href="rangfolge.html">Rangfolge</a>
-      <a href="hotel.html">Das Hotel</a>
       <a href="karte.html">Vor Ort</a>
     </div>
+    <details class="untermenue">
+      <summary aria-label="Weitere Seiten">Mehr<span class="mpfeil" aria-hidden="true"></span></summary>
+      <div class="untermenue-tafel">
+        <a href="hotel.html">Das Hotel</a>
+        <a href="rangfolge.html">Rangfolge</a>
+      </div>
+    </details>
   </div>
 </nav>
 
@@ -422,6 +427,9 @@
       + " · " + esc(h.budget) + "</span>"
       + '<div class="pop-wege">'
       + (h.rang === 1 ? '<a class="haupt" href="hotel.html">Hotel im Detail</a>' : "")
+      + (h.rang === 1 && D.hotel && D.hotel.portale && D.hotel.portale.length
+        ? '<a href="' + esc(D.hotel.portale[0].url)
+          + '" target="_blank" rel="noopener">Bilder & Bewertungen</a>' : "")
       + '<a href="rangfolge.html">In der Rangfolge</a>'
       + '<a href="https://www.google.com/maps/search/?api=1&query='
       + encodeURIComponent(h.name + " " + String(h.lage).split("/")[0].trim())
