@@ -102,6 +102,16 @@
      9x9-Raster je Zeile, daraus ein Sprite. shape-rendering="crispEdges" ist
      Pflicht - sonst zeichnet der Browser die Pixelkanten weich. */
   const SYMBOLE = {
+    /* Busbahnhof: Bus von vorn - Dach, Scheibe, zwei Raeder. */
+    busbahnhof: [".XXXXXXX.",
+            "XXXXXXXXX",
+            "X.......X",
+            "X.XXXXX.X",
+            "X.XXXXX.X",
+            "X.......X",
+            "XXXXXXXXX",
+            "X.X...X.X",
+            ".X.....X."],
     /* Altstadt: Haeuserzeile. */
     altstadt: [".........",
             "..X...X..",
@@ -238,7 +248,15 @@
       + (HOTEL ? '<a href="https://www.google.com/maps/dir/?api=1&origin='
         + encodeURIComponent(HOTEL.name + ", " + (HOTEL.adresse || ""))
         + "&destination=" + encodeURIComponent(p.name + " " + SEITE.name)
-        + '" target="_blank" rel="noopener">Route ab Quartier</a>' : "")
+        /* Beim Busbahnhof ist die Frage nicht "wie fahre ich hin", sondern "wie
+           komme ich mit dem Bus her". OpenStreetMap kennt keine Fahrplaene -
+           dieser Link reicht die Frage an einen Dienst weiter, der sie
+           beantworten kann, statt sie hier zu erfinden. Findet Google keine
+           Verbindung, sagt es das; eine Zahl auf dieser Seite koennte das nicht. */
+        + (p.art === "busbahnhof" ? "&travelmode=transit" : "")
+        + '" target="_blank" rel="noopener">'
+        + (p.art === "busbahnhof" ? "Bus-Verbindung ab Quartier" : "Route ab Quartier")
+        + "</a>" : "")
       + (p.wikipedia ? '<a href="' + esc(p.wikipedia)
         + '" target="_blank" rel="noopener">Wikipedia</a>' : "")
       + (p.web ? '<a href="' + esc(p.web)
@@ -252,8 +270,8 @@
   PUNKTE.forEach((p, i) => {
     p.id = "p" + i;
     const m = L.marker([p.lat, p.lon], {
-      icon: marke("k-" + p.art, p.art, p.art !== "altstadt"),
-      zIndexOffset: p.art === "altstadt" ? 300 : 100,
+      icon: marke("k-" + p.art, p.art, p.art !== "altstadt" && p.art !== "busbahnhof"),
+      zIndexOffset: p.art === "busbahnhof" ? 400 : (p.art === "altstadt" ? 300 : 100),
     })
       .bindPopup('<span class="pop-art">' + esc(titelVon(p.art)) + "</span>"
         + '<span class="pop-name">' + esc(p.name) + "</span>"
@@ -276,6 +294,29 @@
       { padding: [28, 28], maxZoom: SEITE.zoom || 15 });
   }
 
+  /* ---------- Die Ringe ab dem Ankunftspunkt ----------
+     Wer mit dem Bus kommt, steigt am Ueberland-Bahnhof aus und laeuft von dort
+     los - nicht vom geometrischen Stadtmittelpunkt. Die Ringe liegen darum um
+     den Bahnhof: man liest ab, was zu Fuss erreichbar ist, ohne etwas
+     anzuklicken. Bei mehreren Bahnhoefen traegt sie der zentrumsnaechste, und
+     genau das steht auch unter der Karte.
+     Die Fahne sitzt am noerdlichen Scheitel - dort liegt bei diesen Kuestenorten
+     Wasser, sie verdeckt also keine Punkte. */
+  const RINGZENTRUM = DETAIL.ringzentrum || null;
+  if (RINGZENTRUM) {
+    [500, 1000, 2000].forEach((m) => {
+      L.circle([RINGZENTRUM.lat, RINGZENTRUM.lon],
+        { radius: m, className: "ring", interactive: false }).addTo(karte);
+      L.marker([RINGZENTRUM.lat + m / 111320, RINGZENTRUM.lon], {
+        icon: L.divIcon({ className: "", html: "", iconSize: [0, 0] }),
+        interactive: false, keyboard: false,
+      })
+        .bindTooltip(m >= 1000 ? (m / 1000) + " km" : m + " m",
+          { permanent: true, direction: "center", className: "ringmass" })
+        .addTo(karte);
+    });
+  }
+
   /* Die Altstadt fuehrt OSM als PUNKT, nicht als Flaeche. Der Kreis ist darum
      ausdruecklich eine Orientierungshilfe und keine Grenze - und genau das
      steht auch unter der Karte. Eine gezeichnete Flaeche, die wie eine amtliche
@@ -284,11 +325,30 @@
   if (altstadt) {
     L.circle([altstadt.lat, altstadt.lon],
       { radius: 350, className: "altstadtkreis", interactive: false }).addTo(karte);
+  }
+
+  const hinweise = [];
+  if (RINGZENTRUM) {
+    const weitere = PUNKTE.filter((p) => p.art === "busbahnhof").length - 1;
+    hinweise.push("<strong>Die Ringe messen ab dem Busbahnhof</strong> ("
+      + esc(RINGZENTRUM.name) + ") — 500 m, 1 km, 2 km. Das ist der Punkt, an dem "
+      + "man ankommt, wenn man mit dem Überlandbus anreist."
+      + (weitere > 0
+        ? " Die Stadt hat noch " + weitere + (weitere === 1 ? " weiteren" : " weitere")
+          + " Überland-Bahnhof; gemessen wird ab dem zentrumsnächsten."
+        : "")
+      + " <em>Welche Linie welchen Bahnhof anfährt, sagt OpenStreetMap nicht — "
+      + "Fahrpläne sind dort nicht erfasst.</em>");
+  }
+  if (altstadt) {
+    hinweise.push("<strong>Der Kreis um die Altstadt ist eine Orientierungshilfe, "
+      + "keine Grenze.</strong> OpenStreetMap führt die Altstadt als Punkt, nicht als "
+      + "Fläche — gezeichnet sind 350 m um diesen Punkt.");
+  }
+  if (hinweise.length) {
     const h = $("kartenhinweis");
     h.hidden = false;
-    h.innerHTML = "<strong>Der Kreis um die Altstadt ist eine Orientierungshilfe, "
-      + "keine Grenze.</strong> OpenStreetMap führt die Altstadt als Punkt, nicht als "
-      + "Fläche — gezeichnet sind 350 m um diesen Punkt.";
+    h.innerHTML = hinweise.map((t) => "<span class='hinweiszeile'>" + t + "</span>").join("");
   }
 
   /* ---------- Filterleiste ---------- */
@@ -359,7 +419,11 @@
     + '<span><span class="zname">' + esc(p.name) + "</span>"
     + (function () {
         // Keine Zweitzeile, die nur den Namen wiederholt ("Altstadt / Altstadt").
-        const zweit = p.beschreibung || titelVon(p.art);
+        const zweit = p.beschreibung
+          || (p.art === "busbahnhof" && p.entfernung_zentrum_m != null
+            ? "Überlandbusse · " + p.entfernung_zentrum_m + " m vom Stadtzentrum"
+              + (p.betreiber ? " · " + p.betreiber : "")
+            : titelVon(p.art));
         return zweit && zweit !== p.name
           ? '<span class="zmeta">' + esc(zweit) + "</span>" : "";
       })() + "</span>"

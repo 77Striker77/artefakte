@@ -88,6 +88,9 @@
   /* Die Arten der Ortsseiten. Sie greifen auf die vorhandenen Ortsfarben zurueck,
      statt neue zu erfinden - elf unterscheidbare Hues sind das Maximum, das eine
      Karte traegt, und die sind bereits vergeben. */
+  /* Ankunftspunkt der Ortsseiten. Hue 142 - naechster Nachbar ist der Hafen
+     mit 189, also 47 Grad Abstand; die Hotelmarke steht bei 45. */
+  --p-busbahnhof:#16A34A;
   --p-altstadt:var(--koralle);
   --p-festung:#C026A8;
   --p-museum:#9333EA;
@@ -334,6 +337,18 @@ h3{font-family:var(--display); font-size:17px}
    Ohne diese Zeile steht eine h2 in einer hellen Tafel mit 1,04:1 - genau so
    passiert beim Bau der Legende auf der Uebersichtskarte. */
 :is(.tafel, .legende, .stadt, .flug, .fakt, .ziel, .bilderhinweis) :is(h2, h3){color:var(--tinte)}
+
+/* ---------- Entfernungsringe ----------
+ * Unbeschriftet sah man drei gestrichelte Kreise und musste raten, wofuer sie
+ * stehen; mit Mass sind sie das nuetzlichste Element der Karte - man liest die
+ * Entfernung ab, ohne etwas anzuklicken. Steht zentral, weil die Quartierseite
+ * sie um das Hotel legt und die Stadtseiten um den Busbahnhof. */
+.ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.5}
+.leaflet-tooltip.ringmass{
+  background:var(--flaeche); color:var(--tinte-fein);
+  border:2px solid var(--umriss); border-radius:0; box-shadow:2px 2px 0 var(--umriss);
+  font-family:var(--zahl); font-size:9px; padding:1px 4px; white-space:nowrap}
+.leaflet-tooltip.ringmass::before{display:none}
 
 /* ---------- Karten-Popups ----------
  * Standen bis hierher zweimal getrennt in index.html und karte.html und waren

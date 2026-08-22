@@ -27,6 +27,7 @@
                    drop-shadow(3px 3px 0 rgba(0,0,0,.32))}
 /* Eine Farbe je Art, wie auf der Quartierseite. Die Form traegt der Umriss,
    nicht die Fuellfarbe - dieselbe Mechanik, dieselbe drop-shadow-Kontur. */
+.k-busbahnhof{color:var(--p-busbahnhof)}
 .k-altstadt{color:var(--koralle)}
 .k-festung{color:var(--p-baeckerei)}
 .k-museum{color:var(--p-cafe)}
@@ -68,6 +69,13 @@
 .kartenhinweis{background:var(--tiefe-tief); color:var(--auf-tiefe);
                border-left:6px solid var(--koralle); padding:var(--sp-xs) var(--sp-m);
                font-size:12.5px; margin-top:var(--sp-xs)}
+/* Der Kasten traegt bis zu zwei Auskuenfte - Ringe und Altstadtkreis. Als
+   Geschwister-Spans in einem <p>, damit die Zeilen im Fluss bleiben. */
+.hinweiszeile{display:block}
+.hinweiszeile + .hinweiszeile{margin-top:var(--sp-2xs)}
+/* Der Fahrplan-Vorbehalt ist eine Einschraenkung, keine Betonung: kursiv waere
+   hier lauter als noetig, die leisere Tinte trifft es. 10,18:1 auf dem Panel. */
+.kartenhinweis em{font-style:normal; color:var(--auf-tiefe-leise)}
 
 .faktenraster{display:grid; gap:var(--sp-xs); margin:var(--sp-m) 0;
               grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}

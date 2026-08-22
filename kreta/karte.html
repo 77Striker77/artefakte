@@ -88,12 +88,8 @@
      Standort ist der Marker, der am wenigsten verwechselbar sein darf. */
   /* Die Entfernungsringe sind das nuetzlichste Element der Karte und waren
      unbeschriftet - man sah drei Kreise und musste raten, wofuer sie stehen. */
-  .ring{stroke:var(--umriss); fill:none; stroke-dasharray:3 8; stroke-width:2; opacity:.5}
-  .leaflet-tooltip.ringmass{
-    background:var(--flaeche); color:var(--tinte-fein);
-    border:2px solid var(--umriss); border-radius:0; box-shadow:2px 2px 0 var(--umriss);
-    font-family:var(--zahl); font-size:9px; padding:1px 4px; white-space:nowrap}
-  .leaflet-tooltip.ringmass::before{display:none}
+  /* .ring und .ringmass stehen seit den Ortsseiten zentral in stil.css -
+     zwei Kopien laufen erfahrungsgemaess auseinander. */
   .standort-genauigkeit{stroke:var(--akzent); fill:var(--akzent); fill-opacity:.14; stroke-width:2}
 
   /* Popup-Stile stehen jetzt zentral in stil.css - sie waren hier und in
