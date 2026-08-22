@@ -191,6 +191,32 @@ img{image-rendering:pixelated}
 .menue a:hover{color:var(--auf-tiefe)}
 .menue a[aria-current="page"]{color:var(--akzent-hell); border-bottom-color:var(--see)}
 
+/* ---------- Reiter ----------
+ * Echte Tabs mit role=tablist: Pfeiltasten wechseln, immer nur der aktive ist
+ * ein Tab-Stopp (roving tabindex). Ein Satz <button> ohne diese Rollen sieht
+ * gleich aus, ist aber fuer die Tastatur eine Reihe zusammenhangloser Knoepfe.
+ * Steht hier zentral, weil Uebersichtskarte und Vor-Ort-Seite beide Reiter
+ * haben - zwei Kopien laufen erfahrungsgemaess auseinander. */
+.reiter{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin:var(--sp-xl) 0 0;
+        border-bottom:var(--rand) solid var(--see); padding-bottom:var(--sp-2xs)}
+.reiter button{font-family:var(--display); font-size:15px; font-weight:600;
+               min-height:46px; padding:0 var(--sp-m); cursor:pointer;
+               background:transparent; color:var(--auf-tiefe-leise);
+               border:var(--rand) solid transparent; border-bottom:0;
+               display:inline-flex; align-items:center; gap:7px}
+.reiter button:hover{color:var(--auf-tiefe)}
+.reiter button[aria-selected="true"]{background:var(--flaeche); color:var(--tinte);
+                                     border-color:var(--umriss)}
+.reiter .zahl{font-family:var(--zahl); font-size:10px; color:var(--auf-tiefe-leise)}
+.reiter button[aria-selected="true"] .zahl{color:var(--tinte-fein)}
+/* Das Symbol der Gruppe auf dem Reiter - dieselbe Form wie auf der Karte. */
+.reiter .punkt.marksym{width:16px; height:16px}
+.reiter .punkt.marksym svg{width:16px; height:16px}
+.tafelinhalt{padding-top:var(--sp-m)}
+.tafelinhalt[hidden]{display:none}
+.reiterkopf{display:flex; align-items:baseline; gap:var(--sp-s);
+            margin-bottom:var(--sp-s); flex-wrap:wrap}
+
 /* ---------- Untermenue ----------
  * <details> statt eines nachgebauten Dropdowns: ohne Skript bedienbar, per
  * Tastatur erreichbar, meldet seinen Zustand selbst. Die Tafel liegt absolut,

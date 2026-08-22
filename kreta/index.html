@@ -121,26 +121,8 @@
               justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
               font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
 
-  /* ---------- Reiter ----------
-     Echte Tabs mit role=tablist: Pfeiltasten wechseln, Tab springt ins Panel.
-     Ein Satz <button> ohne diese Rollen sieht gleich aus, ist aber fuer die
-     Tastatur eine Reihe zusammenhangloser Knoepfe. */
-  .reiter{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin:var(--sp-xl) 0 0;
-          border-bottom:var(--rand) solid var(--see); padding-bottom:var(--sp-2xs)}
-  .reiter button{font-family:var(--display); font-size:15px; font-weight:600;
-                 min-height:46px; padding:0 var(--sp-m); cursor:pointer;
-                 background:transparent; color:var(--auf-tiefe-leise);
-                 border:var(--rand) solid transparent; border-bottom:0;
-                 display:inline-flex; align-items:center; gap:7px}
-  .reiter button:hover{color:var(--auf-tiefe)}
-  .reiter button[aria-selected="true"]{background:var(--flaeche); color:var(--tinte);
-                                       border-color:var(--umriss)}
-  .reiter .zahl{font-family:var(--zahl); font-size:10px; color:var(--auf-tiefe-leise)}
-  .reiter button[aria-selected="true"] .zahl{color:var(--tinte-fein)}
-  .tafelinhalt{padding-top:var(--sp-m)}
-  .tafelinhalt[hidden]{display:none}
-  .reiterkopf{display:flex; align-items:baseline; gap:var(--sp-s);
-              margin-bottom:var(--sp-s); flex-wrap:wrap}
+  /* Die Reiter-Stile stehen zentral in stil.css - die Vor-Ort-Seite hat
+     inzwischen ebenfalls welche. */
 
   /* ---------- Ausflugsziele ---------- */
   .zielgruppe{margin-bottom:var(--sp-l)}

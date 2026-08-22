@@ -169,11 +169,9 @@
 
   <div id="karte"></div>
 
-  <div class="listenkopf">
-    <h2 id="liste">Nach Entfernung</h2>
-    <span class="zaehler" id="zaehler"></span>
-  </div>
-  <ul class="liste" id="listeninhalt"></ul>
+  <h2 id="liste" class="listenkopf">Die Orte im Einzelnen</h2>
+  <div class="reiter" role="tablist" aria-label="Orte nach Art" id="listenreiter"></div>
+  <div id="listentafeln"></div>
 </main>
 
 <footer class="fuss"><div class="huelle" id="fuss"></div></footer>
@@ -356,14 +354,14 @@
                  ".XXXXXXX.",
                  "..X...X..",
                  "........."],
-    hotel:      [".........",
-                 ".X.......",
-                 ".X..XXX..",
-                 ".X.X...X.",
-                 ".XXXXXXXX",
-                 ".X......X",
-                 ".X......X",
-                 ".........",
+    hotel:      ["....X....",
+                 "...XXX...",
+                 "XXXXXXXXX",
+                 ".XXXXXXX.",
+                 "..XXXXX..",
+                 "..XX.XX..",
+                 ".XX...XX.",
+                 ".X.....X.",
                  "........."],
     ich:        ["....X....",
                  "....X....",
@@ -567,10 +565,40 @@
   });
 
   /* ---------- Liste ---------- */
-  function listeZeichnen() {
-    const sichtbar = D.orte.filter((o) => an.has(o.art)).sort((a, b) => a.m - b.m);
-    $("zaehler").textContent = sichtbar.length + " von " + D.orte.length + " Orten · Stand 2026-06-14";
-    $("listeninhalt").innerHTML = sichtbar.map((o) => {
+  /* Die Liste war eine einzige Reihe aus 33 Eintraegen, nach Entfernung sortiert.
+     Das beantwortet "was ist am naechsten", aber nicht "wo esse ich" oder "wo
+     kaufe ich ein" - und bei eingeschalteten Haltestellen sind es 108 Zeilen am
+     Stueck. Die Arten sind darum zu vier Gruppen gebuendelt; neun einzelne
+     Reiter waeren wieder nur eine Liste in anderer Form.
+     Innerhalb einer Gruppe bleibt es bei der Sortierung nach Entfernung - das
+     ist die Reihenfolge, in der man vor Ort denkt. */
+  const GRUPPEN = [
+    { id: "essen",  titel: "Essen & Trinken", sym: "restaurant",
+      arten: ["Restaurant", "Imbiss", "Baeckerei", "Cafe", "Bar", "Strandbar"] },
+    { id: "kaufen", titel: "Einkaufen",       sym: "supermarkt", arten: ["Supermarkt"] },
+    { id: "strand", titel: "Strand",          sym: "strand",     arten: ["Strand"] },
+    { id: "bus",    titel: "Haltestellen",    sym: "bus",        arten: ["Bus"] },
+  ];
+  const gruppeVon = (art) => (GRUPPEN.find((g) => g.arten.includes(art)) || GRUPPEN[0]).id;
+
+  let reiterAktiv = 0;
+
+  function reiterWaehlen(i, fokus) {
+    const knoepfe = [...$("listenreiter").querySelectorAll('[role="tab"]')];
+    if (!knoepfe.length) return;
+    i = Math.max(0, Math.min(i, knoepfe.length - 1));
+    reiterAktiv = i;
+    knoepfe.forEach((b, k) => {
+      const an = k === i;
+      b.setAttribute("aria-selected", an ? "true" : "false");
+      b.tabIndex = an ? 0 : -1;
+      const tafel = document.getElementById(b.getAttribute("aria-controls"));
+      if (tafel) tafel.hidden = !an;
+      if (an && fokus) b.focus();
+    });
+  }
+
+  function zeileHtml(o) {
       const meta = [o.typ && o.typ !== o.art ? o.typ : o.art,
                     o.bew != null ? o.bew.toFixed(1) + "★" : null, o.preis || null]
         .filter(Boolean).join(" · ");
@@ -586,9 +614,52 @@
         + '<a class="zumaps" href="' + esc(mapsZiel(o))
         + '" target="_blank" rel="noopener" aria-label="' + esc(o.name)
         + ' in Google Maps ansehen">Maps</a></li>';
-    }).join("");
   }
-  $("listeninhalt").addEventListener("click", (e) => {
+
+  function listeZeichnen() {
+    const sichtbar = D.orte.filter((o) => an.has(o.art)).sort((a, b) => a.m - b.m);
+    const proGruppe = {};
+    for (const o of sichtbar) (proGruppe[gruppeVon(o.art)] ||= []).push(o);
+
+    // Leere Gruppen fallen weg - ein Reiter, der auf nichts zeigt, ist eine
+    // Sackgasse. Das passiert, sobald eine Art auf der Karte abgeschaltet wird.
+    const zeigbar = GRUPPEN.filter((g) => (proGruppe[g.id] || []).length);
+
+    $("listenreiter").innerHTML = zeigbar.map((g, i) =>
+      '<button role="tab" type="button" id="rt-' + g.id + '"'
+      + ' aria-controls="tp-' + g.id + '"'
+      + ' aria-selected="' + (i === reiterAktiv ? "true" : "false") + '"'
+      + (i === reiterAktiv ? "" : ' tabindex="-1"') + '>'
+      + '<span class="punkt marksym" style="color:var(--p-' + g.sym + ')">'
+      + symbolSvg(g.sym) + "</span>" + esc(g.titel)
+      + ' <span class="zahl">' + proGruppe[g.id].length + "</span></button>").join("");
+
+    $("listentafeln").innerHTML = zeigbar.map((g, i) =>
+      '<div class="tafelinhalt" role="tabpanel" id="tp-' + g.id + '"'
+      + ' aria-labelledby="rt-' + g.id + '" tabindex="0"'
+      + (i === reiterAktiv ? "" : " hidden") + '>'
+      + '<p class="zaehler">' + proGruppe[g.id].length + " von "
+      + D.orte.filter((o) => gruppeVon(o.art) === g.id).length
+      + " · nach Entfernung · Stand 2026-06-14</p>"
+      + '<ul class="liste">' + proGruppe[g.id].map(zeileHtml).join("") + "</ul></div>").join("");
+
+    // role=tablist verlangt Pfeiltasten-Bedienung; die Knoepfe werden bei jedem
+    // Neuzeichnen ersetzt, also haengen die Handler hier und nicht einmalig.
+    [...$("listenreiter").querySelectorAll('[role="tab"]')].forEach((b, i) => {
+      b.addEventListener("click", () => reiterWaehlen(i, false));
+      b.addEventListener("keydown", (e) => {
+        const n = zeigbar.length;
+        if (e.key === "ArrowRight") { reiterWaehlen((i + 1) % n, true); e.preventDefault(); }
+        else if (e.key === "ArrowLeft") { reiterWaehlen((i - 1 + n) % n, true); e.preventDefault(); }
+        else if (e.key === "Home") { reiterWaehlen(0, true); e.preventDefault(); }
+        else if (e.key === "End") { reiterWaehlen(n - 1, true); e.preventDefault(); }
+      });
+    });
+    if (reiterAktiv >= zeigbar.length) reiterWaehlen(0, false);
+  }
+  // Die Tafeln werden bei jedem Filterwechsel neu gebaut - der Handler haengt
+  // darum am bleibenden Behaelter, nicht an den Listen darin.
+  $("listentafeln").addEventListener("click", (e) => {
     const b = e.target.closest(".zeile");
     if (!b) return;
     const o = D.orte.find((x) => x.id === b.dataset.id);
