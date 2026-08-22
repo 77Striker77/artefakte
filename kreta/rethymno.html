@@ -28,8 +28,49 @@
               filter:drop-shadow(2px 0 0 var(--umriss)) drop-shadow(-2px 0 0 var(--umriss))
                      drop-shadow(0 2px 0 var(--umriss)) drop-shadow(0 -2px 0 var(--umriss))
                      drop-shadow(3px 3px 0 rgba(0,0,0,.32))}
-  .k-stadt{color:var(--koralle)}
+  /* Eine Farbe je Art, wie auf der Quartierseite. Die Form traegt der Umriss,
+     nicht die Fuellfarbe - dieselbe Mechanik, dieselbe drop-shadow-Kontur. */
+  .k-altstadt{color:var(--koralle)}
+  .k-festung{color:var(--p-baeckerei)}
+  .k-museum{color:var(--p-cafe)}
+  .k-kirche{color:var(--p-bar)}
+  .k-hafen{color:var(--p-strandbar)}
+  .k-strand{color:var(--p-strand)}
+  .k-bau{color:var(--p-imbiss)}
   .k-hotel{color:var(--sonne-flaeche)}
+  /* Kleiner als das Quartier-Sternchen: hier sind es 23 Punkte auf engem Raum. */
+  .pixpin.klein{width:22px; height:22px}
+  .pixpin.klein svg{width:22px; height:22px;
+              filter:drop-shadow(2px 0 0 var(--umriss)) drop-shadow(-2px 0 0 var(--umriss))
+                     drop-shadow(0 2px 0 var(--umriss)) drop-shadow(0 -2px 0 var(--umriss))
+                     drop-shadow(2px 2px 0 rgba(0,0,0,.3))}
+
+  .zeilenhuelle{display:flex; align-items:stretch; gap:var(--sp-2xs)}
+  .zeilenhuelle .zeile{flex:1; min-width:0}
+  .zeile{width:100%; text-align:left; font:inherit; cursor:pointer;
+         background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); padding:var(--sp-xs) var(--sp-s);
+         display:grid; grid-template-columns:auto minmax(0,1fr); gap:var(--sp-s);
+         align-items:center; min-height:44px}
+  .zeile:hover{background:var(--flaeche-2)}
+  .zname{font-weight:600; font-size:14px; line-height:1.25; display:block}
+  .zmeta{font-size:12px; color:var(--tinte-leise); display:block; margin-top:1px}
+  .zumaps{flex:none; display:flex; align-items:center; justify-content:center;
+          padding:0 var(--sp-xs); min-width:44px;
+          font-family:var(--zahl); font-size:10px; letter-spacing:.04em;
+          text-decoration:none; color:var(--tinte); background:var(--flaeche);
+          border:var(--rand) solid var(--umriss)}
+  .zumaps:hover{background:var(--akzent-weich); color:var(--akzent-text)}
+  .liste{list-style:none; margin:0; padding:0; display:grid; gap:var(--sp-2xs);
+         grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))}
+  .zaehler{font-family:var(--zahl); font-size:11px; color:var(--auf-tiefe-leise)}
+  /* Der Hinweis zur Altstadt gehoert sichtbar an die Karte, nicht in die Fusszeile:
+     ein gezeichneter Bereich, der keine amtliche Grenze ist, muss das sagen. */
+  .altstadtkreis{stroke:var(--koralle); fill:var(--koralle); fill-opacity:.10;
+                 stroke-dasharray:4 6; stroke-width:3}
+  .kartenhinweis{background:var(--tiefe-tief); color:var(--auf-tiefe);
+                 border-left:6px solid var(--koralle); padding:var(--sp-xs) var(--sp-m);
+                 font-size:12.5px; margin-top:var(--sp-xs)}
 
   .faktenraster{display:grid; gap:var(--sp-xs); margin:var(--sp-m) 0;
                 grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}
@@ -93,10 +134,15 @@
 
   <div class="wege" id="wege"></div>
 
+  <div class="leiste2" id="artenLeiste"><span class="leiste-titel">Zeigen</span></div>
+
   <div id="karte"></div>
+  <p class="kartenhinweis" id="kartenhinweis" hidden></p>
   <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
 
-  <h2 class="listenkopf" id="orte">Die Orte im Einzelnen</h2>
+  <h2 class="listenkopf" id="orte">Sehenswertes im Einzelnen</h2>
+  <div class="reiter" role="tablist" aria-label="Sehenswertes nach Art" id="listenreiter"></div>
+  <div id="listentafeln"></div>
   <div id="ortsliste"></div>
 </main>
 
@@ -182,7 +228,8 @@
      9x9-Raster je Zeile, daraus ein Sprite. shape-rendering="crispEdges" ist
      Pflicht - sonst zeichnet der Browser die Pixelkanten weich. */
   const SYMBOLE = {
-    stadt: [".........",
+    /* Altstadt: Haeuserzeile. */
+    altstadt: [".........",
             "..X...X..",
             ".XXX.XXX.",
             ".X.X.X.X.",
@@ -190,6 +237,66 @@
             "X.X.X.X.X",
             "XXXXXXXXX",
             "X.XX.XX.X",
+            "XXXXXXXXX"],
+    /* Festung & Tore: Zinnenkranz. */
+    festung: [".........",
+            "X.X.X.X.X",
+            "XXXXXXXXX",
+            "XXXXXXXXX",
+            "X.XXXXX.X",
+            "XXXXXXXXX",
+            "XX.XXX.XX",
+            "XXXXXXXXX",
+            "XXXXXXXXX"],
+    /* Museum: Giebel auf Saeulen. */
+    museum: ["....X....",
+            "..XXXXX..",
+            ".XXXXXXX.",
+            "XXXXXXXXX",
+            ".........",
+            ".X.X.X.X.",
+            ".X.X.X.X.",
+            ".X.X.X.X.",
+            "XXXXXXXXX"],
+    /* Kirche: Kreuz ueber dem Bau. */
+    kirche: ["....X....",
+            "...XXX...",
+            "....X....",
+            "..XXXXX..",
+            ".XX...XX.",
+            ".X.....X.",
+            ".X.XXX.X.",
+            ".X.XXX.X.",
+            "XXXXXXXXX"],
+    /* Hafen: Anker. */
+    hafen: ["....X....",
+            "...X.X...",
+            "....X....",
+            "..XXXXX..",
+            "....X....",
+            "X...X...X",
+            "X...X...X",
+            ".X..X..X.",
+            "..XXXXX.."],
+    /* Strand: Sonne ueber Welle - wie auf der Quartierseite. */
+    strand: ["....X....",
+            ".X..X..X.",
+            "..XXXXX..",
+            ".XXXXXXX.",
+            "..XXXXX..",
+            ".........",
+            ".XX...XX.",
+            "X..XX...X",
+            "........."],
+    /* Bauwerk: Loggia, Saeulen unter Gebaelk. */
+    bau: [".........",
+            "XXXXXXXXX",
+            "XXXXXXXXX",
+            ".X.X.X.X.",
+            ".X.X.X.X.",
+            ".X.X.X.X.",
+            ".X.X.X.X.",
+            "XXXXXXXXX",
             "XXXXXXXXX"],
     hotel: ["....X....",
             "...XXX...",
@@ -224,27 +331,103 @@
     document.body.prepend(svg);
   })();
 
-  const marke = (klasse, sym) => L.divIcon({
-    className: "",
-    html: '<i class="pixpin ' + klasse + '"><svg shape-rendering="crispEdges" aria-hidden="true">'
-      + '<use href="#sym-' + sym + '"/></svg></i>',
-    iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -18],
-  });
+  const symbolSvg = (sym) => SYMBOLE[sym]
+    ? '<svg shape-rendering="crispEdges" aria-hidden="true"><use href="#sym-' + sym + '"/></svg>'
+    : "";
+  const marke = (klasse, sym, klein) => {
+    const mass = klein ? 22 : 36;
+    return L.divIcon({
+      className: "",
+      html: '<i class="pixpin ' + klasse + (klein ? " klein" : "") + '">'
+        + symbolSvg(sym) + "</i>",
+      iconSize: [mass, mass], iconAnchor: [mass / 2, mass / 2],
+      popupAnchor: [0, -mass / 2],
+    });
+  };
 
-  if (STADT) {
-    L.marker([STADT.lat, STADT.lon], { icon: marke("k-stadt", "stadt"), zIndexOffset: 200 })
-      .bindPopup('<span class="pop-art">Stadt · ' + esc(STADT.name_gr) + "</span>"
-        + '<span class="pop-name">' + esc(STADT.name) + "</span>"
-        + '<span class="pop-zeile">'
-        + (STADT.einwohner === "unbekannt" ? "Einwohner unbekannt"
-          : STADT.einwohner.toLocaleString("de-DE") + " Einwohner (" + esc(STADT.einwohner_jahr) + ")")
-        + "</span>")
-      .addTo(karte);
+  /* ---------- Sehenswertes ----------
+     Die Punkte kommen aus ortsdetails.json - dieselbe Mechanik wie die Lokale
+     auf der Quartierseite, nur eine Ebene weiter. */
+  const DETAIL = (D.ortsdetails || {})[SEITE.id] || { punkte: [] };
+  const ARTEN = (D.ortsdetailArten || []).filter(
+    (a) => DETAIL.punkte.some((p) => p.art === a.id));
+  const PUNKTE = DETAIL.punkte;
+
+  const gruppen = {}, markerVon = new Map();
+  const an = new Set(ARTEN.map((a) => a.id));
+
+  const wegeLinks = (p) => {
+    const suche = "https://www.google.com/maps/search/?api=1&query="
+      + encodeURIComponent(p.name + " " + (SEITE.name || ""));
+    return '<div class="pop-wege"><a href="' + suche
+      + '" target="_blank" rel="noopener">In Google Maps</a>'
+      + (HOTEL ? '<a href="https://www.google.com/maps/dir/?api=1&origin='
+        + encodeURIComponent(HOTEL.name + ", " + (HOTEL.adresse || ""))
+        + "&destination=" + encodeURIComponent(p.name + " " + (SEITE.name || ""))
+        + '" target="_blank" rel="noopener">Route ab Quartier</a>' : "")
+      + (p.wikipedia ? '<a href="' + esc(p.wikipedia)
+        + '" target="_blank" rel="noopener">Wikipedia</a>' : "")
+      + (p.web ? '<a href="' + esc(p.web)
+        + '" target="_blank" rel="noopener">Website</a>' : "")
+      + "</div>";
+  };
+
+  const titelVon = (id) => (ARTEN.find((a) => a.id === id) || {}).titel || id;
+
+  ARTEN.forEach((a) => { gruppen[a.id] = L.layerGroup(); });
+  PUNKTE.forEach((p, i) => {
+    p.id = "p" + i;
+    const m = L.marker([p.lat, p.lon], {
+      icon: marke("k-" + p.art, p.art, p.art !== "altstadt"),
+      zIndexOffset: p.art === "altstadt" ? 300 : 100,
+    })
+      .bindPopup('<span class="pop-art">' + esc(titelVon(p.art)) + "</span>"
+        + '<span class="pop-name">' + esc(p.name) + "</span>"
+        + (p.beschreibung ? '<span class="pop-zeile">' + esc(p.beschreibung) + "</span>" : "")
+        + (p.zeiten ? '<span class="pop-zeile">Geöffnet: ' + esc(p.zeiten) + "</span>" : "")
+        + wegeLinks(p), { maxWidth: 300 })
+      .bindTooltip(p.name, { direction: "top", offset: [0, -12] });
+    markerVon.set(p.id, m);
+    if (gruppen[p.art]) gruppen[p.art].addLayer(m);
+  });
+  ARTEN.forEach((a) => gruppen[a.id].addTo(karte));
+
+  /* Die Altstadt fuehrt OSM als PUNKT, nicht als Flaeche. Der Kreis ist darum
+     ausdruecklich eine Orientierungshilfe und keine Grenze - und genau das
+     steht auch unter der Karte. Eine gezeichnete Flaeche, die wie eine amtliche
+     aussieht, waere hier die unehrlichere Loesung. */
+  const altstadt = PUNKTE.find((p) => p.art === "altstadt");
+  if (altstadt) {
+    L.circle([altstadt.lat, altstadt.lon],
+      { radius: 350, className: "altstadtkreis", interactive: false }).addTo(karte);
+    const h = $("kartenhinweis");
+    h.hidden = false;
+    h.innerHTML = "<strong>Der Kreis um die Altstadt ist eine Orientierungshilfe, "
+      + "keine Grenze.</strong> OpenStreetMap führt die Altstadt als Punkt, nicht als "
+      + "Fläche — gezeichnet sind 350 m um diesen Punkt.";
   }
+
+  /* ---------- Filterleiste ---------- */
+  ARTEN.forEach((a) => {
+    const n = PUNKTE.filter((p) => p.art === a.id).length;
+    const b = document.createElement("button");
+    b.className = "knopf"; b.type = "button";
+    b.setAttribute("aria-pressed", "true");
+    b.innerHTML = '<span class="punkt marksym" style="color:var(--p-' + a.id + ')">'
+      + symbolSvg(a.id) + "</span>" + esc(a.titel)
+      + ' <span class="zahl">' + n + "</span>";
+    b.addEventListener("click", () => {
+      if (an.has(a.id)) { an.delete(a.id); karte.removeLayer(gruppen[a.id]); }
+      else { an.add(a.id); gruppen[a.id].addTo(karte); }
+      b.setAttribute("aria-pressed", String(an.has(a.id)));
+      listeZeichnen();
+    });
+    $("artenLeiste").appendChild(b);
+  });
   /* Das Quartier liegt ausserhalb dieses Ausschnitts, gehoert aber auf die
      Karte: es ist der Bezugspunkt, von dem aus man herkommt. */
   if (HOTEL && HOTEL.lat) {
-    L.marker([HOTEL.lat, HOTEL.lon], { icon: marke("k-hotel", "hotel"), zIndexOffset: 500 })
+    L.marker([HOTEL.lat, HOTEL.lon], { icon: marke("k-hotel", "hotel", false), zIndexOffset: 500 })
       .bindPopup('<span class="pop-art">Unser Hotel</span><span class="pop-name">'
         + esc(HOTEL.name) + '</span><div class="pop-wege">'
         + '<a href="hotel.html">Hotel im Detail</a>'
@@ -255,22 +438,110 @@
   $("kartequelle").textContent = "Karte: OpenStreetMap-Mitwirkende · Luftbild: Esri";
   $("kartedetail").textContent = SEITE.quelle || "";
 
-  /* ---------- Ortsliste ----------
-     Noch leer, und das steht auch so da. Sobald in reise.json bei dieser
-     Ortsseite "daten" gesetzt ist, wird hier dieselbe Reiterliste gebaut wie
-     auf der Quartierseite. */
-  const schluessel = SEITE.daten;
-  const orte = schluessel ? (D[schluessel] || []) : [];
-  if (!orte.length) {
+  /* ---------- Liste in Reitern ----------
+     Derselbe Aufbau wie auf der Quartierseite: eine Gruppe je Art, leere
+     Gruppen fallen weg, und die Reiter werden bei jedem Filterwechsel neu
+     gebaut - die Tastatur-Handler haengen darum an den neuen Knoepfen. */
+  let reiterAktiv = 0;
+
+  function reiterWaehlen(i, fokus) {
+    const knoepfe = [...$("listenreiter").querySelectorAll('[role="tab"]')];
+    if (!knoepfe.length) return;
+    i = Math.max(0, Math.min(i, knoepfe.length - 1));
+    reiterAktiv = i;
+    knoepfe.forEach((b, k) => {
+      const auf = k === i;
+      b.setAttribute("aria-selected", auf ? "true" : "false");
+      b.tabIndex = auf ? 0 : -1;
+      const tafel = document.getElementById(b.getAttribute("aria-controls"));
+      if (tafel) tafel.hidden = !auf;
+      if (auf && fokus) b.focus();
+    });
+  }
+
+  const zeileHtml = (p) =>
+    '<li class="zeilenhuelle"><button class="zeile" type="button" data-id="' + p.id + '">'
+    + '<span class="punkt marksym" style="color:var(--p-' + p.art + ')">'
+    + symbolSvg(p.art) + "</span>"
+    + '<span><span class="zname">' + esc(p.name) + "</span>"
+    + (function () {
+        // Keine Zweitzeile, die nur den Namen wiederholt ("Altstadt / Altstadt").
+        const zweit = p.beschreibung || titelVon(p.art);
+        return zweit && zweit !== p.name
+          ? '<span class="zmeta">' + esc(zweit) + "</span>" : "";
+      })() + "</span>"
+    + "</button>"
+    + '<a class="zumaps" href="https://www.google.com/maps/search/?api=1&query='
+    + encodeURIComponent(p.name + " " + (SEITE.name || ""))
+    + '" target="_blank" rel="noopener" aria-label="' + esc(p.name)
+    + ' in Google Maps ansehen">Maps</a></li>';
+
+  function listeZeichnen() {
+    const sichtbar = PUNKTE.filter((p) => an.has(p.art));
+    const proArt = {};
+    for (const p of sichtbar) (proArt[p.art] ||= []).push(p);
+    const zeigbar = ARTEN.filter((a) => (proArt[a.id] || []).length);
+
+    $("listenreiter").innerHTML = zeigbar.map((a, i) =>
+      '<button role="tab" type="button" id="rt-' + a.id + '" aria-controls="tp-' + a.id + '"'
+      + ' aria-selected="' + (i === reiterAktiv ? "true" : "false") + '"'
+      + (i === reiterAktiv ? "" : ' tabindex="-1"') + '>'
+      + '<span class="punkt marksym" style="color:var(--p-' + a.id + ')">'
+      + symbolSvg(a.id) + "</span>" + esc(a.titel)
+      + ' <span class="zahl">' + proArt[a.id].length + "</span></button>").join("");
+
+    $("listentafeln").innerHTML = zeigbar.map((a, i) =>
+      '<div class="tafelinhalt" role="tabpanel" id="tp-' + a.id + '"'
+      + ' aria-labelledby="rt-' + a.id + '" tabindex="0"'
+      + (i === reiterAktiv ? "" : " hidden") + '>'
+      + '<ul class="liste">' + proArt[a.id].map(zeileHtml).join("") + "</ul></div>").join("");
+
+    [...$("listenreiter").querySelectorAll('[role="tab"]')].forEach((b, i) => {
+      b.addEventListener("click", () => reiterWaehlen(i, false));
+      b.addEventListener("keydown", (e) => {
+        const n = zeigbar.length;
+        if (e.key === "ArrowRight") { reiterWaehlen((i + 1) % n, true); e.preventDefault(); }
+        else if (e.key === "ArrowLeft") { reiterWaehlen((i - 1 + n) % n, true); e.preventDefault(); }
+        else if (e.key === "Home") { reiterWaehlen(0, true); e.preventDefault(); }
+        else if (e.key === "End") { reiterWaehlen(n - 1, true); e.preventDefault(); }
+      });
+    });
+    if (reiterAktiv >= zeigbar.length) reiterWaehlen(0, false);
+  }
+
+  /* Ein Klick in der Liste zeigt den Punkt auf der Karte. Der Handler haengt am
+     bleibenden Behaelter - die Tafeln darin werden neu gebaut. */
+  $("listentafeln").addEventListener("click", (e) => {
+    const b = e.target.closest(".zeile");
+    if (!b) return;
+    const p = PUNKTE.find((x) => x.id === b.dataset.id);
+    const m = markerVon.get(b.dataset.id);
+    if (!p || !m) return;
+    karte.setView([p.lat, p.lon], Math.max(karte.getZoom(), 16));
+    m.openPopup();
+    $("karte").scrollIntoView({ block: "nearest",
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
+
+  if (PUNKTE.length) listeZeichnen();
+
+  if (!PUNKTE.length) {
     $("ortsliste").innerHTML =
       '<div class="nochleer"><p><strong>Hier ist noch nichts erfasst.</strong> '
-      + "Lokale, Geschäfte und Sehenswürdigkeiten in Rethymno sind noch nicht "
-      + "recherchiert — die Seite zeigt darum bewusst eine leere Liste statt "
-      + "einer gefüllten, die niemand geprüft hat.</p>"
-      + "<p>Was bereits belegt ist, steht oben: Einwohnerzahl aus der Volkszählung 2021, "
-      + "Entfernung und Fahrzeit aus OSRM, die Zahl der Museen, Festungen und Marinas "
-      + "aus OpenStreetMap. Für den Quartierort sind es zum Vergleich 33 einzeln "
-      + "geprüfte Orte — <a href='karte.html'>so soll diese Seite einmal aussehen</a>.</p></div>";
+      + "Für diesen Ort liegen noch keine Punkte vor.</p></div>";
+  }
+
+  /* Was hier NICHT steht, gehoert genannt: Lokale und Geschaefte sind fuer
+     Rethymno nicht erhoben - auf der Quartierseite sind es 33 einzeln geprüfte. */
+  if (PUNKTE.length) {
+    const nachtrag = document.createElement("p");
+    nachtrag.className = "nochleer";
+    nachtrag.innerHTML = "<strong>Noch nicht erfasst:</strong> Lokale, Cafés und "
+      + "Geschäfte in Rethymno. Was hier steht, sind Sehenswürdigkeiten aus "
+      + "OpenStreetMap; die Gastronomie ist für diesen Ort noch nicht recherchiert. "
+      + "Für den Quartierort sind es zum Vergleich 33 einzeln geprüfte Orte — "
+      + "<a href='karte.html'>so sieht das dann aus</a>.";
+    $("ortsliste").appendChild(nachtrag);
   }
 
   $("fuss").innerHTML =
