@@ -28,16 +28,42 @@ window.reich = function (s) {
   "use strict";
   const D = window.DATEN || {};
   const hier = location.pathname.replace(/\/$/, "").split("/").pop() || "index.html";
+
+  /* Die Ortspunkte im Menue kommen aus reise.json, nicht aus dem Markup der
+     Seiten. Eine weitere Ortsseite ist damit ein Eintrag dort plus eine
+     HTML-Datei - stuenden sie im Markup, muesste man fuer jeden neuen Ort alle
+     fuenf Seiten anfassen und wuerde eine vergessen.
+     Der Quartierort traegt einen Stern: er ist der einzige, an dem man
+     tatsaechlich wohnt, und genau das ist im Menue sonst nicht zu sehen. */
+  const orte = D.ortsseiten || [];
+  if (orte.length) {
+    const halter = document.querySelector(".menue a[href='karte.html']");
+    if (halter) {
+      const frag = document.createDocumentFragment();
+      for (const o of orte) {
+        const a = document.createElement("a");
+        a.href = o.seite;
+        if (o.quartier) {
+          const st = document.createElement("span");
+          st.className = "menuestern";
+          st.textContent = "★";
+          st.setAttribute("aria-hidden", "true");
+          a.append(st, document.createTextNode(o.name));
+          a.title = o.name + " — hier liegt das gewählte Hotel";
+        } else {
+          a.textContent = o.name;
+        }
+        frag.append(a);
+      }
+      halter.replaceWith(frag);
+    }
+  }
   // Auch die Links im Untermenue: das steht seit dem Klipprand-Umbau NEBEN
   // .menue, nicht mehr darin - ein Selektor nur auf ".menue a" liesse die
   // Hotelseite so aussehen, als waere man nirgends.
   document.querySelectorAll(".menue a, .untermenue-tafel a").forEach((a) => {
     const ziel = a.getAttribute("href").replace(/\/$/, "").split("/").pop() || "index.html";
     if (ziel === hier) a.setAttribute("aria-current", "page");
-    if (ziel === "karte.html" && D.bezugOrt && D.bezugOrt !== "unbekannt") {
-      a.textContent = D.bezugOrt;
-      a.title = "Vor Ort: " + D.bezugOrt;
-    }
   });
   const marke = document.querySelector(".marke");
   if (marke && D.texte && D.texte.marke) marke.textContent = D.texte.marke;

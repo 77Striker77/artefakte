@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rethymno — die Stadt nebenan</title>
+<meta name="description" content="Rethymno auf echtem Kartenmaterial: venezianische Altstadt, Hafen und Fortezza, rund acht Kilometer vom Quartier.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="stil.css">
+<style>
+  /* Zweite Ortsseite. Sie hat bewusst denselben Aufbau wie die Quartierseite -
+     Kopf, Fakten, Karte, Ortsliste -, nur ist die Liste noch leer. Wenn hier
+     Lokale dazukommen, wird in reise.json bei dieser Ortsseite "daten" auf den
+     Schluessel in daten.js gesetzt; das Markup steht schon. */
+  @media (max-width:640px){ #karte{height:clamp(320px,46vh,460px)} }
+  #karte{height:clamp(380px,58vh,620px); border:var(--rand) solid var(--umriss);
+         box-shadow:var(--schatten); background:var(--tiefe); z-index:0}
+  .leaflet-container{font-family:var(--sans); background:var(--tiefe)}
+  .leaflet-control-attribution{font-size:10.5px}
+
+  .pixpin{display:flex; align-items:center; justify-content:center;
+          width:30px; height:30px; image-rendering:pixelated}
+  .pixpin svg{width:30px; height:30px; display:block; fill:currentColor;
+              filter:drop-shadow(2px 0 0 var(--umriss)) drop-shadow(-2px 0 0 var(--umriss))
+                     drop-shadow(0 2px 0 var(--umriss)) drop-shadow(0 -2px 0 var(--umriss))
+                     drop-shadow(3px 3px 0 rgba(0,0,0,.32))}
+  .k-stadt{color:var(--koralle)}
+  .k-hotel{color:var(--sonne-flaeche)}
+
+  .faktenraster{display:grid; gap:var(--sp-xs); margin:var(--sp-m) 0;
+                grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}
+  .fakt{background:var(--flaeche); color:var(--tinte);
+        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+        padding:var(--sp-s) var(--sp-m)}
+  .fakt dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
+           text-transform:uppercase; color:var(--tinte-fein)}
+  .fakt dd{margin:var(--sp-2xs) 0 0; font-size:14.5px}
+  .charakter{margin-top:var(--sp-s); font-size:14px; color:var(--auf-tiefe-leise); max-width:64ch}
+  .merkchips{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
+  /* Diese Chips stehen frei auf dem Wasser, nicht in einer hellen Tafel wie auf
+     der Uebersichtskarte. Ohne eigenen Grund erben sie --tinte und stehen dunkel
+     auf dunkel: gemessen 1:1, also schlicht unsichtbar. */
+  .merkchips .chip{background:var(--flaeche); color:var(--tinte)}
+
+  .listenkopf{margin:var(--sp-xl) 0 var(--sp-s)}
+  /* Der ehrliche Leerzustand. Eine leere Liste ohne Hinweis sieht aus wie ein
+     Fehler; hier steht, dass die Orte noch nicht erfasst sind und was schon da ist. */
+  .nochleer{background:var(--tiefe-tief); color:var(--auf-tiefe);
+            border-left:6px solid var(--koralle); padding:var(--sp-m);
+            font-size:13.5px}
+  .nochleer strong{color:var(--koralle)}
+  /* Der Kasten ist ein tiefes Panel - die globale a-Regel gaebe dem Link
+     --akzent-text mit 2,75:1. */
+  .nochleer a{color:var(--akzent-hell)}
+  .nochleer p + p{margin-top:var(--sp-xs)}
+  .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
+              justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
+              font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
+</style>
+</head>
+<body>
+<a class="skip" href="#karte">Zur Karte springen</a>
+
+<nav class="leiste">
+  <div class="leiste-innen">
+    <a class="marke" href="index.html">Kreta 2026</a>
+    <div class="menue">
+      <a href="index.html">Übersicht</a>
+      <a href="karte.html">Vor Ort</a>
+    </div>
+    <details class="untermenue">
+      <summary aria-label="Weitere Seiten">Mehr<span class="mpfeil" aria-hidden="true"></span></summary>
+      <div class="untermenue-tafel">
+        <a href="hotel.html">Das Hotel</a>
+        <a href="rangfolge.html">Rangfolge</a>
+      </div>
+    </details>
+  </div>
+</nav>
+
+<main class="huelle">
+  <p class="eyebrow" id="tEyebrow">Vor Ort</p>
+  <h1 id="tTitel">Rethymno</h1>
+  <p class="unterzeile" id="tUnterzeile"></p>
+
+  <dl class="faktenraster" id="fakten"></dl>
+  <p class="charakter" id="charakter"></p>
+  <div class="merkchips" id="merkmale"></div>
+
+  <div class="wege" id="wege"></div>
+
+  <div id="karte"></div>
+  <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
+
+  <h2 class="listenkopf" id="orte">Die Orte im Einzelnen</h2>
+  <div id="ortsliste"></div>
+</main>
+
+<footer class="fuss"><div class="huelle" id="fuss"></div></footer>
+
+<script src="vendor/leaflet.js"></script>
+<script src="daten.js"></script>
+<script src="gemein.js"></script>
+<script>
+(function () {
+  "use strict";
+  const D = window.DATEN || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = window.esc;
+
+  /* Alles Ortsabhaengige kommt aus reise.json, nichts steht hier fest
+     verdrahtet - dieselbe Trennung wie auf den uebrigen Seiten. */
+  const SEITE = (D.ortsseiten || []).find((o) => o.seite === "rethymno.html") || {};
+  const STADT = (D.staedte || []).find((s) => s.name === SEITE.name) || null;
+  const HOTEL = D.hotel || null;
+
+  if (SEITE.titel) $("tTitel").textContent = SEITE.titel;
+  if (SEITE.unterzeile) $("tUnterzeile").innerHTML = SEITE.unterzeile;
+  $("tEyebrow").textContent = "Vor Ort · " + (SEITE.name || "Rethymno");
+
+  /* ---------- Fakten ----------
+     Sie liegen laengst in kreta-orte.json, weil die Uebersichtskarte sie fuer
+     ihre Staedte-Reiter braucht. Diese Seite holt sie sich von dort, statt
+     dieselben Zahlen ein zweites Mal zu pflegen. */
+  if (STADT) {
+    const zeile = (t, w) => "<div class='fakt'><dt>" + esc(t) + "</dt><dd>" + w + "</dd></div>";
+    const weg = STADT.strasse_hotel_km === "unbekannt"
+      ? "Entfernung unbekannt"
+      : STADT.strasse_hotel_km + " km · rund " + STADT.fahrzeit_hotel_min + " min";
+    $("fakten").innerHTML =
+      zeile("Einwohner", STADT.einwohner === "unbekannt"
+        ? "unbekannt"
+        : STADT.einwohner.toLocaleString("de-DE") + " <small>(Zählung "
+          + esc(STADT.einwohner_jahr) + ")</small>")
+      + zeile("Ab dem Quartier", esc(weg))
+      + zeile("Luftlinie", STADT.luftlinie_hotel_km + " km")
+      + zeile("Griechisch", esc(STADT.name_gr));
+
+    if (STADT.charakteristik && STADT.charakteristik !== "unbekannt")
+      $("charakter").textContent = STADT.charakteristik;
+
+    const NAMEN = { museen: ["Museum", "Museen"], festungen: ["Festung", "Festungen"],
+      ausgrabungen: ["Ausgrabung", "Ausgrabungen"],
+      faehranleger: ["Fähranleger", "Fähranleger"], marinas: ["Marina", "Marinas"] };
+    $("merkmale").innerHTML = Object.entries(STADT.merkmale || {})
+      .filter(([k, v]) => v > 0 && NAMEN[k])
+      .sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => '<span class="chip">' + v + " " + NAMEN[k][v === 1 ? 0 : 1] + "</span>")
+      .join("");
+
+    $("wege").innerHTML =
+      '<a href="https://www.google.com/maps/search/?api=1&query='
+      + encodeURIComponent(SEITE.name + " " + (D.zielName || ""))
+      + '" target="_blank" rel="noopener">In Google Maps</a>'
+      + (HOTEL ? '<a href="https://www.google.com/maps/dir/?api=1&origin='
+        + encodeURIComponent(HOTEL.name + ", " + (HOTEL.adresse || ""))
+        + "&destination=" + encodeURIComponent(SEITE.name + " " + (D.zielName || ""))
+        + '" target="_blank" rel="noopener">Route ab Quartier</a>' : "")
+      + (STADT.wikipedia ? '<a href="' + esc(STADT.wikipedia)
+        + '" target="_blank" rel="noopener">Wikipedia</a>' : "");
+  }
+
+  /* ---------- Karte ---------- */
+  const karte = L.map("karte", { scrollWheelZoom: true })
+    .setView([SEITE.lat || 35.36765, SEITE.lon || 24.47361], SEITE.zoom || 15);
+
+  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende',
+  }).addTo(karte);
+  const satellit = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19, attribution: "Luftbild: Esri, Maxar, Earthstar Geographics" });
+  L.control.layers({ "Karte": osm, "Satellit": satellit }, null, { position: "topright" }).addTo(karte);
+  L.control.scale({ imperial: false, position: "bottomleft" }).addTo(karte);
+
+  /* Zwei Pixel-Symbole, dieselbe Schreibweise wie auf der Quartierseite: ein
+     9x9-Raster je Zeile, daraus ein Sprite. shape-rendering="crispEdges" ist
+     Pflicht - sonst zeichnet der Browser die Pixelkanten weich. */
+  const SYMBOLE = {
+    stadt: [".........",
+            "..X...X..",
+            ".XXX.XXX.",
+            ".X.X.X.X.",
+            "XXXXXXXXX",
+            "X.X.X.X.X",
+            "XXXXXXXXX",
+            "X.XX.XX.X",
+            "XXXXXXXXX"],
+    hotel: ["....X....",
+            "...XXX...",
+            "XXXXXXXXX",
+            ".XXXXXXX.",
+            "..XXXXX..",
+            "..XX.XX..",
+            ".XX...XX.",
+            ".X.....X.",
+            "........."],
+  };
+  (function sprite() {
+    let inhalt = "";
+    for (const [name, raster] of Object.entries(SYMBOLE)) {
+      let rects = "";
+      raster.forEach((zeile, y) => {
+        let x = 0;
+        while (x < zeile.length) {
+          if (zeile[x] !== "X") { x++; continue; }
+          let b = 0;
+          while (zeile[x + b] === "X") b++;
+          rects += `<rect x="${x}" y="${y}" width="${b}" height="1"/>`;
+          x += b;
+        }
+      });
+      inhalt += `<symbol id="sym-${name}" viewBox="0 0 9 9">${rects}</symbol>`;
+    }
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("style", "position:absolute;width:0;height:0;overflow:hidden");
+    svg.innerHTML = inhalt;
+    document.body.prepend(svg);
+  })();
+
+  const marke = (klasse, sym) => L.divIcon({
+    className: "",
+    html: '<i class="pixpin ' + klasse + '"><svg shape-rendering="crispEdges" aria-hidden="true">'
+      + '<use href="#sym-' + sym + '"/></svg></i>',
+    iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -18],
+  });
+
+  if (STADT) {
+    L.marker([STADT.lat, STADT.lon], { icon: marke("k-stadt", "stadt"), zIndexOffset: 200 })
+      .bindPopup('<span class="pop-art">Stadt · ' + esc(STADT.name_gr) + "</span>"
+        + '<span class="pop-name">' + esc(STADT.name) + "</span>"
+        + '<span class="pop-zeile">'
+        + (STADT.einwohner === "unbekannt" ? "Einwohner unbekannt"
+          : STADT.einwohner.toLocaleString("de-DE") + " Einwohner (" + esc(STADT.einwohner_jahr) + ")")
+        + "</span>")
+      .addTo(karte);
+  }
+  /* Das Quartier liegt ausserhalb dieses Ausschnitts, gehoert aber auf die
+     Karte: es ist der Bezugspunkt, von dem aus man herkommt. */
+  if (HOTEL && HOTEL.lat) {
+    L.marker([HOTEL.lat, HOTEL.lon], { icon: marke("k-hotel", "hotel"), zIndexOffset: 500 })
+      .bindPopup('<span class="pop-art">Unser Hotel</span><span class="pop-name">'
+        + esc(HOTEL.name) + '</span><div class="pop-wege">'
+        + '<a href="hotel.html">Hotel im Detail</a>'
+        + '<a href="karte.html">Karte vor Ort</a></div>')
+      .addTo(karte);
+  }
+
+  $("kartequelle").textContent = "Karte: OpenStreetMap-Mitwirkende · Luftbild: Esri";
+  $("kartedetail").textContent = SEITE.quelle || "";
+
+  /* ---------- Ortsliste ----------
+     Noch leer, und das steht auch so da. Sobald in reise.json bei dieser
+     Ortsseite "daten" gesetzt ist, wird hier dieselbe Reiterliste gebaut wie
+     auf der Quartierseite. */
+  const schluessel = SEITE.daten;
+  const orte = schluessel ? (D[schluessel] || []) : [];
+  if (!orte.length) {
+    $("ortsliste").innerHTML =
+      '<div class="nochleer"><p><strong>Hier ist noch nichts erfasst.</strong> '
+      + "Lokale, Geschäfte und Sehenswürdigkeiten in Rethymno sind noch nicht "
+      + "recherchiert — die Seite zeigt darum bewusst eine leere Liste statt "
+      + "einer gefüllten, die niemand geprüft hat.</p>"
+      + "<p>Was bereits belegt ist, steht oben: Einwohnerzahl aus der Volkszählung 2021, "
+      + "Entfernung und Fahrzeit aus OSRM, die Zahl der Museen, Festungen und Marinas "
+      + "aus OpenStreetMap. Für den Quartierort sind es zum Vergleich 33 einzeln "
+      + "geprüfte Orte — <a href='karte.html'>so soll diese Seite einmal aussehen</a>.</p></div>";
+  }
+
+  $("fuss").innerHTML =
+    "<p>Kartenmaterial: &copy; OpenStreetMap-Mitwirkende (ODbL) · Luftbild: Esri, Maxar, "
+    + "Earthstar Geographics.</p>"
+    + "<p>Stadtdaten: " + esc(SEITE.quelle || "unbekannt") + ".</p>";
+})();
+</script>
+</body>
+</html>

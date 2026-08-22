@@ -190,6 +190,10 @@ img{image-rendering:pixelated}
          color:var(--auf-tiefe-leise); white-space:nowrap; border-bottom:3px solid transparent}
 .menue a:hover{color:var(--auf-tiefe)}
 .menue a[aria-current="page"]{color:var(--akzent-hell); border-bottom-color:var(--see)}
+/* Der Stern markiert den Ort, an dem das gewaehlte Hotel liegt. Er ist
+   aria-hidden - der Titel des Links sagt dasselbe in Worten, und ein
+   vorgelesenes "schwarzer Stern" hilft niemandem. */
+.menuestern{color:var(--sonne-flaeche); margin-right:5px; font-size:13px; line-height:1}
 
 /* ---------- Reiter ----------
  * Echte Tabs mit role=tablist: Pfeiltasten wechseln, immer nur der aktive ist
