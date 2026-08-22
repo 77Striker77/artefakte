@@ -157,7 +157,7 @@
   /* Tinte, nicht tinte-fein: gemessen wurde --tinte auf --ziel (7,37:1);
      tinte-fein kommt auf derselben Flaeche nur auf 3,43:1. Ein Messwert gilt
      fuer die Farbe, die man dann auch eintraegt. */
-  .zielart{font-family:var(--zahl); font-size:9px; letter-spacing:.06em;
+  .zielart{font-family:var(--zahl); font-size:10px; letter-spacing:.06em;
            text-transform:uppercase; color:var(--tinte);
            border:2px solid var(--umriss); padding:2px 5px; background:var(--ziel)}
   .zieltext{font-size:12.5px; color:var(--tinte-leise); margin-top:var(--sp-2xs)}
@@ -172,7 +172,7 @@
   .anreise.auto{background:var(--warn-bg); color:var(--warn)}
   .anreise.bus{background:var(--gut-bg); color:var(--gut)}
   .zielfakt{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-2xs)}
-  .zielquelle{font-family:var(--zahl); font-size:9px; color:var(--tinte-fein);
+  .zielquelle{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein);
               margin-top:var(--sp-2xs)}
   .zielquelle a{color:var(--akzent-text)}
   .hinweis{background:var(--tiefe-tief); color:var(--auf-tiefe);
@@ -199,7 +199,7 @@
             border-bottom:2px solid var(--linie)}
   .stadttext{font-size:13px; color:var(--tinte-leise)}
   .stadtmerk{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-2xs)}
-  .stadtquelle{font-family:var(--zahl); font-size:9px; color:var(--tinte-fein); margin-top:var(--sp-2xs)}
+  .stadtquelle{font-family:var(--zahl); font-size:10px; color:var(--tinte-fein); margin-top:var(--sp-2xs)}
   .stadtquelle a{color:var(--akzent-text)}
   /* Die naechste Stadt zum Hotel wird hervorgehoben - sie ist die einzige, die
      ohne Tagesausflug erreichbar ist. */
@@ -219,6 +219,22 @@
 
   @media (max-width:640px){
     .stadtew{margin-left:0; text-align:left; width:100%}
+
+    /* Kreta ist rund 260 km breit und 60 km hoch. Auf 390 px Bildschirmbreite
+       begrenzt die Breite den Zoom so stark, dass die Insel ein schmaler
+       Streifen in viel leerem Meer ist - jede zusaetzliche Hoehe macht das
+       schlimmer, nicht besser. */
+    #karte{height:clamp(280px,38vh,380px)}
+
+    /* Die dauerhaften Namensfahnen lagen auf 390 px uebereinander und
+       verdeckten genau die Marken, die sie beschriften sollten: sechs Staedte
+       auf 300 px Inselbreite gehen nicht nebeneinander. Der Name kommt beim
+       Antippen im Popup - dort steht er ohnehin. */
+    .leaflet-tooltip.fahne{display:none}
+
+    /* Die Ebenen-Knoepfe brauchen sonst drei Zeilen. */
+    .leiste2 .knopf{font-size:13.5px; padding:0 10px}
+    .reiter button{font-size:13.5px; padding:0 var(--sp-s)}
   }
 </style>
 </head>
@@ -520,7 +536,15 @@
 
   /* Ausflugsziele. Die Marke traegt die Fahrzeit in Minuten - die Zahl, die
      ueber Halbtags- oder Ganztagesausflug entscheidet. */
-  const ebeneZiele = L.layerGroup().addTo(karte);
+  /* Auf einem 390-px-Bildschirm liegen 11 Hotels, 6 Staedte, 3 Flughaefen und
+     22 Ziele auf rund 300 px Inselbreite - das ist ein Klumpen, kein Kartenbild.
+     Die zahlreichste Ebene startet dort darum ausgeblendet; der Knopf steht
+     sichtbar daneben und zeigt die Zahl, es geht also nichts verloren.
+     matchMedia statt einer Breitenabfrage: das beruecksichtigt auch, wenn der
+     Nutzer spaeter dreht - der Startzustand bleibt dann, was er gewaehlt hat. */
+  const schmal = matchMedia("(max-width: 640px)").matches;
+  const ebeneZiele = L.layerGroup();
+  if (!schmal) ebeneZiele.addTo(karte);
   const minuten = (z) => typeof z.fahrzeit_hotel_min === "number"
     ? z.fahrzeit_hotel_min + "'" : "?";
 
@@ -577,10 +601,13 @@
     ["eFlug", ebeneFlug, "nFlug", FLUG.length],
     ["eZiele", ebeneZiele, "nZiele", ZIELE.length],
   ];
+  if (schmal) $("eZiele").setAttribute("aria-pressed", "false");
   schalter.forEach(([id, ebene, zaehlerId, anzahl]) => {
     $(zaehlerId).textContent = anzahl;
     const b = $(id);
     if (!anzahl) { b.disabled = true; b.setAttribute("aria-pressed", "false"); return; }
+    // Der Knopf muss zeigen, was die Karte tut - nicht, was im Markup stand.
+    b.setAttribute("aria-pressed", karte.hasLayer(ebene) ? "true" : "false");
     b.addEventListener("click", () => {
       const an = b.getAttribute("aria-pressed") === "true";
       b.setAttribute("aria-pressed", an ? "false" : "true");

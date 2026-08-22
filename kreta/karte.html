@@ -24,6 +24,11 @@
   .leiste-titel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
                 text-transform:uppercase; color:var(--auf-tiefe-leise); margin-right:var(--sp-2xs)}
 
+  /* Auf dem Handy flacher: 62vh sind auf einem 844-px-Geraet ueber 500 px und
+     schieben die Liste komplett unter die Falz. Der Ausschnitt hier ist klein
+     genug, dass die Marken sich nicht ins Gehege kommen - die Ringmasse bleiben
+     darum sichtbar, sie sind der eigentliche Nutzen dieser Karte. */
+  @media (max-width:640px){ #karte{height:clamp(320px,46vh,460px)} }
   #karte{height:clamp(380px,62vh,680px); border:var(--rand) solid var(--umriss);
          background:var(--tiefe); z-index:0}
   /* Der Grund unter den Kacheln ist bei einer Kuestenkarte ohnehin Wasser. */
@@ -106,8 +111,9 @@
   .zeilenhuelle .zeile{flex:1; min-width:0}
   /* Schmal, aber ueber 44 px hoch - er sitzt in einer Liste, die auf dem Handy
      einspaltig wird, und muss dort noch treffbar sein. */
-  .zumaps{flex:none; display:flex; align-items:center; padding:0 var(--sp-xs);
-          font-family:var(--zahl); font-size:9px; letter-spacing:.04em;
+  .zumaps{flex:none; display:flex; align-items:center; justify-content:center;
+          padding:0 var(--sp-xs); min-width:44px;
+          font-family:var(--zahl); font-size:10px; letter-spacing:.04em;
           text-decoration:none; color:var(--tinte); background:var(--flaeche);
           border:var(--rand) solid var(--umriss)}
   .zumaps:hover{background:var(--akzent-weich); color:var(--akzent-text)}

@@ -175,7 +175,8 @@ img{image-rendering:pixelated}
 .leiste-innen{max-width:var(--mass); margin:0 auto; padding:0 var(--sp-m);
               display:flex; align-items:center; gap:var(--sp-m); min-height:62px}
 .marke{font-family:var(--display); font-size:23px; font-weight:700; text-decoration:none;
-       color:var(--auf-tiefe); white-space:nowrap; letter-spacing:.02em}
+       color:var(--auf-tiefe); white-space:nowrap; letter-spacing:.02em;
+       display:inline-flex; align-items:center; min-height:44px}
 /* overflow-x:auto laesst die Menueleiste auf schmalen Geraeten seitlich
    schieben - klippt dabei aber AUCH SENKRECHT. Ein aufgeklapptes Untermenue
    innerhalb dieses Containers waere unsichtbar: der Pfeil drehte sich, die
@@ -249,8 +250,16 @@ h3{font-family:var(--display); font-size:17px}
        box-shadow:var(--schatten); padding:var(--sp-m) var(--sp-l)}
 .tafel h2,.tafel h3{color:var(--tinte)}
 .tafel:focus-visible{box-shadow:0 0 0 2px var(--fokus-innen), var(--schatten)}
+/* nowrap haelt kurze Chips ("PASST", "5★") in einer Zeile - genau richtig.
+   Sobald aber ein Oeffnungszeiten-Text hineingeraet ("Apr 01-Oct 31: 08:00-20:00;
+   Nov 01-Mar 31: 08:30-15:00"), wird der Chip 457 px breit und zieht die ganze
+   Seite auf: gemessen 497 px Inhalt in einem 320-px-Fenster. max-width kappt das,
+   ohne den Umbruch kurzer Chips zu erlauben. */
 .chip{font-family:var(--zahl); font-size:10px; letter-spacing:.03em; padding:5px 8px;
-      border:2px solid var(--umriss); white-space:nowrap; display:inline-block}
+      border:2px solid var(--umriss); white-space:nowrap; display:inline-block;
+      max-width:100%; overflow-wrap:anywhere}
+/* In den Faktenkarten stehen ganze Zeitangaben - dort darf umbrochen werden. */
+.zielfakt .chip, .stadtmerk .chip{white-space:normal}
 .chip.passt{background:var(--gut-bg); color:var(--gut)}
 .chip.grenz{background:var(--warn-bg); color:var(--warn)}
 .chip.ko{background:var(--krit-bg); color:var(--krit)}
@@ -332,7 +341,10 @@ h3{font-family:var(--display); font-size:17px}
 .pop-wege a.haupt,.wege a.haupt{background:var(--sonne-flaeche)}
 /* In den Faktenkarten sind es Fusszeilen-Knoepfe: etwas kleiner, damit sie die
    Karte nicht dominieren, aber weiterhin ueber 44 px Tastflaeche durch padding. */
-.wege a{font-size:11.5px; padding:8px 10px}
+/* 44 px Tasthoehe nach WCAG 2.5.8 - gemessen waren es 38. Und die Schrift
+   bleibt bei 11,5 px: darunter liest man auf einem Handy nicht mehr bequem. */
+.wege a{font-size:11.5px; padding:0 12px; min-height:44px;
+        display:inline-flex; align-items:center; gap:6px}
 
 .punkt{width:12px; height:12px; flex:none; display:inline-block; border:2px solid var(--umriss)}
 /* Traegt der Punkt ein Symbol, zeigt er GENAU das, was auch auf der Karte steht:
@@ -350,6 +362,19 @@ h3{font-family:var(--display); font-size:17px}
 .fuss a{color:var(--akzent-hell)}
 .fuss p{margin-bottom:var(--sp-xs)}
 .fuss .huelle{padding-top:0; padding-bottom:0}
+
+/* ---------- Handy ----------
+ * Am Schreibtisch fällt nichts davon auf, am Gerät alles.
+ */
+@media (max-width:640px){
+  /* Die Marke frisst Platz, den die Menuepunkte brauchen - der Ortsname war
+     als "Adelian" abgeschnitten. Der Seitentitel steht ohnehin als h1 direkt
+     darunter, die Marke darf also schrumpfen. */
+  .marke{font-size:18px}
+  .leiste-innen{gap:var(--sp-xs); padding:0 var(--sp-s)}
+  .menue a{padding:0 var(--sp-xs); font-size:14px}
+  .untermenue > summary{padding:0 var(--sp-xs); font-size:14px}
+}
 
 @media (prefers-reduced-motion: reduce){
   :root{--bewegung:0}
