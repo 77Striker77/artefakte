@@ -356,6 +356,11 @@
   const $ = (id) => document.getElementById(id);
   const esc = window.esc, reich = window.reich;
   const STAEDTE = D.staedte || [];
+  /* Welche Stadt eine eigene Seite hat, steht in reise.json - nicht hier. Eine
+     siebte Stadtseite ist damit ein Eintrag dort, und dieser Link erscheint von
+     selbst; eine geloeschte Seite hinterlaesst keinen toten Verweis. */
+  const ORTSSEITE = new Map((D.ortsseiten || [])
+    .filter((o) => !o.quartier).map((o) => [o.name, o.seite]));
   const FLUG = D.flughaefen || [];
   const ZIELE = D.ziele || [];
   /* Gesucht wird nach NAMEN, nicht nach Koordinaten: "?query=35.3,25.1" setzt nur
@@ -487,7 +492,10 @@
           : '<span class="pop-zeile">' + esc(s.charakteristik) + "</span>")
         + (merkText(s.merkmale).length
           ? '<span class="pop-zeile">' + esc(merkText(s.merkmale).join(" · ")) + "</span>" : "")
-        + '<div class="pop-wege"><a href="#staedte">Fakten unter der Karte</a>'
+        + '<div class="pop-wege">'
+        + (ORTSSEITE.has(s.name)
+          ? "<a href='" + esc(ORTSSEITE.get(s.name)) + "'>Stadtseite öffnen</a>" : "")
+        + '<a href="#staedte">Fakten unter der Karte</a>'
         + (s.wikipedia ? '<a href="' + esc(s.wikipedia) + '" target="_blank" rel="noopener">Wikipedia</a>' : "")
         + "</div>", { maxWidth: 320 })
       .addTo(ebeneStaedte);
@@ -768,9 +776,12 @@
         ? "Charakteristik unbekannt." : esc(s.charakteristik)}</p>
       <div class="stadtmerk">${merkText(s.merkmale).map((t) =>
         '<span class="chip">' + esc(t) + "</span>").join("")}</div>
-      ${wege(s.lat, s.lon, s.wikipedia
-        ? '<a href="' + esc(s.wikipedia) + '" target="_blank" rel="noopener">Wikipedia</a>'
-        : "", s.name)}
+      ${wege(s.lat, s.lon,
+        (ORTSSEITE.has(s.name)
+          ? "<a href='" + esc(ORTSSEITE.get(s.name)) + "'>Stadtseite öffnen</a>" : "")
+        + (s.wikipedia
+          ? '<a href="' + esc(s.wikipedia) + '" target="_blank" rel="noopener">Wikipedia</a>'
+          : ""), s.name)}
       <p class="stadtquelle">Einwohner: Wikidata · Weg: OSRM · Merkmale: OpenStreetMap</p>
     </article>`).join("");
 

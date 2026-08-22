@@ -328,7 +328,7 @@ h3{font-family:var(--display); font-size:17px}
  * NICHT hier stehen duerfen die tiefen Panels (.urteil, .zeile.sieger,
  * .sieger-hinweis) - die sind dunkel und setzen ihre helle Tinte selbst. */
 :is(.tafel, .zeile, .fakt, .tabellenhuelle, .spalte li, details, .chip, .knopf,
-    .legende, .stadt, .flug, .ziel, .bilderhinweis,
+    .legende, .stadt, .flug, .ziel, .bilderhinweis, .zumaps,
     .leaflet-popup-content-wrapper, .leaflet-popup-content){color:var(--tinte)}
 /* Ueberschriften erben nicht: h1,h2 tragen weiter unten die helle Grundtinte.
    Ohne diese Zeile steht eine h2 in einer hellen Tafel mit 1,04:1 - genau so

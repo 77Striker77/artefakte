@@ -1,0 +1,100 @@
+/* ortsseite.css — der Stil ALLER Ortsseiten.
+ *
+ * Warum ausgelagert: es gibt sechs Stadtseiten mit sprechenden Adressen
+ * (heraklion.html, chania.html, …). Stuende dieser Block in jeder von ihnen,
+ * muesste jede Stilaenderung sechsmal nachgezogen werden - und die eine
+ * vergessene Datei faellt niemandem auf. Dieselbe Trennung wie bei stil.css
+ * und gemein.js: die Datei ist die Kopie, nicht der Inhalt.
+ *
+ * Die hellen Flaechen dieser Seiten (.zeile, .fakt, .chip, .zumaps) schalten
+ * NICHT hier auf Rollensatz 1 zurueck, sondern zentral im Abschnitt
+ * "Rollensatz-Umschaltung" in stil.css. Wer hier eine neue helle Flaeche
+ * anlegt, traegt sie dort ein - sonst erbt sie die helle Grundtinte des body
+ * und steht hell auf hell.
+ */
+
+@media (max-width:640px){ #karte{height:clamp(320px,46vh,460px)} }
+#karte{height:clamp(380px,58vh,620px); border:var(--rand) solid var(--umriss);
+       box-shadow:var(--schatten); background:var(--tiefe); z-index:0}
+.leaflet-container{font-family:var(--sans); background:var(--tiefe)}
+.leaflet-control-attribution{font-size:10.5px}
+
+.pixpin{display:flex; align-items:center; justify-content:center;
+        width:30px; height:30px; image-rendering:pixelated}
+.pixpin svg{width:30px; height:30px; display:block; fill:currentColor;
+            filter:drop-shadow(2px 0 0 var(--umriss)) drop-shadow(-2px 0 0 var(--umriss))
+                   drop-shadow(0 2px 0 var(--umriss)) drop-shadow(0 -2px 0 var(--umriss))
+                   drop-shadow(3px 3px 0 rgba(0,0,0,.32))}
+/* Eine Farbe je Art, wie auf der Quartierseite. Die Form traegt der Umriss,
+   nicht die Fuellfarbe - dieselbe Mechanik, dieselbe drop-shadow-Kontur. */
+.k-altstadt{color:var(--koralle)}
+.k-festung{color:var(--p-baeckerei)}
+.k-museum{color:var(--p-cafe)}
+.k-kirche{color:var(--p-bar)}
+.k-hafen{color:var(--p-strandbar)}
+.k-strand{color:var(--p-strand)}
+.k-bau{color:var(--p-imbiss)}
+.k-hotel{color:var(--sonne-flaeche)}
+/* Kleiner als das Quartier-Sternchen: hier stehen zwei Dutzend Punkte auf engem Raum. */
+.pixpin.klein{width:22px; height:22px}
+.pixpin.klein svg{width:22px; height:22px;
+            filter:drop-shadow(2px 0 0 var(--umriss)) drop-shadow(-2px 0 0 var(--umriss))
+                   drop-shadow(0 2px 0 var(--umriss)) drop-shadow(0 -2px 0 var(--umriss))
+                   drop-shadow(2px 2px 0 rgba(0,0,0,.3))}
+
+.zeilenhuelle{display:flex; align-items:stretch; gap:var(--sp-2xs)}
+.zeilenhuelle .zeile{flex:1; min-width:0}
+.zeile{width:100%; text-align:left; font:inherit; cursor:pointer;
+       background:var(--flaeche);
+       border:var(--rand) solid var(--umriss); padding:var(--sp-xs) var(--sp-s);
+       display:grid; grid-template-columns:auto minmax(0,1fr); gap:var(--sp-s);
+       align-items:center; min-height:44px}
+.zeile:hover{background:var(--flaeche-2)}
+.zname{font-weight:600; font-size:14px; line-height:1.25; display:block}
+.zmeta{font-size:12px; color:var(--tinte-leise); display:block; margin-top:1px}
+.zumaps{flex:none; display:flex; align-items:center; justify-content:center;
+        padding:0 var(--sp-xs); min-width:44px;
+        font-family:var(--zahl); font-size:10px; letter-spacing:.04em;
+        text-decoration:none; background:var(--flaeche);
+        border:var(--rand) solid var(--umriss)}
+.zumaps:hover{background:var(--akzent-weich); color:var(--akzent-text)}
+.liste{list-style:none; margin:0; padding:0; display:grid; gap:var(--sp-2xs);
+       grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))}
+.zaehler{font-family:var(--zahl); font-size:11px; color:var(--auf-tiefe-leise)}
+/* Der Hinweis zur Altstadt gehoert sichtbar an die Karte, nicht in die Fusszeile:
+   ein gezeichneter Bereich, der keine amtliche Grenze ist, muss das sagen. */
+.altstadtkreis{stroke:var(--koralle); fill:var(--koralle); fill-opacity:.10;
+               stroke-dasharray:4 6; stroke-width:3}
+.kartenhinweis{background:var(--tiefe-tief); color:var(--auf-tiefe);
+               border-left:6px solid var(--koralle); padding:var(--sp-xs) var(--sp-m);
+               font-size:12.5px; margin-top:var(--sp-xs)}
+
+.faktenraster{display:grid; gap:var(--sp-xs); margin:var(--sp-m) 0;
+              grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}
+.fakt{background:var(--flaeche);
+      border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+      padding:var(--sp-s) var(--sp-m)}
+.fakt dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
+         text-transform:uppercase; color:var(--tinte-fein)}
+.fakt dd{margin:var(--sp-2xs) 0 0; font-size:14.5px}
+.charakter{margin-top:var(--sp-s); font-size:14px; color:var(--auf-tiefe-leise); max-width:64ch}
+.merkchips{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); margin-top:var(--sp-s)}
+/* Diese Chips stehen frei auf dem Wasser, nicht in einer hellen Tafel wie auf
+   der Uebersichtskarte. Ohne eigenen Grund erben sie --tinte und stehen dunkel
+   auf dunkel: gemessen 1:1, also schlicht unsichtbar. */
+.merkchips .chip{background:var(--flaeche)}
+
+.listenkopf{margin:var(--sp-xl) 0 var(--sp-s)}
+/* Der ehrliche Leerzustand. Eine leere Liste ohne Hinweis sieht aus wie ein
+   Fehler; hier steht, dass die Orte noch nicht erfasst sind und was schon da ist. */
+.nochleer{background:var(--tiefe-tief); color:var(--auf-tiefe);
+          border-left:6px solid var(--koralle); padding:var(--sp-m);
+          font-size:13.5px}
+.nochleer strong{color:var(--koralle)}
+/* Der Kasten ist ein tiefes Panel - die globale a-Regel gaebe dem Link
+   --akzent-text mit 2,75:1. */
+.nochleer a{color:var(--akzent-hell)}
+.nochleer p + p{margin-top:var(--sp-xs)}
+.karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
+            justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
+            font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
