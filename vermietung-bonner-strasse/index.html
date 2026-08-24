@@ -9,11 +9,9 @@
 -->
 <style>
   /* @grund-hell: #F4F6F7 */
-  /* @grund-dunkel: #10161A */
   /* Serienfarben der Diagramme (Zeitband, Balken, Monatsleiste) — damit der Messstand
-     die Paletten je Theme prüfen kann statt sie als ungeprüft zu melden. */
+     die Palette prüfen kann statt sie als ungeprüft zu melden. */
   /* @serien-hell: #1F6B79, #8A5A12, #A33526, #2C6E4B, #7C8A93 */
-  /* @serien-dunkel: #5FB4C4, #D9A64A, #E38578, #6FC195, #66747E */
 
   :root{
     color-scheme: light;
@@ -33,33 +31,6 @@
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
     --mass:1120px; --lese:68ch;
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      color-scheme: dark;
-      --c-bg:#10161A; --c-surface:#171E23; --c-surface-2:#20292F;
-      --c-ink:#E7ECEF; --c-ink-soft:#ABB8C0; --c-ink-faint:#8A97A0;
-      --c-line:#2A343B; --c-line-strong:#66747E;
-      --c-accent:#5FB4C4; --c-accent-ink:#8FCFDB;
-      --c-accent-bg:#1B3A41;
-      --c-good:#6FC195; --c-good-bg:#1E3A2C;
-      --c-warn:#D9A64A; --c-warn-bg:#3E311E;
-      --c-crit:#E38578; --c-crit-bg:#472018;
-      --schatten-rgb:0 0 0;
-    }
-  }
-  :root[data-theme="dark"]{
-    color-scheme: dark;
-    --c-bg:#10161A; --c-surface:#171E23; --c-surface-2:#20292F;
-    --c-ink:#E7ECEF; --c-ink-soft:#ABB8C0; --c-ink-faint:#8A97A0;
-    --c-line:#2A343B; --c-line-strong:#66747E;
-    --c-accent:#5FB4C4; --c-accent-ink:#8FCFDB;
-    --c-accent-bg:#1B3A41;
-    --c-good:#6FC195; --c-good-bg:#1E3A2C;
-    --c-warn:#D9A64A; --c-warn-bg:#3E311E;
-    --c-crit:#E38578; --c-crit-bg:#472018;
-    --schatten-rgb:0 0 0;
-  }
-
   *{box-sizing:border-box}
   body{margin:0;background:var(--c-bg);color:var(--c-ink);
     font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -80,17 +51,13 @@
     border-radius:var(--radius-s);z-index:10}
   .skip:focus{left:var(--sp-s);top:var(--sp-s)}
 
-  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;
-    gap:var(--sp-m);padding-bottom:var(--sp-m);border-bottom:1px solid var(--c-line)}
+  header.top{padding-bottom:var(--sp-m);border-bottom:1px solid var(--c-line)}
+  /* Der Kopf gehört zur Landingpage — in den Fachbereichen führt die Bereichszeile. */
+  body:not(.startseite) header.top{display:none}
   header.top h1{font-size:clamp(26px,4.2vw,40px);line-height:1.08}
   .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:650;
     color:var(--c-accent-ink)}
   header.top .sub{color:var(--c-ink-soft);margin-top:var(--sp-xs);font-size:15px}
-  /* Werkzeuge: dezente Symbol-Knöpfe am Rand (Thema, Druck) */
-  .werkzeuge{display:flex;gap:2px}
-  .wknopf{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
-    background:none;border:0;border-radius:var(--radius-s);color:var(--c-ink-faint);cursor:pointer;padding:0}
-  .wknopf:hover{background:var(--c-surface-2);color:var(--c-ink)}
 
   /* Navigation — ZWEI Ebenen, jede genau einmal auf der Seite:
      Ebene 1 Bereich  → ab 1100px die sticky Seitenleiste, darunter die Pill-Leiste.
@@ -146,7 +113,7 @@
 
   @media (min-width:1100px){
     .wrap{display:grid;grid-template-columns:236px minmax(0,1fr);column-gap:var(--sp-xl)}
-    .wrap>header.top,.wrap>.pii-strip,.wrap>.pii-panel,.wrap>.seitenfuss{grid-column:1/-1}
+    .wrap>header.top,.wrap>.pii-strip,.wrap>.pii-panel{grid-column:1/-1}
     .bereichsmenue{display:none}
     .leiste{display:block;position:sticky;top:var(--sp-m);align-self:start;margin-top:var(--sp-l)}
     main#inhalt{margin-top:var(--sp-s)}
@@ -549,12 +516,10 @@
   @media(max-width:820px){.zweispaltig{grid-template-columns:1fr}}
 
   .fussnote{font-size:12px;color:var(--c-ink-faint);padding:var(--sp-xs) var(--sp-m) var(--sp-m)}
-  .seitenfuss{margin-top:var(--sp-xl);padding-top:var(--sp-m);border-top:1px solid var(--c-line);
-    font-size:12.5px;color:var(--c-ink-faint);line-height:1.7}
 
   /* Lesbare Zeilenlänge auch dort, wo Prosa nicht in <p> steht — sonst laufen
      Fußzeile und Hinweiskästen auf breiten Schirmen auf über 150 Zeichen. */
-  .hinweiskasten,.warnkasten,.kritkasten,.fussnote,.seitenfuss,
+  .hinweiskasten,.warnkasten,.kritkasten,.fussnote,
   .punkt .detail,.schritte li,.merk,.option ul{max-width:var(--lese)}
 
   /* Ampel: die Gesamtlage in fünf Zeilen (Übersicht) */
@@ -634,7 +599,7 @@
     /* Druck/PDF zeigt IMMER alles — Bereiche UND Unterseiten aufklappen,
        sonst verliert die Papierfassung genau das, was die Navigation nur zusammenfaltet. */
     .view,.unterseite{display:block!important}
-    .werkzeuge,.skip,.pii-lock,.pii-panel,.regler input,.themadlg{display:none!important}
+    .skip,.pii-lock,.pii-panel,.regler input,.themadlg{display:none!important}
     body{background:#fff;color:#000}
     .karte,.kachel{break-inside:avoid;box-shadow:none}
     section{margin-top:18px}
@@ -646,19 +611,9 @@
 
 <div class="wrap">
   <header class="top">
-    <div>
-      <div class="eyebrow">Vermietung · Einfamilienhaus · Betriebstafel</div>
-      <h1>Vermieter-Cockpit · Bonner Straße</h1>
-      <div class="sub">Kommt das Geld, läuft eine Frist, liegt Potenzial brach, baut sich Risiko auf? — <span data-pii="objekt">XX</span></div>
-    </div>
-    <div class="werkzeuge">
-      <button class="wknopf" id="themaKnopf" aria-pressed="false" aria-label="Dunkles Design einschalten">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path id="themaIcon" d="" fill="currentColor"/></svg>
-      </button>
-      <button class="wknopf" onclick="window.print()" aria-label="Drucken oder als PDF sichern">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 3h10v4h2a2 2 0 0 1 2 2v7h-4v4H7v-4H3V9a2 2 0 0 1 2-2h2V3zm2 2v2h6V5H9zm0 11v3h6v-3H9zm-4-2h2v-1h10v1h2V9H5v5z" fill="currentColor"/></svg>
-      </button>
-    </div>
+    <div class="eyebrow">Vermietung · Betriebstafel</div>
+    <h1>Das Haus in der Bonner Straße</h1>
+    <div class="sub">Freistehendes Einfamilienhaus, Baujahr 1969, 207,4 m² Wohnfläche — <span data-pii="objekt">XX</span></div>
   </header>
 
   <div class="pii-strip">
@@ -789,6 +744,35 @@
           <span class="hinweis">vor Steuern · <a href="#geld/bilanz">Jahr für Jahr aufschlüsseln</a></span></div>
         <div class="karte innen gesamtband" id="gesamtband"></div>
         <div class="karte innen" style="margin-top:var(--sp-s)"><div class="fluss" id="bilanzFluss"></div></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-ueb-quellen">
+      <section aria-labelledby="h-qdok">
+        <div class="sekkopf"><h2 id="h-qdok">Worauf die Zahlen beruhen</h2></div>
+        <div class="karte"><div class="tabellenrahmen"><table>
+          <thead><tr><th>Dokument</th><th>Stand</th><th>Was daraus kommt</th></tr></thead>
+          <tbody id="qtDokumente"></tbody>
+        </table></div></div>
+      </section>
+
+      <section aria-labelledby="h-qnorm">
+        <div class="sekkopf"><h2 id="h-qnorm">Verifizierte Normen</h2>
+          <span class="hinweis">Kernnormen gegen gesetze-im-internet.de geprüft</span></div>
+        <div class="karte"><div class="tabellenrahmen"><table>
+          <tbody id="qtNormen"></tbody>
+        </table></div></div>
+      </section>
+
+      <section aria-labelledby="h-qansatz">
+        <div class="sekkopf"><h2 id="h-qansatz">Was Beleg ist und was Ansatz</h2></div>
+        <div class="karte"><ul class="tdliste" id="qtAnsatz"></ul></div>
+      </section>
+
+      <section aria-labelledby="h-qgrenzen">
+        <div class="sekkopf"><h2 id="h-qgrenzen">Grenzen dieser Tafel</h2>
+          <span class="hinweis"><a href="#aufgaben/recht">Rechtsstand ansehen</a></span></div>
+        <div class="karte"><ul class="tdliste" id="qtGrenzen"></ul></div>
       </section>
     </div>
 
@@ -1319,7 +1303,6 @@
     <div class="tdbody" id="themaBody"></div>
   </dialog>
 
-  <div class="seitenfuss" id="seitenfuss"></div>
 </div>
 
 <script>
@@ -1987,7 +1970,7 @@ function baueAmpel() {
    im Druck sind alle Panels aufgeklappt (siehe @media print). */
 const NAVDEF = [
   { id: 'uebersicht', name: 'Übersicht', praefix: 'u-ueb-', subs: [
-    ['start', 'Start'], ['lage', 'Lage &amp; Bilanz']] },
+    ['start', 'Start'], ['lage', 'Lage &amp; Bilanz'], ['quellen', 'Quellen']] },
   { id: 'geld', name: 'Geld &amp; Bilanz', praefix: 'u-geld-', subs: [
     ['eingang', 'Mieteingang'], ['kaution', 'Kaution'], ['bilanz', 'Bilanz &amp; Cashflow'],
     ['ruecklage', 'Rücklage'], ['reparaturen', 'Reparaturen']] },
@@ -2095,6 +2078,7 @@ function zeigeSeite(bId, sId) {
   document.getElementById('bmAktuell').textContent =
     n.name.replace(/&amp;/g, '&') + (pos >= 0 ? ' · ' + n.subs[pos][1].replace(/&amp;/g, '&') : '');
   document.getElementById('bereichsmenue').open = false;
+  document.body.classList.toggle('startseite', n.id === 'uebersicht');
 }
 
 /* Blätterzeile: am Ende eines Bereichs führt sie in den nächsten — ein Durchlauf ohne Sackgasse */
@@ -2907,34 +2891,55 @@ function baueRechtsstand() {
     '<tr><td>' + w.thema + '</td><td style="white-space:nowrap">' + w.frist + '</td><td style="color:var(--c-ink-soft)">' + w.detail + '</td></tr>').join('');
 }
 
-/* ===== Fuß, Thema, PII ===== */
-function baueFuss() {
-  document.getElementById('seitenfuss').innerHTML =
-    '<b>Datenbasis:</b> Mietvertrag V1.0 (final) · NK-Vorausschau V1.0 (03.05.2026) · Wohnflächenberechnung WoFiV V1.0 (207,4 m²) · Rechtsstand recherchiert und verifiziert 10.07.2026 · Mieteingänge sind nicht verifizierbar (keine Zahlungsinfos) und gelten vereinfacht als bezahlt (Nutzerentscheidung 10.08.2026). ' +
-    'Einzelquelle der Zahlen: vermieter-daten.json. ' +
-    '<b>Verifizierte Normen:</b> §§ 548, 551, 556, 558, 558b, 558d, 561, 569 BGB · CO2KostAufG · §§ 60, 71, 72, 79–80 GEG · ' +
-    'KÜO und § 15 1. BImSchV · §§ 45–47 AwSV · § 52 LGrStG BW · §§ 7, 9, 11, 21 EStG · §§ 82b, 11d EStDV · §§ 149, 179, 180 AO. ' +
-    '<b>Kalkulatorische Werte</b> (Rücklage, Mietausfallwagnis, CO₂-Rückstellung, Cashflow, Markt-Orientierung) sind <b>Ansätze, keine Messwerte</b>. ' +
-    'Rechtliche und steuerliche Angaben sind allgemeine Information, keine Rechts- oder Steuerberatung. ' +
-    'Personenbezogene Angaben (Adresse, Namen, IBAN) erscheinen als „XX“ und lassen sich nur lokal per Schlüssel-Datei einblenden — im Artefakt ist nichts davon gespeichert.';
-}
-function themaVerdrahten() {
-  const knopf = document.getElementById('themaKnopf');
-  const SONNE = 'M12 17.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM11 1h2v4h-2V1zm0 18h2v4h-2v-4zM1 11h4v2H1v-2zm18 0h4v2h-4v-2zM3.5 5 5 3.5l2.8 2.8-1.5 1.5L3.5 5zm12.7 12.7 1.5-1.5 2.8 2.8-1.5 1.5-2.8-2.8zm2.8-14.2L20.5 5l-2.8 2.8-1.5-1.5 2.9-2.8zM6.3 16.2l1.5 1.5-2.8 2.8L3.5 19l2.8-2.8z';
-  const MOND = 'M20.6 14.6A8.5 8.5 0 0 1 9.4 3.4a8.5 8.5 0 1 0 11.2 11.2z';
-  const dunkelJetzt = () => document.documentElement.dataset.theme === 'dark' ||
-    (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
-  const beschriften = () => { const d = dunkelJetzt();
-    document.getElementById('themaIcon').setAttribute('d', d ? SONNE : MOND);
-    knopf.setAttribute('aria-label', d ? 'Helles Design einschalten' : 'Dunkles Design einschalten');
-    knopf.setAttribute('aria-pressed', String(d)); };
-  knopf.addEventListener('click', () => {
-    document.documentElement.dataset.theme = dunkelJetzt() ? 'light' : 'dark'; beschriften(); });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (!document.documentElement.dataset.theme) beschriften(); });
-  beschriften();
-}
+/* ===== Quellen: worauf diese Tafel steht =====
+   Löst die frühere Datenbasis-Fußzeile ab. Gespiegelt in vermieter-daten.json
+   unter quellen — dort stehen dieselben Einträge. */
+const QUELLENTAFEL = {
+  dokumente: [
+    ['Mietvertrag V1.0 (final)', 'unterschrieben', 'Miete, Fälligkeit, Kaution, Kleinreparaturen, Pflichtenverteilung, Heizöl-Regel'],
+    ['Nebenkosten-Vorausschau V1.0', '03.05.2026', 'Kalkulation der Betriebskosten und Höhe der Vorauszahlung'],
+    ['Wohnflächenberechnung nach WoFlV V1.0', '23.04.2026', 'Wohnfläche 207,4 m² und die Aufteilung nach Etagen'],
+    ['Übergabeprotokoll V1.0.1', 'Übergabe 01.06.2026', 'Zählerstände, Heizölbestand, Schlüsselliste — liegen bisher nur auf Papier'],
+    ['Internet-Nutzungsvereinbarung V1.0', 'unterschrieben', 'Tarif; der monatliche Kostenanteil ist im abgelegten PDF nicht ausgefüllt'],
+    ['Handwerker- und Materialbelege 2026', 'Stand 10.08.2026', 'Erhaltungsaufwand 9.731,47 € brutto — ohne die Dachsanierung'],
+    ['Qualifizierter Mietspiegel 2025 (§ 558d BGB)', 'gültig bis 31.12.2026', 'Orientierung für den Erhöhungs-Spielbereich'],
+    ['Rechtsstand-Recherche', 'geprüft 10.07.2026', 'Normen, Fristen und Prüfzyklen dieser Tafel']
+  ],
+  normen: [
+    ['Mietrecht', '§§ 548, 551, 556, 558, 558b, 558d, 561, 569 BGB'],
+    ['CO₂-Kosten', 'CO2KostAufG (§§ 3, 5, 6, 9 und Anlage)'],
+    ['Gebäude und Energie', '§§ 60, 71, 72, 79–80, 108 GEG'],
+    ['Feuerstätte und Schornsteinfeger', 'KÜO · § 15 1. BImSchV · § 14 SchfHwG'],
+    ['Öltank', '§§ 45–47 AwSV · § 89 WHG'],
+    ['Grundsteuer', '§ 52 LGrStG BW'],
+    ['Steuern', '§§ 7, 9, 11, 21 EStG · §§ 82b, 11d EStDV · §§ 149, 179, 180 AO'],
+    ['Verkehrssicherung', '§ 823 BGB'],
+    ['Rauchwarnmelder', '§ 15 VII LBO BW']
+  ],
+  ansatz: [
+    ['warn', '<b>Kalkulatorische Werte sind Ansätze, keine Messwerte.</b> Das betrifft Rücklage, Mietausfallwagnis, CO₂-Rückstellung, Cashflow und die Markt-Orientierung.'],
+    ['warn', '<b>Mieteingänge sind nicht verifizierbar</b> — es liegen keine Zahlungsinfos vor. Jeder begonnene Monat gilt vereinfacht als bezahlt (Nutzerentscheidung 10.08.2026); Ausnahmen tragen Sie ein.'],
+    ['gut', '<b>Einzelquelle aller Zahlen ist vermieter-daten.json.</b> Diese Tafel rechnet daraus und führt keine zweite Zahlenwelt.'],
+    ['', 'Summen, Etagenflächen, Fristen und der Mieteingang werden bei jedem Aufruf neu gerechnet — sie können nicht gegen die Einzelwerte driften.']
+  ],
+  grenzen: [
+    ['krit', 'Rechtliche und steuerliche Angaben sind allgemeine Information, <b>keine Rechts- oder Steuerberatung</b>.'],
+    ['', 'Personenbezogene Angaben — Adresse, Namen, IBAN — erscheinen als „XX“ und lassen sich nur lokal per Schlüssel-Datei einblenden. Im Artefakt ist nichts davon gespeichert.'],
+    ['', 'Der Rechtsstand hat ein Ablaufdatum: danach warnt die Tafel von selbst, bis neu geprüft wurde.']
+  ]
+};
 
+function baueQuellen() {
+  document.getElementById('qtDokumente').innerHTML = QUELLENTAFEL.dokumente.map((d) =>
+    '<tr><td><b>' + d[0] + '</b></td><td style="white-space:nowrap">' + d[1] +
+    '</td><td style="color:var(--c-ink-soft)">' + d[2] + '</td></tr>').join('');
+  document.getElementById('qtNormen').innerHTML = QUELLENTAFEL.normen.map((n) =>
+    '<tr><td style="white-space:nowrap"><b>' + n[0] + '</b></td><td>' + n[1] + '</td></tr>').join('');
+  const liste = (rows) => rows.map((z) =>
+    '<li><span class="tdpunkt ' + z[0] + '"></span><span>' + z[1] + '</span></li>').join('');
+  document.getElementById('qtAnsatz').innerHTML = liste(QUELLENTAFEL.ansatz);
+  document.getElementById('qtGrenzen').innerHTML = liste(QUELLENTAFEL.grenzen);
+}
 /* PII: nur lokal einblenden (kein Upload, kein Speicher) — NICHT verändern */
 let PII = {};
 function applyPII() { document.querySelectorAll('[data-pii]').forEach((n) => {
@@ -2985,7 +2990,7 @@ document.documentElement.lang = 'de';   // trägt auch ohne <html>-Tag (Artefakt
 baueNavigation();
 baueLage(); baueUebersicht(); baueGesamt(); baueBilanz(); baueZeitband(); baueZahlungen(); baueKaution();
 baueVertrag(); baueErhoehung(); baueNK(); baueCO2(); bauePunkte(); baueWirtschaft();
-baueVersicherungen(); baueSteuern(); baueRechtsstand(); baueFuss();
+baueVersicherungen(); baueSteuern(); baueRechtsstand(); baueQuellen();
 tabellenBeschriften();
-themaVerdrahten(); route(); applyPII();
+route(); applyPII();
 </script>
