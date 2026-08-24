@@ -337,6 +337,9 @@
   .raum{font-size:12.5px;background:var(--c-surface);border:1px solid var(--c-line);
     border-radius:999px;padding:3px 10px;font-variant-numeric:tabular-nums}
   .raum i{font-style:normal;color:var(--c-ink-faint)}
+  .belegbalken{height:8px;border-radius:99px;background:var(--c-surface-2);
+    overflow:hidden;margin-top:var(--sp-s)}
+  .belegbalken span{display:block;height:100%;background:var(--c-accent);border-radius:99px}
   .kalreihe{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--sp-s)}
   a.kalblatt{display:block;background:var(--c-surface);border:1px solid var(--c-line);
     border-radius:var(--radius);overflow:hidden;text-decoration:none;color:inherit;text-align:center;
@@ -1199,6 +1202,19 @@
       </section>
     </div>
 
+    <div class="unterseite" id="u-nk-belege">
+      <section aria-labelledby="h-blg">
+        <div class="sekkopf"><h2 id="h-blg">Belege für die Abrechnung 2026</h2>
+          <span class="hinweis">Ablage im Familien-Share: 06_Nebenkosten \ 2026 \ Belege</span></div>
+        <div class="karte innen gesamtband" id="belegStand"></div>
+        <div class="karte" style="margin-top:var(--sp-s)"><div class="tabellenrahmen"><table>
+          <thead><tr><th>Position</th><th class="zahl">Erwartet / Jahr</th><th class="zahl">davon 7/12</th><th>Beleg</th></tr></thead>
+          <tbody id="belegTabelle"></tbody>
+        </table></div></div>
+        <div id="belegHinweise"></div>
+      </section>
+    </div>
+
     <div class="unterseite" id="u-nk-abrechnung">
       <section aria-labelledby="h-abr">
         <div class="sekkopf">
@@ -1450,15 +1466,15 @@ const DATEN = {
     kalk_monat: 444.23, kalk_jahr: 5330.78, vz_monat: 475.00, vz_jahr: 5700.00,
     puffer_monat: 30.77, vz_m2: 2.29, kalk_m2: 2.14,
     positionen: [
-      { label: 'Grundsteuer',             kat: 'abgaben', jahr: 1630.96, norm: '§ 2 Nr. 1 BetrKV' },
-      { label: 'Gebäudeversicherung',     kat: 'abgaben', jahr: 1699.73, norm: '§ 2 Nr. 13 BetrKV' },
-      { label: 'Haftpflichtversicherung', kat: 'abgaben', jahr: 63.84,   norm: '§ 2 Nr. 13 BetrKV' },
-      { label: 'Abfallentsorgung',        kat: 'betrieb', jahr: 1008.00, norm: '§ 2 Nr. 8 BetrKV' },
-      { label: 'Trinkwasser',             kat: 'wasser',  jahr: 300.00,  norm: '§ 2 Nr. 2 BetrKV' },
-      { label: 'Entwässerung',            kat: 'wasser',  jahr: 216.00,  norm: '§ 2 Nr. 3 BetrKV' },
-      { label: 'Wartung Heizung',         kat: 'waerme',  jahr: 220.00,  norm: '§ 2 Nr. 4d BetrKV' },
-      { label: 'Schornsteinfeger',        kat: 'waerme',  jahr: 92.25,   norm: '§ 2 Nr. 12 BetrKV' },
-      { label: 'Rauchwarnmelder-Wartung', kat: 'betrieb', jahr: 100.00,  norm: '§ 2 Nr. 17 BetrKV' }
+      { key: 'grundsteuer', label: 'Grundsteuer',             kat: 'abgaben', jahr: 1630.96, norm: '§ 2 Nr. 1 BetrKV' },
+      { key: 'gebaeudevers', label: 'Gebäudeversicherung',     kat: 'abgaben', jahr: 1699.73, norm: '§ 2 Nr. 13 BetrKV' },
+      { key: 'haftpflicht', label: 'Haftpflichtversicherung', kat: 'abgaben', jahr: 63.84,   norm: '§ 2 Nr. 13 BetrKV' },
+      { key: 'abfall', label: 'Abfallentsorgung',        kat: 'betrieb', jahr: 1008.00, norm: '§ 2 Nr. 8 BetrKV' },
+      { key: 'trinkwasser', label: 'Trinkwasser',             kat: 'wasser',  jahr: 300.00,  norm: '§ 2 Nr. 2 BetrKV' },
+      { key: 'entwaesserung', label: 'Entwässerung',            kat: 'wasser',  jahr: 216.00,  norm: '§ 2 Nr. 3 BetrKV' },
+      { key: 'heizwartung', label: 'Wartung Heizung',         kat: 'waerme',  jahr: 220.00,  norm: '§ 2 Nr. 4d BetrKV' },
+      { key: 'schornstein', label: 'Schornsteinfeger',        kat: 'waerme',  jahr: 92.25,   norm: '§ 2 Nr. 12 BetrKV' },
+      { key: 'rwm', label: 'Rauchwarnmelder-Wartung', kat: 'betrieb', jahr: 100.00,  norm: '§ 2 Nr. 17 BetrKV' }
     ]
   },
   abrechnung: { zeitraum: '01.06.–31.12.2026 (7 Monate)', vz_soll: 3325.00,
@@ -1489,7 +1505,7 @@ const DATEN = {
   // Nicht umlagefähig (§ 1 II BetrKV), aber Werbungskosten; Brutto zählt (Vermietung umsatzsteuerfrei).
   insta: { 2026: {
     netto: 12239.81, brutto: 14565.37,
-    beleg_ort: 'Scans im Familien-Share, Ordner 06_Instandhaltung_und_Reparaturen · Einzelaufstellung: instandhaltung/2026.md',
+    beleg_ort: 'Scans im Familien-Share, Ordner 07_Instandhaltung_und_Reparaturen · Einzelaufstellung: instandhaltung/2026.md',
     vorgaenge: [
       { d: '2026-05-12', firma: 'Auto-Bissinger', was: 'Baustellenabsicherung (Einsatz 02.04.2026)', rg: '232600137 TK', netto: 150.00, brutto: 178.50 },
       { d: '2026-05-18', firma: 'Globus Baumarkt', was: 'Fliesen Keller (4 × Feinsteinzeug Bristol Anthrazit)', rg: 'Kassenbeleg', netto: 124.30, brutto: 147.92 },
@@ -1682,7 +1698,7 @@ const STEUER_FRISTEN = [
   { d: '2028-02-29', was: 'Anlage V / Feststellung 2026 mit Steuerberater (§ 149 III AO)' }
 ];
 const JAHRESABLAUF = [
-  ['Laufend: Belege sammeln', 'Mieteingänge laufen aufs Gemeinschaftskonto, die Kaution liegt separat (§ 551 III BGB). Ablage im Share: <b>05_Nebenkosten\\Belege</b> · <b>06_Instandhaltung</b> · <b>08_Steuern</b>.'],
+  ['Laufend: Belege sammeln', 'Mieteingänge laufen aufs Gemeinschaftskonto, die Kaution liegt separat (§ 551 III BGB). Ablage im Share: <b>06_Nebenkosten\\2026\\Belege</b> · <b>06_Instandhaltung</b> · <b>08_Steuern</b>.'],
   ['Nach Jahresende: EINE Erklärung fürs Haus', 'Gesonderte und einheitliche Feststellung mit Anlage V über ELSTER — das Ergebnis wird amtlich je 50 % festgestellt. Frist 31.07. des Folgejahres, mit Berater Ende Februar des übernächsten Jahres.'],
   ['Persönlich: jede die eigene Hälfte', 'Jede Vermieterin übernimmt ihre 50 % in die eigene Einkommensteuererklärung — zum <b>persönlichen</b> Steuersatz. Dieselbe Hälfte kann bei beiden unterschiedlich viel Steuer kosten. Es gibt keine separate Miet-Steuer und nichts monatlich abzuführen.']
 ];
@@ -1710,7 +1726,7 @@ const GOOD_TO_KNOW = [
   ['Rücklage und Kaution sind steuerlich unsichtbar', 'Geld in die Rücklage zu legen ist <b>kein</b> Werbungskosten-Abzug — abziehbar ist erst die bezahlte Reparatur (Abflussprinzip, § 11 EStG). Die Kaution ist weder Einnahme noch Ausgabe, solange sie verwahrt wird.'],
   ['Zufluss und Abfluss entscheiden das Jahr', 'Die Dezember-Miete, die am 3. Januar eingeht, gehört ins neue Jahr (§ 11 EStG). Ausnahme: die <b>10-Tage-Regel</b> für regelmäßig wiederkehrende Zahlungen rund um den Jahreswechsel.'],
   ['Verluste wirken sofort', 'Ein Verlust aus Vermietung — etwa durch den Erhaltungsaufwand 2026 — verrechnet sich mit Gehalt, Rente und übrigen Einkünften desselben Jahres. Voraussetzung ist die <b>Einkünfteerzielungsabsicht</b>. Auch ein Verlust will also erklärt werden.'],
-  ['Belege 10 Jahre aufbewahren', 'Sammelstellen sind die Share-Ordner 05_Nebenkosten, 06_Instandhaltung und 08_Steuern. Ohne Beleg kein Abzug — und ohne Beleg auch keine belastbare Nebenkostenabrechnung.'],
+  ['Belege 10 Jahre aufbewahren', 'Sammelstellen sind die Share-Ordner 06_Nebenkosten, 07_Instandhaltung und 09_Steuern. Ohne Beleg kein Abzug — und ohne Beleg auch keine belastbare Nebenkostenabrechnung.'],
   ['Keinen Pauschbetrag erwarten', 'Bei Vermietung und Verpachtung gibt es <b>keinen</b> Werbungskosten-Pauschbetrag — nur echte Belege zählen.'],
   ['Kein V+V-Freibetrag', 'Steuerpflichtig ab dem ersten Euro; es wirkt allein der persönliche Grundfreibetrag (2026: 12.348 €). Mieteinkünfte können bei Rentnerinnen überhaupt erst die Erklärungspflicht auslösen.'],
   ['Umsatz- und Gewerbesteuer bleiben außen vor', 'Wohnraumvermietung ist umsatzsteuerfrei — keine Voranmeldungen, kein Vorsteuerabzug. Private Vermietung ist Vermögensverwaltung, also kein Gewerbe.'],
@@ -2089,7 +2105,7 @@ const NAVDEF = [
     ['vertrag', 'Objekt &amp; Vertrag'], ['radar', 'Erhöhungs-Radar'], ['strategie', 'Strategie'],
     ['spiel', 'Spielbereich'], ['quellen', 'Checkliste &amp; Quellen']] },
   { id: 'nebenkosten', name: 'Nebenkosten &amp; CO₂', praefix: 'u-nk-', subs: [
-    ['kalkulation', 'Kalkulation'], ['abrechnung', 'Abrechnung 2026'],
+    ['kalkulation', 'Kalkulation'], ['belege', 'Belege'], ['abrechnung', 'Abrechnung 2026'],
     ['co2', 'CO₂-Erstattung'], ['co2recht', 'CO₂: Rechtsgrundlage']] },
   { id: 'aufgaben', name: 'Aufgaben &amp; Risiken', praefix: 'u-auf-', subs: [
     ['offen', 'Offene Punkte'], ['versicherung', 'Versicherungen'], ['recht', 'Rechtsstand']] },
@@ -2757,6 +2773,61 @@ function baueNK() {
     'Zwei Punkte zu diesem Beleg sind noch offen: Leistung und Rechnung liegen <b>vor</b> Mietbeginn 01.06. — Empfehlung, wie bei Grundsteuer und Versicherungen <b>7/12 anzusetzen</b> und das in der Abrechnung offen auszuweisen. Und: Die Checkliste im Share nennt § 2 Nr. 4d BetrKV; bei einer zentralen Ölheizung ist <b>§ 2 Nr. 4a BetrKV</b> zutreffend.';
 }
 
+
+/* ===== Belege für die Abrechnung =====
+   Was ist eingegangen, was fehlt. Der Schlüssel ist die Positions-Kennung aus
+   der Kalkulation — dadurch kann die Liste nicht gegen die Kostenarten driften. */
+const BELEGE = {
+  heizwartung: { datum: '2026-03-04', wer: 'U. Meyer Installation',
+    beleg: 'Rechnung 8002 · Wartung ausgeführt 15.01.2026', brutto: 230.98, ansatz: 134.74,
+    hinweis: 'Leistung und Rechnung liegen <b>vor Mietbeginn</b>. Empfehlung: 7/12 ansetzen wie bei Grundsteuer und Versicherungen und in der Abrechnung offen ausweisen. Nebenbefund: die Checkliste im Share nennt § 2 Nr. 4d BetrKV — bei zentraler Ölheizung ist <b>§ 2 Nr. 4a</b> zutreffend.' }
+};
+/* Kein Beleg im Sinne der BetrKV, aber ohne sie keine Wasserabrechnung. */
+const BELEG_EXTRA = [
+  { was: 'Zählerstände zum 31.12.2026', wo: 'Fotos in 06_Nebenkosten \\ 2026 \\ Zaehlerstaende', da: false },
+  { was: 'Zählerstände der Übergabe 01.06.2026', wo: 'liegen nur im Papier-Protokoll', da: false }
+];
+
+function baueBelege() {
+  const P = DATEN.nk.positionen;
+  const da = P.filter((p) => BELEGE[p.key]);
+  const summeErwartet = P.reduce((n, p) => n + p.jahr, 0);
+  const summeDa = da.reduce((n, p) => n + (BELEGE[p.key].ansatz || 0), 0);
+  const anteil = Math.round((da.length / P.length) * 100);
+
+  document.getElementById('belegStand').innerHTML =
+    '<div class="gkopf">Belege für den Abrechnungszeitraum 01.06.–31.12.2026</div>' +
+    '<div class="gzahl">' + da.length + ' von ' + P.length + '</div>' +
+    '<div class="gsub">Kostenarten belegt · ' + eur(summeDa) + ' von kalkuliert ' +
+    eur(summeErwartet * 7 / 12) + ' im Zeitraum</div>' +
+    '<div class="belegbalken"><span style="width:' + anteil + '%"></span></div>';
+
+  document.getElementById('belegTabelle').innerHTML =
+    P.map((p) => {
+      const b = BELEGE[p.key];
+      return '<tr><td><b>' + p.label + '</b><br><span style="font-size:12px;color:var(--c-ink-soft)">' +
+        p.norm + '</span></td>' +
+        '<td class="zahl num">' + eur(p.jahr) + '</td>' +
+        '<td class="zahl num">' + eur(p.jahr * 7 / 12) + '</td>' +
+        '<td>' + (b
+          ? '<span class="pille erledigt">liegt vor</span> ' + b.wer + ', ' + b.beleg +
+            ' — <b class="num">' + eur(b.brutto) + '</b> brutto, Ansatz <b class="num">' + eur(b.ansatz) + '</b>'
+          : '<span class="pille offen">fehlt</span>') + '</td></tr>';
+    }).join('') +
+    BELEG_EXTRA.map((e) =>
+      '<tr><td><b>' + e.was + '</b><br><span style="font-size:12px;color:var(--c-ink-soft)">kein BetrKV-Beleg, aber Rechengrundlage</span></td>' +
+      '<td class="zahl">—</td><td class="zahl">—</td>' +
+      '<td><span class="pille offen">fehlt</span> ' + e.wo + '</td></tr>').join('');
+
+  document.getElementById('belegHinweise').innerHTML =
+    Object.keys(BELEGE).map((k) => BELEGE[k].hinweis ?
+      '<div class="warnkasten"><b>Zur Wartungsrechnung:</b> ' + BELEGE[k].hinweis + '</div>' : '').join('') +
+    '<div class="hinweiskasten"><b>Gehört nicht hierher:</b> Heizöl (kaufen die Mieter selbst), ' +
+    'Reparaturen und Instandhaltung (→ <a href="#geld/reparaturen">Reparaturen</a>), die Anschaffung der ' +
+    'Rauchwarnmelder (nur die <b>Wartung</b> ist umlagefähig) sowie Verwaltungs- und Bankkosten. ' +
+    'Ohne vertragliche Vereinbarung ist eine Kostenart nicht umlagefähig — maßgeblich ist § 4 Nr. 1–11 Mietvertrag.</div>';
+}
+
 /* ===== CO2 ===== */
 function baueCO2() {
   const S = DATEN.co2.stufen;
@@ -3111,7 +3182,7 @@ document.documentElement.lang = 'de';   // trägt auch ohne <html>-Tag (Artefakt
 baueNavigation();
 baueLage(); baueUebersicht(); baueGesamt(); baueBilanz(); baueZeitband(); baueZahlungen(); baueKaution();
 baueVertrag(); baueErhoehung(); baueNK(); baueCO2(); bauePunkte(); baueWirtschaft();
-baueVersicherungen(); baueSteuern(); baueRechtsstand(); baueQuellen(); baueHausSeiten();
+baueVersicherungen(); baueSteuern(); baueRechtsstand(); baueQuellen(); baueHausSeiten(); baueBelege();
 tabellenBeschriften();
 route(); applyPII();
 </script>
