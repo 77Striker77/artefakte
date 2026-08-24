@@ -712,7 +712,7 @@
                 </pattern>
               </defs>
 
-              <a class="szene" href="#nebenkosten/co2" tabindex="-1" aria-hidden="true">
+              <a class="szene" href="#nebenkosten" tabindex="-1" aria-hidden="true">
                 <circle class="rauch" cx="395" cy="52" r="6"/>
                 <circle class="rauch r2" cx="397" cy="44" r="8"/>
                 <circle class="rauch r3" cx="393" cy="38" r="10"/>
@@ -737,13 +737,13 @@
                 <rect class="haus-hell" x="375" y="238" width="50" height="40"/>
                 <line x1="400" y1="238" x2="400" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
               </a>
-              <a class="szene" href="#mietverhaeltnis/vertrag" tabindex="-1" aria-hidden="true">
+              <a class="szene" href="#mietverhaeltnis" tabindex="-1" aria-hidden="true">
                 <rect class="haus-hell" x="300" y="228" width="45" height="72"/>
                 <circle cx="337" cy="266" r="2.5" fill="var(--c-line-strong)"/>
               </a>
 
 
-              <a class="szene" href="#geld/eingang" tabindex="-1" aria-hidden="true">
+              <a class="szene" href="#geld" tabindex="-1" aria-hidden="true">
                 <rect class="haus-strich" x="147" y="258" width="6" height="42"/>
                 <rect class="haus-hell" x="133" y="236" width="34" height="24"/>
                 <line x1="139" y1="250" x2="161" y2="250" stroke="var(--c-line-strong)" stroke-width="1.5"/>
@@ -1923,13 +1923,13 @@ const HAUSTHEMEN = [
 const HAUSPUNKTE = [
   { nr: 1, x: 325, y: 105, ziel: '#haus/dach', titel: 'Dach',
     kurz: 'Eindeckung, Dachfenster und was steuerlich daran hängt.' },
-  { nr: 2, x: 393, y: 88, ziel: '#nebenkosten/co2', titel: 'Schornstein',
+  { nr: 2, x: 393, y: 88, ziel: '#nebenkosten', titel: 'Schornstein',
     kurz: 'Nebenkosten und der CO₂-Anteil, den Sie erstatten.' },
   { nr: 3, x: 325, y: 182, ziel: '#haus/grundriss', titel: 'Fassade &amp; Grundriss',
     kurz: 'Bauart, Flächen, Aufteilung und der Energieausweis.' },
-  { nr: 4, x: 322, y: 266, ziel: '#mietverhaeltnis/vertrag', titel: 'Haustür',
+  { nr: 4, x: 322, y: 266, ziel: '#mietverhaeltnis', titel: 'Haustür',
     kurz: 'Das Mietverhältnis: Vertrag, Erhöhung, Strategie.' },
-  { nr: 5, x: 150, y: 248, ziel: '#geld/eingang', titel: 'Briefkasten',
+  { nr: 5, x: 150, y: 248, ziel: '#geld', titel: 'Briefkasten',
     kurz: 'Geld und Bilanz: Mieteingang, Kaution, Rücklage.' },
   { nr: 6, x: 234, y: 339, ziel: '#haus/heizung', titel: 'Heizung &amp; Öltank',
     kurz: 'Im Keller: Betrieb, Wartung, Prüfpflichten.' },
@@ -1943,13 +1943,13 @@ const HAUSPUNKTE = [
    zwingen hätte Requisiten gebraucht, die es hier nicht gibt — sie stehen
    deshalb als Knöpfe daneben. */
 const WEITERE_BEREICHE = [
-  { ziel: '#fristen/zeitband', titel: 'Fristen &amp; Pflichten',
+  { ziel: '#fristen', titel: 'Fristen &amp; Pflichten',
     kurz: 'Zeitband, Fristenliste, Jahreskalender, Prüfzyklen.' },
-  { ziel: '#aufgaben/offen', titel: 'Aufgaben &amp; Risiken',
+  { ziel: '#aufgaben', titel: 'Aufgaben &amp; Risiken',
     kurz: 'Offene Punkte, Versicherungen, Rechtsstand.' },
-  { ziel: '#steuern/landkarte', titel: 'Steuern',
+  { ziel: '#steuern', titel: 'Steuern',
     kurz: 'Anlage V, AfA, Erhaltungsaufwand, Fristen.' },
-  { ziel: '#quellen/dokumente', titel: 'Quellen &amp; Schlüssel',
+  { ziel: '#quellen', titel: 'Quellen &amp; Schlüssel',
     kurz: 'Worauf die Tafel steht — und der Schlüssel für die Namen.' }
 ];
 
