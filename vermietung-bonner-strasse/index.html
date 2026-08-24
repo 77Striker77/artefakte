@@ -1,4 +1,5 @@
 <title>Vermieter-Cockpit · Bonner Straße</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--
   Vermieter-Cockpit V2 — Bonner Straße (EFH, Vermietersicht). Von Grund auf neu
   auf dem Werkstatt-Grundgerüst (Design_AI): Zwei-Theme-Token, Mess-Marker,
@@ -73,26 +74,32 @@
      doppelt und der aktive Zustand wäre an zwei Orten zu pflegen. */
   /* Schmale Schirme: EIN Aufklappmenü mit der vollständigen Gliederung. Eine waagerecht
      scrollende Pill-Leiste hatte 4 von 7 Bereichen unsichtbar aus dem Bild geschoben. */
-  .bereichsmenue{position:sticky;top:0;z-index:5;background:var(--c-bg);
-    border-bottom:1px solid var(--c-line)}
+  .bereichsmenue{position:relative}
   .bereichsmenue>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;
     cursor:pointer;list-style:none;font-weight:650;font-size:14px;color:var(--c-ink);
     border:1px solid var(--c-line-strong);border-radius:var(--radius-s);background:var(--c-surface);
-    margin:var(--sp-xs) 0}
+    box-shadow:inset 3px 0 0 var(--c-accent);margin:var(--sp-xs) 0}
   .bereichsmenue>summary::-webkit-details-marker{display:none}
-  .bereichsmenue>summary::after{content:"▾";margin-left:auto;color:var(--c-ink-faint);font-size:13px}
-  .bereichsmenue[open]>summary::after{content:"▴"}
+  .bmpfeil{margin-left:auto;flex:none;color:var(--c-accent);transition:transform .18s ease}
+  .bereichsmenue[open] .bmpfeil{transform:rotate(180deg)}
   .bereichsmenue .bmwo{text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;
     font-weight:650;color:var(--c-ink-faint);flex:none}
-  .bereichsmenue .bmaktuell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .bmliste{padding:0 0 var(--sp-s);display:grid;gap:2px;max-height:min(70vh,540px);overflow-y:auto}
-  .bmgruppe{border-top:1px solid var(--c-line);padding-top:4px}
+  .bereichsmenue .bmaktuell{display:flex;align-items:baseline;gap:6px;min-width:0}
+  .bereichsmenue .bmb{color:var(--c-ink-faint);font-weight:600;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bereichsmenue .bmaktuell b{color:var(--c-accent-ink);flex:none;white-space:nowrap}
+  .bmliste{padding:0 0 var(--sp-s);display:grid;gap:2px;max-height:min(70vh,540px);
+    overflow-y:auto;overscroll-behavior:contain}
+  .bmgruppe{border-top:1px solid var(--c-line-strong);padding-top:4px}
+  .bmgruppe:first-child{border-top:0}
   .bmgruppe:first-child{border-top:0}
   .bmliste a{display:flex;align-items:center;gap:8px;text-decoration:none;border-radius:var(--radius-s);
     padding:0 12px;min-height:44px;font-size:14px}
   .bmliste a.bmhaupt{font-weight:650;color:var(--c-ink)}
   .bmliste a.bmhaupt[aria-current="page"]{color:var(--c-accent-ink);background:var(--c-surface-2)}
-  .bmsubs{display:grid;gap:1px;margin-left:12px;padding-left:12px;border-left:1px solid var(--c-line)}
+  .bmsubs{display:none;gap:1px;margin-left:12px;padding-left:12px;
+    border-left:2px solid var(--c-accent)}
+  .bmgruppe.offen .bmsubs{display:grid}
   .bmsubs a{font-size:13.5px;font-weight:500;color:var(--c-ink-soft)}
   .bmsubs a[aria-current="page"]{color:var(--c-accent-ink);background:var(--c-accent-bg);font-weight:650}
   .bmliste a:hover{background:var(--c-surface-2)}
@@ -103,7 +110,7 @@
   .leiste .kopfzeile{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:650;
     color:var(--c-ink-faint);margin:0 0 var(--sp-xs);padding-left:12px}
   .leiste ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-  .leiste a.haupt{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:40px;
+  .leiste a.haupt{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;
     padding:0 12px;border-radius:var(--radius-s);text-decoration:none;color:var(--c-ink-soft);
     font-weight:600;font-size:13.5px;position:relative;transition:background .15s,color .15s}
   .leiste a.haupt::before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:2px;
@@ -123,9 +130,8 @@
     .bereichsmenue{display:none}
     /* Die Menüspalte beginnt ganz oben; PII-Streifen und Inhalt teilen sich Spalte 2. */
     .leiste{display:block;position:sticky;top:var(--sp-m);align-self:start;
-      grid-column:1;grid-row:1/span 3}
-    .wrap>.pii-strip,.wrap>.pii-panel,.wrap>main{grid-column:2}
-    .wrap>.pii-strip{margin-top:0}
+      grid-column:1;grid-row:1/span 4}
+    .wrap>.navblock,.wrap>.pii-strip,.wrap>.pii-panel,.wrap>main{grid-column:2}
     main#inhalt{margin-top:var(--sp-s)}
   }
   /* Breite Schirme: die Seitenleiste kostet 236 px + Spalte — die Inhaltsspalte darf
@@ -139,23 +145,42 @@
   /* Reiterzeile der Unterseiten — die zweite Ebene, immer sichtbar, mit Aktivzustand */
   /* Zähler direkt hinter dem Bereichstitel — am rechten Rand stand er rund 1000 px von
      der Reiterzeile entfernt und half beim „wo bin ich“ praktisch nicht. */
-  .bereichskopf{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:var(--sp-m)}
+  .navblock{position:sticky;top:0;z-index:5;background:var(--c-bg);
+    padding-bottom:var(--sp-2xs)}
+  /* Schmal führt der Aufklapper und nennt den Ort bereits — der Bereichskopf
+     würde denselben Namen binnen 130 px ein zweites Mal zeigen. */
+  .bereichskopf{display:none;align-items:baseline;gap:8px;flex-wrap:wrap;
+    padding-top:var(--sp-s)}
+  @media (min-width:1100px){.bereichskopf{display:flex}}
   .bereichskopf .btitel{text-transform:uppercase;letter-spacing:.12em;font-size:11.5px;
     font-weight:650;color:var(--c-ink-faint)}
-  .bereichskopf .bzaehler{font-size:11.5px;color:var(--c-ink-faint);font-variant-numeric:tabular-nums;
+  .bereichskopf .bzaehler{font-size:11.5px;color:var(--c-accent-ink);font-variant-numeric:tabular-nums;
     font-weight:600;letter-spacing:0}
   /* Der aktive Reiter trug vorher nur Weißfläche (1,08:1) und Hairline-Rahmen (1,21:1) —
      beides weit unter den 3:1, die WCAG 1.4.11 für den Zustand eines Bedienelements
      verlangt. Jetzt trägt ihn eine Akzent-Unterkante (5,64:1 hell / 7,65:1 dunkel). */
-  .unternav{display:flex;flex-wrap:wrap;gap:var(--sp-2xs);margin:var(--sp-xs) 0 var(--sp-m);
-    border-bottom:2px solid var(--c-line)}
-  .unternav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--c-ink-soft);
-    border-bottom:3px solid transparent;margin-bottom:-2px;padding:0 12px;min-height:42px;
-    display:inline-flex;align-items:center;gap:7px;background:none;white-space:nowrap}
-  .unternav a:hover{color:var(--c-ink);border-bottom-color:var(--c-line-strong)}
-  .unternav a[aria-current="page"]{color:var(--c-accent-ink);font-weight:700;
-    border-bottom-color:var(--c-accent)}
-  .unternav .upunkt{width:8px;height:8px;border-radius:50%;flex:none;background:var(--c-crit)}
+  /* Schmaler Platz: schieben statt umbrechen. Ein Strich unter einem von drei
+     Wortblöcken liest sich als Trennlinie, nicht als Zustand — deshalb trägt der
+     aktive Reiter eine Pille MIT Rahmen: die Füllung allein liegt bei 1,39:1
+     und dürfte den Zustand nach 1.4.11 nicht tragen. Das Innenmaß gleicht den
+     Klipprand aus, den overflow-x auch senkrecht zieht (sonst wird der Fokusring
+     oben und unten abgeschnitten); der negative Außenabstand nimmt es heraus. */
+  .unternav{display:flex;flex-wrap:nowrap;gap:var(--sp-xs);
+    margin:0 calc(-1 * var(--sp-2xs)) var(--sp-s);padding:var(--sp-2xs);
+    overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;
+    scrollbar-width:thin}
+  .unternav a{display:inline-flex;align-items:center;gap:6px;flex:none;min-height:44px;
+    padding:0 14px;border-radius:100px;border:1px solid transparent;scroll-snap-align:start;
+    font-size:13px;font-weight:600;text-decoration:none;color:var(--c-ink-soft);
+    background:var(--c-surface);transition:color .15s,background .15s,border-color .15s}
+  .unternav a:hover{color:var(--c-ink);border-color:var(--c-line-strong)}
+  .unternav a[aria-current="page"]{background:var(--c-accent-bg);border-color:var(--c-accent);
+    color:var(--c-accent-ink);font-weight:700}
+  /* W2: der Punkt trug in der Reiterzeile FEST die Kritisch-Farbe — dieselbe
+     Warnung war im Aufklappmenü bernsteinfarben. Zwei Schweregrade für ein Signal. */
+  .unternav .upunkt{width:8px;height:8px;border-radius:50%;flex:none;background:var(--c-ink-faint)}
+  .unternav .upunkt.warnung{background:var(--c-warn)}
+  .unternav .upunkt.kritisch{background:var(--c-crit)}
 
   /* Blätterzeile: beweist am Seitenende, dass der Bereich weitergeht */
   .blaettern{display:flex;justify-content:space-between;gap:var(--sp-s);flex-wrap:wrap;
@@ -429,7 +454,9 @@
   a.balken{color:inherit;text-decoration:none;border-radius:var(--radius-s)}
   a.balken:hover{background:var(--c-surface-2)}
   a.balken .bl span{text-decoration:underline;text-decoration-color:var(--c-line-strong);text-underline-offset:3px}
-  [id]{scroll-margin-top:76px}
+  [id]{scroll-margin-top:calc(var(--nav-h,118px) + 10px)}
+  :root{--nav-h:118px}
+  @media (min-width:1100px){:root{--nav-h:96px}}
   /* ZWEI Kanäle, ein Element trägt nie beide:
      Kanal A — Zustand: nur kritisch (.ausschluss) und offen (.pflicht) bekommen Farbe.
        Erledigtes bekommt bewusst KEIN Signal, sonst ist die Seite großflächig grün
@@ -621,12 +648,22 @@
 
 <div class="wrap">
 
-  <details class="bereichsmenue" id="bereichsmenue">
-    <summary><span class="bmwo">Bereich</span><span class="bmaktuell" id="bmAktuell">Übersicht</span></summary>
-    <nav class="bmliste" id="bmListe" aria-label="Alle Bereiche und Unterseiten"></nav>
-  </details>
-
   <nav class="leiste" id="leiste" aria-label="Bereiche"></nav>
+
+  <!-- Beide Navigationsebenen kleben als EIN Block oben — Ebene 2 wechselt man
+       am häufigsten und war nach dem ersten Wisch bisher unerreichbar. -->
+  <div class="navblock">
+    <details class="bereichsmenue" id="bereichsmenue">
+      <summary>
+        <span class="bmwo">Bereich</span>
+        <span class="bmaktuell"><span class="bmb" id="bmBereich"></span><b id="bmSub"></b></span>
+        <svg class="bmpfeil" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9.5 12 15.5 18 9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </summary>
+      <nav class="bmliste" id="bmListe" aria-label="Alle Bereiche und Unterseiten"></nav>
+    </details>
+    <div class="bereichskopf"><span class="btitel" id="bkTitel"></span><span class="bzaehler" id="bkZaehler"></span></div>
+    <nav class="unternav" id="unternav" aria-label="Unterseiten des Bereichs"></nav>
+  </div>
   <div class="pii-strip">
     <span class="pii-item">Objekt: <b data-pii="objekt">XX</b></span>
     <span class="pii-item">Vermieterinnen: <b data-pii="vermieter">XX</b></span>
@@ -646,7 +683,6 @@
   <main id="inhalt" tabindex="-1">
 
   <div class="view" id="v-uebersicht">
-    <nav class="unternav" data-unternav="uebersicht" aria-label="Unterseiten der Übersicht"></nav>
 
     <div class="unterseite" id="u-ueb-start">
       <header class="top">
@@ -791,9 +827,6 @@
   </div>
 
   <div class="view" id="v-geld">
-    <div class="bereichskopf"><span class="btitel">Geld &amp; Bilanz</span>
-      <span class="bzaehler" data-zaehler="geld"></span></div>
-    <nav class="unternav" data-unternav="geld" aria-label="Unterseiten von Geld und Bilanz"></nav>
 
     <div class="unterseite" id="u-geld-eingang">
       <section aria-labelledby="h-zahlungen">
@@ -905,9 +938,6 @@
   </div>
 
   <div class="view" id="v-fristen">
-    <div class="bereichskopf"><span class="btitel">Fristen &amp; Pflichten</span>
-      <span class="bzaehler" data-zaehler="fristen"></span></div>
-    <nav class="unternav" data-unternav="fristen" aria-label="Unterseiten von Fristen und Pflichten"></nav>
 
     <div class="unterseite" id="u-fristen-zeitband">
       <section aria-labelledby="h-zeitband">
@@ -981,9 +1011,6 @@
   </div>
 
   <div class="view" id="v-mietverhaeltnis">
-    <div class="bereichskopf"><span class="btitel">Mietverhältnis</span>
-      <span class="bzaehler" data-zaehler="mietverhaeltnis"></span></div>
-    <nav class="unternav" data-unternav="mietverhaeltnis" aria-label="Unterseiten des Mietverhältnisses"></nav>
 
     <div class="unterseite" id="u-mv-vertrag">
       <section aria-labelledby="h-vertrag">
@@ -1102,9 +1129,6 @@
   </div>
 
   <div class="view" id="v-nebenkosten">
-    <div class="bereichskopf"><span class="btitel">Nebenkosten &amp; CO₂</span>
-      <span class="bzaehler" data-zaehler="nebenkosten"></span></div>
-    <nav class="unternav" data-unternav="nebenkosten" aria-label="Unterseiten von Nebenkosten und CO2"></nav>
 
     <div class="unterseite" id="u-nk-kalkulation">
       <section aria-labelledby="h-nk">
@@ -1191,9 +1215,6 @@
   </div>
 
   <div class="view" id="v-aufgaben">
-    <div class="bereichskopf"><span class="btitel">Aufgaben &amp; Risiken</span>
-      <span class="bzaehler" data-zaehler="aufgaben"></span></div>
-    <nav class="unternav" data-unternav="aufgaben" aria-label="Unterseiten von Aufgaben und Risiken"></nav>
 
     <div class="unterseite" id="u-auf-offen">
       <section aria-labelledby="h-pflichten">
@@ -1237,9 +1258,6 @@
   </div>
 
   <div class="view" id="v-steuern">
-    <div class="bereichskopf"><span class="btitel">Steuern</span>
-      <span class="bzaehler" data-zaehler="steuern"></span></div>
-    <nav class="unternav" data-unternav="steuern" aria-label="Unterseiten von Steuern"></nav>
 
     <div class="unterseite" id="u-st-landkarte">
       <section aria-labelledby="h-steuern">
@@ -1891,6 +1909,20 @@ function oeffneThema(id) {
   body.scrollTop = 0;
 }
 
+(function () {
+  const menue = document.getElementById('bereichsmenue');
+  menue.addEventListener('toggle', () => {
+    if (!menue.open) return;
+    const a = document.querySelector('#bmListe [aria-current="page"]');
+    if (a) a.scrollIntoView({ block: 'center' });
+  });
+  document.getElementById('bmListe').addEventListener('click', () => { menue.open = false; });
+  document.addEventListener('click', (e) => {
+    if (menue.open && !e.target.closest('#bereichsmenue')) menue.open = false;
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') menue.open = false; });
+})();
+
 document.addEventListener('click', (e) => {
   const marke = e.target.closest && e.target.closest('[data-thema]');
   if (marke) { e.preventDefault(); oeffneThema(marke.dataset.thema); return; }
@@ -2044,24 +2076,31 @@ function baueNavigation() {
   // (Die frühere Pill-Leiste schob 4 von 7 Bereichen unsichtbar aus dem Bild.)
   document.getElementById('bmListe').innerHTML = NAVDEF.map((n) => {
     const b = badgeFuer(n.id);
-    return '<div class="bmgruppe"><a class="bmhaupt" href="#' + n.id + '">' + n.name +
-      (b ? '<span class="badge ' + b.cls + '">' + b.txt + '</span>' : '') + '</a>' +
+    return '<div class="bmgruppe" data-bereich="' + n.id + '"><a class="bmhaupt" href="#' + n.id + '">' + n.name +
+      (b ? '<span class="badge ' + b.cls + '">' + b.txt + '</span>' :
+        '<span class="zaehler">' + n.subs.length + '</span>') + '</a>' +
       (n.subs.length ? '<div class="bmsubs">' + n.subs.map((s) => {
         const sg = subSignal(n.id, s[0]);
-        return '<a href="#' + n.id + '/' + s[0] + '">' + s[1] +
-          (sg && sg.cls ? '<span class="upunkt ' + sg.cls + '"></span>' : '') + '</a>';
+        return '<a href="#' + n.id + '/' + s[0] + '">' + s[1] + (sg && sg.cls ? '<span class="upunkt ' + sg.cls + '" role="img" aria-label="' + sg.txt + '"></span>' : '') + '</a>';
       }).join('') + '</div>' : '') + '</div>';
   }).join('');
+}
 
-  // Ebene 2: Reiterzeile je Bereich
-  document.querySelectorAll('.unternav[data-unternav]').forEach((nav) => {
-    const n = bereichVon(nav.dataset.unternav);
-    nav.innerHTML = n.subs.map((s) => {
-      const sg = subSignal(n.id, s[0]);
-      return '<a href="#' + n.id + '/' + s[0] + '">' + s[1] +
-        (sg && sg.cls ? '<span class="upunkt ' + sg.cls + '"></span>' : '') + '</a>';
-    }).join('');
-  });
+/* Ebene 2: EINE Reiterzeile, beim Seitenwechsel neu gefüllt */
+function baueUnternav(n, ziel) {
+  const nav = document.getElementById('unternav');
+  nav.innerHTML = n.subs.map((s) => {
+    const sg = subSignal(n.id, s[0]);
+    const href = '#' + n.id + '/' + s[0];
+    return '<a href="' + href + '"' + (href === ziel ? ' aria-current="page"' : '') + '>' +
+      s[1] + (sg && sg.cls ? '<span class="upunkt ' + sg.cls + '" role="img" aria-label="' + sg.txt + '"></span>' : '') + '</a>';
+  }).join('');
+  // Der aktive Reiter muss im Bild stehen, auch wenn die Zeile geschoben wurde.
+  // NICHT über scrollIntoView: das versetzt in Chrome den Startpunkt der
+  // Tab-Reihenfolge, und der erste Tabulator landet dann mitten in der Seite
+  // statt beim Sprunglink. Der Rollstand wird deshalb direkt gesetzt.
+  const a = nav.querySelector('[aria-current="page"]');
+  if (a) nav.scrollLeft = Math.max(0, a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2);
 }
 
 /* ===== Router: Bereich + Unterseite über den Hash ===== */
@@ -2077,17 +2116,24 @@ function zeigeSeite(bId, sId) {
   const ziel = '#' + n.id + (sId ? '/' + sId : '');
   document.querySelectorAll('#leiste a.haupt, #bmListe a.bmhaupt').forEach((a) =>
     a.getAttribute('href') === '#' + n.id ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
-  document.querySelectorAll('.unternav a, #bmListe .bmsubs a').forEach((a) =>
+  document.querySelectorAll('#bmListe .bmsubs a').forEach((a) =>
     a.getAttribute('href') === ziel ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  // Nur der aktuelle Bereich zeigt seine Unterseiten — sonst sind es 35 Zeilen
+  // auf 1.619 px in einem 540-px-Fenster, das nirgends anzeigt, dass es scrollt.
+  document.querySelectorAll('#bmListe .bmgruppe').forEach((g) =>
+    g.classList.toggle('offen', g.dataset.bereich === n.id));
 
   const pos = subIds.indexOf(sId);
-  document.querySelectorAll('[data-zaehler]').forEach((el) => {
-    if (el.dataset.zaehler === n.id && pos >= 0) el.textContent = '· ' + (pos + 1) + ' / ' + subIds.length;
-  });
+  baueUnternav(n, ziel);
+  const klar = (t) => t.replace(/&amp;/g, '&');
+  document.getElementById('bkTitel').textContent = klar(n.name);
+  document.getElementById('bkZaehler').textContent = pos >= 0 ? '· ' + (pos + 1) + ' / ' + subIds.length : '';
   baueBlaettern(n, pos);
 
-  document.getElementById('bmAktuell').textContent =
-    n.name.replace(/&amp;/g, '&') + (pos >= 0 ? ' · ' + n.subs[pos][1].replace(/&amp;/g, '&') : '');
+  // Bei 320 px kürzt der Bereich, die Unterseite bleibt ganz — sie ist die
+  // spezifischere Hälfte und die einzige dauerhafte Ortsangabe.
+  document.getElementById('bmBereich').textContent = klar(n.name) + (pos >= 0 ? ' ·' : '');
+  document.getElementById('bmSub').textContent = pos >= 0 ? klar(n.subs[pos][1]) : '';
   document.getElementById('bereichsmenue').open = false;
 }
 
