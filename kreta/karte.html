@@ -471,6 +471,11 @@
     if (o.adresse) teile.push('<span class="pop-zeile">' + esc(o.adresse) + "</span>");
     if (o.bew != null) teile.push('<span class="pop-zeile">Google ' + o.bew.toFixed(1) + " / 5"
       + (o.anz ? " (" + o.anz + ")" : "") + (o.preis ? " · " + esc(o.preis) : "") + "</span>");
+    /* "Gaeste nennen", nicht "Kueche": gezaehlt ist, welche Gerichte in den
+       Bewertungen vorkommen. Ein Kuechen-Etikett waere daraus geschlossen. */
+    if ((o.gerichte || []).length) teile.push('<span class="pop-zeile">'
+      + '<strong>Gäste nennen:</strong> ' + esc(o.gerichte.join(" · "))
+      + ' <em>(gezählt in bis zu fünf Google-Bewertungen — kein Speisekarten-Auszug)</em></span>');
     /* Google kennt bei diesen Angaben nur "ja" und "keine Angabe" - ein
        fehlendes Merkmal heisst NICHT, dass es das nicht gibt. Ohne diesen Satz
        liest sich eine kurze Liste wie eine Absage. */
@@ -635,7 +640,11 @@
                        Seltenheit sortiert: alle vier anzuzeigen zog die Zeile
                        auf drei Zeilen, mal 33 Eintraege. Vollstaendig steht es
                        im Popup. */
-                    (o.merk || []).length ? o.merk.slice(0, 2).join(" · ") : null]
+                    /* Die Gerichte beantworten die Frage "was fuer ein Lokal
+                       ist das" besser als die Ausstattung - sie stehen darum in
+                       der Liste, die Ausstattung nur noch im Popup. */
+                    (o.gerichte || []).length
+                      ? "Gäste: " + o.gerichte.slice(0, 2).join(" · ") : null]
         .filter(Boolean).join(" · ");
       /* Der Maps-Link steht als Geschwister NEBEN dem Knopf, nicht darin: ein
          <a> in einem <button> ist ungueltiges HTML und per Tastatur kaputt. */
