@@ -802,7 +802,7 @@
     <div class="unterseite" id="u-hg-dach">
       <section aria-labelledby="h-hg-dach">
         <div class="sekkopf"><h2 id="h-hg-dach">Dach</h2>
-          <span class="hinweis">Eindeckung, Belege, Steuerwirkung</span></div>
+          <span class="hinweis">was 2026 gemacht wurde — und was nicht</span></div>
         <div class="karte hausseite" id="hs-dach"></div>
       </section>
     </div>
@@ -936,7 +936,7 @@
             <thead><tr><th scope="col">Datum</th><th scope="col">Firma</th><th scope="col">Leistung</th><th scope="col" class="zahl">Brutto</th></tr></thead>
             <tbody id="instaTabelle"></tbody>
           </table></div>
-          <div class="hinweiskasten">Diese Kosten sind <b>nicht umlagefähig</b> (§ 1 II BetrKV) — sie bleiben bei den Vermieterinnen. Aber: Sie sind <b>Werbungskosten</b> in der Anlage V und mindern die Steuer. Der Bruttobetrag zählt, weil Wohnraumvermietung umsatzsteuerfrei ist. Die <b>Dachsanierung 2026 ist hier noch nicht enthalten</b> (Belege offen — § 82b-Wahlrecht, siehe <a href="#steuern/dach">Steuern → Dach 2026</a>). Stand: 10.08.2026.</div>
+          <div class="hinweiskasten">Diese Kosten sind <b>nicht umlagefähig</b> (§ 1 II BetrKV) — sie bleiben bei den Vermieterinnen. Aber: Sie sind <b>Werbungskosten</b> in der Anlage V und mindern die Steuer. Der Bruttobetrag zählt, weil Wohnraumvermietung umsatzsteuerfrei ist. Alle Belege 2026 sind aufgenommen — auch der Dachfenstertausch vom Mai. Zum Wahlrecht zwischen Sofortabzug und Verteilung siehe <a href="#steuern/dach">Steuern → Erhaltungsaufwand</a>. Stand: 24.08.2026.</div>
           <div class="kritkasten">Die Rechnung R26/800303 beschreibt einen <b>Rohrbruch</b> — ein klassischer Leitungswasserschaden der Wohngebäudeversicherung. Ob er gemeldet wurde, ist nicht dokumentiert. Details und nächster Schritt unter <a href="#aufgaben/offen">Aufgaben → Offene Punkte</a>.</div>
         </div>
       </section>
@@ -1298,7 +1298,7 @@
 
     <div class="unterseite" id="u-st-dach">
       <section aria-labelledby="h-dach">
-        <div class="sekkopf"><h2 id="h-dach">Dach 2026: sofort absetzen oder verteilen?</h2>
+        <div class="sekkopf"><h2 id="h-dach">Erhaltungsaufwand 2026: sofort absetzen oder verteilen?</h2>
           <span class="hinweis">§ 82b EStDV — ein echtes Wahlrecht, das erst mit der Anlage V ausgeübt wird</span></div>
         <div class="karte">
           <div class="optionen" id="dachOptionen"></div>
@@ -1443,14 +1443,15 @@ const DATEN = {
     ]
   },
   wirtschaft: { rohertrag: 25200.00, wagnis: 504.00, cashflow: [19417, 22011] },
-  // Echte Instandhaltung 2026 (Belege Share-Eingang 10.08.2026; Dach 2026 noch NICHT enthalten).
+  // Echte Instandhaltung 2026, vollständig belegt (Stand 24.08.2026).
   // Nicht umlagefähig (§ 1 II BetrKV), aber Werbungskosten; Brutto zählt (Vermietung umsatzsteuerfrei).
   insta: { 2026: {
-    netto: 8177.71, brutto: 9731.47,
+    netto: 12239.81, brutto: 14565.37,
     beleg_ort: 'Scans im Familien-Share, Ordner 06_Instandhaltung_und_Reparaturen · Einzelaufstellung: instandhaltung/2026.md',
     vorgaenge: [
       { d: '2026-05-12', firma: 'Auto-Bissinger', was: 'Baustellenabsicherung (Einsatz 02.04.2026)', rg: '232600137 TK', netto: 150.00, brutto: 178.50 },
       { d: '2026-05-18', firma: 'Globus Baumarkt', was: 'Fliesen Keller (4 × Feinsteinzeug Bristol Anthrazit)', rg: 'Kassenbeleg', netto: 124.30, brutto: 147.92 },
+      { d: '2026-05-21', firma: 'Dach- und Holzbau Scheitacker', was: '2 Dachfenster ersetzt (VELUX Schwingfenster THERMO, U 1,3 W/m²K, 114 × 140 cm), Dachantenne abgebaut, Dachdurchsicht: Rinne gereinigt, Moos am Kamin entfernt, defekte Ziegel getauscht', rg: '2605107', netto: 4062.10, brutto: 4833.90 },
       { d: '2026-06-09', firma: 'Zenkner Sanitär-Technik', was: 'GIS-Vorwandinstallation (Arbeitszettel 24130 v. 20.05.2026)', rg: 'R26/800302', netto: 3281.27, brutto: 3904.71 },
       { d: '2026-06-09', firma: 'Zenkner Sanitär-Technik', was: 'Rohrbruch: Kalt-/Warmwasserleitung und Abwasser neu verlegt, Dichtheitsprüfung', rg: 'R26/800303', netto: 646.80, brutto: 769.69 },
       { d: '2026-06-29', firma: 'Zenkner Sanitär-Technik', was: 'Waschbecken Gäste-WC und 1. OG erneuert, Waschtischsets Keller und EG', rg: 'R26/800342', netto: 3975.34, brutto: 4730.65 }
@@ -1514,12 +1515,9 @@ const OFFENE = [
   { prio: 'wichtig', titel: 'Versicherungs-Dreifach-Check',
     detail: 'Vermietung dem Gebäudeversicherer gemeldet (Obliegenheit)? Deckt die Haftpflicht Haus- &amp; Grundbesitzerhaftpflicht fürs VERMIETETE Objekt? Gewässerschadenhaftpflicht für den Öltank (§ 89 WHG: unbegrenzte, verschuldensunabhängige Haftung)?',
     schritt: 'Policen prüfen, fehlende Deckung abschließen (~35–60 €/J, umlagefähig).' },
-  { prio: 'wichtig', titel: 'Sanierungs-Stammdaten erfassen (Dämmung, Dach 2026)',
-    detail: 'Dreifach relevant: belegt eine niedrigere CO₂-Stufe (weniger Erstattung), Basis für den offenen Energieausweis, und die Dach-Rechnungen 2026 gehören als Erhaltungsaufwand in die Anlage V.',
-    schritt: 'Jahr/Umfang der Dämmung klären, Dach-Belege 2026 ablegen.' },
-  { prio: 'klein', titel: 'Rechnung Scheitacker aus dem Eingang aufnehmen',
-    detail: 'Die Datei 00_Eingang/Rechnung Scheitacker.pdf liegt seit 13.07.2026 im Eingang und ließ sich am 10.08.2026 nicht von der NAS laden (Synology meldete: Netzwerk nicht verfügbar). Inhalt daher unbekannt, weder einsortiert noch verbucht — sie fehlt damit sowohl in der Instandhaltungs-Aufstellung als auch in der Anlage V.',
-    schritt: 'Datei auf der NAS verfügbar machen (Synology Drive verbinden), dann einsortieren und zuordnen.' },
+  { prio: 'wichtig', titel: 'Sanierungs-Stammdaten erfassen (Dämmung, Alter der Eindeckung)',
+    detail: 'Fassadendämmung: Jahr und Umfang unbekannt. Die Eindeckung selbst wurde 2026 NICHT erneuert — getauscht wurden zwei Dachfenster, dazu eine Durchsicht; das Alter des Dachs ist nirgends erfasst. Beides zählt doppelt: es belegt die CO₂-Stufe (weniger Erstattung) und ist die Basis für den offenen Energieausweis.',
+    schritt: 'Jahr/Umfang der Dämmung und das Alter der Eindeckung klären, Nachweise ablegen.' },
   { prio: 'klein', titel: 'Internet-Kostenanteil der Mieter nachtragen',
     detail: 'Internetnutzungsvereinbarung (Vodafone Red Business 100) ist geschlossen; der monatliche Kostenanteil ist im abgelegten PDF nicht ausgefüllt — eine zusätzliche Monatseinnahme bleibt unerfasst.',
     schritt: 'Betrag aus der unterschriebenen Fassung übernehmen.' },
@@ -1655,7 +1653,7 @@ const ANLAGE_V = {
   ],
   aus: [
     ['Laufende Kosten', 'Grundsteuer, Versicherungen, Wartung, Schornsteinfeger, Wasser, Abfall'],
-    ['Erhaltungsaufwand 2026', '9.731,47 € brutto Handwerker/Material — Dach 2026 kommt hinzu (§ 82b-Wahlrecht)'],
+    ['Erhaltungsaufwand 2026', '14.565,37 € brutto Handwerker/Material, vollständig belegt (§ 82b-Wahlrecht)'],
     ['AfA Gebäude', '2 % linear, 2026 nur <b>zeitanteilig ab 06/2026</b> (§ 7 IV 1 Nr. 2b EStG); Basis wegen Erbfall über § 11d EStDV zwingend mit Berater klären'],
     ['CO₂-Erstattung an die Mieter', 'abziehbar nach § 21 EStG'],
     ['Sonstiges', 'Kontoführung, Fahrten, Porto, Steuerberater']
@@ -1669,7 +1667,7 @@ const ANLAGE_V = {
 const GOOD_TO_KNOW = [
   ['Rücklage und Kaution sind steuerlich unsichtbar', 'Geld in die Rücklage zu legen ist <b>kein</b> Werbungskosten-Abzug — abziehbar ist erst die bezahlte Reparatur (Abflussprinzip, § 11 EStG). Die Kaution ist weder Einnahme noch Ausgabe, solange sie verwahrt wird.'],
   ['Zufluss und Abfluss entscheiden das Jahr', 'Die Dezember-Miete, die am 3. Januar eingeht, gehört ins neue Jahr (§ 11 EStG). Ausnahme: die <b>10-Tage-Regel</b> für regelmäßig wiederkehrende Zahlungen rund um den Jahreswechsel.'],
-  ['Verluste wirken sofort', 'Ein Verlust aus Vermietung — etwa durch das Dach 2026 — verrechnet sich mit Gehalt, Rente und übrigen Einkünften desselben Jahres. Voraussetzung ist die <b>Einkünfteerzielungsabsicht</b>. Auch ein Verlust will also erklärt werden.'],
+  ['Verluste wirken sofort', 'Ein Verlust aus Vermietung — etwa durch den Erhaltungsaufwand 2026 — verrechnet sich mit Gehalt, Rente und übrigen Einkünften desselben Jahres. Voraussetzung ist die <b>Einkünfteerzielungsabsicht</b>. Auch ein Verlust will also erklärt werden.'],
   ['Belege 10 Jahre aufbewahren', 'Sammelstellen sind die Share-Ordner 05_Nebenkosten, 06_Instandhaltung und 08_Steuern. Ohne Beleg kein Abzug — und ohne Beleg auch keine belastbare Nebenkostenabrechnung.'],
   ['Keinen Pauschbetrag erwarten', 'Bei Vermietung und Verpachtung gibt es <b>keinen</b> Werbungskosten-Pauschbetrag — nur echte Belege zählen.'],
   ['Kein V+V-Freibetrag', 'Steuerpflichtig ab dem ersten Euro; es wirkt allein der persönliche Grundfreibetrag (2026: 12.348 €). Mieteinkünfte können bei Rentnerinnen überhaupt erst die Erklärungspflicht auslösen.'],
@@ -1789,23 +1787,28 @@ const m2 = (n) => n.toFixed(1).replace('.', ',') + ' m²';
 const HAUSTHEMEN = [
   {
     id: 'dach', titel: 'Dach',
-    lead: 'Das Dach ist 2026 komplett neu gedeckt worden. Die Arbeit ist erledigt, offen sind die Belege — und daran hängt bares Geld.',
-    fakten: [['Zustand', '2026 neu gedeckt'], ['Belege', 'fehlen'],
+    lead: 'Das Dach wurde 2026 <b>nicht</b> neu gedeckt. Getauscht wurden zwei Dachfenster; dazu kamen der Abbau der alten Antenne und eine Dachdurchsicht.',
+    fakten: [['Maßnahme 2026', '2 Dachfenster ersetzt'], ['Kosten', '4.833,90 € brutto'],
       ['Steuerlich', 'Erhaltungsaufwand'], ['Umlagefähig', 'nein']],
     bloecke: [
-      { h: 'Was gilt', p: [
-        ['', 'Die Dachsanierung 2026 ist bisher nur als Nutzerangabe vom 13.07.2026 erfasst — Umfang und Kosten sind nicht belegt.'],
-        ['', 'Instandhaltung ist Vermietersache und <b>nicht umlagefähig</b> (§ 1 Abs. 2 BetrKV) — sie taucht in keiner Nebenkostenabrechnung auf.'],
-        ['', 'In der Instandhaltungssumme 2026 von <b>9.731,47 € brutto</b> ist das Dach noch <b>nicht</b> enthalten.'],
-        ['gut', 'Ein neues Dach senkt die CO₂-Stufe dauerhaft — und damit den Anteil, den Sie dem Mieter erstatten müssen (CO2KostAufG).'],
-        ['gut', 'Es ist zugleich die Grundlage für den fehlenden Energieausweis.'] ] },
-      { h: 'Was zu tun ist', p: [
-        ['warn', 'Rechnungen der Dachfirma beschaffen und in 06_Instandhaltung ablegen.'],
-        ['warn', 'Betrag ins Cockpit übernehmen und in die Anlage V 2026 einstellen.'],
-        ['', 'Dann entscheiden: sofort im Zahlungsjahr abziehen oder gleichmäßig auf 2 bis 5 Jahre verteilen (§ 82b EStDV) — je nachdem, in welchem Jahr der Abzug mehr bringt.'] ] }
+      { h: 'Was 2026 gemacht wurde', p: [
+        ['gut', '<b>Zwei Dachfenster ersetzt</b> — VELUX Schwingfenster THERMO, 114 × 140 cm, U-Wert 1,3 W/m²K, mit Dämm- und Anschlussset und neuem Eindeckrahmen. Die alten wurden ausgebaut und entsorgt.'],
+        ['gut', '<b>Alte Dachantenne abgebaut</b> und die Stelle wieder eingedeckt.'],
+        ['gut', '<b>Dachdurchsicht:</b> Dachrinne gereinigt, Moos am Kamin entfernt, defekte Ziegel getauscht — dazu 12 Halbsteine Frankfurter Pfanne als Reserve.'],
+        ['', 'Rechnung Scheitacker 2605107 vom 21.05.2026: 4.062,10 € netto, <b>4.833,90 € brutto</b> (nach 2 % Skonto).'],
+        ['warn', 'Die <b>Eindeckung selbst ist unverändert</b>, und ihr Alter ist nirgends erfasst. Für Rücklagenplanung und Energieausweis wäre das der wichtigere Wert.'] ] },
+      { h: 'Was das steuerlich heißt', p: [
+        ['', 'Der Fenstertausch ersetzt Vorhandenes und ist damit <b>Erhaltungsaufwand</b>, kein Herstellungsaufwand — sofort abziehbar oder wahlweise auf zwei bis fünf Jahre verteilt (§ 82b EStDV).'],
+        ['', 'Er steckt in der Instandhaltungssumme 2026 von <b>14.565,37 € brutto</b>, die jetzt vollständig belegt ist.'],
+        ['warn', 'Der Rechnungshinweis auf <b>§ 35a EStG</b> (1.590,50 € Dienstleistungsanteil) richtet sich an Selbstnutzer. Bei Vermietung ist der Betrag <b>voll Werbungskosten</b> — das ist deutlich mehr wert als die 20-%-Ermäßigung.'],
+        ['', 'Instandhaltung ist Vermietersache und <b>nicht umlagefähig</b> (§ 1 Abs. 2 BetrKV).'] ] },
+      { h: 'Was das energetisch heißt', p: [
+        ['gut', 'Neue Fenster mit U 1,3 W/m²K senken den Verbrauch — und damit die CO₂-Stufe, also den Anteil, den Sie dem Mieter erstatten (CO2KostAufG).'],
+        ['', 'Für den fehlenden Energieausweis ist die Maßnahme belegbar — die Rechnung dem Energieberater vorlegen.'],
+        ['', '§ 35c EStG (Ermäßigung für energetische Sanierung) greift hier nicht: er gilt nur für selbstgenutztes Eigentum.'] ] }
     ],
-    links: [['#aufgaben/offen', 'Offene Punkte'], ['#steuern/dach', 'Dach 2026'],
-      ['#geld/reparaturen', 'Reparaturen']]
+    links: [['#steuern/dach', 'Erhaltungsaufwand 2026'], ['#geld/reparaturen', 'Reparaturen'],
+      ['#aufgaben/offen', 'Offene Punkte']]
   },
   {
     id: 'grundriss', titel: 'Haus &amp; Grundriss',
@@ -1822,7 +1825,7 @@ const HAUSTHEMEN = [
         ['krit', 'Bußgeld bis 10.000 € möglich (§ 108 GEG).'],
         ['', 'Baujahr 1969 und weniger als fünf Wohneinheiten: es muss ein <b>Bedarfsausweis</b> sein, ein Verbrauchsausweis genügt nicht. Gültigkeit dann 10 Jahre.'],
         ['gut', 'Für das laufende Mietverhältnis besteht keine fortlaufende Pflicht — nachholen senkt trotzdem das Risiko, und für jede Neuvermietung und jeden Verkauf ist er zwingend.'],
-        ['warn', 'Energieberater beauftragen und die energetische Sanierung — Fassadendämmung und Dach 2026 — bereithalten: sie verbessert das Ergebnis. Ausstellungs- und Ablaufdatum danach ins Cockpit.'] ] },
+        ['warn', 'Energieberater beauftragen und die energetischen Verbesserungen — Fassadendämmung und die neuen Dachfenster 2026 — bereithalten: sie verbessern das Ergebnis. Ausstellungs- und Ablaufdatum danach ins Cockpit.'] ] },
       { h: 'Woran die Fläche hängt', p: [
         ['', 'Die Wohnfläche ist der Nenner jeder Vergleichsmiete: aktuell <b>10,13 €/m²</b> Kaltmiete.'],
         ['', 'Sie steuert auch die Rücklagen-Richtwerte, die je m² und Jahr gerechnet werden.'],
@@ -1897,7 +1900,7 @@ const HAUSTHEMEN = [
    x/y sind Koordinaten im viewBox 0 0 760 420. */
 const HAUSPUNKTE = [
   { nr: 1, x: 243, y: 118, ziel: '#haus/dach', titel: 'Dach',
-    kurz: 'Eindeckung, Dämmung und was steuerlich daran hängt.' },
+    kurz: 'Dachfenster 2026, Durchsicht — und was steuerlich daran hängt.' },
   { nr: 2, x: 393, y: 88, ziel: '#nebenkosten/co2', titel: 'Schornstein',
     kurz: 'Nebenkosten und der CO₂-Anteil, den Sie erstatten.' },
   { nr: 3, x: 325, y: 96, ziel: '#fristen/zeitband', titel: 'Uhr im Giebel',
@@ -2059,7 +2062,7 @@ const NAVDEF = [
   { id: 'aufgaben', name: 'Aufgaben &amp; Risiken', praefix: 'u-auf-', subs: [
     ['offen', 'Offene Punkte'], ['versicherung', 'Versicherungen'], ['recht', 'Rechtsstand']] },
   { id: 'steuern', name: 'Steuern', praefix: 'u-st-', subs: [
-    ['landkarte', 'Landkarte'], ['anlagev', 'Anlage V'], ['dach', 'Dach 2026'],
+    ['landkarte', 'Landkarte'], ['anlagev', 'Anlage V'], ['dach', 'Erhaltungsaufwand'],
     ['wissen', 'Fristen &amp; Good to know']] },
   { id: 'quellen', name: 'Quellen &amp; Schlüssel', praefix: 'u-q-', subs: [
     ['dokumente', 'Dokumente'], ['normen', 'Normen'], ['grenzen', 'Beleg &amp; Grenzen'],
@@ -2328,7 +2331,7 @@ function baueBilanz() {
       '<a class="balken" href="' + r.ziel + '"><div class="bl"><span>' + r.label + '</span></div>' +
       '<div class="spur"><i style="width:' + (r.bis / maxR * 100).toFixed(1) + '%;background:var(--c-accent)"></i></div>' +
       '<div class="bw num">' + (r.leer ? 'keine erfasst' : r.von === r.bis ? eur0(r.von) : eur0(r.von) + '–' + eur0(r.bis)) + '</div></a>').join('') +
-      '<div class="fussnote" style="padding:8px 0 0">Die Nebenkosten gleicht der Vorschuss der Mieter aus. Die Reparaturen bleiben bei den Vermieterinnen, mindern aber die Steuer. Dazu einmalig: Dach neu 2026, Betrag noch offen.</div>';
+      '<div class="fussnote" style="padding:8px 0 0">Die Nebenkosten gleicht der Vorschuss der Mieter aus. Die Reparaturen bleiben bei den Vermieterinnen, mindern aber die Steuer.</div>';
 
     document.querySelectorAll('#bilanzJahrwahl button').forEach((b) =>
       b.setAttribute('aria-pressed', String(Number(b.textContent) === j)));
@@ -2496,7 +2499,7 @@ function baueKaution() {
 function baueVertrag() {
   const rows = [
     ['Objekt', 'freistehendes Einfamilienhaus, Baujahr 1969 · 207,4 m² Wohnfläche (WoFiV) · Grundstück ca. 595 m² · 7 Zimmer · Garage, Kfz-Stellplatz, Garten, Schuppen'],
-    ['Sanierung', 'energetisch saniert: Fassadendämmung (Jahr/Umfang offen) · Dach neu 2026 (Belege offen — offener Punkt)'],
+    ['Sanierung', 'energetisch saniert: Fassadendämmung (Jahr/Umfang offen) · 2026 zwei Dachfenster ersetzt (U 1,3 W/m²K) und Dachdurchsicht — die Eindeckung selbst ist unverändert, Alter unbekannt'],
     ['Mietverhältnis', 'unbefristet ab 01.06.2026 · 2 Vermieterinnen / 2 Mieter, jeweils Gesamtschuldner (§ 22 Mietvertrag)'],
     ['Heizung', 'Ölheizung mit Tank — die Mieter beschaffen und bezahlen das Heizöl selbst (§ 4 II) · Heizperiode 01.10.–30.04., Betriebsbereitschaft ist Vermieterpflicht (§ 7 II)'],
     ['Heizöl-Regel', 'Bestand bei Übergabe dokumentiert; bei Rückgabe Füllstand wiederherstellen oder wertmäßig ausgleichen — letzter Einkaufspreis (§ 9 II)'],
@@ -2736,7 +2739,7 @@ function baueCO2() {
     }).join('') +
     '<div class="fussnote" style="padding:var(--sp-xs) 0 0">Vermieteranteil je Stufe · ◀ = Szenario dieses Hauses</div>';
   document.getElementById('co2Schaetzung').innerHTML =
-    '<b>Schätzung für dieses Haus:</b> unsaniert (3.000 L/J) ≈ 38,5 kg/m² → Stufe 60 % ≈ <b class="num">290 €/J</b> · saniert (2.000 L/J) ≈ 25,7 kg/m² → Stufe 30 % ≈ <b class="num">100 €/J</b>. Haus ist energetisch saniert (Fassadendämmung, Dach 2026) → eher unteres Band. <b>Rückstellung: 100–500 €/J.</b> Die echte Einstufung bestimmt allein der Verbrauch laut Lieferrechnungen — ab der ersten Öllieferung der Mieter.';
+    '<b>Schätzung für dieses Haus:</b> unsaniert (3.000 L/J) ≈ 38,5 kg/m² → Stufe 60 % ≈ <b class="num">290 €/J</b> · saniert (2.000 L/J) ≈ 25,7 kg/m² → Stufe 30 % ≈ <b class="num">100 €/J</b>. Haus ist energetisch verbessert (Fassadendämmung, neue Dachfenster 2026) → eher unteres Band. <b>Rückstellung: 100–500 €/J.</b> Die echte Einstufung bestimmt allein der Verbrauch laut Lieferrechnungen — ab der ersten Öllieferung der Mieter.';
   const schritte = [
     ['Öllieferant weist CO₂-Kosten aus', 'mit jeder Lieferung · § 3 CO2KostAufG'],
     ['Mieter berechnet die Einstufung', 'Liter × 2,66 kg/L ÷ 207,4 m² → kg/m²·J → Stufe → Vermieteranteil · § 5 + Anlage'],
@@ -2776,7 +2779,7 @@ function baueCO2() {
   document.getElementById('co2Fuss').innerHTML =
     'Praxis: <b>Von jeder Öllieferung eine Rechnungskopie anfordern</b> — sie ist zugleich das eigene Verbrauchs-Monitoring. ' +
     'Die Bringschuld liegt vollständig beim Mieter: Ohne fristgerechte Geltendmachung erlischt sein Anspruch, der Vermieter muss nichts proaktiv berechnen. ' +
-    'Energetische Sanierung (Fassadendämmung, Dach 2026) senkt die Stufe dauerhaft — sie wirkt indirekt über weniger Liter. ' +
+    'Energetische Verbesserungen (Fassadendämmung, neue Dachfenster 2026) senken die Stufe dauerhaft — sie wirken indirekt über weniger Liter. ' +
     'Eine Ermäßigung nach § 9 CO2KostAufG (etwa bei Denkmalschutz) ist hier voraussichtlich nicht einschlägig. ' +
     'Quelle: gesetze-im-internet.de/co2kostaufg (§§ 3, 5, 6, 9 + Anlage), verifiziert 10.07.2026.';
 }
@@ -2856,7 +2859,7 @@ function baueWirtschaft() {
     ['− CO₂-Rückstellung', eur0(C.co2) + '/J (Mittelwert aus der Spanne ' + eur0(DATEN.co2.rueckstellung[0]) + '–' + eur0(DATEN.co2.rueckstellung[1]) + ')'],
     ['= Kalkulatorischer Cashflow vor Steuern', '<b>' + eur0(C.von) + ' – ' + eur0(C.bis) + '/Jahr</b> = ' + eur0(C.von / 12) + '–' + eur0(C.bis / 12) + '/Monat (volles Jahr)'],
     ['BK-Puffer bis zur Abrechnung', eur(DATEN.nk.puffer_monat) + '/M (VZ ' + eur0(DATEN.nk.vz_monat) + ' − Kalkulation ' + eur(DATEN.nk.kalk_monat) + ') = ' + eur(DATEN.nk.puffer_monat * 12) + '/Jahr — läuft bei 100-%-Umlage durch'],
-    ['Instandhaltung (echt, nicht kalkulatorisch)', instaJahre().map((j) => j + ': ' + eur(DATEN.insta[j].brutto) + ' brutto').join(' · ') + ' — nicht umlagefähig, aber Werbungskosten; Dach 2026 noch offen']
+    ['Instandhaltung (echt, nicht kalkulatorisch)', instaJahre().map((j) => j + ': ' + eur(DATEN.insta[j].brutto) + ' brutto').join(' · ') + ' — nicht umlagefähig, aber Werbungskosten; Belege 2026 vollständig']
   ];
   document.getElementById('wirtTabelle').innerHTML = rows.map((r) =>
     '<tr><td style="color:var(--c-ink-soft)">' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('');
@@ -2936,7 +2939,7 @@ function baueSteuern() {
   document.getElementById('dachOptionen').innerHTML =
     '<div class="option"><h3><span class="pille erledigt">Option A</span> Sofort komplett in 2026</h3><ul>' +
     '<li>Voller Abzug im Jahr der Zahlung (<b>§ 11 EStG</b>, Abflussprinzip).</li>' +
-    '<li>2026 ist ein Rumpfjahr mit nur 7 Monaten Mieteinnahmen — der volle Dachbetrag erzeugt dort womöglich einen <b>Verlust</b>.</li>' +
+    '<li>2026 ist ein Rumpfjahr mit nur 7 Monaten Mieteinnahmen — der volle Betrag erzeugt dort womöglich einen <b>Verlust</b>.</li>' +
     '<li>Der Verlust verrechnet sich mit den übrigen Einkünften desselben Jahres. Lohnt also, wenn 2026 <b>hohe andere Einkünfte</b> mit hohem Steuersatz dagegenstehen.</li>' +
     '<li>Die einfachste Variante — nichts zu verwalten, nichts fortzuschreiben.</li></ul></div>' +
     '<div class="option"><h3><span class="pille pflicht">Option B</span> Gleichmäßig auf 2–5 Jahre</h3><ul>' +
@@ -2953,7 +2956,7 @@ function baueSteuern() {
   document.getElementById('dachAbgrenzung').innerHTML =
     'Abgrenzung: Die vielzitierte <b>15-%-Falle des anschaffungsnahen Aufwands (§ 6 I Nr. 1a EStG)</b> setzt einen <b>entgeltlichen Erwerb</b> voraus. ' +
     'Beim geerbten Haus ist sie regelmäßig kein Thema — vom Berater bestätigen lassen. ' +
-    'Belegt sind für 2026 bisher ' + eur(instaLetzte().brutto) + ' brutto an Handwerker- und Materialkosten; die Dachsanierung kommt hinzu, Betrag und Belege sind noch offen.';
+    'Belegt sind für 2026 ' + eur(instaLetzte().brutto) + ' brutto an Handwerker- und Materialkosten — alle Belege liegen vor (Stand 24.08.2026).';
 
   document.getElementById('steuerFristen').innerHTML = STEUER_FRISTEN.map((f) => {
     const t = tageBis(f.d);
@@ -2988,7 +2991,7 @@ const QUELLENTAFEL = {
     ['Wohnflächenberechnung nach WoFlV V1.0', '23.04.2026', 'Wohnfläche 207,4 m² und die Aufteilung nach Etagen'],
     ['Übergabeprotokoll V1.0.1', 'Übergabe 01.06.2026', 'Zählerstände, Heizölbestand, Schlüsselliste — liegen bisher nur auf Papier'],
     ['Internet-Nutzungsvereinbarung V1.0', 'unterschrieben', 'Tarif; der monatliche Kostenanteil ist im abgelegten PDF nicht ausgefüllt'],
-    ['Handwerker- und Materialbelege 2026', 'Stand 10.08.2026', 'Erhaltungsaufwand 9.731,47 € brutto — ohne die Dachsanierung'],
+    ['Handwerker- und Materialbelege 2026', 'vollständig, Stand 24.08.2026', 'Erhaltungsaufwand 14.565,37 € brutto — sechs Belege'],
     ['Qualifizierter Mietspiegel 2025 (§ 558d BGB)', 'gültig bis 31.12.2026', 'Orientierung für den Erhöhungs-Spielbereich'],
     ['Rechtsstand-Recherche', 'geprüft 10.07.2026', 'Normen, Fristen und Prüfzyklen dieser Tafel']
   ],
