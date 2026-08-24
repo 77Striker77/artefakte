@@ -112,11 +112,8 @@
   .legtext strong{display:block; font-size:13.5px}
   .legtext span{display:block; font-size:12.5px; color:var(--tinte-leise); margin-top:1px}
 
-  .leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-xs); align-items:center;
-           margin:var(--sp-m) 0 var(--sp-xs)}
-  .leiste-titel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
-                text-transform:uppercase; color:var(--auf-tiefe-leise);
-                margin-right:var(--sp-2xs)}
+  /* .leiste2 und .leiste-titel stehen seit dem 24.08.2026 zentral in stil.css -
+     sie waren hier und in karte.html doppelt und auf den Stadtseiten gar nicht. */
   .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
               justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);
               font-size:11px; color:var(--auf-tiefe-leise); font-family:var(--zahl)}
@@ -215,7 +212,6 @@
     .leaflet-tooltip.fahne{display:none}
 
     /* Die Ebenen-Knoepfe brauchen sonst drei Zeilen. */
-    .leiste2 .knopf{font-size:13.5px; padding:0 10px}
     .reiter button{font-size:13.5px; padding:0 var(--sp-s)}
   }
 </style>

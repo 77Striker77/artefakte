@@ -357,6 +357,28 @@ h3{font-family:var(--display); font-size:17px}
    passiert beim Bau der Legende auf der Uebersichtskarte. */
 :is(.tafel, .legende, .stadt, .flug, .fakt, .ziel, .bilderhinweis) :is(h2, h3){color:var(--tinte)}
 
+/* ---------- Steuerleisten ueber der Karte ("Zeigen", "Ausschnitt") ----------
+ * Stand bis zum 24.08.2026 ZWEIMAL da - in index.html und karte.html, mit
+ * bereits auseinandergelaufenen Aussenabstaenden - und auf den sechs Stadtseiten
+ * GAR NICHT: dort klebten die Filterknoepfe ohne Abstand aneinander, weil
+ * ortsseite.css die Klasse nie mitbekommen hat. Genau der Fall, vor dem der
+ * Abschnitt zu den Reiter-Stilen weiter oben warnt.
+ *
+ * Die Knoepfe sind hier kleiner als der allgemeine .knopf: es sind viele davon
+ * nebeneinander, und sie stehen VOR dem Element, um das es geht. Gemessen bei
+ * 320 px waren es auf der Quartierseite 370 px Knopfflaeche in acht Zeilen,
+ * bevor die Karte anfing. Die Tasthoehe bleibt bei 44 px - gespart wird an
+ * Schrift, Innenabstand und Symbolgroesse, nicht an der Treffflaeche. */
+.leiste2{display:flex; flex-wrap:wrap; gap:var(--sp-2xs); align-items:center;
+         margin:var(--sp-m) 0 var(--sp-xs)}
+.leiste-titel{font-family:var(--zahl); font-size:10.5px; letter-spacing:.1em;
+              text-transform:uppercase; color:var(--auf-tiefe-leise);
+              margin-right:var(--sp-2xs)}
+.leiste2 .knopf{font-size:13px; padding:0 10px; min-height:44px; gap:6px}
+.leiste2 .knopf .zahl{font-size:9.5px}
+.leiste2 .punkt.marksym{width:14px; height:14px}
+.leiste2 .punkt.marksym svg{width:14px; height:14px}
+
 /* ---------- Entfernungsringe ----------
  * Unbeschriftet sah man drei gestrichelte Kreise und musste raten, wofuer sie
  * stehen; mit Mass sind sie das nuetzlichste Element der Karte - man liest die
@@ -447,6 +469,14 @@ h3{font-family:var(--display); font-size:17px}
   .leiste-innen{gap:var(--sp-xs); padding:0 var(--sp-s)}
   .menue a{padding:0 var(--sp-xs); font-size:14px}
   .untermenue > summary{padding:0 var(--sp-xs); font-size:14px}
+  /* Noch eine Stufe kleiner: hier entscheidet jede Knopfbreite darueber, ob
+     eine weitere Zeile aufgeht und die Karte tiefer rutscht. */
+  .leiste2 .knopf{font-size:12.5px; padding:0 8px}
+  /* Und die Beschriftung bekommt eine eigene Zeile. Als Flex-Kind belegte sie
+     einen Knopfplatz: bei 320 px passte neben "ZEIGEN" nur noch ein Knopf, und
+     die Leiste ging auf vier Zeilen statt drei. Als volle Zeile kostet sie 16 px
+     und spart 44. */
+  .leiste-titel{width:100%; margin:0 0 2px}
 }
 
 /* Ab hier reicht der Platz fuer die volle Leiste nicht mehr. Der Wert ist
