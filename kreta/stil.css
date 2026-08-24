@@ -91,6 +91,9 @@
   /* Ankunftspunkt der Ortsseiten. Hue 142 - naechster Nachbar ist der Hafen
      mit 189, also 47 Grad Abstand; die Hotelmarke steht bei 45. */
   --p-busbahnhof:#16A34A;
+  /* Essen & Trinken. Hue 100 - Abstand zum naechsten Nachbarn: 42 Grad zum
+     Busbahnhof (142) und 55 zur Hotelmarke (45). */
+  --p-essen:#4E9A2F;
   --p-altstadt:var(--koralle);
   --p-festung:#C026A8;
   --p-museum:#9333EA;

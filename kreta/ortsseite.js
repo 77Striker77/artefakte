@@ -112,6 +112,16 @@
             "XXXXXXXXX",
             "X.X...X.X",
             ".X.....X."],
+    /* Essen & Trinken: Gabel und Messer. */
+    essen: ["XX.XX..XX",
+            "XX.XX..XX",
+            "XX.XX..XX",
+            "XXXXX..XX",
+            ".XXX...XX",
+            "..XX...XX",
+            "..XX...XX",
+            "..XX...XX",
+            "........."],
     /* Altstadt: Haeuserzeile. */
     altstadt: [".........",
             "..X...X..",
@@ -241,8 +251,8 @@
   const an = new Set(ARTEN.map((a) => a.id));
 
   const wegeLinks = (p) => {
-    const suche = "https://www.google.com/maps/search/?api=1&query="
-      + encodeURIComponent(p.name + " " + SEITE.name);
+    const suche = p.maps || ("https://www.google.com/maps/search/?api=1&query="
+      + encodeURIComponent(p.name + " " + SEITE.name));
     return '<div class="pop-wege"><a href="' + suche
       + '" target="_blank" rel="noopener">In Google Maps</a>'
       + (HOTEL ? '<a href="https://www.google.com/maps/dir/?api=1&origin='
@@ -276,6 +286,12 @@
       .bindPopup('<span class="pop-art">' + esc(titelVon(p.art)) + "</span>"
         + '<span class="pop-name">' + esc(p.name) + "</span>"
         + (p.beschreibung ? '<span class="pop-zeile">' + esc(p.beschreibung) + "</span>" : "")
+        + (p.art === "essen" && p.bew != null
+            ? '<span class="pop-zeile">Google ' + p.bew.toFixed(1) + " / 5"
+              + (p.anz ? " (" + p.anz.toLocaleString("de-DE") + " Stimmen)" : "")
+              + (p.preis ? " · " + esc(p.preis) : "") + "</span>" : "")
+        + (p.art === "essen" && p.adresse
+            ? '<span class="pop-zeile">' + esc(p.adresse) + "</span>" : "")
         + (p.zeiten ? '<span class="pop-zeile">Geöffnet: ' + esc(p.zeiten) + "</span>" : "")
         + wegeLinks(p), { maxWidth: 300 })
       .bindTooltip(p.name, { direction: "top", offset: [0, -12] });
@@ -419,6 +435,14 @@
     + '<span><span class="zname">' + esc(p.name) + "</span>"
     + (function () {
         // Keine Zweitzeile, die nur den Namen wiederholt ("Altstadt / Altstadt").
+        if (p.art === "essen") {
+          return '<span class="zmeta">'
+            + esc([p.typ, p.bew != null ? p.bew.toFixed(1) + "★"
+                    + (p.anz ? " (" + p.anz.toLocaleString("de-DE") + ")" : "") : null,
+                   p.preis || null,
+                   p.m_bus != null ? p.m_bus + " m ab Bus" : null]
+              .filter(Boolean).join(" · ")) + "</span>";
+        }
         const zweit = p.beschreibung
           || (p.art === "busbahnhof" && p.entfernung_zentrum_m != null
             ? "Überlandbusse · " + p.entfernung_zentrum_m + " m vom Stadtzentrum"
@@ -428,8 +452,9 @@
           ? '<span class="zmeta">' + esc(zweit) + "</span>" : "";
       })() + "</span>"
     + "</button>"
-    + '<a class="zumaps" href="https://www.google.com/maps/search/?api=1&query='
-    + encodeURIComponent(p.name + " " + SEITE.name)
+    + '<a class="zumaps" href="'
+    + (p.maps || ("https://www.google.com/maps/search/?api=1&query="
+        + encodeURIComponent(p.name + " " + SEITE.name)))
     + '" target="_blank" rel="noopener" aria-label="' + esc(p.name)
     + ' in Google Maps ansehen">Maps</a></li>';
 
@@ -494,6 +519,18 @@
       + esc(SEITE.name) + " liegen noch keine Sehenswürdigkeiten aus OpenStreetMap vor. "
       + "Die Seite zeigt bewusst eine leere Liste statt einer gefüllten, die niemand "
       + "geprüft hat.</p>";
+  } else if (PUNKTE.some((p) => p.art === "essen")) {
+    /* Sobald Lokale da sind, ist die ehrliche Auskunft eine andere: nicht
+       "nicht erfasst", sondern "gefiltert". Wer das nicht sagt, laesst eine
+       Auswahl wie eine Vollstaendigkeit aussehen - und ein Lokal, das fehlt,
+       wirkt dann wie eines, das es nicht gibt. */
+    const n = PUNKTE.filter((p) => p.art === "essen").length;
+    kasten.innerHTML = "<p><strong>Die " + n + " Lokale sind eine Auswahl, keine Liste "
+      + "aller.</strong> Aufgenommen ist, was bei Google mindestens 4,7 Sterne bei "
+      + "mindestens 300 Stimmen hat; gehobene Preisstufen und reine Fischlokale sind "
+      + "ausgenommen. Was fehlt, ist deshalb nicht schlecht — es liegt unter der "
+      + "Schwelle oder wurde aussortiert. Öffnungszeiten stehen bewusst nicht dabei: "
+      + "sie ändern sich saisonal und wären am Abrufdatum festgenagelt.</p>"
   } else {
     kasten.innerHTML = "<p><strong>Noch nicht erfasst:</strong> Lokale, Cafés und "
       + "Geschäfte in " + esc(SEITE.name) + ". Was hier steht, sind Sehenswürdigkeiten "
