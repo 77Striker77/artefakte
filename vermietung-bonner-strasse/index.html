@@ -268,6 +268,14 @@
   .hauslegende .lnr{background:var(--c-accent)}
   .hauslegende b{display:block;font-size:14px}
   .hauslegende span.ltxt{font-size:12.5px;color:var(--c-ink-soft);line-height:1.45}
+  .weitere{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:var(--sp-xs);
+    margin-top:var(--sp-m);padding-top:var(--sp-m);border-top:1px solid var(--c-line-strong)}
+  .weitere a{display:grid;gap:2px;align-content:start;text-decoration:none;color:inherit;
+    min-height:44px;padding:10px 12px;border-radius:var(--radius-s);background:var(--c-surface-2);
+    border:1px solid var(--c-line)}
+  .weitere a:hover{border-color:var(--c-accent);background:var(--c-accent-bg)}
+  .weitere b{font-size:14px;color:var(--c-accent-ink)}
+  .weitere a>span{font-size:12.5px;color:var(--c-ink-soft);line-height:1.45}
   /* Der Keller ist ein Schnitt: das Erdreich wird schraffiert, damit der Kasten
      unter der Geländelinie nicht wie ein zweites Gebäude wirkt. */
   .haus-keller{fill:var(--c-surface);stroke:var(--c-line-strong);stroke-width:2}
@@ -681,7 +689,7 @@
         <div class="sekkopf"><h2 id="h-haus">Das Haus auf einen Blick</h2></div>
         <div class="karte hauskarte">
           <div class="haus-svg">
-            <svg viewBox="0 0 760 420" role="group" aria-label="Anklickbares Schaubild des Anwesens: Dach, Schornstein, Giebeluhr, Fassade, Haustür, Briefkasten, Leiter, Keller mit Heizung, Zählern und Aktenregal, Gartentor und Garten — jeder Punkt führt in den passenden Bereich">
+            <svg viewBox="0 0 760 420" role="group" aria-label="Anklickbares Schaubild des Anwesens: Dach, Schornstein, Fassade, Haustür, Briefkasten, Keller mit Heizung und Zählern, Garage, Gartentor und Garten — jeder Punkt führt in den passenden Bereich">
               <defs>
                 <pattern id="erdreich" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                   <line x1="0" y1="0" x2="0" y2="11" stroke="var(--c-line)" stroke-width="1.5"/>
@@ -694,11 +702,6 @@
               <rect class="haus-strich" x="380" y="66" width="26" height="58"/>
               <polygon class="haus-dach" points="175,140 475,140 325,50"/>
 
-              <circle class="haus-hell" cx="325" cy="96" r="26"/>
-              <line x1="325" y1="74" x2="325" y2="81" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="347" y1="96" x2="340" y2="96" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="325" y1="118" x2="325" y2="111" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
-              <line x1="303" y1="96" x2="310" y2="96" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
 
               <rect class="haus-strich" x="200" y="140" width="250" height="160"/>
               <line x1="200" y1="220" x2="450" y2="220" stroke="var(--c-line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
@@ -715,12 +718,6 @@
               <rect class="haus-hell" x="300" y="228" width="45" height="72"/>
               <circle cx="337" cy="266" r="2.5" fill="var(--c-line-strong)"/>
 
-              <line x1="452" y1="298" x2="466" y2="152" stroke="var(--c-line-strong)" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="462" y1="298" x2="476" y2="152" stroke="var(--c-line-strong)" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="455" y1="270" x2="464" y2="270" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="457" y1="240" x2="466" y2="240" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="460" y1="210" x2="469" y2="210" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="462" y1="180" x2="471" y2="180" stroke="var(--c-line-strong)" stroke-width="2"/>
 
               <rect class="haus-strich" x="147" y="258" width="6" height="42"/>
               <rect class="haus-hell" x="133" y="236" width="34" height="24"/>
@@ -758,16 +755,10 @@
               <line x1="214" y1="330" x2="254" y2="330" stroke="var(--c-line-strong)" stroke-width="1.5"/>
               <rect class="haus-strich" x="266" y="322" width="68" height="40" rx="19"/>
               <rect class="haus-strich" x="292" y="314" width="14" height="10"/>
-              <rect class="haus-hell" x="346" y="314" width="32" height="36"/>
-              <circle cx="355" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <circle cx="369" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="352" y1="340" x2="372" y2="340" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="392" y="310" width="46" height="56"/>
-              <line x1="392" y1="328" x2="438" y2="328" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="392" y1="347" x2="438" y2="347" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-strich" x="397" y="314" width="7" height="14"/>
-              <rect class="haus-strich" x="407" y="314" width="7" height="14"/>
-              <rect class="haus-strich" x="417" y="314" width="7" height="14"/>
+              <rect class="haus-hell" x="380" y="314" width="32" height="36"/>
+              <circle cx="389" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <circle cx="403" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="386" y1="340" x2="406" y2="340" stroke="var(--c-line-strong)" stroke-width="1.5"/>
 
               <text class="hausbez" x="192" y="186" text-anchor="end">OG</text>
               <text class="hausbez" x="192" y="264" text-anchor="end">EG</text>
@@ -777,6 +768,7 @@
             </svg>
           </div>
           <ol class="hauslegende" id="hausLegende"></ol>
+          <div class="weitere" id="weitereBereiche"></div>
         </div>
       </section>
 
@@ -1917,30 +1909,36 @@ const HAUSTHEMEN = [
    Jeder Bereich der Tafel ist genau einmal im Bild vertreten.
    x/y sind Koordinaten im viewBox 0 0 760 420. */
 const HAUSPUNKTE = [
-  { nr: 1, x: 243, y: 118, ziel: '#haus/dach', titel: 'Dach',
+  { nr: 1, x: 325, y: 105, ziel: '#haus/dach', titel: 'Dach',
     kurz: 'Dachfenster 2026, Durchsicht — und was steuerlich daran hängt.' },
   { nr: 2, x: 393, y: 88, ziel: '#nebenkosten/co2', titel: 'Schornstein',
     kurz: 'Nebenkosten und der CO₂-Anteil, den Sie erstatten.' },
-  { nr: 3, x: 325, y: 96, ziel: '#fristen/zeitband', titel: 'Uhr im Giebel',
-    kurz: 'Alle Fristen und wiederkehrenden Pflichten.' },
-  { nr: 4, x: 325, y: 182, ziel: '#haus/grundriss', titel: 'Fassade &amp; Grundriss',
+  { nr: 3, x: 325, y: 182, ziel: '#haus/grundriss', titel: 'Fassade &amp; Grundriss',
     kurz: 'Bauart, Flächen, Aufteilung und der Energieausweis.' },
-  { nr: 5, x: 322, y: 266, ziel: '#mietverhaeltnis/vertrag', titel: 'Haustür',
+  { nr: 4, x: 322, y: 266, ziel: '#mietverhaeltnis/vertrag', titel: 'Haustür',
     kurz: 'Das Mietverhältnis: Vertrag, Erhöhung, Strategie.' },
-  { nr: 6, x: 150, y: 248, ziel: '#geld/eingang', titel: 'Briefkasten',
+  { nr: 5, x: 150, y: 248, ziel: '#geld/eingang', titel: 'Briefkasten',
     kurz: 'Geld und Bilanz: Mieteingang, Kaution, Rücklage.' },
-  { nr: 7, x: 462, y: 215, ziel: '#aufgaben/offen', titel: 'Leiter an der Wand',
-    kurz: 'Offene Punkte, Versicherungen, Rechtsstand.' },
-  { nr: 8, x: 234, y: 339, ziel: '#haus/heizung', titel: 'Heizung &amp; Öltank',
+  { nr: 6, x: 234, y: 339, ziel: '#haus/heizung', titel: 'Heizung &amp; Öltank',
     kurz: 'Im Keller: Betrieb, Wartung, Prüfpflichten.' },
-  { nr: 9, x: 362, y: 332, ziel: '#haus/zaehler', titel: 'Zähler &amp; Ablesung',
+  { nr: 7, x: 396, y: 332, ziel: '#haus/zaehler', titel: 'Zähler &amp; Ablesung',
     kurz: 'Im Keller: Ablesung und Abrechnungsgrundlage.' },
-  { nr: 10, x: 415, y: 338, ziel: '#steuern/landkarte', titel: 'Aktenregal im Keller',
-    kurz: 'Steuern: Anlage V, AfA, Erhaltungsaufwand.' },
-  { nr: 11, x: 614, y: 272, ziel: '#quellen/dokumente', titel: 'Gartentor',
-    kurz: 'Quellen und Schlüssel: worauf die Tafel steht.' },
-  { nr: 12, x: 698, y: 178, ziel: '#haus/garten', titel: 'Garten &amp; Zaun',
+  { nr: 8, x: 698, y: 178, ziel: '#haus/garten', titel: 'Garten &amp; Zaun',
     kurz: 'Wer pflegt, wer räumt — und wer haftet.' }
+];
+
+/* Diese Bereiche sitzen an keiner Stelle des Hauses. Sie in die Zeichnung zu
+   zwingen hätte Requisiten gebraucht, die es hier nicht gibt — sie stehen
+   deshalb als Knöpfe daneben. */
+const WEITERE_BEREICHE = [
+  { ziel: '#fristen/zeitband', titel: 'Fristen &amp; Pflichten',
+    kurz: 'Zeitband, Fristenliste, Jahreskalender, Prüfzyklen.' },
+  { ziel: '#aufgaben/offen', titel: 'Aufgaben &amp; Risiken',
+    kurz: 'Offene Punkte, Versicherungen, Rechtsstand.' },
+  { ziel: '#steuern/landkarte', titel: 'Steuern',
+    kurz: 'Anlage V, AfA, Erhaltungsaufwand, Fristen.' },
+  { ziel: '#quellen/dokumente', titel: 'Quellen &amp; Schlüssel',
+    kurz: 'Worauf die Tafel steht — und der Schlüssel für die Namen.' }
 ];
 
 function etagenHtml() {
@@ -1996,6 +1994,9 @@ function baueUebersicht() {
     '<li><a href="' + t.ziel + '">' +
     '<span class="lnr">' + t.nr + '</span>' +
     '<span><b>' + t.titel + '</b><span class="ltxt">' + t.kurz + '</span></span></a></li>').join('');
+
+  document.getElementById('weitereBereiche').innerHTML = WEITERE_BEREICHE.map((t) =>
+    '<a href="' + t.ziel + '"><b>' + t.titel + '</b><span>' + t.kurz + '</span></a>').join('');
 
   const MONK = ['JAN', 'FEB', 'MRZ', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEZ'];
   const nf3 = FRISTEN.map((f) => ({ ...f, tage: tageBis(f.d) })).filter((f) => f.tage >= 0).slice(0, 3);
