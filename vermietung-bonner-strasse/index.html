@@ -227,12 +227,11 @@
   .lagekarte.warnung .ldot{background:var(--c-warn)} .lagekarte.kritisch .ldot{background:var(--c-crit)}
   .lagelinks{font-size:13px;color:var(--c-ink-soft);margin-top:2px}
   .lagelinks a{white-space:nowrap;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
-  .hauskarte{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(240px,1fr);
-    gap:var(--sp-m);padding:var(--sp-m);align-items:center}
-  /* min-width:0 gegen den Grid-Blowout: ohne das erzwingt der min-content der
+  .hauskarte{padding:var(--sp-m)}
+  /* min-width:0 gegen den Grid-Blowout: ohne das erzwingt der min-content einer
      Spalte bei 320 px eine Spur breiter als die Karte (gemessen scrollWidth 323). */
   .hauskarte>*{min-width:0}
-  @media(max-width:760px){.hauskarte{grid-template-columns:minmax(0,1fr)}}
+  .haus-svg{max-width:960px;margin:0 auto}
   .haus-svg svg{width:100%;height:auto;display:block}
   .haus-strich{fill:var(--c-surface-2);stroke:var(--c-line-strong);stroke-width:2}
   .haus-hell{fill:var(--c-surface);stroke:var(--c-line-strong);stroke-width:2}
@@ -251,11 +250,11 @@
   .rauch{fill:var(--c-ink-faint);opacity:0;animation:rauch 6s ease-out infinite}
   .rauch.r2{animation-duration:7s;animation-delay:2s}
   .rauch.r3{animation-duration:8s;animation-delay:4s}
-  .hauslegende{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-  .hauslegende button{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;
-    width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;border:0;
-    background:transparent;padding:7px 10px;border-radius:var(--radius-s);min-height:44px}
-  .hauslegende button:hover{background:var(--c-surface-2)}
+  .hauslegende{list-style:none;margin:var(--sp-m) 0 0;padding:0;display:grid;gap:6px;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .hauslegende a{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;
+    text-decoration:none;color:inherit;padding:7px 10px;border-radius:var(--radius-s);min-height:44px}
+  .hauslegende a:hover{background:var(--c-surface-2)}
   .hauslegende .lnr{width:26px;height:26px;border-radius:50%;color:var(--c-bg);font-weight:700;
     font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:2px}
   .hauslegende .lnr{background:var(--c-accent)}
@@ -268,21 +267,8 @@
   .hausbez{fill:var(--c-ink-faint);font-size:11px;font-weight:650;letter-spacing:.1em;
     font-family:var(--sans)}
 
-  /* ===== Themen-Fenster: ein Punkt am Haus öffnet alles zu diesem Thema ===== */
-  .themadlg{border:1px solid var(--c-line);border-radius:var(--radius);padding:0;
-    width:min(94vw,680px);max-height:88vh;background:var(--c-surface);color:var(--c-ink);
-    box-shadow:0 24px 60px rgb(var(--schatten-rgb)/.35);overflow:hidden}
-  .themadlg::backdrop{background:rgb(var(--schatten-rgb)/.6)}
-  .tdkopf{display:flex;gap:12px;align-items:center;padding:var(--sp-m) var(--sp-m) var(--sp-xs);
-    border-bottom:1px solid var(--c-line)}
-  .tdnr{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;
-    justify-content:center;background:var(--c-accent);color:var(--c-bg);font-weight:700;font-size:14px}
-  .tdkopf h2{font-size:19px;min-width:0}
-  .tdkopf form{margin:0 0 0 auto}
-  .tdx{width:40px;height:40px;border-radius:50%;border:1px solid var(--c-line);cursor:pointer;
-    background:var(--c-surface-2);color:var(--c-ink);font-size:17px;line-height:1}
-  .tdx:hover{background:var(--c-line)}
-  .tdbody{overflow-y:auto;max-height:calc(88vh - 76px);padding:var(--sp-m);display:grid;gap:var(--sp-m)}
+  /* ===== Themenseiten: Fakten, Listen und Anschlussverweise ===== */
+  .hausseite{display:grid;gap:var(--sp-m)}
   .tdlead{margin:0;font-size:14.5px;color:var(--c-ink-soft);max-width:none}
   .tdfakten{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:var(--sp-xs)}
   .tdfakt{background:var(--c-surface-2);border-radius:var(--radius-s);padding:8px 10px;min-width:0}
@@ -632,7 +618,7 @@
     /* Druck/PDF zeigt IMMER alles — Bereiche UND Unterseiten aufklappen,
        sonst verliert die Papierfassung genau das, was die Navigation nur zusammenfaltet. */
     .view,.unterseite{display:block!important}
-    .skip,.pii-panel,.regler input,.themadlg{display:none!important}
+    .skip,.pii-panel,.regler input{display:none!important}
     body{background:#fff;color:#000}
     .karte,.kachel{break-inside:avoid;box-shadow:none}
     section{margin-top:18px}
@@ -677,72 +663,97 @@
         <div class="sekkopf"><h2 id="h-haus">Das Haus auf einen Blick</h2></div>
         <div class="karte hauskarte">
           <div class="haus-svg">
-            <svg viewBox="0 0 640 392" role="group" aria-label="Schaubild des Hauses: Dach, Obergeschoss, Erdgeschoss, Keller mit Heizung und Zählern, Garage und eingezäunter Garten — sechs anklickbare Punkte">
+            <svg viewBox="0 0 760 420" role="group" aria-label="Anklickbares Schaubild des Anwesens: Dach, Schornstein, Giebeluhr, Fassade, Haustür, Briefkasten, Leiter, Keller mit Heizung, Zählern und Aktenregal, Gartentor und Garten — jeder Punkt führt in den passenden Bereich">
               <defs>
                 <pattern id="erdreich" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                   <line x1="0" y1="0" x2="0" y2="11" stroke="var(--c-line)" stroke-width="1.5"/>
                 </pattern>
               </defs>
 
-              <circle class="rauch" cx="342" cy="58" r="6"/>
-              <circle class="rauch r2" cx="344" cy="50" r="8"/>
-              <circle class="rauch r3" cx="340" cy="44" r="10"/>
-              <rect class="haus-strich" x="330" y="72" width="24" height="52"/>
-              <polygon class="haus-dach" points="170,140 400,140 285,55"/>
+              <circle class="rauch" cx="395" cy="52" r="6"/>
+              <circle class="rauch r2" cx="397" cy="44" r="8"/>
+              <circle class="rauch r3" cx="393" cy="38" r="10"/>
+              <rect class="haus-strich" x="380" y="66" width="26" height="58"/>
+              <polygon class="haus-dach" points="175,140 475,140 325,50"/>
 
-              <rect class="haus-strich" x="190" y="140" width="190" height="160"/>
-              <line x1="190" y1="220" x2="380" y2="220" stroke="var(--c-line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
-              <rect class="haus-hell" x="210" y="160" width="44" height="44"/>
-              <line x1="232" y1="160" x2="232" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="210" y1="182" x2="254" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="320" y="160" width="44" height="44"/>
-              <line x1="342" y1="160" x2="342" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="320" y1="182" x2="364" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="210" y="238" width="44" height="40"/>
-              <line x1="232" y1="238" x2="232" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="320" y="238" width="44" height="40"/>
-              <line x1="342" y1="238" x2="342" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="262" y="230" width="40" height="70"/>
-              <circle cx="293" cy="266" r="2.5" fill="var(--c-line-strong)"/>
+              <circle class="haus-hell" cx="325" cy="96" r="26"/>
+              <line x1="325" y1="74" x2="325" y2="81" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="347" y1="96" x2="340" y2="96" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="325" y1="118" x2="325" y2="111" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="303" y1="96" x2="310" y2="96" stroke="var(--c-line-strong)" stroke-width="2" stroke-linecap="round"/>
 
-              <rect class="haus-strich" x="400" y="218" width="95" height="82"/>
-              <line x1="416" y1="218" x2="416" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="448" y1="218" x2="448" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="480" y1="218" x2="480" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-strich" x="200" y="140" width="250" height="160"/>
+              <line x1="200" y1="220" x2="450" y2="220" stroke="var(--c-line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
+              <rect class="haus-hell" x="225" y="160" width="50" height="44"/>
+              <line x1="250" y1="160" x2="250" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="225" y1="182" x2="275" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="375" y="160" width="50" height="44"/>
+              <line x1="400" y1="160" x2="400" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="375" y1="182" x2="425" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="225" y="238" width="50" height="40"/>
+              <line x1="250" y1="238" x2="250" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="375" y="238" width="50" height="40"/>
+              <line x1="400" y1="238" x2="400" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="300" y="228" width="45" height="72"/>
+              <circle cx="337" cy="266" r="2.5" fill="var(--c-line-strong)"/>
 
-              <rect class="haus-strich" x="124" y="258" width="6" height="42"/>
-              <rect class="haus-hell" x="110" y="236" width="34" height="24"/>
-              <line x1="116" y1="250" x2="138" y2="250" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="452" y1="298" x2="466" y2="152" stroke="var(--c-line-strong)" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="462" y1="298" x2="476" y2="152" stroke="var(--c-line-strong)" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="455" y1="270" x2="464" y2="270" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <line x1="457" y1="240" x2="466" y2="240" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <line x1="460" y1="210" x2="469" y2="210" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <line x1="462" y1="180" x2="471" y2="180" stroke="var(--c-line-strong)" stroke-width="2"/>
 
-              <rect class="haus-strich" x="556" y="240" width="14" height="60"/>
-              <circle class="haus-strich" cx="563" cy="200" r="44"/>
-              <line x1="500" y1="264" x2="624" y2="264" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="500" y1="286" x2="624" y2="286" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <rect class="haus-zaun" x="500" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="517" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="534" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="551" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="568" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="585" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="602" y="252" width="5" height="48"/>
-              <rect class="haus-zaun" x="619" y="252" width="5" height="48"/>
+              <rect class="haus-strich" x="147" y="258" width="6" height="42"/>
+              <rect class="haus-hell" x="133" y="236" width="34" height="24"/>
+              <line x1="139" y1="250" x2="161" y2="250" stroke="var(--c-line-strong)" stroke-width="1.5"/>
 
-              <rect x="20" y="300" width="170" height="72" fill="url(#erdreich)"/>
-              <rect x="380" y="300" width="240" height="72" fill="url(#erdreich)"/>
-              <line x1="20" y1="300" x2="620" y2="300" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <rect class="haus-keller" x="190" y="300" width="190" height="72"/>
-              <rect class="haus-hell" x="206" y="314" width="36" height="48"/>
-              <line x1="206" y1="328" x2="242" y2="328" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-strich" x="256" y="324" width="64" height="38" rx="18"/>
-              <rect class="haus-strich" x="280" y="316" width="14" height="10"/>
-              <rect class="haus-hell" x="334" y="314" width="32" height="36"/>
-              <circle cx="343" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <circle cx="357" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="340" y1="340" x2="360" y2="340" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-strich" x="484" y="218" width="96" height="82"/>
+              <line x1="500" y1="218" x2="500" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="532" y1="218" x2="532" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="564" y1="218" x2="564" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
 
-              <text class="hausbez" x="182" y="186" text-anchor="end">OG</text>
-              <text class="hausbez" x="182" y="264" text-anchor="end">EG</text>
-              <text class="hausbez" x="182" y="342" text-anchor="end">KELLER</text>
+              <rect class="haus-strich" x="690" y="246" width="16" height="54"/>
+              <circle class="haus-strich" cx="698" cy="206" r="44"/>
+              <line x1="644" y1="262" x2="748" y2="262" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <line x1="644" y1="286" x2="748" y2="286" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <rect class="haus-zaun" x="644" y="250" width="5" height="50"/>
+              <rect class="haus-zaun" x="663" y="250" width="5" height="50"/>
+              <rect class="haus-zaun" x="682" y="250" width="5" height="50"/>
+              <rect class="haus-zaun" x="701" y="250" width="5" height="50"/>
+              <rect class="haus-zaun" x="720" y="250" width="5" height="50"/>
+              <rect class="haus-zaun" x="739" y="250" width="5" height="50"/>
+
+              <rect class="haus-hell" x="636" y="244" width="6" height="56"/>
+              <rect class="haus-hell" x="592" y="244" width="6" height="56"/>
+              <line x1="594" y1="256" x2="640" y2="256" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <line x1="594" y1="288" x2="640" y2="288" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <line x1="594" y1="288" x2="640" y2="256" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <circle class="haus-hell" cx="633" cy="272" r="4"/>
+
+              <rect x="20" y="300" width="180" height="78" fill="url(#erdreich)"/>
+              <rect x="450" y="300" width="290" height="78" fill="url(#erdreich)"/>
+              <line x1="20" y1="300" x2="744" y2="300" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <rect class="haus-keller" x="200" y="300" width="250" height="78"/>
+
+              <rect class="haus-hell" x="214" y="314" width="40" height="50"/>
+              <line x1="214" y1="330" x2="254" y2="330" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-strich" x="266" y="322" width="68" height="40" rx="19"/>
+              <rect class="haus-strich" x="292" y="314" width="14" height="10"/>
+              <rect class="haus-hell" x="346" y="314" width="32" height="36"/>
+              <circle cx="355" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <circle cx="369" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="352" y1="340" x2="372" y2="340" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="392" y="310" width="46" height="56"/>
+              <line x1="392" y1="328" x2="438" y2="328" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="392" y1="347" x2="438" y2="347" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-strich" x="397" y="314" width="7" height="14"/>
+              <rect class="haus-strich" x="407" y="314" width="7" height="14"/>
+              <rect class="haus-strich" x="417" y="314" width="7" height="14"/>
+
+              <text class="hausbez" x="192" y="186" text-anchor="end">OG</text>
+              <text class="hausbez" x="192" y="264" text-anchor="end">EG</text>
+              <text class="hausbez" x="192" y="344" text-anchor="end">KELLER</text>
 
               <g id="hausMarken"></g>
             </svg>
@@ -777,6 +788,50 @@
     </div>
 
     <div class="blaettern" data-blaettern="uebersicht"></div>
+  </div>
+
+  <div class="view" id="v-haus">
+    <div class="unterseite" id="u-hg-grundriss">
+      <section aria-labelledby="h-hg-grundriss">
+        <div class="sekkopf"><h2 id="h-hg-grundriss">Grundriss &amp; Fläche</h2>
+          <span class="hinweis">nach WoFlV — Flächen, keine Raummaße</span></div>
+        <div class="karte hausseite" id="hs-grundriss"></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-hg-dach">
+      <section aria-labelledby="h-hg-dach">
+        <div class="sekkopf"><h2 id="h-hg-dach">Dach</h2>
+          <span class="hinweis">Eindeckung, Belege, Steuerwirkung</span></div>
+        <div class="karte hausseite" id="hs-dach"></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-hg-heizung">
+      <section aria-labelledby="h-hg-heizung">
+        <div class="sekkopf"><h2 id="h-hg-heizung">Heizung &amp; Öltank</h2>
+          <span class="hinweis">Betrieb, Wartung, Prüfpflichten</span></div>
+        <div class="karte hausseite" id="hs-heizung"></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-hg-zaehler">
+      <section aria-labelledby="h-hg-zaehler">
+        <div class="sekkopf"><h2 id="h-hg-zaehler">Zähler &amp; Ablesung</h2>
+          <span class="hinweis">Grundlage der Nebenkostenabrechnung</span></div>
+        <div class="karte hausseite" id="hs-zaehler"></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-hg-garten">
+      <section aria-labelledby="h-hg-garten">
+        <div class="sekkopf"><h2 id="h-hg-garten">Garten &amp; Zaun</h2>
+          <span class="hinweis">Pflege, Winterdienst, Verkehrssicherung</span></div>
+        <div class="karte hausseite" id="hs-garten"></div>
+      </section>
+    </div>
+
+    <div class="blaettern" data-blaettern="haus"></div>
   </div>
 
   <div class="view" id="v-geld">
@@ -1332,15 +1387,6 @@
 
   </main>
 
-  <!-- Ein Fenster für alle Haus-Themen; der Inhalt kommt aus der HAUS-Konstante. -->
-  <dialog class="themadlg" id="themaDlg" aria-labelledby="themaTitel">
-    <div class="tdkopf">
-      <span class="tdnr" id="themaNr"></span>
-      <h2 id="themaTitel"></h2>
-      <form method="dialog"><button class="tdx" aria-label="Fenster schließen">&#10005;</button></form>
-    </div>
-    <div class="tdbody" id="themaBody"></div>
-  </dialog>
 
 </div>
 
@@ -1740,11 +1786,9 @@ const m2 = (n) => n.toFixed(1).replace('.', ',') + ' m²';
 /* ===== Haus-Themen =====
    Eine Quelle für die Marke im Schaubild, die Legende daneben und das Themen-Fenster.
    x/y sind Koordinaten im viewBox 0 0 640 392. */
-const HAUS = [
+const HAUSTHEMEN = [
   {
-    nr: 1, id: 'dach', x: 285, y: 100, titel: 'Dach',
-    aria: 'Dach: Eindeckung, Dämmung und was steuerlich daran hängt',
-    kurz: 'Eindeckung, Dämmung und was steuerlich daran hängt.',
+    id: 'dach', titel: 'Dach',
     lead: 'Das Dach ist 2026 komplett neu gedeckt worden. Die Arbeit ist erledigt, offen sind die Belege — und daran hängt bares Geld.',
     fakten: [['Zustand', '2026 neu gedeckt'], ['Belege', 'fehlen'],
       ['Steuerlich', 'Erhaltungsaufwand'], ['Umlagefähig', 'nein']],
@@ -1764,9 +1808,7 @@ const HAUS = [
       ['#geld/reparaturen', 'Reparaturen']]
   },
   {
-    nr: 2, id: 'grundriss', x: 285, y: 182, titel: 'Haus &amp; Grundriss',
-    aria: 'Haus und Grundriss: Bauart, Flächen, Aufteilung und Energieausweis',
-    kurz: 'Bauart, Flächen, Aufteilung und der Energieausweis.',
+    id: 'grundriss', titel: 'Haus &amp; Grundriss',
     lead: 'Freistehendes Einfamilienhaus, Baujahr 1969. Die Wohnfläche ist nach der Wohnflächenverordnung ermittelt (Berechnung V1.0 vom 23.04.2026) — hier stehen nur die angerechneten Flächen, keine Raummaße.',
     grundriss: true,
     bloecke: [
@@ -1790,9 +1832,7 @@ const HAUS = [
       ['#mietverhaeltnis/radar', 'Erhöhungs-Radar'], ['#nebenkosten/kalkulation', 'NK-Kalkulation']]
   },
   {
-    nr: 3, id: 'heizung', x: 224, y: 338, titel: 'Heizung &amp; Öltank',
-    aria: 'Heizung und Öltank im Keller: Betrieb, Wartung und Prüfpflichten',
-    kurz: 'Ölheizung im Keller: Betrieb, Wartung, Prüfpflichten.',
+    id: 'heizung', titel: 'Heizung &amp; Öltank',
     lead: 'Ölheizung mit Tank im Keller. Das Heizöl beschafft und bezahlt der Mieter selbst; die Anlage bleibt Ihre Sache — und dafür fehlen drei Stammdaten.',
     fakten: [['Anlage', 'Ölheizung mit Tank'], ['Brennstoff', 'Mieter beschafft selbst'],
       ['Heizperiode', '01.10.–30.04.'], ['Wartung', 'jährlich bis 30.09.']],
@@ -1815,9 +1855,7 @@ const HAUS = [
       ['#nebenkosten/co2', 'CO₂-Erstattung'], ['#aufgaben/versicherung', 'Versicherungen']]
   },
   {
-    nr: 4, id: 'zaehler', x: 350, y: 332, titel: 'Zähler &amp; Ablesung',
-    aria: 'Zähler und Ablesung im Keller: Ablesung und Abrechnungsgrundlage',
-    kurz: 'Zählerkasten im Keller: Ablesung und Abrechnungsgrundlage.',
+    id: 'zaehler', titel: 'Zähler &amp; Ablesung',
     lead: 'Zählerkasten und Öltank stehen im Keller. Einmal im Jahr ablesen — daran hängt die komplette Nebenkostenabrechnung.',
     fakten: [['Ablesetermin', '31.12.'], ['Erste Abrechnung', '01.06.–31.12.2026'],
       ['Interne Deadline', '31.10.2027'], ['Ausschlussfrist', '31.12.2027']],
@@ -1835,28 +1873,7 @@ const HAUS = [
       ['#aufgaben/offen', 'Offene Punkte']]
   },
   {
-    nr: 5, id: 'miete', x: 127, y: 248, titel: 'Briefkasten: die Miete',
-    aria: 'Briefkasten: was monatlich fällig ist und was bei Verzug gilt',
-    kurz: 'Was monatlich fällig ist und was bei Verzug gilt.',
-    lead: 'Jeder begonnene Monat seit Juni 2026 gilt im Cockpit als voll bezahlt. Einzelne Zahlungen werden nicht geprüft — bleibt einmal etwas aus, melden Sie den Monat, dann rechnet das Cockpit den Rückstand.',
-    fakten: [['Soll je Monat', eur0(DATEN.soll_monat)], ['davon Kaltmiete', eur0(DATEN.kaltmiete)],
-      ['Nebenkosten-Vorschuss', eur0(DATEN.bk_vz)], ['Kaltmiete je m²', '10,13 €']],
-    bloecke: [
-      { h: 'Was gilt', p: [
-        ['', 'Fällig bis zum dritten Werktag im Voraus; Samstage zählen dabei nicht mit (§ 5 Abs. 1 Mietvertrag).'],
-        ['', 'Verzug kostet fünf Prozentpunkte über dem Basiszins, dazu 5 € Mahngebühr je schriftlicher Mahnung (§ 5 Abs. 4 Mietvertrag).'],
-        ['krit', 'Ab einem Rückstand von zwei Monatsmieten ist die fristlose Kündigung möglich (§ 543 II Nr. 3 BGB).'],
-        ['', 'Der Nebenkosten-Vorschuss ist <b>Durchlauf</b>, keine Einnahme — er wird einmal im Jahr gegen die echten Kosten abgerechnet.'],
-        ['gut', 'Die Kaution von 5.000 € ist vollständig eingegangen und getrennt angelegt. Die gesetzliche Grenze wären drei Kaltmieten, also 6.300 €.'],
-        ['', 'Beide Mieter haften als Gesamtschuldner (§ 22 Mietvertrag) — Sie können die volle Miete von jedem einzeln verlangen.'] ] }
-    ],
-    links: [['#geld/eingang', 'Mieteingang'], ['#geld/kaution', 'Kaution'],
-      ['#geld/bilanz', 'Bilanz &amp; Cashflow']]
-  },
-  {
-    nr: 6, id: 'garten', x: 563, y: 168, titel: 'Garten &amp; Zaun',
-    aria: 'Garten und Zaun: Pflege, Winterdienst und Haftung',
-    kurz: 'Wer pflegt, wer räumt — und wer haftet.',
+    id: 'garten', titel: 'Garten &amp; Zaun',
     lead: 'Gartenpflege, Reinigung und Winterdienst der Alleinnutzflächen liegen beim Mieter. Die Verkehrssicherungspflicht bleibt trotzdem bei Ihnen — deshalb: hinsehen und notieren.',
     fakten: [['Gartenpflege', 'Mieter'], ['Winterdienst', 'Mieter'],
       ['Baumkontrolle', 'Vermieter, 1–2× im Jahr'], ['Grundstück', 'ca. 595 m²']],
@@ -1874,8 +1891,36 @@ const HAUS = [
   }
 ];
 
-/* ===== Themen-Fenster: ein Punkt am Haus öffnet alles zu diesem Thema ===== */
-const themaDlg = document.getElementById('themaDlg');
+/* ===== Das Schaubild IST die Navigation =====
+   Jeder Punkt führt in einen Reiter — kein Fenster, kein Zwischenschritt.
+   Jeder Bereich der Tafel ist genau einmal im Bild vertreten.
+   x/y sind Koordinaten im viewBox 0 0 760 420. */
+const HAUSPUNKTE = [
+  { nr: 1, x: 243, y: 118, ziel: '#haus/dach', titel: 'Dach',
+    kurz: 'Eindeckung, Dämmung und was steuerlich daran hängt.' },
+  { nr: 2, x: 393, y: 88, ziel: '#nebenkosten/co2', titel: 'Schornstein',
+    kurz: 'Nebenkosten und der CO₂-Anteil, den Sie erstatten.' },
+  { nr: 3, x: 325, y: 96, ziel: '#fristen/zeitband', titel: 'Uhr im Giebel',
+    kurz: 'Alle Fristen und wiederkehrenden Pflichten.' },
+  { nr: 4, x: 325, y: 182, ziel: '#haus/grundriss', titel: 'Fassade &amp; Grundriss',
+    kurz: 'Bauart, Flächen, Aufteilung und der Energieausweis.' },
+  { nr: 5, x: 322, y: 266, ziel: '#mietverhaeltnis/vertrag', titel: 'Haustür',
+    kurz: 'Das Mietverhältnis: Vertrag, Erhöhung, Strategie.' },
+  { nr: 6, x: 150, y: 248, ziel: '#geld/eingang', titel: 'Briefkasten',
+    kurz: 'Geld und Bilanz: Mieteingang, Kaution, Rücklage.' },
+  { nr: 7, x: 462, y: 215, ziel: '#aufgaben/offen', titel: 'Leiter an der Wand',
+    kurz: 'Offene Punkte, Versicherungen, Rechtsstand.' },
+  { nr: 8, x: 234, y: 339, ziel: '#haus/heizung', titel: 'Heizung &amp; Öltank',
+    kurz: 'Im Keller: Betrieb, Wartung, Prüfpflichten.' },
+  { nr: 9, x: 362, y: 332, ziel: '#haus/zaehler', titel: 'Zähler &amp; Ablesung',
+    kurz: 'Im Keller: Ablesung und Abrechnungsgrundlage.' },
+  { nr: 10, x: 415, y: 338, ziel: '#steuern/landkarte', titel: 'Aktenregal im Keller',
+    kurz: 'Steuern: Anlage V, AfA, Erhaltungsaufwand.' },
+  { nr: 11, x: 614, y: 272, ziel: '#quellen/dokumente', titel: 'Gartentor',
+    kurz: 'Quellen und Schlüssel: worauf die Tafel steht.' },
+  { nr: 12, x: 698, y: 178, ziel: '#haus/garten', titel: 'Garten &amp; Zaun',
+    kurz: 'Wer pflegt, wer räumt — und wer haftet.' }
+];
 
 function etagenHtml() {
   const zeile = (e) =>
@@ -1898,66 +1943,38 @@ function etagenHtml() {
       ' — <b>' + m2(g[1]) + '</b></span></li>').join('') + '</ul></section>';
 }
 
-function oeffneThema(id) {
-  const t = HAUS.find((x) => x.id === id);
-  if (!t) return;
-  document.getElementById('themaNr').textContent = t.nr;
-  document.getElementById('themaTitel').innerHTML = t.titel;
-  const body = document.getElementById('themaBody');
-  body.innerHTML =
-    '<p class="tdlead">' + t.lead + '</p>' +
-    (t.fakten ? '<div class="tdfakten">' + t.fakten.map((f) =>
-      '<div class="tdfakt"><div class="tdk">' + f[0] + '</div><div class="tdv">' +
-      f[1] + '</div></div>').join('') + '</div>' : '') +
-    (t.grundriss ? etagenHtml() : '') +
-    t.bloecke.map((b) => '<section class="tdabschnitt"><h3>' + b.h + '</h3><ul class="tdliste">' +
-      b.p.map((z) => '<li><span class="tdpunkt ' + z[0] + '"></span><span>' + z[1] +
-        '</span></li>').join('') + '</ul></section>').join('') +
-    '<div class="tdlinks">' + t.links.map((l) =>
-      '<a href="' + l[0] + '">' + l[1] + '</a>').join('') + '</div>';
-  themaDlg.showModal();
-  body.scrollTop = 0;
+/* Die fünf Haus-Themen sind jetzt Unterseiten, keine Fenster mehr. */
+function baueHausSeiten() {
+  HAUSTHEMEN.forEach((t) => {
+    const ziel = document.getElementById('hs-' + t.id);
+    if (!ziel) return;
+    ziel.innerHTML =
+      '<p class="tdlead">' + t.lead + '</p>' +
+      (t.fakten ? '<div class="tdfakten">' + t.fakten.map((f) =>
+        '<div class="tdfakt"><div class="tdk">' + f[0] + '</div><div class="tdv">' +
+        f[1] + '</div></div>').join('') + '</div>' : '') +
+      (t.grundriss ? etagenHtml() : '') +
+      t.bloecke.map((b) => '<section class="tdabschnitt"><h3>' + b.h + '</h3><ul class="tdliste">' +
+        b.p.map((z) => '<li><span class="tdpunkt ' + z[0] + '"></span><span>' + z[1] +
+          '</span></li>').join('') + '</ul></section>').join('') +
+      '<div class="tdlinks">' + t.links.map((l) =>
+        '<a href="' + l[0] + '">' + l[1] + '</a>').join('') + '</div>';
+  });
 }
-
-(function () {
-  const menue = document.getElementById('bereichsmenue');
-  menue.addEventListener('toggle', () => {
-    if (!menue.open) return;
-    const a = document.querySelector('#bmListe [aria-current="page"]');
-    if (a) a.scrollIntoView({ block: 'center' });
-  });
-  document.getElementById('bmListe').addEventListener('click', () => { menue.open = false; });
-  document.addEventListener('click', (e) => {
-    if (menue.open && !e.target.closest('#bereichsmenue')) menue.open = false;
-  });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') menue.open = false; });
-})();
-
-document.addEventListener('click', (e) => {
-  const marke = e.target.closest && e.target.closest('[data-thema]');
-  if (marke) { e.preventDefault(); oeffneThema(marke.dataset.thema); return; }
-  // Ein Link im Fenster führt in einen Bereich — dort ist das Fenster nur im Weg.
-  if (themaDlg.open && e.target.closest && e.target.closest('.tdlinks a')) themaDlg.close();
-});
-// Die Marken im Schaubild sind <g role="button"> — Tastaturbedienung gehört dazu.
-document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Enter' && e.key !== ' ') return;
-  const marke = e.target.closest && e.target.closest('.hm[data-thema]');
-  if (marke) { e.preventDefault(); oeffneThema(marke.dataset.thema); }
-});
 
 /* ===== Übersicht (Landing): Haus-Schaubild, Kalenderblätter, Geld, Bereichs-Karten ===== */
 function baueUebersicht() {
-  document.getElementById('hausMarken').innerHTML = HAUS.map((t) =>
-    '<g class="hm" data-thema="' + t.id + '" role="button" tabindex="0" aria-label="' + t.aria + '">' +
+  const klartext = (t) => (t.titel + ': ' + t.kurz).replace(/&amp;/g, 'und');
+  document.getElementById('hausMarken').innerHTML = HAUSPUNKTE.map((t) =>
+    '<a class="hm" href="' + t.ziel + '" aria-label="' + klartext(t) + '">' +
     '<circle cx="' + t.x + '" cy="' + t.y + '" r="26" fill="transparent"/>' +
     '<circle class="hv" cx="' + t.x + '" cy="' + t.y + '" r="17"/>' +
-    '<text x="' + t.x + '" y="' + (t.y + 5) + '">' + t.nr + '</text></g>').join('');
+    '<text x="' + t.x + '" y="' + (t.y + 5) + '">' + t.nr + '</text></a>').join('');
 
-  document.getElementById('hausLegende').innerHTML = HAUS.map((t) =>
-    '<li><button type="button" data-thema="' + t.id + '">' +
+  document.getElementById('hausLegende').innerHTML = HAUSPUNKTE.map((t) =>
+    '<li><a href="' + t.ziel + '">' +
     '<span class="lnr">' + t.nr + '</span>' +
-    '<span><b>' + t.titel + '</b><span class="ltxt">' + t.kurz + '</span></span></button></li>').join('');
+    '<span><b>' + t.titel + '</b><span class="ltxt">' + t.kurz + '</span></span></a></li>').join('');
 
   const MONK = ['JAN', 'FEB', 'MRZ', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEZ'];
   const nf3 = FRISTEN.map((f) => ({ ...f, tage: tageBis(f.d) })).filter((f) => f.tage >= 0).slice(0, 3);
@@ -2024,6 +2041,9 @@ function baueAmpel() {
 const NAVDEF = [
   { id: 'uebersicht', name: 'Übersicht', praefix: 'u-ueb-', subs: [
     ['start', 'Start'], ['lage', 'Lage &amp; Bilanz']] },
+  { id: 'haus', name: 'Haus &amp; Grundstück', praefix: 'u-hg-', subs: [
+    ['grundriss', 'Grundriss &amp; Fläche'], ['dach', 'Dach'], ['heizung', 'Heizung &amp; Öltank'],
+    ['zaehler', 'Zähler &amp; Ablesung'], ['garten', 'Garten &amp; Zaun']] },
   { id: 'geld', name: 'Geld &amp; Bilanz', praefix: 'u-geld-', subs: [
     ['eingang', 'Mieteingang'], ['kaution', 'Kaution'], ['bilanz', 'Bilanz &amp; Cashflow'],
     ['ruecklage', 'Rücklage'], ['reparaturen', 'Reparaturen']] },
@@ -3056,7 +3076,7 @@ document.documentElement.lang = 'de';   // trägt auch ohne <html>-Tag (Artefakt
 baueNavigation();
 baueLage(); baueUebersicht(); baueGesamt(); baueBilanz(); baueZeitband(); baueZahlungen(); baueKaution();
 baueVertrag(); baueErhoehung(); baueNK(); baueCO2(); bauePunkte(); baueWirtschaft();
-baueVersicherungen(); baueSteuern(); baueRechtsstand(); baueQuellen();
+baueVersicherungen(); baueSteuern(); baueRechtsstand(); baueQuellen(); baueHausSeiten();
 tabellenBeschriften();
 route(); applyPII();
 </script>
