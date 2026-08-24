@@ -57,9 +57,10 @@
     border-radius:var(--radius-s);z-index:10}
   .skip:focus{left:var(--sp-s);top:var(--sp-s)}
 
-  header.top{padding-bottom:var(--sp-m);border-bottom:1px solid var(--c-line)}
-  /* Der Kopf gehört zur Landingpage — in den Fachbereichen führt die Bereichszeile. */
-  body:not(.startseite) header.top{display:none}
+  /* Der Kopf ist Teil der Landingpage, nicht der Seitenrahmen — er steht im
+     Panel u-ueb-start und erscheint deshalb nur dort. */
+  header.top{padding-bottom:var(--sp-m);margin-bottom:var(--sp-m);
+    border-bottom:1px solid var(--c-line)}
   header.top h1{font-size:clamp(26px,4.2vw,40px);line-height:1.08}
   .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:650;
     color:var(--c-accent-ink)}
@@ -72,7 +73,7 @@
      doppelt und der aktive Zustand wäre an zwei Orten zu pflegen. */
   /* Schmale Schirme: EIN Aufklappmenü mit der vollständigen Gliederung. Eine waagerecht
      scrollende Pill-Leiste hatte 4 von 7 Bereichen unsichtbar aus dem Bild geschoben. */
-  .bereichsmenue{position:sticky;top:0;z-index:5;margin-top:var(--sp-s);background:var(--c-bg);
+  .bereichsmenue{position:sticky;top:0;z-index:5;background:var(--c-bg);
     border-bottom:1px solid var(--c-line)}
   .bereichsmenue>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;
     cursor:pointer;list-style:none;font-weight:650;font-size:14px;color:var(--c-ink);
@@ -119,9 +120,12 @@
 
   @media (min-width:1100px){
     .wrap{display:grid;grid-template-columns:236px minmax(0,1fr);column-gap:var(--sp-xl)}
-    .wrap>header.top,.wrap>.pii-strip,.wrap>.pii-panel{grid-column:1/-1}
     .bereichsmenue{display:none}
-    .leiste{display:block;position:sticky;top:var(--sp-m);align-self:start;margin-top:var(--sp-l)}
+    /* Die Menüspalte beginnt ganz oben; PII-Streifen und Inhalt teilen sich Spalte 2. */
+    .leiste{display:block;position:sticky;top:var(--sp-m);align-self:start;
+      grid-column:1;grid-row:1/span 3}
+    .wrap>.pii-strip,.wrap>.pii-panel,.wrap>main{grid-column:2}
+    .wrap>.pii-strip{margin-top:0}
     main#inhalt{margin-top:var(--sp-s)}
   }
   /* Breite Schirme: die Seitenleiste kostet 236 px + Spalte — die Inhaltsspalte darf
@@ -616,12 +620,13 @@
 <a class="skip" href="#inhalt">Zum Inhalt springen</a>
 
 <div class="wrap">
-  <header class="top">
-    <div class="eyebrow">Vermietung · Betriebstafel</div>
-    <h1>Das Haus in der Bonner Straße</h1>
-    <div class="sub">Freistehendes Einfamilienhaus, Baujahr 1969, 207,4 m² Wohnfläche — <span data-pii="objekt">XX</span></div>
-  </header>
 
+  <details class="bereichsmenue" id="bereichsmenue">
+    <summary><span class="bmwo">Bereich</span><span class="bmaktuell" id="bmAktuell">Übersicht</span></summary>
+    <nav class="bmliste" id="bmListe" aria-label="Alle Bereiche und Unterseiten"></nav>
+  </details>
+
+  <nav class="leiste" id="leiste" aria-label="Bereiche"></nav>
   <div class="pii-strip">
     <span class="pii-item">Objekt: <b data-pii="objekt">XX</b></span>
     <span class="pii-item">Vermieterinnen: <b data-pii="vermieter">XX</b></span>
@@ -637,12 +642,6 @@
     <div class="pii-err" id="piiErr" role="alert"></div>
   </div>
 
-  <details class="bereichsmenue" id="bereichsmenue">
-    <summary><span class="bmwo">Bereich</span><span class="bmaktuell" id="bmAktuell">Übersicht</span></summary>
-    <nav class="bmliste" id="bmListe" aria-label="Alle Bereiche und Unterseiten"></nav>
-  </details>
-
-  <nav class="leiste" id="leiste" aria-label="Bereiche"></nav>
 
   <main id="inhalt" tabindex="-1">
 
@@ -650,6 +649,12 @@
     <nav class="unternav" data-unternav="uebersicht" aria-label="Unterseiten der Übersicht"></nav>
 
     <div class="unterseite" id="u-ueb-start">
+      <header class="top">
+        <div class="eyebrow">Vermietung · Betriebstafel</div>
+        <h1>Das Haus in der Bonner Straße</h1>
+        <div class="sub">Freistehendes Einfamilienhaus, Baujahr 1969, 207,4 m² Wohnfläche — <span data-pii="objekt">XX</span></div>
+      </header>
+
       <section aria-labelledby="h-haus">
         <div class="sekkopf"><h2 id="h-haus">Das Haus auf einen Blick</h2></div>
         <div class="karte hauskarte">
@@ -2084,7 +2089,6 @@ function zeigeSeite(bId, sId) {
   document.getElementById('bmAktuell').textContent =
     n.name.replace(/&amp;/g, '&') + (pos >= 0 ? ' · ' + n.subs[pos][1].replace(/&amp;/g, '&') : '');
   document.getElementById('bereichsmenue').open = false;
-  document.body.classList.toggle('startseite', n.id === 'uebersicht');
 }
 
 /* Blätterzeile: am Ende eines Bereichs führt sie in den nächsten — ein Durchlauf ohne Sackgasse */
