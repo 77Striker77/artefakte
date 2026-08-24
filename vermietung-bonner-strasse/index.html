@@ -130,8 +130,8 @@
     .bereichsmenue{display:none}
     /* Die Menüspalte beginnt ganz oben; PII-Streifen und Inhalt teilen sich Spalte 2. */
     .leiste{display:block;position:sticky;top:var(--sp-m);align-self:start;
-      grid-column:1;grid-row:1/span 4}
-    .wrap>.navblock,.wrap>.pii-strip,.wrap>.pii-panel,.wrap>main{grid-column:2}
+      grid-column:1;grid-row:1/span 2}
+    .wrap>.navblock,.wrap>main{grid-column:2}
     main#inhalt{margin-top:var(--sp-s)}
   }
   /* Breite Schirme: die Seitenleiste kostet 236 px + Spalte — die Inhaltsspalte darf
@@ -197,14 +197,11 @@
      die zugleich in den passenden Bereich führt. */
 
   /* PII */
-  .pii-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:var(--sp-s);
+  .pii-status{margin-left:auto;font-weight:600;color:var(--c-accent-ink)}
+  .pii-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;
     padding:10px 14px;background:var(--c-surface);border:1px solid var(--c-line);
     border-radius:var(--radius-s);font-size:12.5px;color:var(--c-ink-soft)}
   .pii-item b{color:var(--c-ink);font-weight:600}
-  .pii-lock{margin-left:auto;cursor:pointer;font-weight:600;color:var(--c-accent-ink);
-    user-select:none;white-space:nowrap;background:none;border:0;font-family:inherit;font-size:inherit;
-    min-height:44px;padding:4px 8px}
-  .pii-lock:hover{text-decoration:underline}
   .pii-panel{margin-top:10px;padding:16px 18px;background:var(--c-surface);
     border:1px solid var(--c-line-strong);border-radius:var(--radius)}
   .pii-panel h3{font-size:15px;margin-bottom:4px}
@@ -636,7 +633,7 @@
     /* Druck/PDF zeigt IMMER alles — Bereiche UND Unterseiten aufklappen,
        sonst verliert die Papierfassung genau das, was die Navigation nur zusammenfaltet. */
     .view,.unterseite{display:block!important}
-    .skip,.pii-lock,.pii-panel,.regler input,.themadlg{display:none!important}
+    .skip,.pii-panel,.regler input,.themadlg{display:none!important}
     body{background:#fff;color:#000}
     .karte,.kachel{break-inside:avoid;box-shadow:none}
     section{margin-top:18px}
@@ -663,20 +660,6 @@
     </details>
     <div class="bereichskopf"><span class="btitel" id="bkTitel"></span><span class="bzaehler" id="bkZaehler"></span></div>
     <nav class="unternav" id="unternav" aria-label="Unterseiten des Bereichs"></nav>
-  </div>
-  <div class="pii-strip">
-    <span class="pii-item">Objekt: <b data-pii="objekt">XX</b></span>
-    <span class="pii-item">Vermieterinnen: <b data-pii="vermieter">XX</b></span>
-    <span class="pii-item">Mieter: <b data-pii="mieter">XX</b></span>
-    <button class="pii-lock" id="piiToggle">🔓 Schlüssel laden</button>
-  </div>
-  <div class="pii-panel" id="piiPanel" hidden>
-    <h3>Persönliche Angaben lokal einblenden</h3>
-    <p>Lade die Schlüssel-Datei (JSON) oder füge sie ein — sie bleibt in diesem Browser-Tab, nichts wird hochgeladen oder gespeichert. Nach dem Neuladen steht wieder überall „XX“.</p>
-    <div class="pii-drop" id="piiDrop">Schlüssel-Datei hierher ziehen oder <label class="pii-btn">Datei wählen<input type="file" id="piiFile" accept=".json,application/json" hidden></label></div>
-    <textarea id="piiText" aria-label="Schlüssel-JSON einfügen" placeholder='{ "objekt": "…", "vermieter": "…", "mieter": "…" }'></textarea>
-    <div class="pii-actions"><button class="pii-btn primary" id="piiApply">Einblenden</button><button class="pii-btn" id="piiClear">Wieder verbergen (XX)</button></div>
-    <div class="pii-err" id="piiErr" role="alert"></div>
   </div>
 
 
@@ -791,35 +774,6 @@
           <span class="hinweis">vor Steuern · <a href="#geld/bilanz">Jahr für Jahr aufschlüsseln</a></span></div>
         <div class="karte innen gesamtband" id="gesamtband"></div>
         <div class="karte innen" style="margin-top:var(--sp-s)"><div class="fluss" id="bilanzFluss"></div></div>
-      </section>
-    </div>
-
-    <div class="unterseite" id="u-ueb-quellen">
-      <section aria-labelledby="h-qdok">
-        <div class="sekkopf"><h2 id="h-qdok">Worauf die Zahlen beruhen</h2></div>
-        <div class="karte"><div class="tabellenrahmen"><table>
-          <thead><tr><th>Dokument</th><th>Stand</th><th>Was daraus kommt</th></tr></thead>
-          <tbody id="qtDokumente"></tbody>
-        </table></div></div>
-      </section>
-
-      <section aria-labelledby="h-qnorm">
-        <div class="sekkopf"><h2 id="h-qnorm">Verifizierte Normen</h2>
-          <span class="hinweis">Kernnormen gegen gesetze-im-internet.de geprüft</span></div>
-        <div class="karte"><div class="tabellenrahmen"><table>
-          <tbody id="qtNormen"></tbody>
-        </table></div></div>
-      </section>
-
-      <section aria-labelledby="h-qansatz">
-        <div class="sekkopf"><h2 id="h-qansatz">Was Beleg ist und was Ansatz</h2></div>
-        <div class="karte"><ul class="tdliste" id="qtAnsatz"></ul></div>
-      </section>
-
-      <section aria-labelledby="h-qgrenzen">
-        <div class="sekkopf"><h2 id="h-qgrenzen">Grenzen dieser Tafel</h2>
-          <span class="hinweis"><a href="#aufgaben/recht">Rechtsstand ansehen</a></span></div>
-        <div class="karte"><ul class="tdliste" id="qtGrenzen"></ul></div>
       </section>
     </div>
 
@@ -1318,6 +1272,63 @@
     </div>
 
     <div class="blaettern" data-blaettern="steuern"></div>
+  </div>
+
+  <div class="view" id="v-quellen">
+    <div class="unterseite" id="u-q-dokumente">
+      <section aria-labelledby="h-qdok">
+        <div class="sekkopf"><h2 id="h-qdok">Worauf die Zahlen beruhen</h2></div>
+        <div class="karte"><div class="tabellenrahmen"><table>
+          <thead><tr><th>Dokument</th><th>Stand</th><th>Was daraus kommt</th></tr></thead>
+          <tbody id="qtDokumente"></tbody>
+        </table></div></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-q-normen">
+      <section aria-labelledby="h-qnorm">
+        <div class="sekkopf"><h2 id="h-qnorm">Verifizierte Normen</h2>
+          <span class="hinweis">Kernnormen gegen gesetze-im-internet.de geprüft</span></div>
+        <div class="karte"><div class="tabellenrahmen"><table>
+          <tbody id="qtNormen"></tbody>
+        </table></div></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-q-grenzen">
+      <section aria-labelledby="h-qansatz">
+        <div class="sekkopf"><h2 id="h-qansatz">Was Beleg ist und was Ansatz</h2></div>
+        <div class="karte"><ul class="tdliste" id="qtAnsatz"></ul></div>
+      </section>
+
+      <section aria-labelledby="h-qgrenzen">
+        <div class="sekkopf"><h2 id="h-qgrenzen">Grenzen dieser Tafel</h2>
+          <span class="hinweis"><a href="#aufgaben/recht">Rechtsstand ansehen</a></span></div>
+        <div class="karte"><ul class="tdliste" id="qtGrenzen"></ul></div>
+      </section>
+    </div>
+
+    <div class="unterseite" id="u-q-schluessel">
+      <section aria-labelledby="h-qschl">
+        <div class="sekkopf"><h2 id="h-qschl">Schlüssel laden</h2>
+          <span class="hinweis">bleibt in diesem Browser-Tab</span></div>
+      <div class="pii-strip">
+        <span class="pii-item">Objekt: <b data-pii="objekt">XX</b></span>
+        <span class="pii-item">Vermieterinnen: <b data-pii="vermieter">XX</b></span>
+        <span class="pii-item">Mieter: <b data-pii="mieter">XX</b></span>
+        <span class="pii-status" id="piiStatus">Noch kein Schlüssel geladen</span>
+      </div>
+      <div class="pii-panel" id="piiPanel">
+          <p>Lade die Schlüssel-Datei (JSON) oder füge sie ein — sie bleibt in diesem Browser-Tab, nichts wird hochgeladen oder gespeichert. Nach dem Neuladen steht wieder überall „XX“.</p>
+        <div class="pii-drop" id="piiDrop">Schlüssel-Datei hierher ziehen oder <label class="pii-btn">Datei wählen<input type="file" id="piiFile" accept=".json,application/json" hidden></label></div>
+        <textarea id="piiText" aria-label="Schlüssel-JSON einfügen" placeholder='{ "objekt": "…", "vermieter": "…", "mieter": "…" }'></textarea>
+        <div class="pii-actions"><button class="pii-btn primary" id="piiApply">Einblenden</button><button class="pii-btn" id="piiClear">Wieder verbergen (XX)</button></div>
+        <div class="pii-err" id="piiErr" role="alert"></div>
+      </div>
+      </section>
+    </div>
+
+    <div class="blaettern" data-blaettern="quellen"></div>
   </div>
 
   </main>
@@ -2013,7 +2024,7 @@ function baueAmpel() {
    im Druck sind alle Panels aufgeklappt (siehe @media print). */
 const NAVDEF = [
   { id: 'uebersicht', name: 'Übersicht', praefix: 'u-ueb-', subs: [
-    ['start', 'Start'], ['lage', 'Lage &amp; Bilanz'], ['quellen', 'Quellen']] },
+    ['start', 'Start'], ['lage', 'Lage &amp; Bilanz']] },
   { id: 'geld', name: 'Geld &amp; Bilanz', praefix: 'u-geld-', subs: [
     ['eingang', 'Mieteingang'], ['kaution', 'Kaution'], ['bilanz', 'Bilanz &amp; Cashflow'],
     ['ruecklage', 'Rücklage'], ['reparaturen', 'Reparaturen']] },
@@ -2030,7 +2041,10 @@ const NAVDEF = [
     ['offen', 'Offene Punkte'], ['versicherung', 'Versicherungen'], ['recht', 'Rechtsstand']] },
   { id: 'steuern', name: 'Steuern', praefix: 'u-st-', subs: [
     ['landkarte', 'Landkarte'], ['anlagev', 'Anlage V'], ['dach', 'Dach 2026'],
-    ['wissen', 'Fristen &amp; Good to know']] }
+    ['wissen', 'Fristen &amp; Good to know']] },
+  { id: 'quellen', name: 'Quellen &amp; Schlüssel', praefix: 'u-q-', subs: [
+    ['dokumente', 'Dokumente'], ['normen', 'Normen'], ['grenzen', 'Beleg &amp; Grenzen'],
+    ['schluessel', 'Schlüssel']] }
 ];
 /* Alt-Hashes aus V1/V2-Vorstand bleiben gültig — gesetzte Lesezeichen und die
    Familien-Kopie auf dem NAS sollen nicht ins Leere laufen. */
@@ -3001,19 +3015,18 @@ let PII = {};
 function applyPII() { document.querySelectorAll('[data-pii]').forEach((n) => {
   const k = n.getAttribute('data-pii'); n.textContent = (PII && PII[k]) ? PII[k] : 'XX'; }); }
 (function () {
-  const panel = document.getElementById('piiPanel'), toggle = document.getElementById('piiToggle'),
-    err = document.getElementById('piiErr');
-  toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; });
+  const status = document.getElementById('piiStatus'), err = document.getElementById('piiErr');
   function load(text) {
     let o; try { o = JSON.parse(text); } catch (e) {
       err.textContent = 'Kein gültiges JSON. Erwartet wird ein Objekt wie { „objekt“: „…“ } — mit geraden Anführungszeichen im JSON selbst.'; return; }
     if (!o || typeof o !== 'object' || Array.isArray(o)) {
       err.textContent = 'Die Schlüssel-Datei muss ein JSON-Objekt sein (geschweifte Klammern).'; return; }
-    PII = o; applyPII(); err.textContent = ''; panel.hidden = true; toggle.textContent = '🔒 Angaben eingeblendet';
+    PII = o; applyPII(); err.textContent = ''; status.textContent = '🔒 Angaben sind eingeblendet';
   }
   document.getElementById('piiApply').addEventListener('click', () => load(document.getElementById('piiText').value));
   document.getElementById('piiClear').addEventListener('click', () => { PII = {}; applyPII();
-    document.getElementById('piiText').value = ''; err.textContent = ''; toggle.textContent = '🔓 Schlüssel laden'; });
+    document.getElementById('piiText').value = ''; err.textContent = '';
+    status.textContent = 'Noch kein Schlüssel geladen'; });
   document.getElementById('piiFile').addEventListener('change', (e) => { const f = e.target.files[0]; if (!f) return;
     const r = new FileReader(); r.onload = () => load(r.result); r.readAsText(f); });
   const drop = document.getElementById('piiDrop');
