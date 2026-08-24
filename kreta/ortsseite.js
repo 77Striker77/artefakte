@@ -132,6 +132,16 @@
             ".XXXXX...",
             ".........",
             "XXXXXXXXX"],
+    /* Einkaufen: Tragetasche mit Henkeln. */
+    laden: ["..X...X..",
+            ".XX...XX.",
+            "XXXXXXXXX",
+            "XXXXXXXXX",
+            "XX.XXX.XX",
+            "XXXXXXXXX",
+            "XXXXXXXXX",
+            "XXXXXXXXX",
+            ".XXXXXXX."],
     /* Altstadt: Haeuserzeile. */
     altstadt: [".........",
             "..X...X..",
@@ -285,6 +295,7 @@
   };
 
   const titelVon = (id) => (ARTEN.find((a) => a.id === id) || {}).titel || id;
+  const istVersorgung = (art) => art === "essen" || art === "kaffee" || art === "laden";
 
   ARTEN.forEach((a) => { gruppen[a.id] = L.layerGroup(); });
   PUNKTE.forEach((p, i) => {
@@ -296,11 +307,11 @@
       .bindPopup('<span class="pop-art">' + esc(titelVon(p.art)) + "</span>"
         + '<span class="pop-name">' + esc(p.name) + "</span>"
         + (p.beschreibung ? '<span class="pop-zeile">' + esc(p.beschreibung) + "</span>" : "")
-        + ((p.art === "essen" || p.art === "kaffee") && p.bew != null
+        + (istVersorgung(p.art) && p.bew != null
             ? '<span class="pop-zeile">Google ' + p.bew.toFixed(1) + " / 5"
               + (p.anz ? " (" + p.anz.toLocaleString("de-DE") + " Stimmen)" : "")
               + (p.preis ? " · " + esc(p.preis) : "") + "</span>" : "")
-        + ((p.art === "essen" || p.art === "kaffee") && p.adresse
+        + (istVersorgung(p.art) && p.adresse
             ? '<span class="pop-zeile">' + esc(p.adresse) + "</span>" : "")
         + (p.zeiten ? '<span class="pop-zeile">Geöffnet: ' + esc(p.zeiten) + "</span>" : "")
         + wegeLinks(p), { maxWidth: 300 })
@@ -452,7 +463,7 @@
     + '<span><span class="zname">' + esc(p.name) + "</span>"
     + (function () {
         // Keine Zweitzeile, die nur den Namen wiederholt ("Altstadt / Altstadt").
-        if (p.art === "essen" || p.art === "kaffee") {
+        if (istVersorgung(p.art)) {
           return '<span class="zmeta">'
             + esc([p.typ, p.bew != null ? p.bew.toFixed(1) + "★"
                     + (p.anz ? " (" + p.anz.toLocaleString("de-DE") + ")" : "") : null,
@@ -536,20 +547,23 @@
       + esc(SEITE.name) + " liegen noch keine Sehenswürdigkeiten aus OpenStreetMap vor. "
       + "Die Seite zeigt bewusst eine leere Liste statt einer gefüllten, die niemand "
       + "geprüft hat.</p>";
-  } else if (PUNKTE.some((p) => p.art === "essen" || p.art === "kaffee")) {
+  } else if (PUNKTE.some((p) => istVersorgung(p.art))) {
     /* Sobald Lokale da sind, ist die ehrliche Auskunft eine andere: nicht
        "nicht erfasst", sondern "gefiltert". Wer das nicht sagt, laesst eine
        Auswahl wie eine Vollstaendigkeit aussehen - und ein Lokal, das fehlt,
        wirkt dann wie eines, das es nicht gibt. */
-    const n = PUNKTE.filter((p) => p.art === "essen" || p.art === "kaffee").length;
+    const n = PUNKTE.filter((p) => istVersorgung(p.art)).length;
     kasten.className = "";
     kasten.innerHTML = "<details class='hinweisklapp'><summary>Wie diese "
       + n + " Lokale ausgewählt wurden<span class='kpfeil' aria-hidden='true'></span>"
       + "</summary><div class='inhalt'>"
-      + "<p><strong>Eine Auswahl, keine Liste aller.</strong> Aufgenommen ist, was bei "
-      + "Google mindestens 4,7 Sterne bei mindestens 300 Stimmen hat — beides zusammen: "
-      + "eine 5,0 aus zwölf Stimmen sagt nichts. Was fehlt, ist deshalb nicht schlecht, "
-      + "sondern liegt unter der Schwelle.</p>"
+      + "<p><strong>Eine Auswahl, keine Liste aller.</strong> Bei Lokalen aufgenommen ist, "
+      + "was bei Google mindestens 4,7 Sterne bei mindestens 300 Stimmen hat — beides "
+      + "zusammen: eine 5,0 aus zwölf Stimmen sagt nichts. Bei Geschäften liegt die "
+      + "Schwelle bei 4,6 und 60 Stimmen, weil ein Laden weit weniger Stimmen sammelt "
+      + "als eine Taverne. Was fehlt, ist deshalb nicht schlecht, sondern liegt darunter.</p>"
+      + "<p>Nicht aufgenommen sind Apotheken, Banken, Supermärkte und Werkstätten — sie "
+      + "beantworten keine Frage, die man an eine Stadtkarte stellt.</p>"
       + "<p>Gehobene Preisstufen und reine Fischlokale sind ausgenommen. "
       + "<em>Google unterscheidet dabei nicht zwischen einem Fischrestaurant und einer "
       + "Taverne, die auch Fisch führt — der Filter kann eine Taverne zu Unrecht "

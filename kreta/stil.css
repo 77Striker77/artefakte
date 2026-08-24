@@ -93,9 +93,20 @@
   --p-busbahnhof:#16A34A;
   /* Essen & Trinken. Hue 100 - Abstand zum naechsten Nachbarn: 42 Grad zum
      Busbahnhof (142) und 55 zur Hotelmarke (45). */
-  --p-essen:#4E9A2F;
-  /* Kaffee & Backwaren. Hue 70 - 24 Grad zur Hotelmarke (46), 33 zu Essen (103). */
-  --p-kaffee:#7C8F1F;
+  /* Essen, Kaffee und Einkaufen teilen sich EINE Farbe. Der Grund ist gemessen:
+     die Stadtseite fuehrt elf Arten, und der Farbkreis ist damit voll - der
+     engste Abstand liegt schon bei 19 Grad. Drei weitere Toene haetten die
+     Unterscheidung nicht verbessert, sondern drei Gruentoene nebeneinander
+     erzeugt (Bus 142, Essen 103, Kaffee 70), die bei 22 px Markengroesse
+     ohnehin als eine Familie lesen.
+     Die Unterscheidung traegt hier das SYMBOL - Besteck, Tasse, Tasche - und
+     das ist ohnehin die schnellere Wahrnehmung; die Farbe sagt jetzt die
+     Gruppe: "hier bekommst du etwas". Hue 90, 44 Grad zur Hotelmarke (46)
+     und 52 zum Busbahnhof (142). */
+  --p-versorgung:#549315;
+  --p-essen:var(--p-versorgung);
+  --p-kaffee:var(--p-versorgung);
+  --p-laden:var(--p-versorgung);
   --p-altstadt:var(--koralle);
   --p-festung:#C026A8;
   --p-museum:#9333EA;

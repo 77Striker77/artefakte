@@ -28,8 +28,7 @@
 /* Eine Farbe je Art, wie auf der Quartierseite. Die Form traegt der Umriss,
    nicht die Fuellfarbe - dieselbe Mechanik, dieselbe drop-shadow-Kontur. */
 .k-busbahnhof{color:var(--p-busbahnhof)}
-.k-essen{color:var(--p-essen)}
-.k-kaffee{color:var(--p-kaffee)}
+.k-essen,.k-kaffee,.k-laden{color:var(--p-versorgung)}
 .k-altstadt{color:var(--koralle)}
 .k-festung{color:var(--p-baeckerei)}
 .k-museum{color:var(--p-cafe)}
