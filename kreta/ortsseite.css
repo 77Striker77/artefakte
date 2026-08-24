@@ -29,6 +29,7 @@
    nicht die Fuellfarbe - dieselbe Mechanik, dieselbe drop-shadow-Kontur. */
 .k-busbahnhof{color:var(--p-busbahnhof)}
 .k-essen{color:var(--p-essen)}
+.k-kaffee{color:var(--p-kaffee)}
 .k-altstadt{color:var(--koralle)}
 .k-festung{color:var(--p-baeckerei)}
 .k-museum{color:var(--p-cafe)}
@@ -67,9 +68,30 @@
    ein gezeichneter Bereich, der keine amtliche Grenze ist, muss das sagen. */
 .altstadtkreis{stroke:var(--koralle); fill:var(--koralle); fill-opacity:.10;
                stroke-dasharray:4 6; stroke-width:3}
-.kartenhinweis{background:var(--tiefe-tief); color:var(--auf-tiefe);
-               border-left:6px solid var(--koralle); padding:var(--sp-xs) var(--sp-m);
-               font-size:12.5px; margin-top:var(--sp-xs)}
+/* Frueher zwei korallenrote Banner - eines unter der Karte, eines unter der
+   Liste. Sie trugen Pflichtangaben, riefen aber lauter als ihr Inhalt und
+   standen auf jeder der sechs Seiten doppelt. Jetzt sind es ruhige Ausklapper:
+   die Angabe bleibt auf der Seite, sie draengt sich nur nicht mehr auf. Dieselbe
+   Entscheidung wie bei der Legende auf der Uebersichtskarte. */
+.hinweisklapp{background:var(--flaeche); color:var(--tinte);
+              border:2px solid var(--linie); margin-top:var(--sp-xs);
+              font-size:12.5px}
+.hinweisklapp > summary{cursor:pointer; padding:8px var(--sp-m); min-height:40px;
+  display:flex; align-items:center; gap:8px; list-style:none;
+  font-family:var(--zahl); font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--tinte-leise)}
+.hinweisklapp > summary::-webkit-details-marker{display:none}
+.hinweisklapp > summary::marker{content:""}
+.hinweisklapp > summary:hover{background:var(--flaeche-2)}
+.hinweisklapp .kpfeil{width:0; height:0; flex:none;
+  border-top:5px solid currentColor; border-left:4px solid transparent;
+  border-right:4px solid transparent;
+  transition:transform calc(.12s * var(--bewegung)) steps(3)}
+.hinweisklapp[open] > summary .kpfeil{transform:rotate(180deg)}
+.hinweisklapp .inhalt{padding:0 var(--sp-m) var(--sp-s); line-height:1.5}
+.hinweisklapp .inhalt p{margin:0 0 6px}
+.hinweisklapp .inhalt p:last-child{margin-bottom:0}
+.hinweisklapp em{font-style:normal; color:var(--tinte-leise)}
 /* Der Kasten traegt bis zu zwei Auskuenfte - Ringe und Altstadtkreis. Als
    Geschwister-Spans in einem <p>, damit die Zeilen im Fluss bleiben. */
 .hinweiszeile{display:block}
@@ -96,13 +118,13 @@
 .listenkopf{margin:var(--sp-xl) 0 var(--sp-s)}
 /* Der ehrliche Leerzustand. Eine leere Liste ohne Hinweis sieht aus wie ein
    Fehler; hier steht, dass die Orte noch nicht erfasst sind und was schon da ist. */
-.nochleer{background:var(--tiefe-tief); color:var(--auf-tiefe);
-          border-left:6px solid var(--koralle); padding:var(--sp-m);
+/* Der Leerzustand bleibt sichtbar, nicht ausklappbar: eine leere Liste ohne
+   Erklaerung sieht aus wie ein Fehler, und das gehoert sofort gesagt. Ohne
+   Korallenkante - die Ruhe der Seite gewinnt, die Aussage bleibt. */
+.nochleer{background:var(--flaeche); color:var(--tinte);
+          border:2px solid var(--linie); padding:var(--sp-m);
           font-size:13.5px}
-.nochleer strong{color:var(--koralle)}
-/* Der Kasten ist ein tiefes Panel - die globale a-Regel gaebe dem Link
-   --akzent-text mit 2,75:1. */
-.nochleer a{color:var(--akzent-hell)}
+.nochleer a{color:var(--akzent-text)}
 .nochleer p + p{margin-top:var(--sp-xs)}
 .karte-fuss{display:flex; flex-wrap:wrap; gap:var(--sp-xs) var(--sp-m);
             justify-content:space-between; margin:var(--sp-s) 0 var(--sp-xl);

@@ -122,6 +122,16 @@
             "..XX...XX",
             "..XX...XX",
             "........."],
+    /* Kaffee & Backwaren: Tasse mit Henkel auf einer Untertasse. */
+    kaffee: [".........",
+            ".XXXXX...",
+            ".X...X.XX",
+            ".X...X.X.",
+            ".X...X.XX",
+            ".X...X...",
+            ".XXXXX...",
+            ".........",
+            "XXXXXXXXX"],
     /* Altstadt: Haeuserzeile. */
     altstadt: [".........",
             "..X...X..",
@@ -286,11 +296,11 @@
       .bindPopup('<span class="pop-art">' + esc(titelVon(p.art)) + "</span>"
         + '<span class="pop-name">' + esc(p.name) + "</span>"
         + (p.beschreibung ? '<span class="pop-zeile">' + esc(p.beschreibung) + "</span>" : "")
-        + (p.art === "essen" && p.bew != null
+        + ((p.art === "essen" || p.art === "kaffee") && p.bew != null
             ? '<span class="pop-zeile">Google ' + p.bew.toFixed(1) + " / 5"
               + (p.anz ? " (" + p.anz.toLocaleString("de-DE") + " Stimmen)" : "")
               + (p.preis ? " · " + esc(p.preis) : "") + "</span>" : "")
-        + (p.art === "essen" && p.adresse
+        + ((p.art === "essen" || p.art === "kaffee") && p.adresse
             ? '<span class="pop-zeile">' + esc(p.adresse) + "</span>" : "")
         + (p.zeiten ? '<span class="pop-zeile">Geöffnet: ' + esc(p.zeiten) + "</span>" : "")
         + wegeLinks(p), { maxWidth: 300 })
@@ -361,10 +371,17 @@
       + "keine Grenze.</strong> OpenStreetMap führt die Altstadt als Punkt, nicht als "
       + "Fläche — gezeichnet sind 350 m um diesen Punkt.");
   }
+  /* Frueher ein korallenrotes Banner. Die Angaben sind Pflicht, ihre Lautstaerke
+     war es nicht - als Ausklapper stehen sie weiter auf der Seite, draengen sich
+     aber nicht mehr vor die Karte. Dieselbe Loesung wie bei der Legende auf der
+     Uebersichtskarte: <details> ist ohne Skript bedienbar, per Tastatur
+     erreichbar und meldet seinen Zustand von sich aus. */
   if (hinweise.length) {
     const h = $("kartenhinweis");
     h.hidden = false;
-    h.innerHTML = hinweise.map((t) => "<span class='hinweiszeile'>" + t + "</span>").join("");
+    h.innerHTML = "<details class='hinweisklapp'><summary>Was die Karte nicht sagt"
+      + "<span class='kpfeil' aria-hidden='true'></span></summary>"
+      + "<div class='inhalt'>" + hinweise.map((x) => "<p>" + x + "</p>").join("") + "</div></details>";
   }
 
   /* ---------- Filterleiste ---------- */
@@ -435,7 +452,7 @@
     + '<span><span class="zname">' + esc(p.name) + "</span>"
     + (function () {
         // Keine Zweitzeile, die nur den Namen wiederholt ("Altstadt / Altstadt").
-        if (p.art === "essen") {
+        if (p.art === "essen" || p.art === "kaffee") {
           return '<span class="zmeta">'
             + esc([p.typ, p.bew != null ? p.bew.toFixed(1) + "★"
                     + (p.anz ? " (" + p.anz.toLocaleString("de-DE") + ")" : "") : null,
@@ -519,18 +536,26 @@
       + esc(SEITE.name) + " liegen noch keine Sehenswürdigkeiten aus OpenStreetMap vor. "
       + "Die Seite zeigt bewusst eine leere Liste statt einer gefüllten, die niemand "
       + "geprüft hat.</p>";
-  } else if (PUNKTE.some((p) => p.art === "essen")) {
+  } else if (PUNKTE.some((p) => p.art === "essen" || p.art === "kaffee")) {
     /* Sobald Lokale da sind, ist die ehrliche Auskunft eine andere: nicht
        "nicht erfasst", sondern "gefiltert". Wer das nicht sagt, laesst eine
        Auswahl wie eine Vollstaendigkeit aussehen - und ein Lokal, das fehlt,
        wirkt dann wie eines, das es nicht gibt. */
-    const n = PUNKTE.filter((p) => p.art === "essen").length;
-    kasten.innerHTML = "<p><strong>Die " + n + " Lokale sind eine Auswahl, keine Liste "
-      + "aller.</strong> Aufgenommen ist, was bei Google mindestens 4,7 Sterne bei "
-      + "mindestens 300 Stimmen hat; gehobene Preisstufen und reine Fischlokale sind "
-      + "ausgenommen. Was fehlt, ist deshalb nicht schlecht — es liegt unter der "
-      + "Schwelle oder wurde aussortiert. Öffnungszeiten stehen bewusst nicht dabei: "
-      + "sie ändern sich saisonal und wären am Abrufdatum festgenagelt.</p>"
+    const n = PUNKTE.filter((p) => p.art === "essen" || p.art === "kaffee").length;
+    kasten.className = "";
+    kasten.innerHTML = "<details class='hinweisklapp'><summary>Wie diese "
+      + n + " Lokale ausgewählt wurden<span class='kpfeil' aria-hidden='true'></span>"
+      + "</summary><div class='inhalt'>"
+      + "<p><strong>Eine Auswahl, keine Liste aller.</strong> Aufgenommen ist, was bei "
+      + "Google mindestens 4,7 Sterne bei mindestens 300 Stimmen hat — beides zusammen: "
+      + "eine 5,0 aus zwölf Stimmen sagt nichts. Was fehlt, ist deshalb nicht schlecht, "
+      + "sondern liegt unter der Schwelle.</p>"
+      + "<p>Gehobene Preisstufen und reine Fischlokale sind ausgenommen. "
+      + "<em>Google unterscheidet dabei nicht zwischen einem Fischrestaurant und einer "
+      + "Taverne, die auch Fisch führt — der Filter kann eine Taverne zu Unrecht "
+      + "treffen.</em></p>"
+      + "<p>Öffnungszeiten stehen bewusst nicht dabei: sie ändern sich saisonal und "
+      + "wären am Abrufdatum festgenagelt.</p></div></details>"
   } else {
     kasten.innerHTML = "<p><strong>Noch nicht erfasst:</strong> Lokale, Cafés und "
       + "Geschäfte in " + esc(SEITE.name) + ". Was hier steht, sind Sehenswürdigkeiten "
