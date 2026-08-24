@@ -118,9 +118,21 @@
          min-height:44px}
   .zeile:hover{border-color:var(--linie-stark); background:var(--flaeche-2)}
   .zname{font-weight:600; font-size:14px; line-height:1.25}
-  .zmeta{color:var(--tinte-leise); font-size:11.5px; font-family:var(--zahl)}
+  /* Fliesstext, nicht Zahlen: seit in der Metazeile "Griechisches Restaurant ·
+     Brunch · Frühstück" steht, ist die Pixelschrift die falsche Wahl - Silkscreen
+     ist fuer Ziffern gedacht und traegt bei 320 px kaum 20 Zeichen je Zeile. */
+  .zmeta{color:var(--tinte-leise); font-size:12px; font-family:var(--sans); line-height:1.35}
   .zdist{font-family:var(--zahl); font-size:12px; color:var(--tinte-fein); text-align:right;
          font-variant-numeric:tabular-nums; white-space:nowrap}
+  /* Auf schmalen Geraeten rutscht die Entfernung unter den Text, statt ihm eine
+     dritte Spalte wegzunehmen. Gemessen bei 320 px: Symbol, Text und Entfernung
+     teilten sich 225 px, die Textspalte behielt 110 px - die Metazeile brach
+     dort auf sieben Zeilen um und die Zeile wurde 180 px hoch. Als eigene Zeile
+     kostet die Entfernung 15 px und gibt dem Text 50 % mehr Breite. */
+  @media (max-width:640px){
+    .zeile{grid-template-columns:auto minmax(0,1fr); row-gap:2px}
+    .zdist{grid-column:2; text-align:left}
+  }
 </style>
 </head>
 <body>
@@ -215,10 +227,21 @@
 
   const HOTEL = D.hotel.koordinaten;
 
-  $("warn").innerHTML = "<span><strong>Stand der Ortsdaten: 14.06.2026.</strong> "
-    + "Öffnungszeiten, Bewertungen und Preisstufen stammen aus diesem Abruf und sind für "
-    + "Ende August <em>nicht</em> bestätigt. Deshalb steht hier bewusst kein "
-    + "„jetzt geöffnet“ — das wäre eine Juni-Angabe im Gewand einer aktuellen.</span>";
+  /* Die Abrufdaten kommen aus den Daten, nicht aus dem Markup: sie standen an
+     vier Stellen fest verdrahtet und liefen auseinander, sobald nur eine der
+     beiden Quellen neu geholt wurde. */
+  const STAND = D.vorortStand || {};
+  const deutsch = (iso) => /^d{4}-d{2}-d{2}$/.test(iso || "")
+    ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(0, 4) : "unbekannt";
+
+  $("warn").innerHTML = "<span><strong>Stand der Ortsdaten: "
+    + deutsch(STAND.lokale) + ".</strong> "
+    + "Öffnungszeiten, Bewertungen und Preisstufen stammen aus diesem Abruf. "
+    + "Deshalb steht hier bewusst kein „jetzt geöffnet“ — das wäre eine Angabe vom "
+    + "Abruftag im Gewand einer aktuellen."
+    + (STAND.haltestellen && STAND.haltestellen !== STAND.lokale
+      ? " Die Haltestellen stammen vom " + deutsch(STAND.haltestellen) + "." : "")
+    + "</span>";
 
   /* ---------- Karte ---------- */
   const karte = L.map("karte", { scrollWheelZoom: true })
@@ -448,6 +471,12 @@
     if (o.adresse) teile.push('<span class="pop-zeile">' + esc(o.adresse) + "</span>");
     if (o.bew != null) teile.push('<span class="pop-zeile">Google ' + o.bew.toFixed(1) + " / 5"
       + (o.anz ? " (" + o.anz + ")" : "") + (o.preis ? " · " + esc(o.preis) : "") + "</span>");
+    /* Google kennt bei diesen Angaben nur "ja" und "keine Angabe" - ein
+       fehlendes Merkmal heisst NICHT, dass es das nicht gibt. Ohne diesen Satz
+       liest sich eine kurze Liste wie eine Absage. */
+    if ((o.merk || []).length) teile.push('<span class="pop-zeile">'
+      + esc(o.merk.join(" · ")) + ' <em>(Angaben des Betriebs bei Google; was '
+      + 'fehlt, ist nicht angegeben — nicht ausgeschlossen)</em></span>');
     if (o.info) teile.push('<span class="pop-zeile">' + esc(o.info) + "</span>");
     if (o.tel) teile.push('<span class="pop-zeile">' + esc(o.tel) + "</span>");
     if (o.zeiten) teile.push('<div class="pop-zeiten">'
@@ -474,8 +503,8 @@
       + (o.web ? '<a href="' + esc(o.web) + '" target="_blank" rel="noopener">Website</a>' : "")
       + "</div>");
     teile.push('<span class="pop-stand">' + (o.art === "Bus"
-      ? "OpenStreetMap, 2026-06-14" : "Google Places, 2026-06-14 — für Ende August nicht bestätigt")
-      + "</span>");
+      ? "OpenStreetMap, " + (STAND.haltestellen || "unbekannt")
+      : "Google Places, " + (STAND.lokale || "unbekannt")) + "</span>");
     return teile.join("");
   }
 
@@ -593,8 +622,20 @@
   }
 
   function zeileHtml(o) {
+      /* Was hier steht, ist gemessen ausgewaehlt. "Griechisches Restaurant"
+         liefert Google nur fuer 16 der 33 Orte - fuer die uebrigen bleibt es bei
+         der Gattung. Die ZAHL der Bewertungen traegt dafuer ueberall: 4,5 aus
+         925 Stimmen ist eine andere Auskunft als 4,5 aus zwoelf. */
       const meta = [o.typ && o.typ !== o.art ? o.typ : o.art,
-                    o.bew != null ? o.bew.toFixed(1) + "★" : null, o.preis || null]
+                    o.bew != null
+                      ? o.bew.toFixed(1) + "★" + (o.anz ? " (" + o.anz + ")" : "")
+                      : null,
+                    o.preis || null,
+                    /* Hoechstens zwei, und die Reihenfolge ist nach
+                       Seltenheit sortiert: alle vier anzuzeigen zog die Zeile
+                       auf drei Zeilen, mal 33 Eintraege. Vollstaendig steht es
+                       im Popup. */
+                    (o.merk || []).length ? o.merk.slice(0, 2).join(" · ") : null]
         .filter(Boolean).join(" · ");
       /* Der Maps-Link steht als Geschwister NEBEN dem Knopf, nicht darin: ein
          <a> in einem <button> ist ungueltiges HTML und per Tastatur kaputt. */
@@ -634,7 +675,7 @@
       + (i === reiterAktiv ? "" : " hidden") + '>'
       + '<p class="zaehler">' + proGruppe[g.id].length + " von "
       + D.orte.filter((o) => gruppeVon(o.art) === g.id).length
-      + " · nach Entfernung · Stand 2026-06-14</p>"
+      + " · nach Entfernung · Stand " + (STAND.lokale || "unbekannt") + "</p>"
       + '<ul class="liste">' + proGruppe[g.id].map(zeileHtml).join("") + "</ul></div>").join("");
 
     // role=tablist verlangt Pfeiltasten-Bedienung; die Knoepfe werden bei jedem
