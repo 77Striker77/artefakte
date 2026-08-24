@@ -8,23 +8,29 @@
   Inhalt; Signature ist das Fristen-Zeitband.
 -->
 <style>
-  /* @grund-hell: #F4F6F7 */
+  /* @grund-hell: #0B0713 */
   /* Serienfarben der Diagramme (Zeitband, Balken, Monatsleiste) — damit der Messstand
      die Palette prüfen kann statt sie als ungeprüft zu melden. */
-  /* @serien-hell: #1F6B79, #8A5A12, #A33526, #2C6E4B, #7C8A93 */
+  /* @serien-hell: #00D9F5, #FFC53D, #FF4D8D, #3DFFA8, #7E93C4 */
 
+  /* Richtung: Konsole. Tiefes Violett-Schwarz als Grund, EIN elektrischer Akzent
+     (Cyan) für alles Bedienbare, die Signalfarben leihen sich Bernstein und
+     Magenta aus derselben Welt und behalten ihre Bedeutung. Jeder Wert unten ist
+     gegen Grund, Fläche und Fläche-2 einzeln nachgemessen (kontrast.mjs, 24.08.2026). */
   :root{
-    color-scheme: light;
-    --c-bg:#F4F6F7; --c-surface:#FFFFFF; --c-surface-2:#ECF0F2;
-    --c-ink:#161D22; --c-ink-soft:#45525B; --c-ink-faint:#5F6E78;
-    --c-line:#DCE2E6; --c-line-strong:#7C8A93;
-    --c-accent:#1F6B79;      /* Fläche, Rahmen, Marker — 3:1 */
-    --c-accent-ink:#15525E;  /* Text — 4.5:1 */
-    --c-accent-bg:#E3EEF0;
-    --c-good:#2C6E4B; --c-good-bg:#E3F0E8;
-    --c-warn:#8A5A12; --c-warn-bg:#F6ECD9;
-    --c-crit:#A33526; --c-crit-bg:#F7E3DC;
-    --schatten-rgb:22 29 34;
+    color-scheme: dark;
+    --c-bg:#0B0713; --c-surface:#140F22; --c-surface-2:#1F1733;
+    --c-ink:#E6E1F5; --c-ink-soft:#A99FC4; --c-ink-faint:#8E84B0;
+    /* --c-line trennt nur optisch (1.4.11 nimmt Dekoratives aus); --c-line-strong
+       trägt die Zeichnung und Bedienkanten und hält deshalb >= 3:1 überall. */
+    --c-line:#3A2E63; --c-line-strong:#7E93C4;
+    --c-accent:#00D9F5;      /* Fläche, Rahmen, Marker — 3:1 */
+    --c-accent-ink:#5FE9FF;  /* Text — 4.5:1 */
+    --c-accent-bg:#0E2E38;
+    --c-good:#3DFFA8; --c-good-bg:#06301F;
+    --c-warn:#FFC53D; --c-warn-bg:#35260A;
+    --c-crit:#FF4D8D; --c-crit-bg:#3A0B1E;
+    --schatten-rgb:0 0 0;
     --sp-2xs:4px; --sp-xs:8px; --sp-s:12px; --sp-m:18px;
     --sp-l:28px; --sp-xl:44px; --sp-2xl:72px;
     --radius:12px; --radius-s:8px;
@@ -425,7 +431,7 @@
        Erledigtes bekommt bewusst KEIN Signal, sonst ist die Seite großflächig grün
        und das eine Rote geht darin unter. Grün bleibt nur, wo etwas belegt IST.
      Kanal B — Art/Kategorie (.art): umrandet, neutral. Vorher trug „Pflicht" dieselbe
-       Warnfüllung wie „Ist fehlt" — bei 9 von 11 orangen Zeilen ist Orange Rauschen. */
+       Warnfüllung wie „Ist fehlt" — bei 9 von 11 gewarnten Zeilen ist die Warnfarbe Rauschen. */
   .pille{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 8px;
     border-radius:100px;white-space:nowrap}
   .pille.art{background:none;border:1px solid var(--c-line-strong);color:var(--c-ink-soft);
@@ -732,7 +738,7 @@
     <div class="unterseite" id="u-ueb-lage">
       <section aria-labelledby="h-ampel">
         <div class="sekkopf"><h2 id="h-ampel">Wie läuft die Immobilie?</h2>
-          <span class="hinweis">Grün = läuft · Orange = Pflege oder Stammdatum fehlt · Rot = Handlungsbedarf mit rechtlichem oder finanziellem Risiko</span></div>
+          <span class="hinweis">Grün = läuft · Bernstein = Pflege oder Stammdatum fehlt · Magenta = Handlungsbedarf mit rechtlichem oder finanziellem Risiko</span></div>
         <div class="lagekarte" id="lagekarte"><span class="ldot"></span>
           <div><b id="h-status"></b><div class="lagelinks" id="lagelinks"></div></div>
         </div>
@@ -2255,8 +2261,8 @@ function baueBilanz() {
 }
 
 /* ===== Zeitband (Signature) ===== */
-/* Jede Fristart hat eine eigene FORM, nicht nur eine eigene Farbe: Rot (#A33526) und
-   Amber (#8A5A12) trennen sich bei Deuteranopie nur mit ΔE 2,1 — auf Farbe allein wäre
+/* Jede Fristart hat eine eigene FORM, nicht nur eine eigene Farbe: Magenta und
+   Bernstein liegen bei Deuteranopie eng beieinander — auf Farbe allein wäre
    das Zeitband für farbfehlsichtige Leser nicht auswertbar.
    Raute = Ausschlussfrist · Kreis = Pflicht · Dreieck = Chance. */
 function fristSymbol(art, x, y, gr) {
@@ -2885,7 +2891,7 @@ function baueRechtsstand() {
   if (tage < 0) {
     box.innerHTML = '<div class="kritkasten"><b>Rechtsstand abgelaufen</b> (geprüft ' + dtDE(R.geprueft) + ', gültig bis ' + dtDE(R.gueltig_bis) + '). KappVO (15 % → 20 %?), Mietspiegel 2025 und „Miete II“ neu prüfen, bevor dieses Cockpit Entscheidungen stützt.</div>';
   } else {
-    box.innerHTML = '<div class="hinweiskasten">Rechtsstand geprüft am <b>' + dtDE(R.geprueft) + '</b>, gültig bis <b>' + dtDE(R.gueltig_bis) + '</b> (noch ' + tage + ' Tage). Danach schaltet dieses Feld automatisch auf Rot — der Guard bleibt drin.</div>';
+    box.innerHTML = '<div class="hinweiskasten">Rechtsstand geprüft am <b>' + dtDE(R.geprueft) + '</b>, gültig bis <b>' + dtDE(R.gueltig_bis) + '</b> (noch ' + tage + ' Tage). Danach schaltet dieses Feld automatisch auf Magenta — der Guard bleibt drin.</div>';
   }
   document.getElementById('watchTabelle').innerHTML = WATCH.map((w) =>
     '<tr><td>' + w.thema + '</td><td style="white-space:nowrap">' + w.frist + '</td><td style="color:var(--c-ink-soft)">' + w.detail + '</td></tr>').join('');
