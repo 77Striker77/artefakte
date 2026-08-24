@@ -248,6 +248,13 @@
   .hm text{fill:var(--c-bg);font-weight:700;font-size:15px;text-anchor:middle;font-family:var(--sans)}
   .hm .hv{fill:var(--c-accent)}
   .hm{cursor:pointer}
+  /* Das gezeichnete Ding selbst ist anklickbar, nicht nur der Punkt darauf —
+     sonst sind Zaun, Tor und Fenster tote Striche. Nur für die Maus: tabindex=-1
+     und aria-hidden, damit Tastatur und Vorlesen weiter über Marke und Legende
+     laufen und nicht jedes Ziel doppelt hören. */
+  .szene{cursor:pointer}
+  .szene:hover .haus-strich,.szene:hover .haus-hell,.szene:hover .haus-zaun,
+  .szene:hover line,.szene:hover circle{stroke:var(--c-accent)}
   .hm:hover .hv{stroke:var(--c-ink)}
   /* Fokus auf einem SVG-<g>: outline zeichnen manche Engines nicht — der dickere
      Ring am Marker selbst ist der verlaessliche Teil. */
@@ -696,69 +703,85 @@
                 </pattern>
               </defs>
 
-              <circle class="rauch" cx="395" cy="52" r="6"/>
-              <circle class="rauch r2" cx="397" cy="44" r="8"/>
-              <circle class="rauch r3" cx="393" cy="38" r="10"/>
-              <rect class="haus-strich" x="380" y="66" width="26" height="58"/>
-              <polygon class="haus-dach" points="175,140 475,140 325,50"/>
+              <a class="szene" href="#nebenkosten/co2" tabindex="-1" aria-hidden="true">
+                <circle class="rauch" cx="395" cy="52" r="6"/>
+                <circle class="rauch r2" cx="397" cy="44" r="8"/>
+                <circle class="rauch r3" cx="393" cy="38" r="10"/>
+                <rect class="haus-strich" x="380" y="66" width="26" height="58"/>
+              </a>
+              <a class="szene" href="#haus/dach" tabindex="-1" aria-hidden="true">
+                <polygon class="haus-dach" points="175,140 475,140 325,50"/>
+              </a>
 
 
-              <rect class="haus-strich" x="200" y="140" width="250" height="160"/>
-              <line x1="200" y1="220" x2="450" y2="220" stroke="var(--c-line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
-              <rect class="haus-hell" x="225" y="160" width="50" height="44"/>
-              <line x1="250" y1="160" x2="250" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="225" y1="182" x2="275" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="375" y="160" width="50" height="44"/>
-              <line x1="400" y1="160" x2="400" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="375" y1="182" x2="425" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="225" y="238" width="50" height="40"/>
-              <line x1="250" y1="238" x2="250" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="375" y="238" width="50" height="40"/>
-              <line x1="400" y1="238" x2="400" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-hell" x="300" y="228" width="45" height="72"/>
-              <circle cx="337" cy="266" r="2.5" fill="var(--c-line-strong)"/>
+              <a class="szene" href="#haus/grundriss" tabindex="-1" aria-hidden="true">
+                <rect class="haus-strich" x="200" y="140" width="250" height="160"/>
+                <line x1="200" y1="220" x2="450" y2="220" stroke="var(--c-line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
+                <rect class="haus-hell" x="225" y="160" width="50" height="44"/>
+                <line x1="250" y1="160" x2="250" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <line x1="225" y1="182" x2="275" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <rect class="haus-hell" x="375" y="160" width="50" height="44"/>
+                <line x1="400" y1="160" x2="400" y2="204" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <line x1="375" y1="182" x2="425" y2="182" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <rect class="haus-hell" x="225" y="238" width="50" height="40"/>
+                <line x1="250" y1="238" x2="250" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <rect class="haus-hell" x="375" y="238" width="50" height="40"/>
+                <line x1="400" y1="238" x2="400" y2="278" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              </a>
+              <a class="szene" href="#mietverhaeltnis/vertrag" tabindex="-1" aria-hidden="true">
+                <rect class="haus-hell" x="300" y="228" width="45" height="72"/>
+                <circle cx="337" cy="266" r="2.5" fill="var(--c-line-strong)"/>
+              </a>
 
 
-              <rect class="haus-strich" x="147" y="258" width="6" height="42"/>
-              <rect class="haus-hell" x="133" y="236" width="34" height="24"/>
-              <line x1="139" y1="250" x2="161" y2="250" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <a class="szene" href="#geld/eingang" tabindex="-1" aria-hidden="true">
+                <rect class="haus-strich" x="147" y="258" width="6" height="42"/>
+                <rect class="haus-hell" x="133" y="236" width="34" height="24"/>
+                <line x1="139" y1="250" x2="161" y2="250" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              </a>
 
               <rect class="haus-strich" x="484" y="218" width="96" height="82"/>
               <line x1="500" y1="218" x2="500" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
               <line x1="532" y1="218" x2="532" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
               <line x1="564" y1="218" x2="564" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
 
-              <rect class="haus-strich" x="690" y="246" width="16" height="54"/>
-              <circle class="haus-strich" cx="698" cy="206" r="44"/>
-              <line x1="644" y1="262" x2="748" y2="262" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="644" y1="286" x2="748" y2="286" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <rect class="haus-zaun" x="644" y="250" width="5" height="50"/>
-              <rect class="haus-zaun" x="663" y="250" width="5" height="50"/>
-              <rect class="haus-zaun" x="682" y="250" width="5" height="50"/>
-              <rect class="haus-zaun" x="701" y="250" width="5" height="50"/>
-              <rect class="haus-zaun" x="720" y="250" width="5" height="50"/>
-              <rect class="haus-zaun" x="739" y="250" width="5" height="50"/>
+              <a class="szene" href="#haus/garten" tabindex="-1" aria-hidden="true">
+                <rect class="haus-strich" x="690" y="246" width="16" height="54"/>
+                <circle class="haus-strich" cx="698" cy="206" r="44"/>
+                <line x1="644" y1="262" x2="748" y2="262" stroke="var(--c-line-strong)" stroke-width="2"/>
+                <line x1="644" y1="286" x2="748" y2="286" stroke="var(--c-line-strong)" stroke-width="2"/>
+                <rect class="haus-zaun" x="644" y="250" width="5" height="50"/>
+                <rect class="haus-zaun" x="663" y="250" width="5" height="50"/>
+                <rect class="haus-zaun" x="682" y="250" width="5" height="50"/>
+                <rect class="haus-zaun" x="701" y="250" width="5" height="50"/>
+                <rect class="haus-zaun" x="720" y="250" width="5" height="50"/>
+                <rect class="haus-zaun" x="739" y="250" width="5" height="50"/>
 
-              <rect class="haus-hell" x="636" y="244" width="6" height="56"/>
-              <rect class="haus-hell" x="592" y="244" width="6" height="56"/>
-              <line x1="594" y1="256" x2="640" y2="256" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="594" y1="288" x2="640" y2="288" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <line x1="594" y1="288" x2="640" y2="256" stroke="var(--c-line-strong)" stroke-width="2"/>
-              <circle class="haus-hell" cx="633" cy="272" r="4"/>
+                <rect class="haus-hell" x="636" y="244" width="6" height="56"/>
+                <rect class="haus-hell" x="592" y="244" width="6" height="56"/>
+                <line x1="594" y1="256" x2="640" y2="256" stroke="var(--c-line-strong)" stroke-width="2"/>
+                <line x1="594" y1="288" x2="640" y2="288" stroke="var(--c-line-strong)" stroke-width="2"/>
+                <line x1="594" y1="288" x2="640" y2="256" stroke="var(--c-line-strong)" stroke-width="2"/>
+                <circle class="haus-hell" cx="633" cy="272" r="4"/>
+              </a>
 
               <rect x="20" y="300" width="180" height="78" fill="url(#erdreich)"/>
               <rect x="450" y="300" width="290" height="78" fill="url(#erdreich)"/>
               <line x1="20" y1="300" x2="744" y2="300" stroke="var(--c-line-strong)" stroke-width="2"/>
               <rect class="haus-keller" x="200" y="300" width="250" height="78"/>
 
-              <rect class="haus-hell" x="214" y="314" width="40" height="50"/>
-              <line x1="214" y1="330" x2="254" y2="330" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <rect class="haus-strich" x="266" y="322" width="68" height="40" rx="19"/>
-              <rect class="haus-strich" x="292" y="314" width="14" height="10"/>
-              <rect class="haus-hell" x="380" y="314" width="32" height="36"/>
-              <circle cx="389" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <circle cx="403" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-              <line x1="386" y1="340" x2="406" y2="340" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <a class="szene" href="#haus/heizung" tabindex="-1" aria-hidden="true">
+                <rect class="haus-hell" x="214" y="314" width="40" height="50"/>
+                <line x1="214" y1="330" x2="254" y2="330" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <rect class="haus-strich" x="266" y="322" width="68" height="40" rx="19"/>
+                <rect class="haus-strich" x="292" y="314" width="14" height="10"/>
+              </a>
+              <a class="szene" href="#haus/zaehler" tabindex="-1" aria-hidden="true">
+                <rect class="haus-hell" x="380" y="314" width="32" height="36"/>
+                <circle cx="389" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <circle cx="403" cy="326" r="3.5" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+                <line x1="386" y1="340" x2="406" y2="340" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              </a>
 
               <text class="hausbez" x="192" y="186" text-anchor="end">OG</text>
               <text class="hausbez" x="192" y="264" text-anchor="end">EG</text>
@@ -1887,17 +1910,22 @@ const HAUSTHEMEN = [
   },
   {
     id: 'garten', titel: 'Garten &amp; Zaun',
-    lead: 'Gartenpflege, Reinigung und Winterdienst der Alleinnutzflächen liegen beim Mieter. Die Verkehrssicherungspflicht bleibt trotzdem bei Ihnen — deshalb: hinsehen und notieren.',
+    lead: 'Gartenpflege, Reinigung und Winterdienst der Alleinnutzflächen liegen beim Mieter. Die Verkehrssicherungspflicht und der Zaun bleiben trotzdem bei Ihnen — deshalb: hinsehen und notieren.',
     fakten: [['Gartenpflege', 'Mieter'], ['Winterdienst', 'Mieter'],
-      ['Baumkontrolle', 'Vermieter, 1–2× im Jahr'], ['Grundstück', 'ca. 595 m²']],
+      ['Baumkontrolle', 'Vermieter, 1–2× im Jahr'], ['Zaun', 'Vermietersache']],
     bloecke: [
       { h: 'Was gilt', p: [
         ['gut', 'Reinigung, Gartenpflege und Winterdienst der Alleinnutzflächen sind auf den Mieter übertragen (§ 20 Mietvertrag).'],
         ['warn', 'Die Übertragung entbindet <b>nicht</b> von der Verkehrssicherungspflicht (§ 823 BGB): Sie müssen kontrollieren, ob der Mieter sie tatsächlich erfüllt.'],
         ['', 'Winterdienst-Kontrolle von November bis März — dokumentierte Stichproben genügen. Nicht umlagefähig.'],
         ['warn', 'Die <b>Baumkontrolle</b> bleibt in jedem Fall Vermietersache: ein- bis zweimal im Jahr Sichtprüfung mit Foto-Doku (§ 823 BGB). Nach einem Sturmschaden ist genau diese Doku der Entlastungsbeweis.'],
-        ['', 'Der Zaun gehört zur Einfriedung des Grundstücks — seine Instandhaltung ist Vermietersache und nicht umlagefähig.'],
-        ['warn', 'Die Haus- und Grundbesitzerhaftpflicht muss das vermietete Objekt decken. Ob die vorhandene Police das tut, ist noch nicht geprüft.'] ] }
+        ['warn', 'Die Haus- und Grundbesitzerhaftpflicht muss das vermietete Objekt decken. Ob die vorhandene Police das tut, ist noch nicht geprüft.'] ] },
+      { h: 'Der Zaun', p: [
+        ['', 'Die Einfriedung gehört zum Gebäude, nicht zur Nutzung: <b>Instandhaltung ist Vermietersache</b> und nicht umlagefähig (§ 1 Abs. 2 BetrKV). Der Mieter pflegt nur, was drumherum wächst.'],
+        ['warn', '<b>Wo steht er?</b> Auf der Grenze ist der Zaun eine Grenzeinrichtung (§§ 921, 922 BGB): beide Nachbarn nutzen ihn gemeinsam, tragen die Unterhaltung <b>je zur Hälfte</b>, und keiner darf ihn ohne Zustimmung des anderen beseitigen oder verändern. Steht er ganz auf dem eigenen Grundstück, gehört er allein — und kostet allein.'],
+        ['warn', 'Welcher der beiden Fälle hier vorliegt, ist nirgends erfasst. Bei einer Erneuerung entscheidet genau das, wer zahlt — vor dem ersten Angebot klären.'],
+        ['krit', '<b>Verkehrssicherung:</b> ein morscher Zaun, der auf den Gehweg oder ins Nachbargrundstück kippt, ist Ihre Haftung (§ 823 BGB) — auch wenn der Garten dem Mieter übertragen ist. Die jährliche Objektbegehung deckt das mit ab.'],
+        ['', 'Art und Höhe einer Einfriedung richten sich nach Landesrecht (Nachbarrechtsgesetz Baden-Württemberg) und der örtlichen Satzung. Vor Ersatz, Erhöhung oder Materialwechsel prüfen — sonst droht ein Rückbauverlangen des Nachbarn.'] ] }
     ],
     links: [['#fristen/jahr', 'Jahreskalender'], ['#fristen/zyklen', 'Prüfzyklen'],
       ['#aufgaben/versicherung', 'Versicherungen']]
@@ -1910,7 +1938,7 @@ const HAUSTHEMEN = [
    x/y sind Koordinaten im viewBox 0 0 760 420. */
 const HAUSPUNKTE = [
   { nr: 1, x: 325, y: 105, ziel: '#haus/dach', titel: 'Dach',
-    kurz: 'Dachfenster 2026, Durchsicht — und was steuerlich daran hängt.' },
+    kurz: 'Eindeckung, Dachfenster und was steuerlich daran hängt.' },
   { nr: 2, x: 393, y: 88, ziel: '#nebenkosten/co2', titel: 'Schornstein',
     kurz: 'Nebenkosten und der CO₂-Anteil, den Sie erstatten.' },
   { nr: 3, x: 325, y: 182, ziel: '#haus/grundriss', titel: 'Fassade &amp; Grundriss',
