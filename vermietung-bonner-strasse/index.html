@@ -299,9 +299,18 @@
   .tdfakt .tdv{font-size:14.5px;font-weight:650;font-variant-numeric:tabular-nums;
     overflow-wrap:anywhere}
   .tdabschnitt h3{font-size:11px;text-transform:uppercase;letter-spacing:.1em;
-    color:var(--c-ink-faint);margin-bottom:8px}
+    color:var(--c-accent-ink);margin-bottom:8px}
   .tdliste{list-style:none;margin:0;padding:0;display:grid;gap:9px}
   .tdliste li{display:grid;grid-template-columns:9px 1fr;gap:10px;font-size:14px;line-height:1.5}
+  /* Die Themenseiten sind Nachschlagewerk, kein Fließtext: jeder Abschnitt eine
+     Karte, ab 900 px nebeneinander. Sonst steht die Seite als eine Spalte Blei. */
+  .hausbloecke{display:grid;gap:var(--sp-s);align-items:start}
+  @media(min-width:900px){
+    .hausbloecke{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  }
+  .hausbloecke .tdabschnitt{background:var(--c-surface-2);border:1px solid var(--c-line);
+    border-radius:var(--radius-s);padding:14px 16px}
+  .hausbloecke .tdliste li{font-size:13.5px;line-height:1.5}
   .tdpunkt{width:7px;height:7px;border-radius:50%;background:var(--c-line-strong);margin-top:8px}
   .tdpunkt.gut{background:var(--c-good)} .tdpunkt.warn{background:var(--c-warn)}
   .tdpunkt.krit{background:var(--c-crit)}
@@ -1820,115 +1829,90 @@ const m2 = (n) => n.toFixed(1).replace('.', ',') + ' m²';
 const HAUSTHEMEN = [
   {
     id: 'dach', titel: 'Dach',
-    lead: 'Das Dach wurde 2026 <b>nicht</b> neu gedeckt. Getauscht wurden zwei Dachfenster; dazu kamen der Abbau der alten Antenne und eine Dachdurchsicht.',
-    fakten: [['Maßnahme 2026', '2 Dachfenster ersetzt'], ['Kosten', '4.833,90 € brutto'],
-      ['Steuerlich', 'Erhaltungsaufwand'], ['Umlagefähig', 'nein']],
+    lead: 'Nicht neu gedeckt: 2026 wurden zwei Dachfenster getauscht, die Antenne abgebaut und das Dach durchgesehen.',
+    fakten: [['Maßnahme 2026', '2 Dachfenster'], ['Kosten', '4.833,90 € brutto'],
+      ['Steuerlich', 'Erhaltungsaufwand'], ['Eindeckung', 'Alter unbekannt']],
     bloecke: [
-      { h: 'Was 2026 gemacht wurde', p: [
-        ['gut', '<b>Zwei Dachfenster ersetzt</b> — VELUX Schwingfenster THERMO, 114 × 140 cm, U-Wert 1,3 W/m²K, mit Dämm- und Anschlussset und neuem Eindeckrahmen. Die alten wurden ausgebaut und entsorgt.'],
-        ['gut', '<b>Alte Dachantenne abgebaut</b> und die Stelle wieder eingedeckt.'],
-        ['gut', '<b>Dachdurchsicht:</b> Dachrinne gereinigt, Moos am Kamin entfernt, defekte Ziegel getauscht — dazu 12 Halbsteine Frankfurter Pfanne als Reserve.'],
-        ['', 'Rechnung Scheitacker 2605107 vom 21.05.2026: 4.062,10 € netto, <b>4.833,90 € brutto</b> (nach 2 % Skonto).'],
-        ['warn', 'Die <b>Eindeckung selbst ist unverändert</b>, und ihr Alter ist nirgends erfasst. Für Rücklagenplanung und Energieausweis wäre das der wichtigere Wert.'] ] },
-      { h: 'Was das steuerlich heißt', p: [
-        ['', 'Der Fenstertausch ersetzt Vorhandenes und ist damit <b>Erhaltungsaufwand</b>, kein Herstellungsaufwand — sofort abziehbar oder wahlweise auf zwei bis fünf Jahre verteilt (§ 82b EStDV).'],
-        ['', 'Er steckt in der Instandhaltungssumme 2026 von <b>14.565,37 € brutto</b>, die jetzt vollständig belegt ist.'],
-        ['warn', 'Der Rechnungshinweis auf <b>§ 35a EStG</b> (1.590,50 € Dienstleistungsanteil) richtet sich an Selbstnutzer. Bei Vermietung ist der Betrag <b>voll Werbungskosten</b> — das ist deutlich mehr wert als die 20-%-Ermäßigung.'],
-        ['', 'Instandhaltung ist Vermietersache und <b>nicht umlagefähig</b> (§ 1 Abs. 2 BetrKV).'] ] },
-      { h: 'Was das energetisch heißt', p: [
-        ['gut', 'Neue Fenster mit U 1,3 W/m²K senken den Verbrauch — und damit die CO₂-Stufe, also den Anteil, den Sie dem Mieter erstatten (CO2KostAufG).'],
-        ['', 'Für den fehlenden Energieausweis ist die Maßnahme belegbar — die Rechnung dem Energieberater vorlegen.'],
-        ['', '§ 35c EStG (Ermäßigung für energetische Sanierung) greift hier nicht: er gilt nur für selbstgenutztes Eigentum.'] ] }
+      { h: 'Was gilt', p: [
+        ['', 'Fenstertausch ersetzt Vorhandenes → <b>Erhaltungsaufwand</b>: sofort abziehbar oder auf 2–5 Jahre verteilt (§ 82b EStDV).'],
+        ['', 'Nicht umlagefähig (§ 1 II BetrKV) — Instandhaltung bleibt bei Ihnen.'],
+        ['warn', 'Der <b>§ 35a</b>-Hinweis auf der Rechnung gilt Selbstnutzern. Bei Vermietung ist der volle Betrag Werbungskosten — mehr wert.'],
+        ['gut', 'U-Wert 1,3 W/m²K senkt die CO₂-Stufe und hilft beim Energieausweis.'] ] },
+      { h: 'Was offen ist', p: [
+        ['warn', '<b>Alter der Eindeckung</b> ist nirgends erfasst — es fehlt für Rücklagenplanung und Energieausweis.'] ] }
     ],
-    links: [['#steuern/dach', 'Erhaltungsaufwand 2026'], ['#geld/reparaturen', 'Reparaturen'],
-      ['#aufgaben/offen', 'Offene Punkte']]
+    links: [['#steuern/dach', 'Erhaltungsaufwand'], ['#geld/reparaturen', 'Reparaturen']]
   },
   {
-    id: 'grundriss', titel: 'Haus &amp; Grundriss',
-    lead: 'Freistehendes Einfamilienhaus, Baujahr 1969. Die Wohnfläche ist nach der Wohnflächenverordnung ermittelt (Berechnung V1.0 vom 23.04.2026) — hier stehen nur die angerechneten Flächen, keine Raummaße.',
+    id: 'grundriss', titel: 'Grundriss &amp; Fläche',
+    lead: 'Freistehendes Einfamilienhaus, Baujahr 1969. Flächen nach WoFlV — ohne Raummaße.',
     grundriss: true,
     bloecke: [
-      { h: 'Was dazugehört', p: [
-        ['', 'Nebenflächen: Garage, Kfz-Stellplatz, Garten und Schuppen — mitvermietet, zählen aber nicht zur Wohnfläche.'],
-        ['', 'Keller und Dachboden werden nach WoFlV mit 0 % angerechnet und stecken deshalb nicht in der Wohnfläche.'],
-        ['', 'Terrasse und Balkon zählen mit 25 % ihrer Grundfläche — tatsächlich sind es 51,1 m² und 23,0 m².'],
-        ['warn', 'Grundstück: ca. 595 m² laut Stammdaten und Wohnflächenberechnung; die Nebenkosten-Vorausschau nennt ca. 550 m². Die Abweichung ist ungeklärt, für keine Kennzahl im Cockpit aber relevant.'] ] },
+      { h: 'Was zählt und was nicht', p: [
+        ['', 'Keller und Dachboden: <b>0 %</b>. Terrasse und Balkon: <b>25 %</b> (tatsächlich 51,1 und 23,0 m²).'],
+        ['', 'Garage, Stellplatz, Garten und Schuppen sind mitvermietet, zählen aber nicht zur Wohnfläche.'],
+        ['', 'Die Fläche ist der Nenner jeder Vergleichsmiete: aktuell <b>10,13 €/m²</b>.'],
+        ['warn', 'Über 10 % Abweichung nach unten kann der Mieter mindern — die WoFlV-Berechnung ist der Beleg.'] ] },
       { h: 'Energieausweis', p: [
-        ['krit', '<b>Es gibt keinen.</b> Vorlagepflicht besteht bei Besichtigung und Vertragsschluss (§ 80 GEG) — bei der Vermietung 06/2026 wurde sie nicht erfüllt.'],
-        ['krit', 'Bußgeld bis 10.000 € möglich (§ 108 GEG).'],
-        ['', 'Baujahr 1969 und weniger als fünf Wohneinheiten: es muss ein <b>Bedarfsausweis</b> sein, ein Verbrauchsausweis genügt nicht. Gültigkeit dann 10 Jahre.'],
-        ['gut', 'Für das laufende Mietverhältnis besteht keine fortlaufende Pflicht — nachholen senkt trotzdem das Risiko, und für jede Neuvermietung und jeden Verkauf ist er zwingend.'],
-        ['warn', 'Energieberater beauftragen und die energetischen Verbesserungen — Fassadendämmung und die neuen Dachfenster 2026 — bereithalten: sie verbessern das Ergebnis. Ausstellungs- und Ablaufdatum danach ins Cockpit.'] ] },
-      { h: 'Woran die Fläche hängt', p: [
-        ['', 'Die Wohnfläche ist der Nenner jeder Vergleichsmiete: aktuell <b>10,13 €/m²</b> Kaltmiete.'],
-        ['', 'Sie steuert auch die Rücklagen-Richtwerte, die je m² und Jahr gerechnet werden.'],
-        ['warn', 'Weicht die tatsächliche Fläche um mehr als 10 % nach unten ab, kann der Mieter mindern — deshalb ist die Berechnung nach WoFlV der belastbare Beleg, nicht eine Zahl aus dem Exposé.'] ] }
+        ['krit', '<b>Es gibt keinen.</b> Vorlagepflicht bei der Vermietung 06/2026 nicht erfüllt (§ 80 GEG), Bußgeld bis 10.000 € (§ 108 GEG).'],
+        ['', 'Baujahr 1969, unter fünf Wohneinheiten → <b>Bedarfsausweis</b>, gültig 10 Jahre.'],
+        ['warn', 'Energieberater beauftragen; Dämmung und neue Dachfenster als Nachweis bereithalten.'] ] }
     ],
-    links: [['#mietverhaeltnis/vertrag', 'Objekt &amp; Vertrag'], ['#aufgaben/offen', 'Offene Punkte'],
-      ['#mietverhaeltnis/radar', 'Erhöhungs-Radar'], ['#nebenkosten/kalkulation', 'NK-Kalkulation']]
+    links: [['#mietverhaeltnis/vertrag', 'Objekt &amp; Vertrag'], ['#aufgaben/offen', 'Offene Punkte']]
   },
   {
     id: 'heizung', titel: 'Heizung &amp; Öltank',
-    lead: 'Ölheizung mit Tank im Keller. Das Heizöl beschafft und bezahlt der Mieter selbst; die Anlage bleibt Ihre Sache — und dafür fehlen drei Stammdaten.',
-    fakten: [['Anlage', 'Ölheizung mit Tank'], ['Brennstoff', 'Mieter beschafft selbst'],
-      ['Heizperiode', '01.10.–30.04.'], ['Wartung', 'jährlich bis 30.09.']],
+    lead: 'Ölheizung mit Tank im Keller. Das Öl zahlt der Mieter, die Anlage bleibt Ihre Sache.',
+    fakten: [['Anlage', 'Öl mit Tank'], ['Brennstoff', 'Mieter'],
+      ['Heizperiode', '01.10.–30.04.'], ['Wartung', 'bis 30.09.']],
     bloecke: [
       { h: 'Was gilt', p: [
-        ['', 'Der Mieter beschafft und bezahlt das Heizöl selbst (§ 4 Abs. 2 Mietvertrag) — deshalb steht Heizung in keiner Nebenkostenabrechnung.'],
-        ['', 'Betriebsbereitschaft in der Heizperiode 01.10.–30.04. ist <b>Vermieterpflicht</b> (§ 7 Abs. 2 Mietvertrag).'],
-        ['gut', 'Jährliche Wartung durch einen Fachbetrieb (§ 60 GEG) — umlagefähig.'],
-        ['gut', 'Schornsteinfeger nach Feuerstättenbescheid: bei Öl in der Regel jährlich, Emissionsmessung alle zwei Jahre bei Anlagen über 12 Jahre, Feuerstättenschau alle drei bis fünf Jahre.'],
-        ['', 'Weil der Mieter selbst tankt, erstatten Sie den CO₂-Anteil nach dem Zehn-Stufen-Modell (§§ 5, 6 CO2KostAufG) — Rückstellung 100 bis 500 € im Jahr.'],
-        ['', 'Bei Rückgabe ist der Heizölbestand wiederherzustellen oder auszugleichen (§ 9 Mietvertrag).'] ] },
-      { h: 'Was offen ist', p: [
-        ['warn', '<b>Kesseltyp und Einbaujahr unbekannt.</b> Konstanttemperaturkessel ab 30 Jahren unterliegen dem Betriebsverbot des § 72 GEG; Niedertemperatur- und Brennwertkessel sind ausgenommen. Typenschild oder Schornsteinfegerprotokoll prüfen.'],
-        ['warn', '<b>Öltank-Daten unbekannt.</b> Volumen, ober- oder unterirdisch und die Lage im Wasserschutzgebiet bestimmen den Prüfzyklus: ein Kellertank von 1.000 bis 10.000 Litern außerhalb eines Schutzgebiets braucht keine wiederkehrende Sachverständigenprüfung, sonst alle fünf Jahre, im Schutzgebiet alle zweieinhalb (§§ 45–47 AwSV).'],
-        ['warn', '<b>Letzte Tankreinigung unbekannt.</b> Üblich sind fünf bis zehn Jahre; regelmäßig durchgeführt ist sie umlagefähig (BGH VIII ZR 221/08).'],
-        ['krit', '<b>Gewässerschadenhaftpflicht?</b> Für den Öltank haftet der Betreiber nach § 89 WHG unbegrenzt — ob die Police das deckt, ist nicht geprüft.'],
-        ['', 'Der Heizölbestand bei Übergabe steht nur im Papier-Protokoll — ohne ihn fehlt die Basis für den Ausgleich am Mietende.'] ] }
+        ['', 'Betriebsbereitschaft in der Heizperiode ist <b>Vermieterpflicht</b> (§ 7 II Mietvertrag).'],
+        ['gut', 'Wartung jährlich durch einen Fachbetrieb (§ 60 GEG) — umlagefähig.'],
+        ['gut', 'Schornsteinfeger nach Feuerstättenbescheid; bei Öl in der Regel jährlich.'],
+        ['', 'Weil der Mieter selbst tankt, erstatten Sie den CO₂-Anteil (§§ 5, 6 CO2KostAufG).'] ] },
+      { h: 'Vier offene Stammdaten', p: [
+        ['warn', '<b>Kesseltyp und Baujahr</b> — davon hängt ab, ob das Betriebsverbot des § 72 GEG greift.'],
+        ['warn', '<b>Öltank: Volumen, Lage, Wasserschutzgebiet</b> — bestimmt den Prüfzyklus (§§ 45–47 AwSV).'],
+        ['warn', '<b>Letzte Tankreinigung</b> — üblich alle 5 bis 10 Jahre, regelmäßig umlagefähig.'],
+        ['krit', '<b>Gewässerschadenhaftpflicht</b> nicht geprüft — § 89 WHG haftet unbegrenzt.'] ] }
     ],
-    links: [['#aufgaben/offen', 'Offene Punkte'], ['#fristen/zyklen', 'Prüfzyklen'],
-      ['#nebenkosten/co2', 'CO₂-Erstattung'], ['#aufgaben/versicherung', 'Versicherungen']]
+    links: [['#fristen/zyklen', 'Prüfzyklen'], ['#nebenkosten/co2', 'CO₂-Erstattung'],
+      ['#aufgaben/versicherung', 'Versicherungen']]
   },
   {
     id: 'zaehler', titel: 'Zähler &amp; Ablesung',
-    lead: 'Zählerkasten und Öltank stehen im Keller. Einmal im Jahr ablesen — daran hängt die komplette Nebenkostenabrechnung.',
-    fakten: [['Ablesetermin', '31.12.'], ['Erste Abrechnung', '01.06.–31.12.2026'],
-      ['Interne Deadline', '31.10.2027'], ['Ausschlussfrist', '31.12.2027']],
+    lead: 'Zähler und Öltank im Keller. Einmal im Jahr ablesen — daran hängt die ganze Abrechnung.',
+    fakten: [['Ablesen', '31.12.'], ['Erste Abrechnung', '7 Monate 2026'],
+      ['Intern fertig', '31.10.2027'], ['Ausschlussfrist', '31.12.2027']],
     bloecke: [
       { h: 'Was gilt', p: [
-        ['', 'Zum 31.12. alle Zählerstände und den Öltank-Füllstand sichern — sie sind die Basis der Abrechnung nach § 556 BGB.'],
-        ['', '2026 ist ein Rumpfjahr: abgerechnet wird der Zeitraum 01.06. bis 31.12.2026, also sieben Monate. Grundsteuer und Versicherungen gehen zeitanteilig mit 7/12 ein.'],
-        ['krit', 'Die Abrechnung muss dem Mieter bis <b>31.12.2027 zugehen</b>, nicht nur abgeschickt sein (§ 556 III BGB). Ein Einwurf am 31.12. abends gilt erst am 02.01. als zugegangen — dann ist die Nachforderung verloren.'],
-        ['', 'Der Mieter kann zwölf Monate ab Zugang Einwendungen erheben.'],
-        ['gut', 'Die Heizkostenverordnung gilt hier nicht: Einfamilienhaus, ein Nutzer, Brennstoff-Selbstversorgung.'] ] },
-      { h: 'Was offen ist', p: [
-        ['warn', 'Die Zählerstände der Übergabe vom 01.06.2026 liegen nur im Papier-Protokoll. Ohne Anfangsstand lässt sich der Wasserverbrauch für 2026 nicht abrechnen — das ist der Blocker der ersten Abrechnung.'] ] }
+        ['', 'Zum 31.12. alle Zählerstände und den Öltank-Füllstand sichern — Basis der Abrechnung (§ 556 BGB).'],
+        ['krit', 'Die Abrechnung muss bis 31.12.2027 <b>zugehen</b>, nicht abgeschickt sein — sonst ist die Nachforderung verloren.'],
+        ['', 'Der Mieter kann zwölf Monate ab Zugang widersprechen.'],
+        ['gut', 'HeizkostenV gilt hier nicht: ein Haus, ein Nutzer, Selbstversorgung.'] ] },
+      { h: 'Blocker', p: [
+        ['warn', 'Die <b>Übergabestände vom 01.06.2026</b> liegen nur auf Papier. Ohne Anfangsstand keine Wasserabrechnung.'] ] }
     ],
-    links: [['#nebenkosten/abrechnung', 'Abrechnung 2026'], ['#fristen/jahr', 'Jahreskalender'],
-      ['#aufgaben/offen', 'Offene Punkte']]
+    links: [['#nebenkosten/abrechnung', 'Abrechnung 2026'], ['#fristen/jahr', 'Jahreskalender']]
   },
   {
     id: 'garten', titel: 'Garten &amp; Zaun',
-    lead: 'Gartenpflege, Reinigung und Winterdienst der Alleinnutzflächen liegen beim Mieter. Die Verkehrssicherungspflicht und der Zaun bleiben trotzdem bei Ihnen — deshalb: hinsehen und notieren.',
+    lead: 'Pflege, Reinigung und Winterdienst liegen beim Mieter. Kontrolle, Baum und Zaun bleiben bei Ihnen.',
     fakten: [['Gartenpflege', 'Mieter'], ['Winterdienst', 'Mieter'],
-      ['Baumkontrolle', 'Vermieter, 1–2× im Jahr'], ['Zaun', 'Vermietersache']],
+      ['Baumkontrolle', 'Vermieter'], ['Zaun', 'Vermieter']],
     bloecke: [
       { h: 'Was gilt', p: [
-        ['gut', 'Reinigung, Gartenpflege und Winterdienst der Alleinnutzflächen sind auf den Mieter übertragen (§ 20 Mietvertrag).'],
-        ['warn', 'Die Übertragung entbindet <b>nicht</b> von der Verkehrssicherungspflicht (§ 823 BGB): Sie müssen kontrollieren, ob der Mieter sie tatsächlich erfüllt.'],
-        ['', 'Winterdienst-Kontrolle von November bis März — dokumentierte Stichproben genügen. Nicht umlagefähig.'],
-        ['warn', 'Die <b>Baumkontrolle</b> bleibt in jedem Fall Vermietersache: ein- bis zweimal im Jahr Sichtprüfung mit Foto-Doku (§ 823 BGB). Nach einem Sturmschaden ist genau diese Doku der Entlastungsbeweis.'],
-        ['warn', 'Die Haus- und Grundbesitzerhaftpflicht muss das vermietete Objekt decken. Ob die vorhandene Police das tut, ist noch nicht geprüft.'] ] },
+        ['gut', 'Auf den Mieter übertragen (§ 20 Mietvertrag) — die <b>Verkehrssicherungspflicht bleibt bei Ihnen</b> (§ 823 BGB).'],
+        ['warn', '<b>Baumkontrolle</b> ein- bis zweimal im Jahr mit Foto-Doku. Nach einem Sturmschaden ist das der Entlastungsbeweis.'],
+        ['', 'Winterdienst-Stichproben von November bis März dokumentieren.'] ] },
       { h: 'Der Zaun', p: [
-        ['', 'Die Einfriedung gehört zum Gebäude, nicht zur Nutzung: <b>Instandhaltung ist Vermietersache</b> und nicht umlagefähig (§ 1 Abs. 2 BetrKV). Der Mieter pflegt nur, was drumherum wächst.'],
-        ['warn', '<b>Wo steht er?</b> Auf der Grenze ist der Zaun eine Grenzeinrichtung (§§ 921, 922 BGB): beide Nachbarn nutzen ihn gemeinsam, tragen die Unterhaltung <b>je zur Hälfte</b>, und keiner darf ihn ohne Zustimmung des anderen beseitigen oder verändern. Steht er ganz auf dem eigenen Grundstück, gehört er allein — und kostet allein.'],
-        ['warn', 'Welcher der beiden Fälle hier vorliegt, ist nirgends erfasst. Bei einer Erneuerung entscheidet genau das, wer zahlt — vor dem ersten Angebot klären.'],
-        ['krit', '<b>Verkehrssicherung:</b> ein morscher Zaun, der auf den Gehweg oder ins Nachbargrundstück kippt, ist Ihre Haftung (§ 823 BGB) — auch wenn der Garten dem Mieter übertragen ist. Die jährliche Objektbegehung deckt das mit ab.'],
-        ['', 'Art und Höhe einer Einfriedung richten sich nach Landesrecht (Nachbarrechtsgesetz Baden-Württemberg) und der örtlichen Satzung. Vor Ersatz, Erhöhung oder Materialwechsel prüfen — sonst droht ein Rückbauverlangen des Nachbarn.'] ] }
+        ['warn', '<b>Wo steht er?</b> Auf der Grenze tragen beide Nachbarn die Unterhaltung je zur Hälfte (§§ 921, 922 BGB) — auf eigenem Grund tragen Sie sie allein. Nicht erfasst.'],
+        ['', 'Instandhaltung ist Vermietersache und nicht umlagefähig.'],
+        ['krit', 'Ein morscher Zaun, der kippt, ist Ihre Haftung — auch bei übertragenem Garten.'],
+        ['', 'Art und Höhe nach Nachbarrechtsgesetz BW und örtlicher Satzung — vor Ersatz prüfen.'] ] }
     ],
-    links: [['#fristen/jahr', 'Jahreskalender'], ['#fristen/zyklen', 'Prüfzyklen'],
-      ['#aufgaben/versicherung', 'Versicherungen']]
+    links: [['#fristen/jahr', 'Jahreskalender'], ['#aufgaben/versicherung', 'Versicherungen']]
   }
 ];
 
@@ -2001,9 +1985,10 @@ function baueHausSeiten() {
         '<div class="tdfakt"><div class="tdk">' + f[0] + '</div><div class="tdv">' +
         f[1] + '</div></div>').join('') + '</div>' : '') +
       (t.grundriss ? etagenHtml() : '') +
-      t.bloecke.map((b) => '<section class="tdabschnitt"><h3>' + b.h + '</h3><ul class="tdliste">' +
+      '<div class="hausbloecke">' + t.bloecke.map((b) =>
+        '<section class="tdabschnitt"><h3>' + b.h + '</h3><ul class="tdliste">' +
         b.p.map((z) => '<li><span class="tdpunkt ' + z[0] + '"></span><span>' + z[1] +
-          '</span></li>').join('') + '</ul></section>').join('') +
+          '</span></li>').join('') + '</ul></section>').join('') + '</div>' +
       '<div class="tdlinks">' + t.links.map((l) =>
         '<a href="' + l[0] + '">' + l[1] + '</a>').join('') + '</div>';
   });
