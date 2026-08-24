@@ -223,7 +223,7 @@
   /* Übersicht (Landing): Lage-Zeile, Haus-Schaubild, Kalenderblätter, Geld-Bilanz */
   .lagekarte{display:flex;gap:12px;align-items:flex-start;background:var(--c-surface-2);
     border:1px solid var(--c-line);border-left:4px solid var(--c-good);border-radius:var(--radius-s);
-    padding:12px 16px;font-size:15px;line-height:1.5;grid-column:1/-1}
+    padding:12px 16px;font-size:15px;line-height:1.5;margin-bottom:var(--sp-s)}
   .lagekarte.warnung{border-left-color:var(--c-warn)} .lagekarte.kritisch{border-left-color:var(--c-crit)}
   .lagekarte .ldot{width:10px;height:10px;border-radius:50%;background:var(--c-good);flex:none;margin-top:7px}
   .lagekarte.warnung .ldot{background:var(--c-warn)} .lagekarte.kritisch .ldot{background:var(--c-crit)}
@@ -241,7 +241,7 @@
   .haus-dach{fill:var(--c-accent-bg);stroke:var(--c-accent);stroke-width:2}
   .hm .hv{stroke:var(--c-bg);stroke-width:2}
   .hm text{fill:var(--c-bg);font-weight:700;font-size:15px;text-anchor:middle;font-family:var(--sans)}
-  .hm.ok .hv{fill:var(--c-accent)} .hm.mahnung .hv{fill:var(--c-warn)} .hm.krit .hv{fill:var(--c-crit)}
+  .hm .hv{fill:var(--c-accent)}
   .hm{cursor:pointer}
   .hm:hover .hv{stroke:var(--c-ink)}
   /* Fokus auf einem SVG-<g>: outline zeichnen manche Engines nicht — der dickere
@@ -253,8 +253,6 @@
   .rauch{fill:var(--c-ink-faint);opacity:0;animation:rauch 6s ease-out infinite}
   .rauch.r2{animation-duration:7s;animation-delay:2s}
   .rauch.r3{animation-duration:8s;animation-delay:4s}
-  @keyframes krit-puls{0%,100%{r:17}50%{r:20}}
-  .hm.krit .hv{animation:krit-puls 2.2s ease-in-out infinite}
   .hauslegende{list-style:none;margin:0;padding:0;display:grid;gap:6px}
   .hauslegende button{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;
     width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;border:0;
@@ -262,8 +260,7 @@
   .hauslegende button:hover{background:var(--c-surface-2)}
   .hauslegende .lnr{width:26px;height:26px;border-radius:50%;color:var(--c-bg);font-weight:700;
     font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:2px}
-  .hauslegende .lnr.ok{background:var(--c-accent)} .hauslegende .lnr.mahnung{background:var(--c-warn)}
-  .hauslegende .lnr.krit{background:var(--c-crit)}
+  .hauslegende .lnr{background:var(--c-accent)}
   .hauslegende b{display:block;font-size:14px}
   .hauslegende span.ltxt{font-size:12.5px;color:var(--c-ink-soft);line-height:1.45}
   /* Der Keller ist ein Schnitt: das Erdreich wird schraffiert, damit der Kasten
@@ -281,9 +278,7 @@
   .tdkopf{display:flex;gap:12px;align-items:center;padding:var(--sp-m) var(--sp-m) var(--sp-xs);
     border-bottom:1px solid var(--c-line)}
   .tdnr{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;
-    justify-content:center;color:var(--c-bg);font-weight:700;font-size:14px}
-  .tdnr.ok{background:var(--c-accent)} .tdnr.mahnung{background:var(--c-warn)}
-  .tdnr.krit{background:var(--c-crit)}
+    justify-content:center;background:var(--c-accent);color:var(--c-bg);font-weight:700;font-size:14px}
   .tdkopf h2{font-size:19px;min-width:0}
   .tdkopf form{margin:0 0 0 auto}
   .tdx{width:40px;height:40px;border-radius:50%;border:1px solid var(--c-line);cursor:pointer;
@@ -698,7 +693,7 @@
         <div class="sekkopf"><h2 id="h-haus">Das Haus auf einen Blick</h2></div>
         <div class="karte hauskarte">
           <div class="haus-svg">
-            <svg viewBox="0 0 640 392" role="group" aria-label="Schaubild des Hauses: Dach, Obergeschoss, Erdgeschoss, Keller mit Heizung und Zählern, Garage und eingezäunter Garten — sieben anklickbare Punkte">
+            <svg viewBox="0 0 640 392" role="group" aria-label="Schaubild des Hauses: Dach, Obergeschoss, Erdgeschoss, Keller mit Heizung und Zählern, Garage und eingezäunter Garten — sechs anklickbare Punkte">
               <defs>
                 <pattern id="erdreich" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                   <line x1="0" y1="0" x2="0" y2="11" stroke="var(--c-line)" stroke-width="1.5"/>
@@ -769,9 +764,6 @@
             </svg>
           </div>
           <ol class="hauslegende" id="hausLegende"></ol>
-          <div class="lagekarte" id="lagekarte"><span class="ldot"></span>
-            <div><b id="h-status"></b><div class="lagelinks" id="lagelinks"></div></div>
-          </div>
         </div>
       </section>
 
@@ -786,6 +778,9 @@
       <section aria-labelledby="h-ampel">
         <div class="sekkopf"><h2 id="h-ampel">Wie läuft die Immobilie?</h2>
           <span class="hinweis">Grün = läuft · Orange = Pflege oder Stammdatum fehlt · Rot = Handlungsbedarf mit rechtlichem oder finanziellem Risiko</span></div>
+        <div class="lagekarte" id="lagekarte"><span class="ldot"></span>
+          <div><b id="h-status"></b><div class="lagelinks" id="lagelinks"></div></div>
+        </div>
         <div class="karte"><div class="ampel" id="ampel"></div></div>
       </section>
 
@@ -1725,10 +1720,10 @@ const m2 = (n) => n.toFixed(1).replace('.', ',') + ' m²';
    x/y sind Koordinaten im viewBox 0 0 640 392. */
 const HAUS = [
   {
-    nr: 1, id: 'dach', cls: 'mahnung', x: 285, y: 100, titel: 'Dach',
-    aria: 'Dach: 2026 neu gedeckt, die Belege fehlen noch',
-    kurz: '2026 neu gedeckt — die Rechnungen fehlen noch.',
-    lead: 'Die Arbeit ist erledigt, das Dach ist 2026 komplett neu gedeckt worden. Offen sind die Belege — und daran hängt bares Geld.',
+    nr: 1, id: 'dach', x: 285, y: 100, titel: 'Dach',
+    aria: 'Dach: Eindeckung, Dämmung und was steuerlich daran hängt',
+    kurz: 'Eindeckung, Dämmung und was steuerlich daran hängt.',
+    lead: 'Das Dach ist 2026 komplett neu gedeckt worden. Die Arbeit ist erledigt, offen sind die Belege — und daran hängt bares Geld.',
     fakten: [['Zustand', '2026 neu gedeckt'], ['Belege', 'fehlen'],
       ['Steuerlich', 'Erhaltungsaufwand'], ['Umlagefähig', 'nein']],
     bloecke: [
@@ -1747,9 +1742,9 @@ const HAUS = [
       ['#geld/reparaturen', 'Reparaturen']]
   },
   {
-    nr: 2, id: 'grundriss', cls: 'ok', x: 285, y: 182, titel: 'Haus &amp; Grundriss',
-    aria: 'Haus und Grundriss: Wohnfläche und Aufteilung nach Etagen',
-    kurz: 'Freistehendes Einfamilienhaus von 1969 — Fläche und Aufteilung.',
+    nr: 2, id: 'grundriss', x: 285, y: 182, titel: 'Haus &amp; Grundriss',
+    aria: 'Haus und Grundriss: Bauart, Flächen, Aufteilung und Energieausweis',
+    kurz: 'Bauart, Flächen, Aufteilung und der Energieausweis.',
     lead: 'Freistehendes Einfamilienhaus, Baujahr 1969. Die Wohnfläche ist nach der Wohnflächenverordnung ermittelt (Berechnung V1.0 vom 23.04.2026) — hier stehen nur die angerechneten Flächen, keine Raummaße.',
     grundriss: true,
     bloecke: [
@@ -1758,40 +1753,24 @@ const HAUS = [
         ['', 'Keller und Dachboden werden nach WoFlV mit 0 % angerechnet und stecken deshalb nicht in der Wohnfläche.'],
         ['', 'Terrasse und Balkon zählen mit 25 % ihrer Grundfläche — tatsächlich sind es 51,1 m² und 23,0 m².'],
         ['warn', 'Grundstück: ca. 595 m² laut Stammdaten und Wohnflächenberechnung; die Nebenkosten-Vorausschau nennt ca. 550 m². Die Abweichung ist ungeklärt, für keine Kennzahl im Cockpit aber relevant.'] ] },
+      { h: 'Energieausweis', p: [
+        ['krit', '<b>Es gibt keinen.</b> Vorlagepflicht besteht bei Besichtigung und Vertragsschluss (§ 80 GEG) — bei der Vermietung 06/2026 wurde sie nicht erfüllt.'],
+        ['krit', 'Bußgeld bis 10.000 € möglich (§ 108 GEG).'],
+        ['', 'Baujahr 1969 und weniger als fünf Wohneinheiten: es muss ein <b>Bedarfsausweis</b> sein, ein Verbrauchsausweis genügt nicht. Gültigkeit dann 10 Jahre.'],
+        ['gut', 'Für das laufende Mietverhältnis besteht keine fortlaufende Pflicht — nachholen senkt trotzdem das Risiko, und für jede Neuvermietung und jeden Verkauf ist er zwingend.'],
+        ['warn', 'Energieberater beauftragen und die energetische Sanierung — Fassadendämmung und Dach 2026 — bereithalten: sie verbessert das Ergebnis. Ausstellungs- und Ablaufdatum danach ins Cockpit.'] ] },
       { h: 'Woran die Fläche hängt', p: [
         ['', 'Die Wohnfläche ist der Nenner jeder Vergleichsmiete: aktuell <b>10,13 €/m²</b> Kaltmiete.'],
         ['', 'Sie steuert auch die Rücklagen-Richtwerte, die je m² und Jahr gerechnet werden.'],
         ['warn', 'Weicht die tatsächliche Fläche um mehr als 10 % nach unten ab, kann der Mieter mindern — deshalb ist die Berechnung nach WoFlV der belastbare Beleg, nicht eine Zahl aus dem Exposé.'] ] }
     ],
-    links: [['#mietverhaeltnis/vertrag', 'Objekt &amp; Vertrag'],
+    links: [['#mietverhaeltnis/vertrag', 'Objekt &amp; Vertrag'], ['#aufgaben/offen', 'Offene Punkte'],
       ['#mietverhaeltnis/radar', 'Erhöhungs-Radar'], ['#nebenkosten/kalkulation', 'NK-Kalkulation']]
   },
   {
-    nr: 3, id: 'energieausweis', cls: 'krit', x: 282, y: 262, titel: 'Energieausweis',
-    aria: 'Energieausweis: fehlt, Bedarfsausweis erstellen lassen',
-    kurz: 'Fehlt — der teuerste offene Punkt am Haus.',
-    lead: 'Es gibt keinen Energieausweis. Bei der Vermietung im Juni 2026 hätte er vorliegen und vorgelegt werden müssen.',
-    fakten: [['Status', 'fehlt'], ['Pflichttyp', 'Bedarfsausweis'],
-      ['Bußgeldrahmen', 'bis 10.000 €'], ['Gültigkeit', '10 Jahre']],
-    bloecke: [
-      { h: 'Was gilt', p: [
-        ['krit', 'Vorlagepflicht bei Besichtigung und Vertragsschluss (§ 80 GEG) — bei der Vermietung 06/2026 nicht erfüllt.'],
-        ['krit', 'Bußgeld bis 10.000 € möglich (§ 108 GEG).'],
-        ['', 'Baujahr 1969 und weniger als fünf Wohneinheiten: es muss ein <b>Bedarfsausweis</b> sein, ein Verbrauchsausweis genügt nicht.'],
-        ['gut', 'Für das laufende Mietverhältnis besteht keine fortlaufende Pflicht — nachholen senkt trotzdem das Risiko.'],
-        ['', 'Für jede künftige Neuvermietung und für einen Verkauf ist er zwingend.'] ] },
-      { h: 'Was zu tun ist', p: [
-        ['krit', 'Energieberater oder Ausweis-Dienst beauftragen.'],
-        ['', 'Die energetische Sanierung — Fassadendämmung und Dach 2026 — bereithalten: sie verbessert das Ergebnis.'],
-        ['', 'Ausstellungs- und Ablaufdatum danach ins Cockpit eintragen, damit die Zehnjahresfrist überwacht wird.'] ] }
-    ],
-    links: [['#aufgaben/offen', 'Offene Punkte'], ['#aufgaben/recht', 'Rechtsstand'],
-      ['#fristen/zyklen', 'Prüfzyklen']]
-  },
-  {
-    nr: 4, id: 'heizung', cls: 'mahnung', x: 224, y: 338, titel: 'Heizung &amp; Öltank',
-    aria: 'Heizung und Öltank im Keller: Wartung bis 30. September, Stammdaten fehlen',
-    kurz: 'Im Keller — Wartung bis 30.09., drei Stammdaten fehlen.',
+    nr: 3, id: 'heizung', x: 224, y: 338, titel: 'Heizung &amp; Öltank',
+    aria: 'Heizung und Öltank im Keller: Betrieb, Wartung und Prüfpflichten',
+    kurz: 'Ölheizung im Keller: Betrieb, Wartung, Prüfpflichten.',
     lead: 'Ölheizung mit Tank im Keller. Das Heizöl beschafft und bezahlt der Mieter selbst; die Anlage bleibt Ihre Sache — und dafür fehlen drei Stammdaten.',
     fakten: [['Anlage', 'Ölheizung mit Tank'], ['Brennstoff', 'Mieter beschafft selbst'],
       ['Heizperiode', '01.10.–30.04.'], ['Wartung', 'jährlich bis 30.09.']],
@@ -1814,9 +1793,9 @@ const HAUS = [
       ['#nebenkosten/co2', 'CO₂-Erstattung'], ['#aufgaben/versicherung', 'Versicherungen']]
   },
   {
-    nr: 5, id: 'zaehler', cls: 'ok', x: 350, y: 332, titel: 'Zähler &amp; Ablesung',
-    aria: 'Zählerkasten im Keller: am 31. Dezember alle Zähler und den Öltank ablesen',
-    kurz: 'Im Keller — am 31.12. alles ablesen.',
+    nr: 4, id: 'zaehler', x: 350, y: 332, titel: 'Zähler &amp; Ablesung',
+    aria: 'Zähler und Ablesung im Keller: Ablesung und Abrechnungsgrundlage',
+    kurz: 'Zählerkasten im Keller: Ablesung und Abrechnungsgrundlage.',
     lead: 'Zählerkasten und Öltank stehen im Keller. Einmal im Jahr ablesen — daran hängt die komplette Nebenkostenabrechnung.',
     fakten: [['Ablesetermin', '31.12.'], ['Erste Abrechnung', '01.06.–31.12.2026'],
       ['Interne Deadline', '31.10.2027'], ['Ausschlussfrist', '31.12.2027']],
@@ -1834,9 +1813,9 @@ const HAUS = [
       ['#aufgaben/offen', 'Offene Punkte']]
   },
   {
-    nr: 6, id: 'miete', cls: 'ok', x: 127, y: 248, titel: 'Briefkasten: die Miete',
-    aria: 'Briefkasten: die Miete kommt monatlich und gilt vereinfacht als bezahlt',
-    kurz: 'Kommt monatlich — gilt vereinfacht als bezahlt.',
+    nr: 5, id: 'miete', x: 127, y: 248, titel: 'Briefkasten: die Miete',
+    aria: 'Briefkasten: was monatlich fällig ist und was bei Verzug gilt',
+    kurz: 'Was monatlich fällig ist und was bei Verzug gilt.',
     lead: 'Jeder begonnene Monat seit Juni 2026 gilt im Cockpit als voll bezahlt. Einzelne Zahlungen werden nicht geprüft — bleibt einmal etwas aus, melden Sie den Monat, dann rechnet das Cockpit den Rückstand.',
     fakten: [['Soll je Monat', eur0(DATEN.soll_monat)], ['davon Kaltmiete', eur0(DATEN.kaltmiete)],
       ['Nebenkosten-Vorschuss', eur0(DATEN.bk_vz)], ['Kaltmiete je m²', '10,13 €']],
@@ -1853,9 +1832,9 @@ const HAUS = [
       ['#geld/bilanz', 'Bilanz &amp; Cashflow']]
   },
   {
-    nr: 7, id: 'garten', cls: 'ok', x: 563, y: 168, titel: 'Garten &amp; Zaun',
-    aria: 'Garten, Zaun und Winterdienst: machen die Mieter, die Kontrolle bleibt beim Vermieter',
-    kurz: 'Machen die Mieter — die Kontrolle bleibt bei Ihnen.',
+    nr: 6, id: 'garten', x: 563, y: 168, titel: 'Garten &amp; Zaun',
+    aria: 'Garten und Zaun: Pflege, Winterdienst und Haftung',
+    kurz: 'Wer pflegt, wer räumt — und wer haftet.',
     lead: 'Gartenpflege, Reinigung und Winterdienst der Alleinnutzflächen liegen beim Mieter. Die Verkehrssicherungspflicht bleibt trotzdem bei Ihnen — deshalb: hinsehen und notieren.',
     fakten: [['Gartenpflege', 'Mieter'], ['Winterdienst', 'Mieter'],
       ['Baumkontrolle', 'Vermieter, 1–2× im Jahr'], ['Grundstück', 'ca. 595 m²']],
@@ -1900,9 +1879,7 @@ function etagenHtml() {
 function oeffneThema(id) {
   const t = HAUS.find((x) => x.id === id);
   if (!t) return;
-  const nr = document.getElementById('themaNr');
-  nr.className = 'tdnr ' + t.cls;
-  nr.textContent = t.nr;
+  document.getElementById('themaNr').textContent = t.nr;
   document.getElementById('themaTitel').innerHTML = t.titel;
   const body = document.getElementById('themaBody');
   body.innerHTML =
@@ -1936,14 +1913,14 @@ document.addEventListener('keydown', (e) => {
 /* ===== Übersicht (Landing): Haus-Schaubild, Kalenderblätter, Geld, Bereichs-Karten ===== */
 function baueUebersicht() {
   document.getElementById('hausMarken').innerHTML = HAUS.map((t) =>
-    '<g class="hm ' + t.cls + '" data-thema="' + t.id + '" role="button" tabindex="0" aria-label="' + t.aria + '">' +
+    '<g class="hm" data-thema="' + t.id + '" role="button" tabindex="0" aria-label="' + t.aria + '">' +
     '<circle cx="' + t.x + '" cy="' + t.y + '" r="26" fill="transparent"/>' +
     '<circle class="hv" cx="' + t.x + '" cy="' + t.y + '" r="17"/>' +
     '<text x="' + t.x + '" y="' + (t.y + 5) + '">' + t.nr + '</text></g>').join('');
 
   document.getElementById('hausLegende').innerHTML = HAUS.map((t) =>
     '<li><button type="button" data-thema="' + t.id + '">' +
-    '<span class="lnr ' + t.cls + '">' + t.nr + '</span>' +
+    '<span class="lnr">' + t.nr + '</span>' +
     '<span><b>' + t.titel + '</b><span class="ltxt">' + t.kurz + '</span></span></button></li>').join('');
 
   const MONK = ['JAN', 'FEB', 'MRZ', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEZ'];
