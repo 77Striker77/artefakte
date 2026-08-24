@@ -184,7 +184,10 @@ img{image-rendering:pixelated}
    Flaeche und der Tauchgang faengt erst darunter an. */
 .leiste{position:sticky; top:0; z-index:1000; background:var(--tiefe-tief);
         border-bottom:var(--rand) solid var(--see)}
-.leiste-innen{max-width:var(--mass); margin:0 auto; padding:0 var(--sp-m);
+/* position:relative traegt die Handy-Tafel, die ueber die volle Leistenbreite
+   aufklappt statt als schmale Spalte am rechten Rand. */
+.leiste-innen{position:relative;
+              max-width:var(--mass); margin:0 auto; padding:0 var(--sp-m);
               display:flex; align-items:center; gap:var(--sp-m); min-height:62px}
 .marke{font-family:var(--display); font-size:23px; font-weight:700; text-decoration:none;
        color:var(--auf-tiefe); white-space:nowrap; letter-spacing:.02em;
@@ -269,6 +272,22 @@ img{image-rendering:pixelated}
 .untermenue-tafel a:last-child{border-bottom:0}
 .untermenue-tafel a:hover{background:var(--flaeche-2)}
 .untermenue-tafel a[aria-current="page"]{background:var(--akzent-weich); color:var(--akzent-text)}
+
+/* ---------- Das Menue fuer schmale Geraete ----------
+ * Am Schreibtisch gibt es das nicht: dort ist die Leiste vollstaendig sichtbar
+ * und damit die bessere Navigation. Es erscheint erst, wo gemessen kein Platz
+ * mehr ist (siehe den Handy-Block weiter unten). */
+.hauptmenue{display:none}
+/* Drei Balken als Pixelform, passend zu den uebrigen Marken - und mit dem Wort
+   "Menü" daneben, weil ein blankes Symbol uebersehen wird. */
+.mbalken{width:15px; height:11px; flex:none;
+         background:linear-gradient(currentColor 0 3px, transparent 3px 4px,
+                    currentColor 4px 7px, transparent 7px 8px,
+                    currentColor 8px 11px)}
+.menuegruppe{display:block; padding:var(--sp-xs) var(--sp-m) 4px;
+             font-family:var(--zahl); font-size:9.5px; letter-spacing:.12em;
+             text-transform:uppercase; color:var(--tinte-fein);
+             border-bottom:2px solid var(--linie); background:var(--flaeche-2)}
 
 .huelle{max-width:var(--mass); margin:0 auto; padding:var(--sp-l) var(--sp-m) var(--sp-xl)}
 .eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
@@ -428,6 +447,32 @@ h3{font-family:var(--display); font-size:17px}
   .leiste-innen{gap:var(--sp-xs); padding:0 var(--sp-s)}
   .menue a{padding:0 var(--sp-xs); font-size:14px}
   .untermenue > summary{padding:0 var(--sp-xs); font-size:14px}
+}
+
+/* Ab hier reicht der Platz fuer die volle Leiste nicht mehr. Der Wert ist
+   gemessen, nicht gegriffen: bei 768 px passen alle Teile nebeneinander
+   (272 px Menue, beides sichtbar), bei 430 px war nur noch einer von zwei
+   Links ganz zu sehen und bei 320 px keiner. */
+@media (max-width:719px){
+  /* Von der Leiste bleibt der Quartierort - die Seite, auf der man vor Ort
+     landet. Alles andere steht im Menue. */
+  .menue{overflow-x:visible}
+  .menue a:not(.quartierpunkt){display:none}
+  .untermenue:not(.hauptmenue){display:none}
+  .hauptmenue{display:inline-flex}
+
+  /* Die Tafel nimmt die volle Breite: eine 11rem breite Spalte am rechten Rand
+     verschenkt auf 320 px die Haelfte des Schirms und macht die Zeilen eng. */
+  .hauptmenue{position:static}
+  .hauptmenue .untermenue-tafel{
+    position:absolute; left:var(--sp-s); right:var(--sp-s); top:100%;
+    /* dvh, nicht vh: auf dem Handy rechnet 100vh die eingeblendete
+       Adressleiste mit, und die Tafel reicht dann unter den Schirmrand.
+       Die vh-Zeile bleibt als Rueckfall fuer aeltere Browser darueber. */
+    max-height:calc(100vh - 62px - var(--sp-m));
+    max-height:calc(100dvh - 62px - var(--sp-m));
+    overflow-y:auto}
+  .hauptmenue .untermenue-tafel a{min-height:48px; font-size:15px}
 }
 
 @media (prefers-reduced-motion: reduce){

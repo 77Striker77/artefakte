@@ -52,6 +52,7 @@ window.reich = function (s) {
       st.setAttribute("aria-hidden", "true");
       a.append(st, document.createTextNode(o.name));
       a.title = o.name + " — hier liegt das gewählte Hotel";
+      a.classList.add("quartierpunkt");
     } else {
       a.textContent = o.name;
     }
@@ -89,6 +90,86 @@ window.reich = function (s) {
     mehr.before(d);
   }
 
+  /* ---------- Das Menue fuer schmale Geraete ----------
+     Gemessen: bei 320 px blieben von der schiebenden Leiste 63 px uebrig und
+     KEIN Link war ganz sichtbar - die beiden Aufklapper stehen auf flex:none
+     und nehmen 150 px fest, waehrend ausgerechnet der Teil mit den Seitenlinks
+     der einzige ist, der schrumpfen darf. Der Breiten-Pruefstand meldet das
+     nicht: es ist kein Ueberhang, die Leiste schiebt sauber. Sie ist nur
+     unbedienbar.
+
+     Nicht alles verschwindet dafuer hinter einem Knopf. Versteckte Navigation
+     halbiert nachweislich die Auffindbarkeit (NN/g, 179 Teilnehmende: sichtbare
+     Navigation 1,5-mal so oft benutzt, Aufgaben 2,5 s laenger, 15 % schwerer
+     empfunden). Was dort gewinnt, ist der Hybrid - sichtbare Leiste plus ein
+     beschrifteter Aufklapper fuer den Rest. Hier heisst das:
+
+       sichtbar bleibt  der Quartierort mit Stern (die Seite, auf der man vor
+                        Ort tatsaechlich landet)
+       ins Menue kommt  alles uebrige, mit Zwischenueberschriften statt einer
+                        zweiten Klappebene - die Staedte sind die Gruppe, die
+                        man am haeufigsten braucht, und ein zweiter Tipp genau
+                        dort waere der falsche Ort zum Sparen
+       faellt weg       "Uebersicht" in der Leiste: die Marke links verlinkt
+                        auf dieselbe Seite. Im Menue steht der Punkt weiter.
+
+     Das Symbol traegt ein Wort. Ein blanker Hamburger wird uebersehen - in
+     derselben Untersuchung war das der Unterschied zwischen 44 % und 89 %
+     Navigationsnutzung. */
+  const mehrLinks = mehr ? [...mehr.querySelectorAll("a")]
+    .map((a) => ({ href: a.getAttribute("href"), text: a.textContent.trim() })) : [];
+
+  if (orte.length || mehrLinks.length) {
+    const d = document.createElement("details");
+    d.className = "untermenue hauptmenue";
+    const s = document.createElement("summary");
+    s.setAttribute("aria-label", "Alle Seiten");
+    const bal = document.createElement("span");
+    bal.className = "mbalken";
+    bal.setAttribute("aria-hidden", "true");
+    s.append(bal, document.createTextNode("Menü"));
+    const tafel = document.createElement("div");
+    tafel.className = "untermenue-tafel";
+
+    const gruppe = (titel) => {
+      const h = document.createElement("span");
+      h.className = "menuegruppe";
+      h.textContent = titel;
+      tafel.append(h);
+    };
+    const link = (href, text, stern) => {
+      const a = document.createElement("a");
+      a.href = href;
+      if (stern) {
+        const st = document.createElement("span");
+        st.className = "menuestern";
+        st.textContent = "★";
+        st.setAttribute("aria-hidden", "true");
+        a.append(st, document.createTextNode(text));
+      } else {
+        a.textContent = text;
+      }
+      tafel.append(a);
+    };
+
+    /* Die Uebersicht steht hier weiterhin, obwohl die Marke dorthin fuehrt -
+       die Marke als Startseiten-Link ist Konvention, aber keine Beschriftung. */
+    const start = document.querySelector(".menue a[href='index.html']");
+    if (start) link("index.html", start.textContent.trim(), false);
+    quartiere.forEach((o) => link(o.seite, o.name, true));
+    if (staedte.length) {
+      gruppe("Städte");
+      staedte.forEach((o) => link(o.seite, o.name, false));
+    }
+    if (mehrLinks.length) {
+      gruppe("Mehr");
+      mehrLinks.forEach((m) => link(m.href, m.text, false));
+    }
+
+    d.append(s, tafel);
+    document.querySelector(".leiste-innen").append(d);
+  }
+
   // Auch die Links im Untermenue: das steht seit dem Klipprand-Umbau NEBEN
   // .menue, nicht mehr darin - ein Selektor nur auf ".menue a" liesse die
   // Hotelseite so aussehen, als waere man nirgends.
@@ -103,7 +184,8 @@ window.reich = function (s) {
      sonst sieht die Leiste auf der Hotelseite so aus, als waere man nirgends.
      Seit es zwei Aufklapper gibt (Staedte und Mehr), laeuft das ueber alle. */
   document.querySelectorAll(".untermenue").forEach((unter) => {
-    if (unter.querySelector('a[aria-current="page"]')) unter.classList.add("hier");
+    if (!unter.classList.contains("hauptmenue")
+      && unter.querySelector('a[aria-current="page"]')) unter.classList.add("hier");
 
     /* Ein Klick daneben schliesst das Menue. <details> tut das von sich aus
        nicht - es bliebe offen stehen, bis man den Aufklapper erneut trifft.
