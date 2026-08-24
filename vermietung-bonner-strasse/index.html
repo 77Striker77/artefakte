@@ -625,71 +625,78 @@
   <main id="inhalt" tabindex="-1">
 
   <div class="view" id="v-uebersicht">
-    <section aria-labelledby="h-haus">
-      <div class="sekkopf"><h2 id="h-haus">Das Haus auf einen Blick</h2></div>
-      <div class="karte hauskarte">
-        <div class="haus-svg">
-          <svg viewBox="0 0 640 340" role="group" aria-label="Schaubild des Hauses mit sechs anklickbaren Themen-Punkten: Dach, Heizung und Öltank, Briefkasten für die Miete, Zählerkasten, Energieausweis an der Haustür, Garten">
-            <line x1="20" y1="300" x2="620" y2="300" stroke="var(--c-line-strong)" stroke-width="2"/>
-            <circle class="rauch" cx="342" cy="58" r="6"/>
-            <circle class="rauch r2" cx="344" cy="50" r="8"/>
-            <circle class="rauch r3" cx="340" cy="44" r="10"/>
-            <rect class="haus-strich" x="330" y="72" width="24" height="52"/>
-            <polygon class="haus-dach" points="170,140 400,140 285,55"/>
-            <rect class="haus-strich" x="190" y="140" width="190" height="160"/>
-            <rect class="haus-hell" x="210" y="165" width="44" height="44"/>
-            <line x1="232" y1="165" x2="232" y2="209" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <line x1="210" y1="187" x2="254" y2="187" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <rect class="haus-hell" x="320" y="165" width="44" height="44"/>
-            <line x1="342" y1="165" x2="342" y2="209" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <line x1="320" y1="187" x2="364" y2="187" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <rect class="haus-hell" x="262" y="228" width="40" height="72"/>
-            <circle cx="293" cy="266" r="2.5" fill="var(--c-line-strong)"/>
-            <rect class="haus-strich" x="400" y="218" width="95" height="82"/>
-            <line x1="416" y1="218" x2="416" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <line x1="448" y1="218" x2="448" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <line x1="480" y1="218" x2="480" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
-            <rect class="haus-strich" x="110" y="248" width="58" height="52" rx="12"/>
-            <rect class="haus-strich" x="130" y="238" width="16" height="12"/>
-            <rect class="haus-strich" x="356" y="238" width="20" height="28"/>
-            <rect class="haus-strich" x="524" y="268" width="6" height="32"/>
-            <rect class="haus-hell" x="510" y="250" width="34" height="20"/>
-            <rect class="haus-strich" x="556" y="248" width="14" height="52"/>
-            <circle class="haus-strich" cx="563" cy="206" r="46"/>
-            <a class="hm mahnung" href="#aufgaben" aria-label="Dach: 2026 neu gedeckt, Rechnungen noch ablegen — zum Bereich Aufgaben"><circle cx="255" cy="105" r="26" fill="transparent"/><circle class="hv" cx="255" cy="105" r="17"/><text x="255" y="110">1</text></a>
-            <a class="hm mahnung" href="#aufgaben" aria-label="Heizung und Öltank: Wartung bis 30. September, Tankdaten klären — zum Bereich Aufgaben"><circle cx="139" cy="238" r="26" fill="transparent"/><circle class="hv" cx="139" cy="238" r="17"/><text x="139" y="243">2</text></a>
-            <a class="hm ok" href="#geld" aria-label="Briefkasten: die Miete, 2.575 Euro im Monat, gilt als bezahlt — zum Bereich Zahlungen"><circle cx="527" cy="240" r="26" fill="transparent"/><circle class="hv" cx="527" cy="240" r="17"/><text x="527" y="245">3</text></a>
-            <a class="hm ok" href="#nebenkosten" aria-label="Zählerkasten: am 31. Dezember alle Zähler ablesen — zum Bereich Nebenkosten"><circle cx="366" cy="226" r="26" fill="transparent"/><circle class="hv" cx="366" cy="226" r="17"/><text x="366" y="231">4</text></a>
-            <a class="hm krit" href="#aufgaben" aria-label="Energieausweis: fehlt noch, bitte erstellen lassen — zum Bereich Aufgaben"><circle cx="282" cy="215" r="26" fill="transparent"/><circle class="hv" cx="282" cy="215" r="17"/><text x="282" y="220">5</text></a>
-            <a class="hm ok" href="#fristen" aria-label="Garten und Winterdienst: machen die Mieter, gelegentlich kontrollieren — zum Bereich Fristen"><circle cx="563" cy="160" r="26" fill="transparent"/><circle class="hv" cx="563" cy="160" r="17"/><text x="563" y="165">6</text></a>
-          </svg>
+    <nav class="unternav" data-unternav="uebersicht" aria-label="Unterseiten der Übersicht"></nav>
+
+    <div class="unterseite" id="u-ueb-start">
+      <section aria-labelledby="h-haus">
+        <div class="sekkopf"><h2 id="h-haus">Das Haus auf einen Blick</h2></div>
+        <div class="karte hauskarte">
+          <div class="haus-svg">
+            <svg viewBox="0 0 640 340" role="group" aria-label="Schaubild des Hauses mit sechs anklickbaren Themen-Punkten: Dach, Heizung und Öltank, Briefkasten für die Miete, Zählerkasten, Energieausweis an der Haustür, Garten">
+              <line x1="20" y1="300" x2="620" y2="300" stroke="var(--c-line-strong)" stroke-width="2"/>
+              <circle class="rauch" cx="342" cy="58" r="6"/>
+              <circle class="rauch r2" cx="344" cy="50" r="8"/>
+              <circle class="rauch r3" cx="340" cy="44" r="10"/>
+              <rect class="haus-strich" x="330" y="72" width="24" height="52"/>
+              <polygon class="haus-dach" points="170,140 400,140 285,55"/>
+              <rect class="haus-strich" x="190" y="140" width="190" height="160"/>
+              <rect class="haus-hell" x="210" y="165" width="44" height="44"/>
+              <line x1="232" y1="165" x2="232" y2="209" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="210" y1="187" x2="254" y2="187" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="320" y="165" width="44" height="44"/>
+              <line x1="342" y1="165" x2="342" y2="209" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="320" y1="187" x2="364" y2="187" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-hell" x="262" y="228" width="40" height="72"/>
+              <circle cx="293" cy="266" r="2.5" fill="var(--c-line-strong)"/>
+              <rect class="haus-strich" x="400" y="218" width="95" height="82"/>
+              <line x1="416" y1="218" x2="416" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="448" y1="218" x2="448" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <line x1="480" y1="218" x2="480" y2="300" stroke="var(--c-line-strong)" stroke-width="1.5"/>
+              <rect class="haus-strich" x="110" y="248" width="58" height="52" rx="12"/>
+              <rect class="haus-strich" x="130" y="238" width="16" height="12"/>
+              <rect class="haus-strich" x="356" y="238" width="20" height="28"/>
+              <rect class="haus-strich" x="524" y="268" width="6" height="32"/>
+              <rect class="haus-hell" x="510" y="250" width="34" height="20"/>
+              <rect class="haus-strich" x="556" y="248" width="14" height="52"/>
+              <circle class="haus-strich" cx="563" cy="206" r="46"/>
+              <a class="hm mahnung" href="#aufgaben" aria-label="Dach: 2026 neu gedeckt, Rechnungen noch ablegen — zum Bereich Aufgaben"><circle cx="255" cy="105" r="26" fill="transparent"/><circle class="hv" cx="255" cy="105" r="17"/><text x="255" y="110">1</text></a>
+              <a class="hm mahnung" href="#aufgaben" aria-label="Heizung und Öltank: Wartung bis 30. September, Tankdaten klären — zum Bereich Aufgaben"><circle cx="139" cy="238" r="26" fill="transparent"/><circle class="hv" cx="139" cy="238" r="17"/><text x="139" y="243">2</text></a>
+              <a class="hm ok" href="#geld" aria-label="Briefkasten: die Miete, 2.575 Euro im Monat, gilt als bezahlt — zum Bereich Zahlungen"><circle cx="527" cy="240" r="26" fill="transparent"/><circle class="hv" cx="527" cy="240" r="17"/><text x="527" y="245">3</text></a>
+              <a class="hm ok" href="#nebenkosten" aria-label="Zählerkasten: am 31. Dezember alle Zähler ablesen — zum Bereich Nebenkosten"><circle cx="366" cy="226" r="26" fill="transparent"/><circle class="hv" cx="366" cy="226" r="17"/><text x="366" y="231">4</text></a>
+              <a class="hm krit" href="#aufgaben" aria-label="Energieausweis: fehlt noch, bitte erstellen lassen — zum Bereich Aufgaben"><circle cx="282" cy="215" r="26" fill="transparent"/><circle class="hv" cx="282" cy="215" r="17"/><text x="282" y="220">5</text></a>
+              <a class="hm ok" href="#fristen" aria-label="Garten und Winterdienst: machen die Mieter, gelegentlich kontrollieren — zum Bereich Fristen"><circle cx="563" cy="160" r="26" fill="transparent"/><circle class="hv" cx="563" cy="160" r="17"/><text x="563" y="165">6</text></a>
+            </svg>
+          </div>
+          <ol class="hauslegende" id="hausLegende"></ol>
+          <div class="lagekarte" id="lagekarte"><span class="ldot"></span>
+            <div><b id="h-status"></b><div class="lagelinks" id="lagelinks"></div></div>
+          </div>
         </div>
-        <ol class="hauslegende" id="hausLegende"></ol>
-        <div class="lagekarte" id="lagekarte"><span class="ldot"></span>
-          <div><b id="h-status"></b><div class="lagelinks" id="lagelinks"></div></div>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section aria-labelledby="h-ampel">
-      <div class="sekkopf"><h2 id="h-ampel">Wie läuft die Immobilie?</h2>
-        <span class="hinweis">Grün = läuft · Orange = Pflege oder Stammdatum fehlt · Rot = Handlungsbedarf mit rechtlichem oder finanziellem Risiko</span></div>
-      <div class="karte"><div class="ampel" id="ampel"></div></div>
-    </section>
+      <section aria-labelledby="h-kal">
+        <div class="sekkopf"><h2 id="h-kal">Das steht als Nächstes an</h2>
+          <span class="hinweis"><a href="#fristen">alle Termine ansehen</a></span></div>
+        <div class="kalreihe" id="kalender"></div>
+      </section>
+    </div>
 
-    <section aria-labelledby="h-kal">
-      <div class="sekkopf"><h2 id="h-kal">Das steht als Nächstes an</h2>
-        <span class="hinweis"><a href="#fristen">alle Termine ansehen</a></span></div>
-      <div class="kalreihe" id="kalender"></div>
-    </section>
+    <div class="unterseite" id="u-ueb-lage">
+      <section aria-labelledby="h-ampel">
+        <div class="sekkopf"><h2 id="h-ampel">Wie läuft die Immobilie?</h2>
+          <span class="hinweis">Grün = läuft · Orange = Pflege oder Stammdatum fehlt · Rot = Handlungsbedarf mit rechtlichem oder finanziellem Risiko</span></div>
+        <div class="karte"><div class="ampel" id="ampel"></div></div>
+      </section>
 
-    <section aria-labelledby="h-geld">
-      <div class="sekkopf"><h2 id="h-geld">Die Geld-Bilanz</h2>
-        <span class="hinweis">vor Steuern · <a href="#geld/bilanz">Jahr für Jahr aufschlüsseln</a></span></div>
-      <div class="karte innen gesamtband" id="gesamtband"></div>
-      <div class="karte innen" style="margin-top:var(--sp-s)"><div class="fluss" id="bilanzFluss"></div></div>
-    </section>
+      <section aria-labelledby="h-geld">
+        <div class="sekkopf"><h2 id="h-geld">Die Geld-Bilanz</h2>
+          <span class="hinweis">vor Steuern · <a href="#geld/bilanz">Jahr für Jahr aufschlüsseln</a></span></div>
+        <div class="karte innen gesamtband" id="gesamtband"></div>
+        <div class="karte innen" style="margin-top:var(--sp-s)"><div class="fluss" id="bilanzFluss"></div></div>
+      </section>
+    </div>
 
+    <div class="blaettern" data-blaettern="uebersicht"></div>
   </div>
 
   <div class="view" id="v-geld">
@@ -746,7 +753,7 @@
     <div class="unterseite" id="u-geld-bilanz">
       <section aria-labelledby="h-bilanz">
         <div class="sekkopf"><h2 id="h-bilanz">Bilanz &amp; Cashflow</h2>
-          <span class="hinweis">Kalkulatorisch, vor Steuern — die Kurzfassung steht auf der <a href="#uebersicht">Übersicht</a></span></div>
+          <span class="hinweis">Kalkulatorisch, vor Steuern — die Kurzfassung steht auf der <a href="#uebersicht/lage">Übersicht</a></span></div>
         <div class="zweispaltig">
           <div class="karte innen">
             <div class="bkopfzeile"><h3 class="bkopf" id="treppeTitel">Monat für Monat</h3>
@@ -1653,7 +1660,8 @@ function baueAmpel() {
    damit keine Seite länger wird, als man am Stück lesen mag. Weggelassen wird nichts:
    im Druck sind alle Panels aufgeklappt (siehe @media print). */
 const NAVDEF = [
-  { id: 'uebersicht', name: 'Übersicht', praefix: '', subs: [] },
+  { id: 'uebersicht', name: 'Übersicht', praefix: 'u-ueb-', subs: [
+    ['start', 'Start'], ['lage', 'Lage &amp; Bilanz']] },
   { id: 'geld', name: 'Geld &amp; Bilanz', praefix: 'u-geld-', subs: [
     ['eingang', 'Mieteingang'], ['kaution', 'Kaution'], ['bilanz', 'Bilanz &amp; Cashflow'],
     ['ruecklage', 'Rücklage'], ['reparaturen', 'Reparaturen']] },
