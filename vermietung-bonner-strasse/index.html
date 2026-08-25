@@ -379,6 +379,82 @@
   .gesamtband svg{width:100%;height:auto;display:block;margin-top:var(--sp-s)}
   #gesamtClipRect{width:960px;animation:gwachsen 1.2s ease-out}
   @keyframes gwachsen{from{width:0}to{width:960px}}
+
+  /* Ertragsband (Übersicht → Lage & Bilanz). Die Grundklassen .gkopf/.gzahl/.gsub
+     teilt sich die Karte mit dem Belegstand — alles Neue hängt deshalb an .ertrag. */
+  @property --bb-winkel{syntax:"<angle>";inherits:true;initial-value:0deg}
+  .bb-huelle{position:relative}
+  .ertrag{position:relative}
+  .bb-ring,.bb-glut{position:absolute;inset:-1px;border-radius:calc(var(--radius) + 1px);
+    pointer-events:none;
+    background:conic-gradient(from var(--bb-winkel),transparent 0deg,
+      color-mix(in srgb,var(--c-accent) 4%,transparent) 18deg,
+      color-mix(in srgb,var(--c-accent) 55%,transparent) 46deg,
+      var(--c-accent) 56deg,var(--c-accent-ink) 60deg,transparent 63deg,transparent 198deg,
+      color-mix(in srgb,var(--c-good) 4%,transparent) 216deg,
+      color-mix(in srgb,var(--c-good) 50%,transparent) 244deg,
+      var(--c-good) 254deg,var(--c-good) 258deg,transparent 261deg,transparent 360deg);
+    animation:bbdreh 9s linear infinite}
+  /* Die Dicke ist padding, nicht border-width: der Ring entsteht aus zwei Masken,
+     von denen die innere abgezogen wird. */
+  .bb-ring{padding:1.5px;
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude}
+  /* Die Glut steht VOR der Karte im Markup und außerhalb von ihr — sonst läge
+     der Schein über der eigenen Fläche statt dahinter. */
+  .bb-glut{filter:blur(16px);opacity:.28}
+  @keyframes bbdreh{to{--bb-winkel:360deg}}
+  @media (forced-colors:active){.bb-ring,.bb-glut{display:none}}
+
+  .ertrag .ekopf{display:flex;justify-content:space-between;align-items:flex-start;
+    gap:var(--sp-s);flex-wrap:wrap}
+  .ertrag .gsub{max-width:52ch}
+  .etakt{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:650;
+    color:var(--c-accent-ink);background:var(--c-accent-bg);border:1px solid var(--c-accent);
+    border-radius:100px;padding:5px 12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .etakt i{width:8px;height:8px;border-radius:50%;background:var(--c-accent);flex:none;
+    animation:etakten 2.4s ease-in-out infinite}
+  @keyframes etakten{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--c-accent)}
+    50%{opacity:.45;box-shadow:0 0 0 5px transparent}}
+  .ertrag .puls{animation:epuls 2.8s ease-out infinite}
+  .ertrag svg text.wert{fill:var(--c-accent-ink);font-size:14px;font-weight:700;
+    font-variant-numeric:tabular-nums;font-family:var(--sans)}
+  .ertrag svg text.wert.prog{fill:var(--c-ink-soft);font-weight:650}
+  .ertrag .glutlinie{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--c-accent) 55%,transparent))}
+  @keyframes epuls{0%{r:5;opacity:.6}70%,100%{r:19;opacity:0}}
+  .elegende{display:flex;flex-wrap:wrap;gap:var(--sp-s);margin-top:var(--sp-2xs);
+    font-size:12px;color:var(--c-ink-soft)}
+  .elegende span{display:inline-flex;align-items:center;gap:6px}
+  .elegende i{width:15px;height:10px;border-radius:2px;flex:none}
+  .elegende i.lk{background:var(--c-accent)}
+  .elegende i.lv{border:1px solid var(--c-line-strong);
+    background:repeating-linear-gradient(45deg,var(--c-line-strong) 0 1.5px,transparent 1.5px 5px)}
+  .elegende i.lp{height:0;border-radius:0;border-top:2px dashed var(--c-line-strong)}
+  .ekacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+    gap:var(--sp-xs);margin-top:var(--sp-m)}
+  .ekachel{background:var(--c-surface-2);border:1px solid var(--c-line);
+    border-radius:var(--radius-s);padding:10px 12px;display:block;text-decoration:none;color:inherit}
+  a.ekachel:hover{border-color:var(--c-line-strong)}
+  a.ekachel .kz{text-decoration:underline;text-decoration-color:var(--c-line-strong);
+    text-underline-offset:3px}
+  .ekachel b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--c-ink-faint);font-weight:650}
+  .ekachel .kz{font-size:19px;font-weight:700;margin:3px 0 2px;color:var(--c-ink);
+    font-variant-numeric:tabular-nums lining-nums}
+  .ekachel.gut .kz{color:var(--c-good)}
+  .ekachel.krit .kz{color:var(--c-crit)}
+  .ekachel .ks{font-size:11.5px;color:var(--c-ink-soft);line-height:1.4}
+  .eziel{margin-top:var(--sp-m)}
+  .ezkopf{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-s);
+    font-size:12.5px;color:var(--c-ink-soft);margin-bottom:5px}
+  .ezspur{height:10px;border-radius:5px;background:var(--c-surface-2);
+    border:1px solid var(--c-line);overflow:hidden}
+  .ezspur i{display:block;height:100%;background:linear-gradient(90deg,var(--c-accent-bg),var(--c-accent));
+    transform-origin:left;animation:ezfuell 1.2s ease-out}
+  @keyframes ezfuell{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  /* Trefferflaeche 24px (WCAG 2.2 AA) — der Verweis steht mitten im Fliesstext */
+  .ertrag .fussnote a{display:inline-flex;align-items:center;min-height:24px;padding:0 3px}
   .jahrwahl{display:flex;gap:4px;flex-wrap:wrap}
   .jahrwahl button{font:inherit;font-size:13px;font-weight:600;color:var(--c-ink-soft);
     background:var(--c-surface-2);border:1px solid var(--c-line-strong);border-radius:100px;
@@ -419,7 +495,7 @@
   .zb-legende i.kreis{border-radius:50%}
   .zb-legende i.dreieck{clip-path:polygon(50% 0,100% 100%,0 100%)}
   svg .achse{fill:var(--c-ink-faint);font-size:11px;font-variant-numeric:tabular-nums;font-family:var(--sans)}
-  @media (max-width:640px){ svg .achse{font-size:20px} }
+  @media (max-width:640px){ svg .achse{font-size:20px} .ertrag svg text.wert{font-size:24px} }
   svg .raster{stroke:var(--c-line)}
   @keyframes nadelpuls{0%,100%{opacity:1}50%{opacity:.45}}
   .heutenadel{animation:nadelpuls 2.4s ease-in-out infinite}
@@ -818,7 +894,10 @@
       <section aria-labelledby="h-geld">
         <div class="sekkopf"><h2 id="h-geld">Die Geld-Bilanz</h2>
           <span class="hinweis">vor Steuern · <a href="#geld/bilanz">Jahr für Jahr aufschlüsseln</a></span></div>
-        <div class="karte innen gesamtband" id="gesamtband"></div>
+        <div class="bb-huelle">
+          <div class="bb-glut" aria-hidden="true"></div>
+          <div class="karte innen gesamtband ertrag" id="gesamtband"></div>
+        </div>
         <div class="karte innen" style="margin-top:var(--sp-s)"><div class="fluss" id="bilanzFluss"></div></div>
       </section>
 
@@ -2264,49 +2343,167 @@ function route() {
 }
 window.addEventListener('hashchange', route);
 
-/* ===== Gesamt seit Vermietungsbeginn: Zähler + wachsende Kurve (jahresunabhängig) ===== */
+/* ===== Ertragsband (Übersicht → Lage & Bilanz) =====
+   Ein Bild, drei Fragen: Was kam bisher herein, was davon läuft nur durch, und
+   wohin trägt das laufende Jahr? Gezeichnet wird eine TREPPE, keine Diagonale —
+   Miete kommt monatlich, nicht stetig, und eine Gerade würde das verwischen.
+   Die Fortschreibung ist gestrichelt: sie ist Tarif, kein Eingang. */
 function baueGesamt() {
-  // Nur die Kaltmiete zählt — der Nebenkosten-Vorschuss ist Durchlauf, keine Einnahme.
-  const liste = monatsliste().map((x) => ({ ...x, kalt: Math.min(x.betrag, tarifFuer(x.ym).kalt) }));
-  const gesamt = liste.reduce((s, x) => s + x.kalt, 0);
-  const W = 960, H = 130, oben = 12, unten = 24;
-  const n = liste.length;
-  let cum = 0;
-  const punkte = liste.map((x, i) => { cum += x.kalt;
-    return [n === 1 ? W : i / (n - 1) * W, (H - unten) - cum / gesamt * (H - oben - unten)]; });
-  const flaeche = 'M0,' + (H - unten) + ' L' + punkte.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L') +
-    ' L' + W + ',' + (H - unten) + ' Z';
-  const linie = 'M' + punkte.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L');
-  let ticks = '';
-  liste.forEach((x, i) => {
-    if (x.ym.endsWith('-01') || i === 0) {
-      const px = punkte[i][0];
-      ticks += '<text class="achse" x="' + px.toFixed(1) + '" y="' + (H - 6) + '">' + x.ym.slice(0, 4) + '</text>';
-    }
+  const ist = monatsliste().map((x) => {
+    const t = tarifFuer(x.ym);
+    const kalt = Math.min(x.betrag, t.kalt);   // bei Teilzahlung zählt die Miete zuerst
+    return { ym: x.ym, kalt, vz: x.betrag - kalt };
   });
-  const ende = punkte[punkte.length - 1];
-  document.getElementById('gesamtband').innerHTML =
-    '<div class="gkopf">Miete eingenommen seit Vermietungsbeginn (01.06.2026)</div>' +
-    '<div class="gzahl num" id="gesamtZahl">0 €</div>' +
-    '<div class="gsub">' + n + ' Monate Kaltmiete — ohne durchlaufende Nebenkosten-Vorschüsse</div>' +
-    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Aufsummierte Kaltmiete seit Juni 2026: ' + eur0(gesamt) + '">' +
-    '<defs><clipPath id="gesamtClip"><rect id="gesamtClipRect" x="0" y="0" height="' + H + '"/></clipPath></defs>' +
-    '<line x1="0" y1="' + (H - unten) + '" x2="' + W + '" y2="' + (H - unten) + '" stroke="var(--c-line-strong)" stroke-width="1.5"/>' +
+  const kuenftig = [];
+  for (let m = HEUTE.getMonth() + 2; m <= 12; m++) {
+    const ym = JAHR_JETZT + '-' + String(m).padStart(2, '0');
+    const t = tarifFuer(ym);
+    kuenftig.push({ ym, kalt: t.kalt, vz: t.vz });
+  }
+  let ck = 0, cg = 0;
+  const P = [...ist, ...kuenftig].map((r) => { ck += r.kalt; cg += r.kalt + r.vz;
+    return { ...r, ck, cg }; });
+  const n = P.length, iJetzt = ist.length - 1;
+  const kaltIst = P[iJetzt].ck, kontoIst = P[iJetzt].cg, vzIst = kontoIst - kaltIst;
+  const kaltZiel = P[n - 1].ck, tarifJetzt = tarifFuer(ist[iJetzt].ym);
+
+  // Bei 420 px waere eine 960x250-Flaeche 99 px hoch — die Treppe verschwaende zum Strich.
+  const schmal = matchMedia('(max-width: 640px)').matches;
+  const W = schmal ? 520 : 960, H = schmal ? 300 : 250;
+  const oben = 24, unten = schmal ? 42 : 30, basis = H - unten;
+  const hoch = P[n - 1].cg || 1;
+  const xb = (i) => i / n * W;                 // Monatsgrenze — jeder Monat hat ein Feld
+  const xm = (i) => (i + 0.5) / n * W;         // Feldmitte, dort steht die Beschriftung
+  const y = (v) => basis - v / hoch * (basis - oben);
+  const treppe = (feld, von, bis) => {
+    let d = 'M' + xb(von).toFixed(1) + ',' + y(von === 0 ? 0 : P[von - 1][feld]).toFixed(1);
+    for (let i = von; i <= bis; i++)
+      d += ' L' + xb(i).toFixed(1) + ',' + y(P[i][feld]).toFixed(1) +
+           ' L' + xb(i + 1).toFixed(1) + ',' + y(P[i][feld]).toFixed(1);
+    return d;
+  };
+  const stufenflaeche = (feld, von, bis) => treppe(feld, von, bis) +
+    ' L' + xb(bis + 1).toFixed(1) + ',' + basis + ' L' + xb(von).toFixed(1) + ',' + basis + ' Z';
+  const durchlaufband = (von, bis) => {        // zwischen Kaltmiete und Kontoeingang
+    let zurueck = '';
+    for (let i = bis; i >= von; i--)
+      zurueck += ' L' + xb(i + 1).toFixed(1) + ',' + y(P[i].ck).toFixed(1) +
+                 ' L' + xb(i).toFixed(1) + ',' + y(P[i].ck).toFixed(1);
+    return treppe('cg', von, bis) + zurueck + ' Z';
+  };
+
+  // Wertachse: eine Höhe ohne Maßstab sagt nichts. Stufe so, dass höchstens fünf Linien entstehen.
+  const stufe = [500, 1000, 2000, 2500, 5000, 10000, 25000, 50000].find((s) => hoch / s <= 5) || 100000;
+  let gitter = '';
+  for (let v = stufe; v <= hoch; v += stufe)
+    gitter += '<line x1="0" y1="' + y(v).toFixed(1) + '" x2="' + W + '" y2="' + y(v).toFixed(1) +
+      '" stroke="var(--c-line)" stroke-width="1"/>' +
+      '<text class="achse" x="0" y="' + (y(v) - 5).toFixed(1) + '">' + eur0(v) + '</text>';
+
+  const schritt = Math.max(1, Math.ceil(n / (schmal ? 5 : 9)));
+  let ticks = '';
+  P.forEach((p, i) => {
+    if (i % schritt) return;
+    const voll = !schmal && (i === 0 || p.ym.slice(5) === '01');
+    ticks += '<text class="achse" x="' + xm(i).toFixed(1) + '" y="' + (H - 10) +
+      '" text-anchor="middle">' + (voll ? monatDE(p.ym) : monatDE(p.ym).split(' ')[0]) + '</text>';
+  });
+
+  const hx = xb(iJetzt + 1), hy = y(kaltIst);
+  const nadel = kuenftig.length
+    ? '<line x1="' + hx.toFixed(1) + '" y1="' + oben + '" x2="' + hx.toFixed(1) + '" y2="' + basis + '" ' +
+      'stroke="var(--c-line-strong)" stroke-width="1" stroke-dasharray="3 5"/>' +
+      '<text class="achse" x="' + (hx - 7).toFixed(1) + '" y="' + (oben + 4) + '" text-anchor="end">heute</text>'
+    : '';
+  const prognose = kuenftig.length
+    ? '<path d="' + treppe('cg', iJetzt + 1, n - 1) + '" fill="none" stroke="var(--c-line-strong)" ' +
+      'stroke-width="1.5" stroke-dasharray="6 6" opacity=".7"/>' +
+      '<path d="' + treppe('ck', iJetzt + 1, n - 1) + '" fill="none" stroke="var(--c-accent)" ' +
+      'stroke-width="2.5" stroke-dasharray="7 7"/>' +
+      '<text class="wert prog" x="' + (W - 4) + '" y="' + (y(kaltZiel) - 10).toFixed(1) +
+      '" text-anchor="end">' + eur0(kaltZiel) + '</text>'
+    : '';
+
+  const svg =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+      'Aufsummiert seit ' + monatDE(P[0].ym) + ': ' + eur0(kaltIst) + ' Kaltmiete, ' +
+      eur0(kontoIst) + ' Kontoeingang mit Nebenkosten-Vorschuss' +
+      (kuenftig.length ? '. Fortgeschrieben bis Dezember ' + JAHR_JETZT + ': ' + eur0(kaltZiel) + ' Kaltmiete' : '') + '">' +
+    '<defs>' +
+      '<clipPath id="gesamtClip"><rect id="gesamtClipRect" x="0" y="0" height="' + H + '"/></clipPath>' +
+      '<linearGradient id="eKalt" gradientUnits="userSpaceOnUse" x1="0" y1="' + oben + '" x2="0" y2="' + basis + '">' +
+        '<stop offset="0" stop-color="var(--c-accent)" stop-opacity=".45"/>' +
+        '<stop offset="1" stop-color="var(--c-accent)" stop-opacity=".05"/></linearGradient>' +
+      '<pattern id="eDurchlauf" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+        '<rect width="7" height="7" fill="var(--c-line-strong)" opacity=".14"/>' +
+        '<line x1="0" y1="0" x2="0" y2="7" stroke="var(--c-line-strong)" stroke-width="1.6" opacity=".6"/></pattern>' +
+    '</defs>' + gitter +
+    '<line x1="0" y1="' + basis + '" x2="' + W + '" y2="' + basis + '" stroke="var(--c-line-strong)" stroke-width="1.5"/>' +
     '<g clip-path="url(#gesamtClip)">' +
-    '<path d="' + flaeche + '" fill="var(--c-accent-bg)"/>' +
-    '<path d="' + linie + '" fill="none" stroke="var(--c-accent)" stroke-width="2.5"/>' +
-    '<circle cx="' + ende[0].toFixed(1) + '" cy="' + ende[1].toFixed(1) + '" r="5" fill="var(--c-accent)"/>' +
-    '</g>' + ticks + '</svg>';
+      prognose +
+      '<path d="' + durchlaufband(0, iJetzt) + '" fill="url(#eDurchlauf)"/>' +
+      '<path d="' + treppe('cg', 0, iJetzt) + '" fill="none" stroke="var(--c-line-strong)" stroke-width="1.5"/>' +
+      '<path d="' + stufenflaeche('ck', 0, iJetzt) + '" fill="url(#eKalt)"/>' +
+      '<path class="glutlinie" d="' + treppe('ck', 0, iJetzt) + '" fill="none" stroke="var(--c-accent)" stroke-width="3"/>' +
+      '<circle class="puls" cx="' + hx.toFixed(1) + '" cy="' + hy.toFixed(1) + '" r="5" fill="none" stroke="var(--c-accent)" stroke-width="2"/>' +
+      '<circle cx="' + hx.toFixed(1) + '" cy="' + hy.toFixed(1) + '" r="5" fill="var(--c-accent)"/>' +
+      '<text class="wert" x="' + (hx - 10).toFixed(1) + '" y="' + (hy - 12).toFixed(1) +
+      '" text-anchor="end">' + eur0(kaltIst) + '</text>' +
+    '</g>' + nadel + ticks + '</svg>';
+
+  const rs = rueckstand();
+  const iJahr = instaJahre().filter((j) => j <= JAHR_JETZT).pop();
+  const kacheln = [
+    { k: 'Auf dem Konto', v: eur0(kontoIst),
+      s: 'davon ' + eur0(vzIst) + ' Nebenkosten-Vorschuss — Durchlauf, keine Einnahme', ziel: '#nebenkosten' },
+    { k: 'Je Quadratmeter', v: eur(DATEN.eur_pro_m2),
+      s: 'kalt im Monat · ' + DATEN.wohnflaeche.toLocaleString('de-DE') + ' m² Wohnfläche', ziel: '#haus/grundriss' },
+    { k: 'Rückstand', v: eur0(rs), ton: rs > 0 ? 'krit' : 'gut',
+      s: rs > 0 ? 'offen — im Mieteingang nachsehen' : 'kein offener Monat', ziel: '#geld/eingang' }
+  ];
+  if (iJahr) kacheln.push({ k: 'Ins Haus zurück ' + iJahr, v: eur0(DATEN.insta[iJahr].brutto),
+    s: 'Reparaturen und Handwerker, brutto — mindert die Steuer, nicht die Miete', ziel: '#h-insta' });
+
+  const ziel = kuenftig.length
+    ? '<div class="eziel"><div class="ezkopf"><span>Bis Jahresende ' + JAHR_JETZT +
+        ' — noch ' + kuenftig.length + ' Monate</span>' +
+        '<b class="num">' + eur0(kaltIst) + ' von ' + eur0(kaltZiel) + '</b></div>' +
+        '<div class="ezspur"><i style="width:' + (kaltIst / kaltZiel * 100).toFixed(1) + '%"></i></div></div>'
+    : '';
+
+  document.getElementById('gesamtband').innerHTML =
+    '<div class="bb-ring" aria-hidden="true"></div>' +
+    '<div class="ekopf"><div>' +
+      '<div class="gkopf">Eingenommen seit Vermietungsbeginn</div>' +
+      '<div class="gzahl num" id="gesamtZahl">0 €</div>' +
+      '<div class="gsub">' + ist.length + ' Monate Kaltmiete seit ' + dtDE(DATEN.beginn + '-01') +
+      ' — der Nebenkosten-Vorschuss läuft nur durch</div></div>' +
+      '<div class="etakt"><i></i>+ ' + eur0(tarifJetzt.kalt) + ' je Monat</div></div>' +
+    svg +
+    '<div class="elegende"><span><i class="lk"></i>Kaltmiete — die echte Einnahme</span>' +
+      '<span><i class="lv"></i>Nebenkosten-Vorschuss — läuft durch</span>' +
+      (kuenftig.length ? '<span><i class="lp"></i>fortgeschrieben bis Dezember</span>' : '') + '</div>' +
+    ziel +
+    '<div class="ekacheln">' + kacheln.map((c) =>
+      '<a class="ekachel ' + (c.ton || '') + '" href="' + c.ziel + '"><b>' + c.k + '</b>' +
+      '<div class="kz">' + c.v + '</div><div class="ks">' + c.s + '</div></a>').join('') + '</div>' +
+    '<div class="fussnote" style="padding:var(--sp-s) 0 0">Kein Kontoauszug-Abgleich: jeder ' +
+      'begonnene Monat gilt als bezahlt. Weicht ein Monat ab, wird er im ' +
+      '<a href="#geld/eingang">Mieteingang</a> als Ausnahme geführt und rechnet hier mit.</div>';
 
   const zahlEl = document.getElementById('gesamtZahl');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { zahlEl.textContent = eur0(gesamt); return; }
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { zahlEl.textContent = eur0(kaltIst); return; }
   const dauer = 1100, start = performance.now();
   const tick = (t) => {
     const f = Math.min(1, (t - start) / dauer);
-    zahlEl.textContent = eur0(gesamt * (1 - Math.pow(1 - f, 3)));
+    zahlEl.textContent = eur0(kaltIst * (1 - Math.pow(1 - f, 3)));
     if (f < 1) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
+}
+if (!window.ertragHorcht) {
+  window.ertragHorcht = true;
+  matchMedia('(max-width: 640px)').addEventListener('change', () => baueGesamt());
 }
 
 /* ===== Geld-Bilanz: Fluss, Jahres-Treppe, Ausgaben ===== */
