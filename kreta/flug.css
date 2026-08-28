@@ -55,20 +55,44 @@
 .flugstrecke{display:flex; flex-direction:column; align-items:center; gap:6px}
 .sdauer{font-family:var(--zahl); font-size:13px; color:var(--tinte)}
 .skm{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-fein)}
-/* Die Linie ist gestrichelt aus harten Bloecken, nicht aus border-dashed: das
-   Raster passt zur Pixel-Schrift, und ein weicher Strich faellt hier sofort auf. */
-.flinie{position:relative; width:100%; height:26px;
-        display:flex; align-items:center; justify-content:center}
-.flinie::before{content:""; position:absolute; left:0; right:0; height:3px;
+/* ---------- Die Linie als Fortschritt ----------
+   Der Flieger steht dort, wo der Flug planmaessig gerade ist: --f traegt den
+   Anteil als einheitenlose Zahl zwischen 0 und 1, gesetzt von flug.js.
+
+   Die 15 px in den beiden calc() sind der halbe Flieger. Ohne sie ragt er bei
+   0 % und 100 % zur Haelfte aus der Linie heraus - genau an den beiden
+   Zeitpunkten, an denen jemand hinsieht.
+
+   Gestrichelt aus harten Bloecken, nicht border-dashed: das Raster passt zur
+   Pixel-Schrift, ein weicher Strich faellt hier sofort auf. */
+.flinie{position:relative; width:100%; height:30px; --f:0}
+.flinie::before{content:""; position:absolute; left:0; right:0; top:50%;
+  transform:translateY(-50%); height:3px;
   background:repeating-linear-gradient(90deg,
     var(--umriss) 0 6px, transparent 6px 12px)}
-.flugzeug{position:relative; width:30px; height:30px; flex:none;
+/* Der zurueckgelegte Teil ist durchgezogen. Der Unterschied zwischen
+   "geflogen" und "kommt noch" traegt damit die Strichart, nicht die Farbe -
+   das bleibt lesbar, wenn die Linie nur 3 px hoch ist. */
+.fspur{position:absolute; left:0; top:50%; transform:translateY(-50%);
+       height:3px; background:var(--p-cafe);
+       width:calc(15px + (100% - 30px) * var(--f))}
+.flugzeug{position:absolute; top:50%; width:30px; height:30px;
+          left:calc(15px + (100% - 30px) * var(--f));
+          transform:translate(-50%,-50%);
           display:flex; align-items:center; justify-content:center;
-          background:var(--p-cafe); box-shadow:0 0 0 3px var(--umriss)}
+          background:var(--p-cafe); box-shadow:0 0 0 3px var(--umriss);
+          transition:left calc(.4s * var(--bewegung)) linear}
 .flugzeug svg{width:22px; height:22px; display:block; fill:#FFFFFF}
 /* Der Rueckflug zeigt in die andere Richtung. Gespiegelt, nicht als zweites
    Symbol - sonst laufen die beiden Zeichnungen frueher oder spaeter auseinander. */
 .flugzeug.zurueck svg{transform:scaleX(-1)}
+
+/* Der Status ist die einzige Angabe auf dieser Seite, die sich von selbst
+   aendert - er steht darum unter der Linie und nicht zwischen den Fakten. */
+.sstatus{font-family:var(--zahl); font-size:11px; letter-spacing:.03em;
+         text-align:center; color:var(--akzent-text)}
+.sstatus.laeuft{color:var(--warn)}
+.sstatus.vorbei{color:var(--tinte-fein)}
 
 .flugtafel .faktenraster{margin:var(--sp-m) 0 0}
 /* Diese Fakten stehen INNERHALB der hellen Tafel. Der Versatzschatten der
@@ -84,6 +108,33 @@
               letter-spacing:.03em; color:#FFFFFF; background:var(--p-cafe);
               image-rendering:pixelated;
               box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34)}
+
+/* ---------- Check-in ----------
+   Der Link fuehrt auf das Anmeldeformular der Airline, nicht in eine Buchung.
+   Getrennt von den Fakten durch eine Linie: die Fakten beschreiben den Flug,
+   das hier ist etwas, das man TUT. */
+.checkin{display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-s);
+         margin-top:var(--sp-m); padding-top:var(--sp-s);
+         border-top:2px solid var(--linie)}
+.checkin .knopf{text-decoration:none}
+.cstatus{font-family:var(--zahl); font-size:10.5px; letter-spacing:.03em;
+         color:var(--tinte-fein)}
+/* Offen ist der einzige Zustand, in dem der Knopf etwas bewirkt - der einzige,
+   der Farbe bekommt. --gut auf der hellen Tafel, nicht auf --gut-bg. */
+.cstatus.offen{color:var(--gut)}
+
+/* Der Flieger auf der Karte. Eigene Klasse statt .flugzeug: der hier wird
+   gedreht, und die Drehung wuerde im Zeitband die Ausrichtung zerstoeren. */
+.kartenflieger{display:flex; align-items:center; justify-content:center;
+               width:30px; height:30px; background:var(--p-cafe);
+               image-rendering:pixelated;
+               box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34)}
+.kartenflieger svg{width:22px; height:22px; display:block; fill:#FFFFFF}
+/* Der Status ueber der Karte steht auf dem Wasser, nicht auf einer Tafel -
+   also Rollensatz 2. Wer hier --tinte nimmt, schreibt dunkel auf dunkel. */
+.kartestatus{font-family:var(--zahl); font-size:11.5px; letter-spacing:.03em;
+             color:var(--auf-tiefe-leise); margin:var(--sp-s) 0 var(--sp-xs)}
+.kartestatus strong{color:var(--akzent-hell); font-weight:400}
 
 .quellenliste{margin-top:var(--sp-l)}
 .quellenliste .fakt dd{font-size:13px; line-height:1.45}
