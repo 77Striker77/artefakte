@@ -1,4 +1,8 @@
-/* ortsseite.css — der Stil ALLER Ortsseiten.
+/* ortsseite.css — der Stil ALLER Ortsseiten, und die generischen Bausteine,
+ * die sich die Flugseite mit ihnen teilt: Kartenhoehe, Faktenraster,
+ * Hinweis-Ausklapper, Leerzustand und Kartenfusszeile. flug.html laedt diese
+ * Datei darum mit. Wer hier etwas aendert, das nicht ortsspezifisch ist,
+ * aendert es auch dort - das ist gewollt, es ist derselbe Baustein.
  *
  * Warum ausgelagert: es gibt sechs Stadtseiten mit sprechenden Adressen
  * (heraklion.html, chania.html, …). Stuende dieser Block in jeder von ihnen,

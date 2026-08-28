@@ -1,0 +1,89 @@
+/* flug.css — nur was den Flug betrifft.
+ *
+ * Kartenhoehe, Faktenraster, Hinweis-Ausklapper und Kartenfusszeile kommen aus
+ * ortsseite.css; diese Datei ergaenzt sie, sie wiederholt sie nicht.
+ *
+ * Die Klasse .flug ist NICHT frei - index.html fuehrt darunter die Kacheln der
+ * drei Inselflughaefen. Alles hier heisst darum .flugtafel, .flugband, .flughalt.
+ *
+ * Rollensatz: .flugtafel ist eine HELLE Tafel und steht in der
+ * Rollensatz-Umschaltung in stil.css. Ohne diesen Eintrag erbt sie die helle
+ * Grundtinte des body und schreibt hell auf hell.
+ */
+
+.flugtafel{background:var(--flaeche); color:var(--tinte);
+           border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+           padding:var(--sp-m); margin-bottom:var(--sp-l)}
+
+.flugkopf{display:flex; align-items:center; gap:var(--sp-s); flex-wrap:wrap;
+          border-bottom:2px solid var(--linie); padding-bottom:var(--sp-s);
+          margin-bottom:var(--sp-m)}
+.flugkopf h2{margin:0; font-size:20px}
+/* Die Flugnummer traegt dieselbe Marke wie die Flughaefen auf der
+   Uebersichtskarte: violette Flaeche, WEISSE Schrift. Tinte kaeme auf diesem
+   Violett nur auf 2,75:1, Weiss auf 5,38:1. */
+.flugnr{flex:none; display:flex; align-items:center; justify-content:center;
+        min-width:74px; height:30px; padding:0 8px;
+        font-family:var(--zahl); font-size:12px; letter-spacing:.04em;
+        background:var(--p-cafe); color:#FFFFFF; box-shadow:0 0 0 3px var(--umriss)}
+.flugdatum{margin-left:auto; font-family:var(--zahl); font-size:11px;
+           color:var(--tinte-fein); letter-spacing:.06em; text-transform:uppercase}
+
+/* ---------- Das Zeitband ----------
+   Drei Spalten: Abflug, Strecke, Ankunft. Unter 720 px werden es drei Zeilen -
+   nebeneinander bleiben von den Flughafennamen sonst zwei Zeichen uebrig. */
+.flugband{display:grid; grid-template-columns:1fr minmax(140px,1.3fr) 1fr;
+          gap:var(--sp-s); align-items:center}
+@media (max-width:720px){ .flugband{grid-template-columns:1fr; gap:var(--sp-m)} }
+
+.flughalt{display:flex; flex-direction:column; gap:2px; min-width:0}
+.flughalt.an{text-align:right}
+@media (max-width:720px){ .flughalt.an{text-align:left} }
+.hcode{font-family:var(--zahl); font-size:30px; line-height:1; color:var(--tinte)}
+.hzeit{font-family:var(--zahl); font-size:22px; line-height:1.1; color:var(--akzent-text)}
+.hname{font-size:13px; color:var(--tinte-leise); line-height:1.3}
+.hzone{font-size:11.5px; color:var(--tinte-fein)}
+/* Eine fehlende Uhrzeit wird als Luecke gezeigt, nicht als leere Stelle: ein
+   leeres Feld liest sich wie ein Gestaltungsfehler, dieser Chip wie eine
+   Aufgabe. Das Paar --warn auf --warn-bg ist gemessen (5,18:1). */
+.hzeit.offen{display:inline-block; align-self:flex-start;
+             font-size:12px; letter-spacing:.04em; padding:3px 8px;
+             background:var(--warn-bg); color:var(--warn); border:2px solid var(--warn)}
+.flughalt.an .hzeit.offen{align-self:flex-end}
+@media (max-width:720px){ .flughalt.an .hzeit.offen{align-self:flex-start} }
+
+.flugstrecke{display:flex; flex-direction:column; align-items:center; gap:6px}
+.sdauer{font-family:var(--zahl); font-size:13px; color:var(--tinte)}
+.skm{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-fein)}
+/* Die Linie ist gestrichelt aus harten Bloecken, nicht aus border-dashed: das
+   Raster passt zur Pixel-Schrift, und ein weicher Strich faellt hier sofort auf. */
+.flinie{position:relative; width:100%; height:26px;
+        display:flex; align-items:center; justify-content:center}
+.flinie::before{content:""; position:absolute; left:0; right:0; height:3px;
+  background:repeating-linear-gradient(90deg,
+    var(--umriss) 0 6px, transparent 6px 12px)}
+.flugzeug{position:relative; width:30px; height:30px; flex:none;
+          display:flex; align-items:center; justify-content:center;
+          background:var(--p-cafe); box-shadow:0 0 0 3px var(--umriss)}
+.flugzeug svg{width:22px; height:22px; display:block; fill:#FFFFFF}
+/* Der Rueckflug zeigt in die andere Richtung. Gespiegelt, nicht als zweites
+   Symbol - sonst laufen die beiden Zeichnungen frueher oder spaeter auseinander. */
+.flugzeug.zurueck svg{transform:scaleX(-1)}
+
+.flugtafel .faktenraster{margin:var(--sp-m) 0 0}
+/* Diese Fakten stehen INNERHALB der hellen Tafel. Der Versatzschatten der
+   Ortsseiten wuerde hier Tafel auf Tafel stapeln - hier reicht die Kante. */
+.flugtafel .fakt{box-shadow:none; border-width:2px; background:var(--flaeche-2)}
+
+/* ---------- Route ----------
+   Die Linie auf der Karte ist die Grosskreis-Strecke, nicht der Flugweg: reale
+   Routen folgen Luftstrassen. Der Vorbehalt steht sichtbar unter der Karte. */
+.routenlinie{stroke:var(--p-cafe); stroke-width:4; stroke-dasharray:10 8; fill:none}
+.flughafenpin{display:flex; align-items:center; justify-content:center;
+              width:44px; height:26px; font-family:var(--zahl); font-size:11px;
+              letter-spacing:.03em; color:#FFFFFF; background:var(--p-cafe);
+              image-rendering:pixelated;
+              box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34)}
+
+.quellenliste{margin-top:var(--sp-l)}
+.quellenliste .fakt dd{font-size:13px; line-height:1.45}

@@ -156,6 +156,17 @@ window.reich = function (s) {
        die Marke als Startseiten-Link ist Konvention, aber keine Beschriftung. */
     const start = document.querySelector(".menue a[href='index.html']");
     if (start) link("index.html", start.textContent.trim(), false);
+    /* Statische Leisten-Links, die keine Ortsseite sind - heute die Flugseite.
+       Ohne diese Zeilen steht so ein Punkt zwar in der Leiste, fehlt aber im
+       Handy-Menue: dort wurden bis zum 28.08.2026 ausschliesslich die
+       Uebersicht, die Ortsseiten aus reise.json und der Aufklapper "Mehr"
+       eingetragen. Ein Menuepunkt, den es nur auf breiten Schirmen gibt, fehlt
+       ausgerechnet auf dem Geraet, auf dem man ihn unterwegs sucht.
+       Die Quartierpunkte sind hier schon ersetzt und tragen ihre eigene
+       Klasse - sonst stuenden sie gleich zweimal in der Tafel. */
+    [...document.querySelectorAll(".menue a")]
+      .filter((a) => a !== start && !a.classList.contains("quartierpunkt"))
+      .forEach((a) => link(a.getAttribute("href"), a.textContent.trim(), false));
     quartiere.forEach((o) => link(o.seite, o.name, true));
     if (staedte.length) {
       gruppe("Städte");

@@ -3,23 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agios Nikolaos — Kreta</title>
-<meta name="description" content="Agios Nikolaos auf echtem Kartenmaterial: Marinas, Museen und Ausgrabungen am Golf von Mirabello.">
+<title>Der Flug — Kreta</title>
+<meta name="description" content="Hin- und Rückflug der Kreta-Reise: Airline, Flugnummer, Abflug- und Ankunftszeiten und die Route auf der Karte.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="stil.css">
-<!-- Stil und Logik ALLER Ortsseiten liegen ausserhalb dieser Datei. Sie ist ein
-     Ruempf: Kopf, Menue, leere Behaelter. Welchen Ort sie zeigt, erkennt
-     ortsseite.js am Dateinamen und schlaegt es in reise.json nach - hier steht
-     der Ortsname darum nur in Titel und Beschreibung, die Suchmaschinen und
-     Lesezeichen brauchen. -->
+<!-- ortsseite.css liefert hier NICHT den Ortsstil, sondern die generischen
+     Bausteine, die diese Seite mit den Ortsseiten teilt: die Kartenhoehe,
+     das Faktenraster, den Hinweis-Ausklapper und die Kartenfusszeile. Eine
+     eigene Kopie davon waere die vierte Stelle, an der dieselbe Kartenhoehe
+     gepflegt werden muesste. Was nur den Flug betrifft, steht in flug.css. -->
 <link rel="stylesheet" href="ortsseite.css">
+<link rel="stylesheet" href="flug.css">
 </head>
 <body>
-<a class="skip" href="#karte">Zur Karte springen</a>
+<a class="skip" href="#fluege">Zu den Flügen springen</a>
 
 <nav class="leiste">
   <div class="leiste-innen">
@@ -40,33 +41,28 @@
 </nav>
 
 <main class="huelle">
-  <p class="eyebrow" id="tEyebrow">Vor Ort</p>
-  <h1 id="tTitel">Agios Nikolaos</h1>
+  <p class="eyebrow" id="tEyebrow">Anreise</p>
+  <h1>Der <em>Flug</em></h1>
   <p class="unterzeile" id="tUnterzeile"></p>
 
-  <dl class="faktenraster" id="fakten"></dl>
-  <p class="charakter" id="charakter"></p>
-  <div class="merkchips" id="merkmale"></div>
+  <h2 class="listenkopf" id="fluege">Hin und zurück</h2>
+  <div id="flugtafeln"></div>
 
-  <div class="wege" id="wege"></div>
-
-  <div class="leiste2" id="artenLeiste"><span class="leiste-titel">Zeigen</span></div>
-
+  <h2 class="listenkopf" id="route">Die Route</h2>
+  <p class="unterzeile" id="routentext"></p>
   <div id="karte"></div>
-  <div id="kartenhinweis" hidden></div>
   <p class="karte-fuss"><span id="kartequelle"></span><span id="kartedetail"></span></p>
 
-  <h2 class="listenkopf" id="orte">Sehenswertes im Einzelnen</h2>
-  <div class="reiter" role="tablist" aria-label="Sehenswertes nach Art" id="listenreiter"></div>
-  <div id="listentafeln"></div>
-  <div id="ortsliste"></div>
+  <div id="luecken"></div>
+  <div id="quellen"></div>
 </main>
 
 <footer class="fuss"><div class="huelle" id="fuss"></div></footer>
 
 <script src="vendor/leaflet.js"></script>
 <script src="daten.js"></script>
+<script src="flugdaten.js"></script>
 <script src="gemein.js"></script>
-<script src="ortsseite.js"></script>
+<script src="flug.js"></script>
 </body>
 </html>
