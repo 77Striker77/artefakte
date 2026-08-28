@@ -200,3 +200,8 @@ span.kwert{display:block; margin-top:6px; font-size:14px; color:var(--tinte)}
 .kquelle{margin:var(--sp-m) 0 0; padding-top:var(--sp-s);
          border-top:2px solid var(--linie);
          font-size:12.5px; color:var(--tinte-fein)}
+/* Hintergrund, nicht Vorspann - eigene Flaeche, damit er als Nebenbemerkung
+   liest und nicht als zweite Anweisung. */
+.knachsatz{margin:var(--sp-m) 0 0; padding:var(--sp-s);
+           background:var(--flaeche-2); border:2px solid var(--umriss);
+           font-size:13.5px; line-height:1.5}

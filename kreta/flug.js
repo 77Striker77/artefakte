@@ -263,6 +263,12 @@
       + "<div class='kontaktinhalt'>"
       + (K.hinweis || []).map((h) => "<p class='khinweis'>" + esc(h) + "</p>").join("")
       + "<ol class='kwege'>" + (K.wege || []).map(weg).join("") + "</ol>"
+      /* Der Nachsatz steht UNTER der Liste, nicht darueber. Er erklaert, warum
+         im Portal der Airline womoeglich nur eine Richtung auftaucht - das ist
+         Hintergrund. Oben gemessen: auf 360 px schob er die erste Rufnummer um
+         gut zwei Bildschirme nach unten, in einem Fenster, dessen einziger
+         Zweck eine Rufnummer ist. */
+      + (K.nachsatz || []).map((n) => "<p class='knachsatz'>" + esc(n) + "</p>").join("")
       + "<p class='kquelle'>" + esc(K.quelle || "unbekannt") + ", abgerufen "
       + esc(K.abgerufen || "unbekannt") + ". " + esc(K.einschraenkung || "")
       + (K.hinweis_quellen || []).map((q) => "<br>" + esc(q.angabe) + ": "
