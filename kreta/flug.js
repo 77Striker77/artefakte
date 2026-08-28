@@ -166,9 +166,16 @@
      dieses Repos noch auf dieser Seite, und dabei bleibt es. */
   const checkinZeile = (f) => {
     if (!f.checkin) return "";
+    const st = (F.dienste || {}).status_url;
     return "<div class='checkin'>"
       + "<a class='knopf' href='" + esc(f.checkin.url) + "' target='_blank' rel='noopener'>"
       + "Online-Check-in →</a>"
+      /* Der zweite Knopf beantwortet die Frage, die diese Seite bewusst offen
+         laesst: ob der Flug heute puenktlich ist. Er fuehrt zur Airline, weil
+         die Seite selbst keine Flugdaten abfragt - und weil die Airline die
+         Quelle ist und nicht ein Dritter, der sie weiterreicht. */
+      + (st ? "<a class='knopf' href='" + esc(st) + "' target='_blank' rel='noopener'>"
+        + "Flugstatus →</a>" : "")
       + "<span class='cstatus' data-checkin></span>"
       + "</div>";
   };
@@ -416,7 +423,7 @@
     + "<div class='inhalt'>" + quellen
     + "<p>Der Flieger auf Linie und Karte rechnet ausschließlich mit diesen geplanten "
     + "Zeiten. Er fragt keine Flugdaten ab und weiß nichts von Verspätung, Umleitung "
-    + "oder Ausfall.</p>"
+    + "oder Ausfall — dafür ist der Knopf <em>Flugstatus</em> da, der zur Airline führt.</p>"
     + "</div></details>";
 
   $("fuss").innerHTML =
