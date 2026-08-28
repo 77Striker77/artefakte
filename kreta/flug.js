@@ -157,9 +157,15 @@
 
   const fakt = (t, w) => "<div class='fakt'><dt>" + esc(t) + "</dt><dd>" + w + "</dd></div>";
 
-  const terminalText = (f) => (f.ab.terminal === "unbekannt" && f.an.terminal === "unbekannt")
-    ? "unbekannt"
-    : esc(f.ab.iata) + " " + esc(f.ab.terminal) + " · " + esc(f.an.iata) + " " + esc(f.an.terminal);
+  /* Gezeigt wird nur, wo es tatsaechlich ein Terminal gibt. Heraklion hat
+     genau eines und fuehrt darum gar keine Angabe - "HER unbekannt" waere
+     keine Luecke, sondern eine erfundene Frage. */
+  const terminalText = (f) => {
+    const teile = [];
+    if (f.ab.terminal !== "unbekannt") teile.push(esc(f.ab.iata) + " " + esc(f.ab.terminal));
+    if (f.an.terminal !== "unbekannt") teile.push(esc(f.an.iata) + " " + esc(f.an.terminal));
+    return teile.length ? teile.join(" · ") : "unbekannt";
+  };
 
   /* Der Check-in-Link fuehrt auf das Anmeldeformular der Airline. Die
      Buchungsdaten gibt der Reisende dort ein - sie stehen weder in den Daten
@@ -176,6 +182,12 @@
          Quelle ist und nicht ein Dritter, der sie weiterreicht. */
       + (st ? "<a class='knopf' href='" + esc(st) + "' target='_blank' rel='noopener'>"
         + "Flugstatus →</a>" : "")
+      /* Der dritte Knopf beantwortet die Frage, die nach den ersten beiden
+         kommt: was tut man, wenn im Portal der Airline etwas fehlt oder nicht
+         stimmt. Kein Pfeil - er fuehrt nicht weg, sondern oeffnet ein Fenster
+         auf dieser Seite. */
+      + (F.kontakt ? "<button type='button' class='knopf' data-kontakt-auf>"
+        + "Wo nachfragen?</button>" : "")
       + "<span class='cstatus' data-checkin></span>"
       + "</div>";
   };
@@ -215,6 +227,56 @@
       + checkinZeile(f)
       + "</section>";
   }).join("");
+
+  /* ---------- Wo nachfragen ----------
+     Genau EIN Dialog fuer beide Flugtafeln, auch wenn zwei Knoepfe ihn
+     oeffnen: zwei Dialoge waeren zwei Stellen, an denen dieselbe Liste
+     gepflegt wird, und die zweite ist die, die veraltet.
+
+     Die Reihenfolge der Wege kommt so aus flug.json und wird hier NICHT
+     sortiert - dass der Reiseveranstalter vor der Airline steht, ist die
+     Aussage der Liste und keine Zufallsfolge. */
+  const K = F.kontakt;
+  if (K) {
+    const weg = (w) => "<li class='kweg'>"
+      + "<span class='kzeile'>"
+      + "<span class='krang" + (w.rang === "Zuerst" ? " zuerst" : "") + "'>"
+      + esc(w.rang) + "</span>"
+      + "<span class='kname'>" + esc(w.name) + "</span></span>"
+      + (w.url
+        ? "<a class='kwert' href='" + esc(w.url) + "'"
+          // tel: und mailto: uebergibt das Betriebssystem - ein target='_blank'
+          // liesse dabei einen leeren Reiter stehen.
+          + (/^https?:/.test(w.url) ? " target='_blank' rel='noopener'" : "") + ">"
+          + esc(w.wert) + "</a>"
+        : "<span class='kwert'>" + esc(w.wert) + "</span>")
+      + "<span class='kwann'>" + esc(w.wann) + "</span>"
+      + "</li>";
+
+    const dlg = document.createElement("dialog");
+    dlg.className = "kontaktbox";
+    dlg.setAttribute("aria-labelledby", "kontakttitel");
+    dlg.innerHTML = "<div class='kontaktkopf'>"
+      + "<h2 id='kontakttitel'>" + esc(K.titel) + "</h2>"
+      + "<form method='dialog'><button class='knopf kzu' aria-label='Schließen'>"
+      + "✕</button></form></div>"
+      + "<div class='kontaktinhalt'>"
+      + (K.hinweis || []).map((h) => "<p class='khinweis'>" + esc(h) + "</p>").join("")
+      + "<ol class='kwege'>" + (K.wege || []).map(weg).join("") + "</ol>"
+      + "<p class='kquelle'>" + esc(K.quelle || "unbekannt") + ", abgerufen "
+      + esc(K.abgerufen || "unbekannt") + ". " + esc(K.einschraenkung || "")
+      + (K.hinweis_quellen || []).map((q) => "<br>" + esc(q.angabe) + ": "
+        + esc(q.quelle) + " (abgerufen " + esc(q.abgerufen) + ").").join("")
+      + "</p></div>";
+    document.body.appendChild(dlg);
+
+    for (const b of document.querySelectorAll("[data-kontakt-auf]")) {
+      b.addEventListener("click", () => dlg.showModal());
+    }
+    // Klick auf den Grund schliesst. <dialog> bringt das nicht mit: ::backdrop
+    // ist kein Klickziel, der Klick landet auf dem dialog-Element selbst.
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  }
 
   const linien = [...document.querySelectorAll("[data-linie]")];
   const stati = [...document.querySelectorAll("[data-status]")];
@@ -392,7 +454,9 @@
   for (const f of FLUEGE) {
     if (f.an.zeit === "unbekannt") offen.push(f.flugnummer + ": Ankunftszeit");
     if (f.flugzeug === "unbekannt") offen.push(f.flugnummer + ": Flugzeugtyp");
-    if (f.ab.terminal === "unbekannt") offen.push(f.flugnummer + ": Terminal");
+    // Erst wenn BEIDE Seiten nichts hergeben, ist das eine Luecke.
+    if (f.ab.terminal === "unbekannt" && f.an.terminal === "unbekannt")
+      offen.push(f.flugnummer + ": Terminal");
   }
   if (offen.length) {
     $("luecken").innerHTML = "<div class='nochleer'>"

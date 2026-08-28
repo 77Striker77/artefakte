@@ -138,3 +138,65 @@
 
 .quellenliste{margin-top:var(--sp-l)}
 .quellenliste .fakt dd{font-size:13px; line-height:1.45}
+
+/* ---------- Wo nachfragen ----------
+ * Ein <dialog>, kein Ausklapper: die Frage "wen rufe ich an" stellt sich in
+ * einem Moment, in dem man nicht scrollen will, und ein Modal bringt Escape,
+ * Fokusfalle und Klick-daneben von sich aus mit.
+ *
+ * Die Falle beim Stylen eines <dialog>: der Browser haelt ihn ueber
+ * `dialog:not([open]){display:none}` geschlossen. Ein `display:flex` in der
+ * Grundregel setzt das ausser Kraft, und der Dialog steht dann DAUERHAFT
+ * offen mitten auf der Seite. Darum haengt das display am [open].
+ *
+ * Rollensatz 1: die Box ist eine helle Tafel. Sie steht dafuer auch in der
+ * Umschaltliste in stil.css - ohne die erbt ihre h2 die helle Grundtinte.
+ */
+.kontaktbox{width:min(560px, calc(100vw - 24px)); box-sizing:border-box;
+            max-height:min(86vh, 760px); padding:0;
+            background:var(--flaeche); color:var(--tinte);
+            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.kontaktbox[open]{display:flex; flex-direction:column}
+.kontaktbox::backdrop{background:rgba(4,22,30,.74)}
+
+.kontaktkopf{display:flex; align-items:center; gap:var(--sp-s);
+             padding:var(--sp-s) var(--sp-m); flex:none;
+             border-bottom:2px solid var(--linie); background:var(--flaeche-2)}
+.kontaktkopf h2{margin:0; font-size:19px}
+.kontaktkopf form{margin-left:auto; display:flex}
+.kzu{min-width:46px; justify-content:center; padding:8px 12px}
+
+/* Der Inhalt scrollt, der Kopf bleibt stehen: auf einem 320-px-Schirm ist die
+   Liste laenger als das Fenster, und ein Dialog ohne sichtbaren Schliessknopf
+   ist auf dem Handy eine Sackgasse. */
+.kontaktinhalt{overflow-y:auto; padding:var(--sp-m); line-height:1.55}
+.khinweis{margin:0 0 var(--sp-s)}
+.khinweis:last-of-type{margin-bottom:var(--sp-m)}
+
+.kwege{list-style:none; margin:0; padding:0}
+.kweg{border-top:2px solid var(--linie); padding:var(--sp-s) 0}
+.kweg:first-child{border-top:none; padding-top:0}
+.kzeile{display:flex; align-items:center; gap:var(--sp-2xs); flex-wrap:wrap}
+.krang{font-family:var(--zahl); font-size:10.5px; letter-spacing:.04em;
+       padding:4px 7px; border:2px solid var(--umriss);
+       background:var(--flaeche-2); color:var(--tinte-fein)}
+/* Der erste Eintrag ist der Reiseveranstalter, und das ist keine Reihenfolge
+   aus Bequemlichkeit: bei einer Veranstalterreise kann nur er etwas aendern.
+   Sonne auf heller Tafel, Tinte darauf misst 10,42:1. */
+.krang.zuerst{background:var(--sonne-flaeche); color:var(--tinte)}
+.kname{font-family:var(--display); font-weight:600; font-size:15px}
+
+/* Eine Rufnummer ist auf dem Handy ein Tastziel, kein Fliesstext - darum die
+   44 px, auch wenn sie den Kasten schwerer machen als eine blosse Zeile. */
+a.kwert{display:inline-flex; align-items:center; min-height:44px;
+        margin-top:6px; padding:6px 10px;
+        font-family:var(--zahl); font-size:14px; word-break:break-word;
+        color:var(--akzent-text); text-decoration:none;
+        background:var(--flaeche-2); border:2px solid var(--umriss)}
+a.kwert:hover{background:var(--akzent-weich)}
+span.kwert{display:block; margin-top:6px; font-size:14px; color:var(--tinte)}
+.kwann{display:block; margin-top:6px; font-size:13px; color:var(--tinte-leise)}
+
+.kquelle{margin:var(--sp-m) 0 0; padding-top:var(--sp-s);
+         border-top:2px solid var(--linie);
+         font-size:12.5px; color:var(--tinte-fein)}

@@ -366,12 +366,12 @@ h3{font-family:var(--display); font-size:17px}
  * NICHT hier stehen duerfen die tiefen Panels (.urteil, .zeile.sieger,
  * .sieger-hinweis) - die sind dunkel und setzen ihre helle Tinte selbst. */
 :is(.tafel, .zeile, .fakt, .tabellenhuelle, .spalte li, details, .chip, .knopf,
-    .legende, .stadt, .flug, .flugtafel, .ziel, .bilderhinweis, .zumaps,
+    .legende, .stadt, .flug, .flugtafel, .kontaktbox, .ziel, .bilderhinweis, .zumaps,
     .leaflet-popup-content-wrapper, .leaflet-popup-content){color:var(--tinte)}
 /* Ueberschriften erben nicht: h1,h2 tragen weiter unten die helle Grundtinte.
    Ohne diese Zeile steht eine h2 in einer hellen Tafel mit 1,04:1 - genau so
    passiert beim Bau der Legende auf der Uebersichtskarte. */
-:is(.tafel, .legende, .stadt, .flug, .flugtafel, .fakt, .ziel, .bilderhinweis) :is(h2, h3){color:var(--tinte)}
+:is(.tafel, .legende, .stadt, .flug, .flugtafel, .kontaktbox, .fakt, .ziel, .bilderhinweis) :is(h2, h3){color:var(--tinte)}
 
 /* ---------- Steuerleisten ueber der Karte ("Zeigen", "Ausschnitt") ----------
  * Stand bis zum 24.08.2026 ZWEIMAL da - in index.html und karte.html, mit
