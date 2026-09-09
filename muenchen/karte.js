@@ -166,8 +166,105 @@
       || "https://www.google.com/maps/search/?api=1&query="
          + encodeURIComponent(o.lat + "," + o.lon);
     return '<p class="maps-link"><a href="' + url + '" target="_blank" rel="noopener noreferrer">'
-      + (text || "In Google Maps öffnen") + " ↗</a></p>";
+      + (text || "In Google Maps öffnen") + " ↗</a></p>"
+      + routenLinks(o);
   };
+
+  // --- Die zwei Routen, die man von einem Punkt aus wirklich will -------------
+  // Der Link oben zeigt den ORT. Diese beiden zeigen den WEG dorthin - einmal
+  // von da, wo man gerade steht, einmal von der Unterkunft aus. Sie haengen an
+  // mapsLink() und nicht an elf Sprechblasen einzeln: so kann keine vergessen
+  // werden, und eine zwoelfte bekommt sie von selbst.
+  //
+  // "ab Standort" laesst origin WEG. Das ist kein vergessener Parameter: ohne
+  // origin nimmt Google Maps den Standort des Geraets - und zwar den echten,
+  // nicht den, den diese Seite zuletzt gesehen hat. Der Link funktioniert damit
+  // auch, wenn hier nie auf 'Mein Standort' gedrueckt wurde.
+  //
+  // Das Ziel ist die KOORDINATE, nicht der Name. "Marienplatz" gibt es
+  // dutzendfach, "McDonald's" in Muenchen dreissigfach - ein Name als Ziel
+  // fuehrt zur falschen Filiale, und zwar ohne dass es jemand merkt. Dieselbe
+  // Begruendung wie eine Zeile weiter oben.
+  // Der zuletzt gemessene eigene Standort. Gesetzt von standortKnopf(), gelesen
+  // von den Routenknoepfen - das ist die einzige Stelle, an der die beiden
+  // etwas voneinander wissen muessen.
+  var letzterOrt = null;
+
+  var haus = null;
+  var hausSuchen = function () {
+    if (haus === null) {
+      haus = (DATEN.orte || []).filter(function (o) { return o.art === "unterkunft"; })[0] || false;
+    }
+    return haus;
+  };
+
+  // Luftlinie in Metern - fuer die Wahl des Verkehrsmittels reicht sie.
+  var luftlinie = function (a, b) {
+    var dy = (b.lat - a.lat) * 111320;
+    var dx = (b.lon - a.lon) * 111320 * Math.cos(a.lat * Math.PI / 180);
+    return Math.round(Math.sqrt(dx * dx + dy * dy));
+  };
+
+  // Womit Maps aufmachen soll. OHNE travelmode faengt Google beim Auto an, und
+  // diese Reise hat kein Auto - der Vorgabewert waere also fuer jeden Punkt
+  // falsch. Gewaehlt wird darum nach der Entfernung von der Unterkunft, und die
+  // Schwelle ist NICHT neu erfunden: 1100 m ist derselbe Wert, mit dem die
+  // Umgebungskarte "in Gehweite" absteckt. Zwei Schwellen fuer dieselbe Frage
+  // driften auseinander.
+  //
+  // Es ist ein AUFSCHLAG, keine Behauptung: in Maps ist das Verkehrsmittel ein
+  // Fingertipp weiter. Fuer "ab Standort" gilt dieselbe Wahl, obwohl niemand
+  // weiss, wo der Standort liegt - eine bessere Grundlage gibt es hier nicht,
+  // und das ist der ehrlichere Umgang damit, als eine zu erfinden.
+  var GEHWEITE_M = 1100;
+
+  var mittelFuer = function (von, ziel) {
+    return von && luftlinie(von, ziel) > GEHWEITE_M ? "transit" : "walking";
+  };
+  var dirUrl = function (start, ziel, mittel) {
+    return "https://www.google.com/maps/dir/?api=1"
+      + (start ? "&origin=" + encodeURIComponent(start) : "")
+      + "&destination=" + encodeURIComponent(ziel.lat + "," + ziel.lon)
+      + "&travelmode=" + mittel;
+  };
+
+  var routenLinks = function (o) {
+    if (o.lat == null || o.lon == null) return "";
+    var h = hausSuchen();
+    var knopf = function (url, text, daten) {
+      return '<a class="route-knopf" href="' + url + '"' + (daten || "")
+        + ' target="_blank" rel="noopener noreferrer">' + text + "</a>";
+    };
+    // Das Ziel steht am Knopf, damit der Klick das Verkehrsmittel neu waehlen
+    // kann - siehe unten.
+    var ab = ' data-ab="standort" data-lat="' + o.lat + '" data-lon="' + o.lon + '"';
+    // Am Haus selbst waere "ab Hotel" eine Route zu sich selbst. Der Knopf
+    // faellt dort weg, statt eine leere Auskunft zu geben.
+    var amHaus = h && luftlinie(h, o) < 25;
+    return '<p class="route-links"><span class="route-wort">Route</span>'
+      + knopf(dirUrl(null, o, mittelFuer(h, o)), "ab Standort", ab)
+      + (amHaus ? "" : knopf(dirUrl(h.lat + "," + h.lon, o, mittelFuer(h, o)), "ab Hotel"))
+      + "</p>";
+  };
+
+  // Das Verkehrsmittel des Standort-Knopfs wird ERST BEIM KLICK festgelegt, wenn
+  // bis dahin ein eigener Standort gemessen wurde.
+  //
+  // Warum der Umweg: die Sprechblase entsteht beim Bau der Karte, und da weiss
+  // niemand, wo der Betrachter steht. Der Aufschlag kam darum aus der Entfernung
+  // zur UNTERKUNFT - und das ist genau dann falsch, wenn es darauf ankommt: wer
+  // am Marienplatz steht und ein Wirtshaus 200 m weiter antippt, bekam den
+  // Fahrplan statt des Fusswegs, weil das Hotel 2,3 km entfernt liegt.
+  //
+  // Ohne gemessenen Standort bleibt es beim Aufschlag ueber die Unterkunft. Das
+  // ist keine gute Grundlage, aber die einzige vorhandene - und in Maps ist das
+  // Verkehrsmittel ein Fingertipp weiter.
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest && e.target.closest('.route-knopf[data-ab="standort"]');
+    if (!a || !letzterOrt) return;
+    var ziel = { lat: +a.dataset.lat, lon: +a.dataset.lon };
+    a.href = dirUrl(null, ziel, mittelFuer(letzterOrt, ziel));
+  }, true);
 
   // --- Mein Standort, auf jeder Karte dieselbe Bauart ------------------------
   // EIN Knopf je Karte, und er tut genau zwei Dinge: die Ortung starten und zur
@@ -241,6 +338,9 @@
     karte.on("locationfound", function (e) {
       var erste = !letzte;
       letzte = e.latlng;
+      // Auch fuer die Routenknoepfe in den Sprechblasen - sie waehlen damit das
+      // Verkehrsmittel nach der ECHTEN Entfernung statt nach der zur Unterkunft.
+      letzterOrt = { lat: e.latlng.lat, lon: e.latlng.lng };
       sucht = false;
       knopf.querySelector("span").textContent = "Mein Standort";
       if (marke) { karte.removeLayer(marke); karte.removeLayer(kreis); }
@@ -1135,18 +1235,16 @@
   }());
 
 
-  // --- Bahn-Reiter ----------------------------------------------------------
-  // Ein Unterknopf je Fahrt statt einer durchlaufenden Tafel: Hin- und
-  // Rueckfahrt beantworten verschiedene Fragen und werden an verschiedenen
-  // Tagen gebraucht. Untereinander gestellt las man am Reisetag an der
-  // gesuchten Haelfte vorbei.
+  // --- Bahn-Reiter ---------------------------------------------------------
+  // Ein Unterknopf je Fahrt, mehr nicht. 'Alternativen' war bis zum 09.09.2026
+  // ein dritter, gleichrangiger Knopf - falsch: eine Ersatzverbindung ist keine
+  // eigene Sache, sondern gehoert zu der Fahrt, die sie ersetzt. Als eigener
+  // Punkt musste man erst raten, welche der beiden gemeint ist.
   //
   // Die Knoepfe kommen aus reise.json, nicht aus dem HTML - eine dritte Fahrt
-  // soll ein Datensatz sein und keine Skriptaenderung. Dieselbe Begruendung
-  // wie beim Hauptmenue.
+  // soll ein Datensatz sein und keine Skriptaenderung.
   var bahnDaten = DATEN.bahn_reise || {};
   var bahnFahrten = bahnDaten.fahrten || [];
-  var bahnAlt = bahnDaten.alternativen || null;
 
   var bahnMarke = function (status, text) {
     var klasse = status === "gebucht" ? "zustand--fest"
@@ -1155,41 +1253,104 @@
     return '<span class="zustand ' + klasse + '">' + (text || status) + "</span>";
   };
 
+  var bahnHalt = function (h, art) {
+    var zeit = h.an && h.ab ? h.an + '<span class="band-bis">–</span>' + h.ab
+             : h.ab || h.an || "";
+    return '<li class="band-halt ' + art + '">'
+      + '<span class="band-zeit">' + zeit + "</span>"
+      + '<span class="band-punkt" aria-hidden="true"></span>'
+      + '<span class="band-ort">' + h.ort + "</span>"
+      + '<span class="band-gleis">' + (h.gleis ? "Gl. " + h.gleis : "") + "</span>"
+      + "</li>";
+  };
+
   // Das Streckenband. Eine Fahrt IST eine Folge, und eine Folge liest man als
   // Linie - eine Tabelle beantwortet "wann bin ich wo" erst, nachdem man alle
-  // Zeilen gelesen hat. Zwischenhalte stehen leiser: sie sind Orientierung,
-  // kein Ziel. Ohne diese Abstufung wiegt der Ausstieg so viel wie Guenzburg.
-  var bahnBand = function (halte) {
+  // Zeilen gelesen hat.
+  //
+  // Start und Ziel stehen immer da, die Zwischenhalte liegen dahinter in einem
+  // <details>. Aufgeklappt braucht eine sechsteilige Fahrt so viel Hoehe wie
+  // die halbe Tafel, und die beiden Zeiten, die man wirklich sucht, ruecken
+  // auseinander. Zugeklappt sagt die Zeile trotzdem, WIE VIELE es sind - eine
+  // Faltung, die ihren Inhalt verschweigt, wird nicht geoeffnet.
+  var bahnBand = function (halte, zug) {
     if (!halte || !halte.length) return "";
-    return '<ol class="band">' + halte.map(function (h, i) {
-      var art = h.unbekannt ? "band-halt--luecke"
-              : h.zwischen ? "band-halt--zwischen"
-              : i === 0 ? "band-halt--start" : "band-halt--ziel";
-      var zeit = h.unbekannt ? ""
-        : h.an && h.ab ? h.an + '<span class="band-bis">–</span>' + h.ab
-        : h.ab || h.an || "";
-      return '<li class="band-halt ' + art + '">'
-        + '<span class="band-zeit">' + zeit + "</span>"
-        + '<span class="band-punkt" aria-hidden="true"></span>'
-        + '<span class="band-ort">' + h.ort + "</span>"
-        + '<span class="band-gleis">' + (h.gleis ? "Gl. " + h.gleis : "") + "</span>"
-        + "</li>";
-    }).join("") + "</ol>";
+    var mitte = halte.slice(1, -1);
+    return '<ol class="band">'
+      + bahnHalt(halte[0], "band-halt--start")
+      + '<li class="band-halt band-halt--gruppe">'
+      +   '<span class="band-zeit"></span>'
+      +   '<span class="band-punkt" aria-hidden="true"></span>'
+      +   '<div class="band-mitte">' + (zug ? bahnSchild(zug) : "")
+      +   (mitte.length
+          ? '<details class="halte-mehr"><summary>' + mitte.length
+            + " Zwischenhalte</summary>"
+            + '<ol class="band band--tief">'
+            + mitte.map(function (h) { return bahnHalt(h, "band-halt--zwischen"); }).join("")
+            + "</ol></details>"
+          : "")
+      +   "</div>"
+      + "</li>"
+      + bahnHalt(halte[halte.length - 1], "band-halt--ziel")
+      + "</ol>";
   };
 
   // Die Reservierung als Schild, nicht als Zeile in einer Liste: Wagen und
   // Platz sind das Einzige auf diesem Reiter, das man im Zug im Stehen mit
   // einem Blick treffen muss. Grosse Ziffern sind hier Funktion, nicht Zierde.
+  // Die Reservierung als Wagen gezeichnet, nicht als zwei Kaesten mit Zahlen.
+  //
+  // Wichtig ist, was der Wagen NICHT behauptet: er steht fuer sich, nicht an
+  // einer Stelle in einer Zugreihe. Wo der reservierte Wagen tatsaechlich
+  // am Bahnsteig haelt, ist am Bautag dieser Seite nicht zu wissen - die Wagenreihung von
+  // bahn.de gibt es gemessen erst rund 18 Stunden vor Abfahrt (geprueft
+  // 09.09.2026: ICE 506 bei +17,9 h liefert, ICE 588 bei +18,2 h antwortet
+  // 404). Eine gezeichnete Reihe mit dem Wagen an Position x waere erfunden,
+  // und man stellt sich danach an den falschen Bahnsteigabschnitt.
+  //
+  // Darum: ein Wagen als Rahmen fuer die Zahlen, die wirklich in der Buchung
+  // stehen - und der Hinweis, wann die Position zu erfahren ist. Das ist die
+  // Angabe, die am Reisetag hilft.
   var bahnPlatz = function (r) {
     if (!r) return "";
-    var feld = function (kopf, wert) {
-      return wert ? '<div class="platz-feld"><span class="platz-kopf">' + kopf + "</span>"
-        + '<b class="platz-wert">' + wert + "</b></div>" : "";
-    };
+    var sitze = (r.platz || "").split(",").map(function (s) { return s.trim(); })
+      .filter(Boolean);
     var fuss = [r.bereich, r.plaetze, r.hinweis].filter(Boolean).join(" · ");
     return '<div class="platz">'
-      + '<div class="platz-felder">' + feld("Wagen", r.wagen) + feld("Plätze", r.platz) + "</div>"
+      + '<div class="wagen">'
+      +   '<svg class="wagen-riss" viewBox="0 0 200 62" role="img" aria-hidden="true">'
+      // Kasten, Fensterband, zwei Tueren, zwei Drehgestelle. Reine Kontur in
+      // currentColor - so traegt sie den Rollensatz der Tafel und braucht
+      // keine eigene gemessene Farbe.
+      +     '<rect x="4" y="6" width="192" height="40" rx="3" fill="none" '
+      +       'stroke="currentColor" stroke-width="3"/>'
+      +     '<path d="M18 16h40v13H18z M142 16h40v13h-40z" '
+      +       'fill="none" stroke="currentColor" stroke-width="2"/>'
+      +     '<rect x="64" y="11" width="72" height="24" fill="none" '
+      +       'stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"/>'
+      +     '<path d="M10 10v32 M190 10v32" stroke="currentColor" stroke-width="2"/>'
+      +     '<path d="M40 52h28 M132 52h28" stroke="currentColor" stroke-width="4" '
+      +       'stroke-linecap="round"/>'
+      +   "</svg>"
+      +   '<div class="wagen-nr"><span class="platz-kopf">Wagen</span>'
+      +     '<b class="platz-wert">' + (r.wagen || "?") + "</b></div>"
+      + "</div>"
+      + (sitze.length
+        ? '<div class="sitze"><span class="platz-kopf">Plätze</span>'
+          + '<div class="sitz-reihe">' + sitze.map(function (s) {
+              return '<span class="sitz"><svg viewBox="0 0 20 20" aria-hidden="true">'
+                + '<rect x="4.6" y="2.6" width="10.8" height="6.4" rx="1.6" '
+                + 'fill="currentColor"/>'
+                + '<rect x="2.8" y="10" width="14.4" height="5" rx="1.6" '
+                + 'fill="currentColor"/>'
+                + '<path d="M5 15.4v2.4 M15 15.4v2.4" stroke="currentColor" '
+                + 'stroke-width="2.2" stroke-linecap="round"/></svg><b>' + s + "</b></span>";
+            }).join("") + "</div></div>"
+        : "")
       + (fuss ? '<p class="platz-fuss">' + fuss + "</p>" : "")
+      + bahnHilfe("Wo dieser Wagen am Bahnsteig hält, steht erst rund 18 Stunden "
+          + "vor Abfahrt fest — dann in der DB-App oder am Wagenstandanzeiger.",
+          "Wagenreihung")
       + "</div>";
   };
 
@@ -1202,90 +1363,511 @@
     }).join("") + "</dl>";
   };
 
+  // --- Die Alternativen als Zeitband ----------------------------------------
+  // Bis zum 09.09.2026 stand hier je Verbindung eine Kopfzeile aus Uhrzeiten
+  // und darunter ein Absatz Prosa. Das beantwortete "wann" und sonst nichts:
+  // welche Zuege, wo umgestiegen wird, wie lang welcher Teil dauert und wie die
+  // Verbindungen zueinander liegen, stand alles im Fliesstext oder gar nicht.
+  //
+  // Jetzt liegen alle Verbindungen einer Fahrt auf EINER Skala - der Methode
+  // aus diagramm-grundlagen (Design_AI): eine Skala, an der jede Marke haengt.
+  // Dadurch beantwortet ein Blick vier Fragen zugleich: wann faehrt was, wie
+  // lang ist es unterwegs, wo sitzt der Umstieg und wie viel Luft er hat.
+  // Die Zugart traegt die Farbe. Sie wird aus der Zugnummer gelesen und nicht
+  // als eigenes Feld gefuehrt: die Nummer steht ohnehin da, und ein zweites
+  // Feld daneben ist eine zweite Wahrheit, die auseinanderlaeuft.
+  //
+  // Alle drei Paare gemessen (kontrast.mjs, 09.09.2026): Fern --flaeche auf
+  // --umriss 18,33:1, Regional und S-Bahn weiss auf ihrer Flaeche 7,68:1 bzw.
+  // 6,13:1. Gruen fuer die S-Bahn ist keine Erfindung, sondern die Farbe, die
+  // auf jedem Bahnsteig dafuer steht.
+  // --- Der Wert, der sich aendert -------------------------------------------
+  // Die Antwort auf "die Seite wirkt tot" ist nicht mehr Bewegung. Eine
+  // Staffelung laeuft einmal beim Laden und sagt nichts; sie ist Bewegung, kein
+  // Leben. Was fehlte: die Seite wusste nicht, wie spaet es ist.
+  //
+  // Muster aus Design_AIs wert-und-geste: ein Wert kennt seine Folgen nicht -
+  // wer folgen will, meldet sich an, und bei() gibt die ABMELDUNG zurueck.
+  // Takt 30 s: fein genug fuer eine Minutenanzeige, grob genug, um im
+  // Hintergrund nichts zu kosten.
+  var jetztWert = (function () {
+    var horcher = [], letzte = null;
+    var melden = function () {
+      var d = new Date();
+      var m = d.getHours() * 60 + d.getMinutes();
+      var tag = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2)
+        + "-" + ("0" + d.getDate()).slice(-2);
+      if (letzte && letzte.minute === m && letzte.tag === tag) return;
+      letzte = { minute: m, tag: tag };
+      horcher.forEach(function (f) { f(letzte); });
+    };
+    setInterval(melden, 30000);
+    return {
+      bei: function (f) {
+        horcher.push(f);
+        if (letzte) f(letzte);
+        return function () {                       // die Abmeldung
+          var i = horcher.indexOf(f);
+          if (i >= 0) horcher.splice(i, 1);
+        };
+      },
+      anstossen: melden
+    };
+  }());
+
+  // Die Statuszeile. Sie beantwortet die eine Frage, mit der man diesen Reiter
+  // am Reisetag aufschlaegt - "was faehrt als naechstes" - und die es bisher
+  // nirgends beantwortet gab. Vor dem Reisetag zaehlt sie hin, danach schweigt
+  // sie. Auf dem GRUND, nicht auf der Tafel: darum --auf-grund (16,00:1).
+  var bahnStatus = function (f) {
+    if (!f || !f.datum) return "";
+    var heute = new Date();
+    var hTag = heute.getFullYear() + "-" + ("0" + (heute.getMonth() + 1)).slice(-2)
+      + "-" + ("0" + heute.getDate()).slice(-2);
+    var jetzt = heute.getHours() * 60 + heute.getMinutes();
+
+    // Vor dem Reisetag steht hier NICHTS. Zwei Anlaeufe standen schon da -
+    // ein Countdown ("noch ein Tag") und ein Hinweis auf den offenen Punkt
+    // ("noch keine Ersatzfahrt gewaehlt"). Beide sagten dem Leser, was er
+    // weiss: er hat das Datum zwei Zeilen darueber gelesen, und er sitzt genau
+    // deshalb vor dieser Liste. Eine Zeile, die nur da ist, damit dort eine
+    // Zeile ist, ist schlechter als keine.
+    //
+    // Am Reisetag sagt sie etwas, das nirgends sonst steht: was als Naechstes
+    // faehrt und in wie vielen Minuten. Dann - und nur dann - steht sie da.
+    if (hTag !== f.datum) return "";
+
+    // Am Reisetag: die naechste Abfahrt, die noch zu erreichen ist.
+    var kandidaten = [];
+    if (f.status !== "ausgefallen" && f.halte && f.halte.length) {
+      kandidaten.push({ ab: f.halte[0].ab, was: f.zug, ort: f.halte[0].ort });
+    }
+    ((f.alternativen || {}).liste || []).forEach(function (v) {
+      kandidaten.push({ ab: v.ab, was: (v.abschnitte[0] || {}).zug,
+                        ort: (v.abschnitte[0] || {}).von });
+    });
+    var naechste = null;
+    kandidaten.forEach(function (k) {
+      var m = bahnMin(k.ab);
+      if (m === null || m < jetzt) return;
+      if (!naechste || m < bahnMin(naechste.ab)) naechste = k;
+    });
+    if (!naechste) return "Für heute fährt hier nichts mehr.";
+    var hin = bahnMin(naechste.ab) - jetzt;
+    var dauer = hin < 60 ? "in " + hin + " min"
+      : "in " + Math.floor(hin / 60) + " h " + ("0" + (hin % 60)).slice(-2);
+    return "Als Nächstes: <b>" + naechste.ab + " ab " + naechste.ort
+      + "</b> mit " + naechste.was + ", " + dauer + ".";
+  };
+
+  // Was vorbei ist, tritt zurueck. Dadurch schrumpft die Tafel im Tagesverlauf
+  // von vierzehn brauchbaren Verbindungen auf sechs auf zwei - die Seite tut
+  // etwas, ohne dass jemand sie anfasst. Nur am Reisetag: an jedem anderen Tag
+  // waere jede Verbindung "vorbei" und die Tafel durchgehend blass.
+  var bahnVergangen = function (wurzel, f) {
+    if (!wurzel || !f || !f.datum) return;
+    jetztWert.bei(function (t) {
+      var amTag = t.tag === f.datum;
+      Array.prototype.forEach.call(wurzel.querySelectorAll(".verb"), function (el) {
+        var ab = bahnMin(el.dataset.ab || "");
+        el.classList.toggle("verb--vorbei", amTag && ab !== null && ab < t.minute);
+      });
+      // Der Ring wandert auf die naechste Abfahrt. Ohne Reisetag traegt ihn
+      // keine: eine "naechste Verbindung" gibt es an einem anderen Tag nicht,
+      // und der Ring soll nicht irgendwo leuchten, damit er leuchtet.
+      var naechste = null;
+      Array.prototype.forEach.call(wurzel.querySelectorAll(".verb"), function (el) {
+        var ab = bahnMin(el.dataset.ab || "");
+        if (!amTag || ab === null || ab < t.minute) return;
+        if (!naechste || ab < bahnMin(naechste.dataset.ab)) naechste = el;
+      });
+      Array.prototype.forEach.call(wurzel.querySelectorAll(".verb"), function (el) {
+        el.classList.toggle("verb--tipp", el === naechste);
+      });
+
+      var linie = wurzel.querySelector(".jetzt-linie");
+      if (linie) {
+        var von = +linie.dataset.von, bis = +linie.dataset.bis;
+        var drin = amTag && t.minute >= von && t.minute <= bis;
+        linie.hidden = !drin;
+        if (drin) {
+          linie.style.left = ((t.minute - von) / (bis - von) * 100).toFixed(2) + "%";
+        }
+      }
+    });
+    jetztWert.anstossen();
+  };
+
+  // Ein Info-Knopf mit nativem Popover. Bewusst nicht selbst gebaut: die
+  // Popover-API schliesst bei Escape und bei einem Klick daneben, gibt den
+  // Fokus zurueck und legt das Panel in die oberste Ebene - lauter Dinge, die
+  // eine handgebaute Loesung erst nach mehreren Runden richtig macht.
+  //
+  // Die laufende Nummer macht die id eindeutig. Zwei Popover mit derselben id
+  // oeffnen beide dasselbe Panel, und der zweite Knopf tut scheinbar nichts.
+  var popZaehler = 0;
+  var bahnHilfe = function (text, titel) {
+    if (!text) return "";
+    var id = "pop-" + (++popZaehler);
+    return '<button type="button" class="info-knopf" popovertarget="' + id + '"'
+      + ' aria-label="' + (titel || "Hinweis") + '">i</button>'
+      + '<div popover id="' + id + '" class="pop">'
+      + (titel ? '<h4 class="pop-titel">' + titel + "</h4>" : "")
+      + "<p>" + text + "</p></div>";
+  };
+
+  // --- Fallblattanzeige ------------------------------------------------------
+  // Ziffern ROLLEN auf ihren Zielwert zu - sie springen nicht. Der Unterschied
+  // ist kein Geschmack: die erste Fassung wuerfelte mit Math.random() und zeigte
+  // dabei gemessen "51:81", "19:44", "11:93", "16:96" - Uhrzeiten, die es nicht
+  // gibt, fuer bis zu 1,6 Sekunden. Auf einer Seite, deren Zweck Abfahrtszeiten
+  // sind, ist das kein Effekt, sondern eine Falschangabe.
+  //
+  // Sequenziell hochgezaehlt ist jeder Zwischenstand eine Ziffer UNTERWEGS zur
+  // richtigen, so wie es eine echte Fallblattanzeige tut. Aus dem entschluessel-
+  // ten Text der bewegungs-werkbank bleibt der tragende Befund: ZWEI Takte. Mit
+  // nur einem wechselt jedes Bild, das flimmert und ist unlesbar.
+  var fallblatt = function (el) {
+    var ziel = el.textContent;
+    if (!/\d/.test(ziel) || el.dataset.rollt) return;
+    el.dataset.rollt = "1";
+
+    // Je Stelle: wie viele Schritte rollt sie noch? Vorne wenig, hinten mehr,
+    // damit die Anzeige von links nach rechts einrastet.
+    var rest = [];
+    for (var k = 0; k < ziel.length; k++) {
+      rest[k] = /\d/.test(ziel.charAt(k)) ? 3 + k * 2 : 0;
+    }
+    var letzterSchritt = 0, letzterWechsel = 0;
+    var TAKT_STEHEN = 70, TAKT_ROLLEN = 45;
+
+    var lauf = function (jetzt) {
+      if (!letzterSchritt) { letzterSchritt = letzterWechsel = jetzt; }
+      var offen = false, i;
+      if (jetzt - letzterSchritt >= TAKT_STEHEN) {
+        letzterSchritt = jetzt;
+        for (i = 0; i < rest.length; i++) { if (rest[i] > 0) { rest[i]--; break; } }
+      }
+      if (jetzt - letzterWechsel >= TAKT_ROLLEN) {
+        letzterWechsel = jetzt;
+        for (i = 0; i < rest.length; i++) { if (rest[i] > 0) rest[i]--; }
+      }
+      var s = "";
+      for (i = 0; i < ziel.length; i++) {
+        if (rest[i] > 0) {
+          offen = true;
+          // rueckwaerts von der Zielziffer weg, damit sie darauf ZULAEUFT
+          s += String((+ziel.charAt(i) - rest[i] % 10 + 10) % 10);
+        } else {
+          s += ziel.charAt(i);
+        }
+      }
+      el.textContent = s;
+      if (offen) {
+        requestAnimationFrame(lauf);
+      } else {
+        el.textContent = ziel;
+        delete el.dataset.rollt;
+      }
+    };
+    requestAnimationFrame(lauf);
+  };
+
+  // Gerollt wird NUR beim ersten Aufbau einer Fahrt, nicht bei jedem
+  // Reiterwechsel und nicht beim Aufklappen. Der Wechsel ist die haeufigste
+  // Geste auf diesem Reiter; ein Effekt, der dabei jedes Mal laeuft, ist beim
+  // dritten Mal Wartezeit. Und gerollt wird nur, was sich aendern KANN - die
+  // gebuchte Abfahrt 14:18 steht seit dem Kauf fest.
+  var schonGerollt = {};
+  var fallblattAlle = function (wurzel, schluessel) {
+    if (!wurzel || schonGerollt[schluessel]) return;
+    var wert = getComputedStyle(document.documentElement)
+      .getPropertyValue("--bewegung").trim();
+    if (wert === "0") return;                       // prefers-reduced-motion
+    schonGerollt[schluessel] = true;
+    var felder = wurzel.querySelectorAll(".verb-zeit b");
+    Array.prototype.forEach.call(felder, function (el, k) {
+      setTimeout(function () { fallblatt(el); }, Math.min(k, 12) * 35);
+    });
+  };
+
+  var bahnZugArt = function (zug) {
+    if (/^S\s*\d/.test(zug)) return "sbahn";
+    if (/^(RE|RB|IRE)\b/.test(zug)) return "regio";
+    return "fern";
+  };
+
+  // Ein Zugschild, nach dem Muster der Linienschilder auf der Karte: kraeftige
+  // Flaeche, Umriss-Ring, und ein fetter Grotesk statt der Pixelschrift. Die
+  // Begruendung steht dort schon (stil.css, .linie--klein): Silkscreen hat
+  // keine Unterlaengen und zerfaellt unter 10 px - bei 9 px meldete
+  // pruef-breite.mjs 327 Stellen unter der Schwelle.
+  //
+  // Die Klammer hinter der Nummer ("RE 1 (19011)") faellt weg: die Fahrtnummer
+  // ist fuer die Puenktlichkeitsabfrage da, nicht fuer den Bahnsteig.
+  var bahnSchild = function (zug, klein) {
+    return '<span class="zug-schild zug-schild--' + bahnZugArt(zug)
+      + (klein ? " zug-schild--klein" : "") + '">'
+      + zug.replace(/\s*\(.*\)/, "") + "</span>";
+  };
+
+  var bahnMin = function (hhmm) {
+    var t = /^(\d{1,2}):(\d{2})$/.exec(hhmm || "");
+    return t ? +t[1] * 60 + +t[2] : null;
+  };
+  var bahnUhr = function (m) {
+    return (m / 60 | 0) % 24 + ":" + ("0" + (m % 60)).slice(-2);
+  };
+
+  // Die Skala umfasst alle Verbindungen der Fahrt und rastet auf volle Stunden.
+  // Je Verbindung eine eigene Skala waere bequemer zu rechnen und wertlos: dann
+  // sieht jede Verbindung gleich lang aus, und genau der Vergleich ist der
+  // Zweck der Ansicht.
+  var bahnSkala = function (liste) {
+    var von = Infinity, bis = -Infinity;
+    liste.forEach(function (v) {
+      var a = bahnMin(v.ab), e = bahnMin(v.an);
+      if (a === null || e === null) return;
+      if (e < a) e += 1440;                       // ueber Mitternacht
+      von = Math.min(von, a); bis = Math.max(bis, e);
+    });
+    if (von === Infinity) return null;
+    return { von: Math.floor(von / 60) * 60, bis: Math.ceil(bis / 60) * 60 };
+  };
+
+  var bahnSpur = function (v, skala) {
+    var teile = [], vorher = null;
+    var breite = skala.bis - skala.von;
+    var pct = function (m) { return ((m - skala.von) / breite * 100).toFixed(2) + "%"; };
+
+    (v.abschnitte || []).forEach(function (a) {
+      var ab = bahnMin(a.ab), an = bahnMin(a.an);
+      if (ab === null || an === null) return;
+      if (an < ab) an += 1440;
+      if (ab < skala.von) { ab += 1440; an += 1440; }
+      if (vorher !== null && ab > vorher) {
+        var wart = ab - vorher;
+        // Zwei Stufen, wie beim Zug. Die erste Fassung schnitt bei 7 % ab -
+        // gerechnet auf eine Skala von acht Stunden. Seit sie bis Mitternacht
+        // reicht, sind 720 Minuten das Ganze, und damit liegt ein 47-Minuten-
+        // Umstieg bei 6,5 %: von vierzehn Verbindungen zeigte genau eine ihre
+        // Wartezeit. Die Einheit faellt zuerst, die Zahl zuletzt.
+        var umsAnteil = (ab - vorher) / breite * 100;
+        // "47" braucht 26 px = 3,7 %, "47 min" braucht 50 px = 7,5 %. Die
+        // 3,7 sind knapp gewaehlt, damit der kuerzeste zulaessige Umstieg
+        // seine Zahl behaelt: 27 min sind auf dieser Skala 3,75 %, und
+        // ausgerechnet der knappe Umstieg darf nicht der stumme sein.
+        var umsText = umsAnteil >= 7.5 ? '<b class="mit-einheit">' + wart + "</b>"
+          : umsAnteil >= 3.7 ? "<b>" + wart + "</b>" : "";
+        teile.push('<span class="spur-teil spur-teil--ums'
+          + (wart < 20 ? " spur-teil--knapp" : "") + '" style="left:' + pct(vorher)
+          + ";width:" + umsAnteil.toFixed(2) + '%">' + umsText + "</span>");
+      }
+      // Die Minutenzahl faellt weg, wo der Abschnitt sie nicht traegt: unter
+      // 15 % der Skalenbreite stiess sie an den Nachbarn und wurde mitten im
+      // Wort abgeschnitten ("S 3 47 mi"). Das Zugschild bleibt immer - es ist
+      // die Angabe, ohne die der Balken nichts sagt; die Dauer steht ohnehin
+      // in der Tabelle darunter.
+      // Drei Stufen statt zwei. Unter 5 % traegt der Balken nicht einmal das
+      // Schild - es wurde mitten in der Zugnummer abgeschnitten ("IC"), und
+      // ein angeschnittenes Schild ist schlechter als gar keines: es sieht aus
+      // wie eine Angabe. Welcher Zug es ist, steht in den Etappen darunter.
+      // Die Schwellen sind GERECHNET, nicht geschaetzt. Die Spur ist bei 92ch
+      // rund 708 px breit; ein Schild "ICE 517" braucht darin 52 px Text plus
+      // 14 px Innenmass plus 14 px Nase = 80 px, also 11 %. Mit Minutenzahl
+      // sind es 136 px = 19 %. Vorher standen hier 5 und 15, und bei 5 % wurde
+      // "RE 1" mitten im Wort abgeschnitten.
+      //
+      // Kurze Zubringer tragen damit kein Schild mehr. Das ist der bessere
+      // Tausch: die Farbe nennt die Zugart weiterhin, die Nummer steht in den
+      // Etappen darunter - ein angeschnittenes Schild nennt nichts und sieht
+      // trotzdem nach Angabe aus.
+      var anteil = (an - ab) / breite * 100;
+      var text = anteil < 11 ? ""
+        : bahnSchild(a.zug, true)
+          + (anteil >= 19 ? '<i>' + (an - ab) + " min</i>" : "");
+      teile.push('<span class="spur-teil spur-teil--zug spur-teil--'
+        + bahnZugArt(a.zug) + '" style="left:' + pct(ab)
+        + ";width:" + anteil.toFixed(2) + '%">' + text + "</span>");
+      vorher = an;
+    });
+
+    // Die Stundenmarken sind das, was die Balken vergleichbar macht - ohne sie
+    // ist es ein Balken irgendwo, nicht ein Balken um 12:51.
+    var marken = "";
+    for (var m = skala.von; m <= skala.bis; m += 60) {
+      marken += '<span class="spur-marke" style="left:' + pct(m) + '"></span>';
+    }
+    return '<div class="spur">' + marken + teile.join("") + "</div>";
+  };
+
+  var bahnAchse = function (skala, marke) {
+    var breite = skala.bis - skala.von, s = "";
+    for (var m = skala.von; m <= skala.bis; m += 60) {
+      s += '<span class="achse-tick" style="left:'
+        + ((m - skala.von) / breite * 100).toFixed(2) + '%">' + bahnUhr(m) + "</span>";
+    }
+    // Die Marke kommt aus den DATEN, nicht aus dem Skript: welche Uhrzeit auf
+    // dieser Achse zaehlt, haengt an der Reise - hier der Check-in im Hotel.
+    // Die Rueckfahrt fuehrt keine, dort faehrt man weg statt an.
+    var mk = "";
+    if (marke && marke.zeit) {
+      var mm = bahnMin(marke.zeit);
+      if (mm !== null && mm >= skala.von && mm <= skala.bis) {
+        mk = '<span class="achse-marke" style="left:'
+          + ((mm - skala.von) / breite * 100).toFixed(2) + '%"'
+          + (marke.grund ? ' title="' + marke.grund + '"' : "")
+          + '><b>' + marke.text + " " + marke.zeit + "</b></span>";
+      }
+    }
+    // Ohne aria-hidden, sobald eine Marke da ist: die Stundenzahlen wiederholen
+    // nur, was in den Zeilen steht, die Marke sagt etwas Eigenes.
+    return '<div class="achse"' + (mk ? "" : ' aria-hidden="true"') + ">"
+      + s + mk + "</div>";
+  };
+
+  // Die Auslastung als dreistufiges Zeichen. Sie steht am ABSCHNITT, weil die
+  // Prognose am Einstiegsbahnhof haengt und nicht am Zug: derselbe ICE 517 ist
+  // ab Mannheim in der 2. Klasse hoch ausgelastet und ab Stuttgart gering.
+  //
+  // Drei Balken, gefuellt bis zur Stufe - die Farbe ist nie der einzige
+  // Traeger (WCAG 1.4.1), die Anzahl gefuellter Balken sagt dasselbe. Wo die
+  // Quelle nichts fuehrt, steht nichts: eine graue Null saehe aus wie "leer".
+  var AUSLAST = { gering: 1, mittel: 2, hoch: 3, "sehr hoch": 3 };
+  var bahnAuslastung = function (a) {
+    var s = (a || {}).klasse2;
+    var stufe = AUSLAST[s];
+    if (!stufe) return "";
+    var balken = "";
+    for (var k = 1; k <= 3; k++) {
+      balken += '<i class="last-balken' + (k <= stufe ? " last-balken--an" : "") + '"></i>';
+    }
+    return '<span class="last last--' + stufe + '" title="2. Klasse: ' + s
+      + ' ausgelastet (Prognose)"><span class="last-zeichen" aria-hidden="true">'
+      + balken + '</span><b>' + s + "</b></span>";
+  };
+
+  var bahnAltHtml = function (v, skala, i) {
+    var umsOrte = (v.umstieg || []).map(function (u) { return u.ort; }).join(", ");
+    var gl = function (g) {
+      return g && g !== "unbekannt" ? '<span class="gleis">Gl. ' + g + "</span>"
+        : '<span class="gleis gleis--offen">Gleis offen</span>';
+    };
+
+    // Etappen statt einer Tabellenzeile je Abschnitt. Die Tabelle konnte die
+    // Zwischenhalte nicht aufnehmen, ohne dass jede Verbindung 15 Zeilen lang
+    // wurde - und der S 3 nach Mannheim haelt dreizehnmal. Als Faltung je
+    // Etappe steht die Frage "wo faehrt der lang" da, ohne sie zu beantworten,
+    // bis jemand fragt.
+    var etappen = (v.abschnitte || []).map(function (a) {
+      var h = a.halte;
+      var tief = "";
+      if (h && h.length) {
+        tief = '<details class="halte-mehr"><summary>' + h.length
+          + (h.length === 1 ? " Zwischenhalt" : " Zwischenhalte") + "</summary>"
+          + '<ol class="band band--tief">'
+          + h.map(function (x) { return bahnHalt(x, "band-halt--zwischen"); }).join("")
+          + "</ol></details>";
+      } else if (h) {
+        // Leer und unbekannt sind zwei verschiedene Antworten. Ein Abschnitt
+        // ohne Halt sagt das; einer, dessen Lauf nicht abrufbar war, bekommt
+        // gar nichts - sonst behauptete die Seite eine Durchfahrt, die niemand
+        // geprueft hat.
+        tief = '<p class="etappe-durch">ohne Zwischenhalt</p>';
+      }
+      return '<li class="etappe">'
+        + '<div class="etappe-kopf">' + bahnSchild(a.zug) + bahnAuslastung(a.auslastung)
+        +   '<span class="etappe-weg">'
+        +     '<span class="etappe-halt"><b>' + a.ab + "</b>" + a.von + gl(a.gleis_ab)
+        +     "</span>"
+        +     '<i class="etappe-pfeil" aria-hidden="true">→</i>'
+        +     '<span class="etappe-halt"><b>' + a.an + "</b>" + a.nach + gl(a.gleis_an)
+        +     "</span>"
+        +   "</span>"
+        + "</div>" + tief
+        + "</li>";
+    }).join("");
+
+    // --i traegt die Staffelung. Sie steht als Variable im Markup und nicht
+    // als n-ter Regelsatz im CSS: vierzehn Regeln fuer vierzehn Zeilen waeren
+    // beim fuenfzehnten Eintrag falsch.
+    return '<details class="verb" data-ab="' + v.ab
+      + '" style="--i:' + (i || 0) + '">'
+      + '<span class="bb-ring" aria-hidden="true"></span>'
+      + '<span class="bb-glut" aria-hidden="true"></span>'
+      + '<summary class="verb-kopf"><span class="verb-zeile">'
+      +   '<span class="verb-zeit"><b>' + v.ab + "</b><i>→</i><b>" + v.an + "</b></span>"
+      +   '<span class="verb-dauer">' + v.dauer + "</span>"
+      +   '<span class="verb-weg">' + (v.umstiege === 0 ? "ohne Umstieg"
+          : "umsteigen in " + umsOrte) + "</span>"
+      // Die erwartete Ankunft steht NEBEN der planmaessigen, nie statt ihr: sie
+      // ist aus dem Puenktlichkeitsmittel gerechnet und damit weicher als der
+      // Fahrplan. Ersetzte sie ihn, saehe eine Schaetzung aus wie eine Tafel.
+      +   (v.erwartet ? '<span class="verb-real">real ~' + v.erwartet + "</span>" : "")
+      +   (v.hinweis ? '<span class="alt-flagge'
+          + (v.hinweis_warn ? " alt-flagge--warn" : "") + '">' + v.hinweis + "</span>" : "")
+      +   bahnAuslastung((v.abschnitte[v.abschnitte.length - 1] || {}).auslastung)
+      +   bahnHilfe(v.robust, v.ab + " → " + v.an)
+      +   "</span>"
+      // Die Spur steht IM summary, nicht im aufklappbaren Teil. Dort lag sie bis
+      // zum 09.09.2026 - und damit war sie genau bei einer Verbindung sichtbar,
+      // waehrend die gemeinsame Skala nur Sinn hat, wenn man die Balken
+      // NEBENEINANDER sieht. Ein <summary> darf Flow-Content tragen.
+      +   bahnSpur(v, skala)
+      + "</summary>"
+      + '<div class="verb-tief">'
+      +   '<ol class="etappen">' + etappen + "</ol>"
+      + "</div></details>";
+  };
+
+  // Die Alternativen haengen an IHRER Fahrt. Ohne Ersatzverbindungen faellt der
+  // Abschnitt ganz weg - eine leere Ueberschrift behauptet, es gaebe dort etwas
+  // zu holen.
+  var bahnAltBlock = function (alt, tag) {
+    if (!alt || !(alt.liste || []).length) return "";
+    var skala = bahnSkala(alt.liste);
+    return '<section class="alt-block">'
+      + '<div class="alt-kopfzeile">'
+      +   '<h3 class="alt-titel">' + (alt.titel || "Alternativen") + "</h3>"
+      // Das Datum stand bis zum 09.09.2026 nur oben an der Fahrt. Wer zu den
+      // Alternativen scrollte, sah sechs Uhrzeiten ohne Tag - und die Frage
+      // "ist das ueberhaupt mein Reisetag?" blieb offen.
+      +   (tag ? '<span class="alt-tag">' + tag + "</span>" : "")
+      +   bahnHilfe(alt.lage, "Warum jede Fahrt umsteigt")
+      + "</div>"
+      + ((alt.regeln || alt.stand) ? '<details class="wie"><summary>Wie gesucht wurde'
+          + "</summary><div class=\"wie-inhalt\">"
+          + (alt.regeln ? "<ul>" + alt.regeln.map(function (r) {
+              return "<li>" + r + "</li>"; }).join("") + "</ul>" : "")
+          + (alt.stand ? "<p>" + alt.stand + "</p>" : "")
+          + (alt.auslastung_stand ? "<p>" + alt.auslastung_stand + "</p>" : "")
+          + "</div></details>" : "")
+      + (skala ? '<div class="skala">'
+          + '<span class="jetzt-linie" data-von="' + skala.von
+          + '" data-bis="' + skala.bis + '" hidden><b>jetzt</b></span>'
+          + bahnAchse(skala, alt.marke)
+          + alt.liste.map(function (v, i) { return bahnAltHtml(v, skala, i); }).join("")
+          + "</div>" : "")
+      + "</section>";
+  };
+
   var bahnFahrtHtml = function (f) {
     return '<div class="fahrt">'
       + '<div class="fahrt-kopf">'
       +   '<div><p class="fahrt-richtung">' + f.richtung + "</p>"
       +   '<p class="fahrt-tag">' + f.tag + (f.zug ? " · " + f.zug : "")
       +     (f.dauer ? " · " + f.dauer : "") + "</p></div>"
-      +   bahnMarke(f.status, f.status_text)
+      +   '<span class="kopf-rechts">' + bahnMarke(f.status, f.status_text)
+      +     bahnHilfe(f.meldung, f.richtung + ", " + f.tag) + "</span>"
       + "</div>"
-      + (f.meldung ? '<p class="fahrt-meldung fahrt-meldung--' + f.status + '">'
-          + f.meldung + "</p>" : "")
-      + bahnBand(f.halte)
+      + bahnBand(f.halte, f.zug)
       + '<div class="fahrt-kacheln">'
       +   (f.ticket ? '<section class="kachel"><h3 class="kachel-titel">Ticket</h3>'
           + bahnTicket(f.ticket) + "</section>" : "")
       +   (f.reservierung ? '<section class="kachel"><h3 class="kachel-titel">Reservierung</h3>'
           + bahnPlatz(f.reservierung) + "</section>" : "")
-      + "</div></div>";
-  };
-
-  // Umsteigezeit als Balken gegen eine feste 60-Minuten-Skala. Eine blosse Zahl
-  // ("22 min") laesst sich nicht vergleichen, ohne sie zu lesen; nebeneinander
-  // liegende Balken schon. Die Schwelle ist die Vorgabe fuer diese Reise:
-  // unter 20 Minuten wird nicht umgestiegen.
-  var bahnUmstieg = function (u) {
-    var breite = Math.max(4, Math.min(u.minuten, 60) / 60 * 100);
-    return '<li class="ums' + (u.minuten < 20 ? " ums--knapp" : "") + '">'
-      + '<span class="ums-ort">' + u.ort + "</span>"
-      + '<span class="ums-balken" aria-hidden="true"><i style="width:'
-      +   breite.toFixed(0) + '%"></i></span>'
-      + '<span class="ums-zahl">' + u.minuten + " min</span></li>";
-  };
-
-  var bahnAltHtml = function (v, i) {
-    var abschnitte = (v.abschnitte || []).map(function (a) {
-      return '<li class="abs"><b class="abs-zug">' + a.zug + "</b>"
-        + '<span class="abs-weg">' + a.von + " " + a.ab + " → " + a.nach + " " + a.an + "</span>"
-        + '<span class="abs-gleis">' + (a.gleis ? "Gl. " + a.gleis : "") + "</span></li>";
-    }).join("");
-    var umstiege = (v.umstieg || []).map(bahnUmstieg).join("");
-    return '<details class="alt"' + (i === 0 ? " open" : "") + ">"
-      + '<summary class="alt-kopf">'
-      +   '<span class="alt-zeit"><b>' + v.ab + "</b><i>→</i><b>" + v.an + "</b></span>"
-      // Die erwartete Ankunft steht NEBEN der planmaessigen, nicht statt ihr.
-      // Sie ist eine Rechnung aus dem Puenktlichkeitsmittel des Hauptzugs und
-      // damit weicher als der Fahrplan - ersetzte sie ihn, saehe eine Schaetzung
-      // aus wie eine Abfahrtstafel.
-      +   (v.erwartet ? '<span class="alt-real">real ~' + v.erwartet + "</span>" : "")
-      +   '<span class="alt-dauer">' + v.dauer + "</span>"
-      +   '<span class="alt-ums">' + (v.umstiege === 0 ? "direkt"
-          : v.umstiege + (v.umstiege === 1 ? " Umstieg" : " Umstiege")) + "</span>"
-      // Die Flagge ist standardmaessig NEUTRAL. Traegt sie immer die Warnfarbe,
-      // sieht "beste Reserve" aus wie ein Problem - und die Farbe sagt dann
-      // nichts mehr, weil sie ueberall steht.
-      +   (v.hinweis ? '<span class="alt-flagge'
-          + (v.hinweis_warn ? " alt-flagge--warn" : "") + '">' + v.hinweis + "</span>" : "")
-      + "</summary>"
-      + '<div class="alt-inhalt">'
-      +   (abschnitte ? '<ol class="abschnitte">' + abschnitte + "</ol>" : "")
-      +   (umstiege ? '<h4 class="alt-untertitel">Umsteigezeit</h4><ul class="umse">'
-          + umstiege + "</ul>" : "")
-      +   (v.robust ? '<p class="alt-robust">' + v.robust + "</p>" : "")
-      + "</div></details>";
-  };
-
-  var bahnAltAnsicht = function () {
-    // Kein erfundener Fuellstand: solange die Abfrage nicht gelaufen ist, sagt
-    // der Reiter das. Ein Platzhalter, der wie eine Auswahl aussieht, wird
-    // nicht mehr geprueft - genau davor warnt die Projektregel.
-    if (!bahnAlt || !(bahnAlt.liste || []).length) {
-      return '<p class="alt-leer">Noch nicht abgefragt. Die Alternativen kommen aus einer '
-        + "Fahrplanabfrage und stehen hier, sobald sie gelaufen ist.</p>";
-    }
-    return '<div class="fahrt">'
-      // Die Lage zuerst, vor den Regeln und der Liste. Wer nur die sechs
-      // Verbindungen sieht, haelt den Ausfall fuer ein Zugproblem - er ist ein
-      // Streckenproblem, und das aendert, worauf man am Reisetag achtet.
-      + (bahnAlt.lage ? '<p class="fahrt-meldung fahrt-meldung--ausgefallen">'
-          + bahnAlt.lage + "</p>" : "")
-      + (bahnAlt.regeln ? '<ul class="regeln">' + bahnAlt.regeln.map(function (r) {
-          return "<li>" + r + "</li>"; }).join("") + "</ul>" : "")
-      + bahnAlt.liste.map(bahnAltHtml).join("")
-      + (bahnAlt.ausgeschieden ? '<p class="alt-raus"><b>Geprüft und ausgeschieden.</b> '
-          + bahnAlt.ausgeschieden + "</p>" : "")
-      + (bahnAlt.stand ? '<p class="alt-stand">' + bahnAlt.stand + "</p>" : "")
+      + "</div>"
+      + bahnAltBlock(f.alternativen, f.tag)
       + "</div>";
   };
 
@@ -1293,18 +1875,6 @@
     var navB = document.getElementById("bahn-reiter");
     var zielB = document.getElementById("bahn-tafel");
     if (!navB || !zielB || !bahnFahrten.length) return;
-
-    // 'Alternativen' erscheint nur, wenn eine Fahrt sie braucht. Ein Knopf, der
-    // bei heiler Buchung leer ins Nichts fuehrt, kostet Vertrauen in die
-    // anderen.
-    var braucht = bahnFahrten.some(function (f) { return f.status === "ausgefallen"; });
-    var eintraege = bahnFahrten.map(function (f) {
-      return { id: f.id, label: f.label, warn: f.status === "ausgefallen", bau: function () {
-        return bahnFahrtHtml(f); } };
-    });
-    if (braucht) {
-      eintraege.push({ id: "alt", label: "Alternativen", bau: bahnAltAnsicht });
-    }
 
     // Aufgeschlagen wird die Fahrt, die etwas von einem WILL - die ausgefallene.
     // Sonst die erste. Ein Reiter, der mit dem heilen Teil beginnt, versteckt
@@ -1317,28 +1887,39 @@
       knoepfeB.forEach(function (b) {
         b.setAttribute("aria-pressed", b.dataset.id === id ? "true" : "false");
       });
-      var e = eintraege.filter(function (x) { return x.id === id; })[0];
+      var f = bahnFahrten.filter(function (x) { return x.id === id; })[0];
       // .grund-fuss, nicht .tafel-fuss: der Fuss steht HIER auf dem dunklen
       // Grund und nicht auf der hellen Tafel. Mit .tafel-fuss mass
       // pruef-farben.mjs 2,16:1 - dieselbe Verwechslung, die stil.css schon
       // einmal dokumentiert hat.
-      zielB.innerHTML = (e ? e.bau() : "")
+      var status = bahnStatus(f);
+      zielB.innerHTML = (status ? '<p class="jetzt-satz">' + status + "</p>" : "")
+        + (f ? bahnFahrtHtml(f) : "")
         + '<p class="grund-fuss">' + (bahnDaten.quelle || "")
         + " · Auftragsnummer und Name stehen nicht auf dieser Seite.</p>";
+      fallblattAlle(zielB, id);
+      bahnVergangen(zielB, f);
     };
-    eintraege.forEach(function (e) {
+    bahnFahrten.forEach(function (f) {
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "unterknopf" + (e.warn ? " unterknopf--warn" : "");
-      b.dataset.id = e.id;
-      b.setAttribute("aria-pressed", e.id === offen ? "true" : "false");
-      b.textContent = e.label;
-      b.addEventListener("click", function () { zeige(e.id); });
+      b.className = "unterknopf" + (f.status === "ausgefallen" ? " unterknopf--warn" : "");
+      b.dataset.id = f.id;
+      b.setAttribute("aria-pressed", f.id === offen ? "true" : "false");
+      b.textContent = f.label;
+      b.addEventListener("click", function () { zeige(f.id); });
       knoepfeB.push(b);
       navB.appendChild(b);
     });
     zeige(offen);
   }());
+
+  // --- Bahn-Reiter Ende ------------------------------------------------------
+  // Dieser Marker ist kein Schmuck: bau-vorschau.py schneidet den Block hier
+  // heraus und suchte dafuer die Zeichenfolge "}());". Seit der jetzt-Wert
+  // selbst eine IIFE ist, gibt es die im Block zweimal - der Schnitt landete
+  // mitten im Code, die Vorschau zeigte nur noch die Ueberschrift. Ein Marker
+  // kommt genau einmal vor.
 
   // --- Die Hotelkarte: Umgebung UND Anfahrt ---------------------------------
   // EINE Karte, nicht zwei. Am 09.09.2026 standen hier kurzzeitig zwei

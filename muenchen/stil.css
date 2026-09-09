@@ -111,6 +111,12 @@
        --zahl   kurze Aufschriften in Versalien (ANREISE, DAUER, TAKT)
        --wert   jede Zahl, jedes Datum, jede Uhrzeit, jede Liniennummer */
   --wert:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Zeiten tragen eine EIGENE Schrift. Silkscreen ist eine Pixelschrift ohne
+     Unterlaengen; bei 10-13 px sind 3 und 8, 5 und 6 darin kaum zu trennen -
+     und Ziffern sind auf diesem Reiter der Inhalt, nicht die Verzierung.
+     IBM Plex Mono hat von Haus aus tabellarische Ziffern und eine
+     geschlitzte Null. */
+  --uhr:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 
 *{box-sizing:border-box}
@@ -382,6 +388,25 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .leaflet-container .leaflet-control-attribution{font-size:10.5px;
   background:var(--flaeche); color:var(--tinte-leise)}
 .leaflet-container .leaflet-control-attribution a{color:var(--akzent-text)}  /* 6,12:1 */
+
+/* ---------- Die zwei Routenknoepfe in jeder Sprechblase ----------
+   Als KNOEPFE und nicht als Textlinks: sie werden unterwegs mit dem Daumen
+   getroffen, waehrend man laeuft. 44 px hoch (WCAG 2.5.8) statt der 16 px, die
+   eine Textzeile hoch waere - der Maps-Link darueber bleibt ein Link, weil er
+   im Sitzen gelesen wird und nicht im Gehen gedrueckt.
+
+   Rahmen statt Flaeche: die Sprechblase ist schon hell, ein gefuellter Knopf
+   waere ein zweiter Kasten im Kasten. */
+.route-links{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+             margin:8px 0 0}
+.route-wort{font-size:12px; letter-spacing:.04em; text-transform:uppercase;
+            color:var(--tinte-leise)}                    /* 7,81:1 */
+.leaflet-popup-content .route-knopf{
+  display:inline-flex; align-items:center; min-height:44px; padding:0 11px;
+  font-size:13.5px; font-weight:700; text-decoration:none;
+  color:var(--akzent-text);                              /* 6,12:1 */
+  border:2px solid var(--linie)}
+.leaflet-popup-content .route-knopf:hover{border-color:var(--akzent-text)}
 
 /* ---------- Der Pixel-Sternenhimmel ----------
    Fest hinter allem. z-index:-1 legt die Leinwand hinter jeden Inhalt, aber vor
@@ -915,15 +940,20 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .unterknopf--warn[aria-pressed="false"]{border-color:var(--akzent-hell);
                                         color:var(--akzent-hell)}   /* 8,94:1 */
 
-.fahrt{padding:18px 20px; background:var(--flaeche); color:var(--tinte);
+/* 92ch statt 70ch. Die BREITE ist der Hebel, nicht die Schriftgroesse: bei
+   einer Skala ueber zwoelf Stunden blieben einem 39-Minuten-Abschnitt auf 70ch
+   keine 35 px, und groessere Schrift macht das schlimmer statt besser. Die
+   Fliesstexte darin tragen ihre eigene max-width und wachsen NICHT mit - eine
+   Zeile ueber 92 Zeichen liest sich schlechter. */
+.fahrt{padding:18px 22px; background:var(--flaeche); color:var(--tinte);
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
-       max-width:70ch}
+       max-width:92ch}
 .fahrt-kopf{display:flex; flex-wrap:wrap; gap:10px 16px;
             align-items:flex-start; justify-content:space-between}
 .fahrt-richtung{margin:0; font-family:var(--pixel); font-size:19px}
-.fahrt-tag{margin:3px 0 0; font-family:var(--wert); font-weight:700;
-           font-size:12.5px; color:var(--tinte-leise)}          /* 6,50:1 */
-.zustand--weg{background:var(--warn-bg); color:var(--warn);     /* 5,18:1 */
+.fahrt-tag{margin:3px 0 0; font-family:var(--zahl); font-size:11px;
+           letter-spacing:.5px; color:var(--tinte-leise)}       /* 6,50:1 */
+.zustand--weg{background:var(--warn); color:var(--flaeche);     /* 5,86:1 */
               border:2px solid var(--warn)}
 .fahrt-meldung{margin:14px 0 0; padding:11px 13px; font-size:14px;
                max-width:60ch; background:var(--flaeche-2)}
@@ -932,48 +962,80 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 
 /* --- Streckenband ---
    Vier Spalten, feste Zeitspalte: die Zeiten sollen untereinander fluchten,
-   sonst sucht das Auge sie in jeder Zeile neu. Die Linie haengt am Punkt und
-   nicht am Listenelement - so endet sie am letzten Halt, statt ins Leere
-   weiterzulaufen. */
-.band{list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0}
-.band-halt{display:grid; grid-template-columns:64px 22px minmax(0,1fr) auto;
-           align-items:start; gap:0 10px; min-height:38px}
-.band-zeit{font-family:var(--wert); font-weight:700; font-size:14px;
-           font-variant-numeric:tabular-nums; text-align:right;
-           padding-top:1px; white-space:nowrap}
-.band-bis{opacity:.55; padding:0 1px}
-.band-punkt{position:relative; justify-self:center; width:13px; height:13px;
-            margin-top:3px; border:3px solid var(--umriss); border-radius:50%;
-            background:var(--umriss)}
-.band-halt:not(:last-child) .band-punkt::after{
-  content:""; position:absolute; left:50%; top:13px;
-  width:3px; height:calc(100% + 25px); margin-left:-1.5px;
+   sonst sucht das Auge sie in jeder Zeile neu. Die Spaltenmasse stehen als
+   Variablen, weil die LINIE sie braucht - sie laeuft am Listenelement entlang
+   und muss die Mitte der Punktspalte treffen. Am Punkt selbst hing sie bis zum
+   09.09.2026 und war damit auf dessen Hoehe begrenzt; sobald die Zwischenhalte
+   aufklappen, endete sie nach 13 Pixeln im Nichts. */
+.band{list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0;
+      --sp1:64px; --sp2:22px; --spalt:10px}
+.band-halt{position:relative;
+           display:grid; grid-template-columns:var(--sp1) var(--sp2) minmax(0,1fr) auto;
+           align-items:start; gap:0 var(--spalt); min-height:38px}
+.band-halt:not(:last-child)::before{
+  content:""; position:absolute; top:9px; bottom:-4px; width:3px;
+  left:calc(var(--sp1) + var(--spalt) + var(--sp2) / 2 - 1.5px);
   background:var(--umriss)}
-.band-ort{font-size:16px; font-weight:700; padding-top:0}
-.band-gleis{font-family:var(--wert); font-weight:700; font-size:12px;
-            color:var(--tinte-leise); padding-top:3px; white-space:nowrap}
+.band-zeit{font-family:var(--uhr); font-size:13.5px; font-weight:600;
+           text-align:right; padding-top:1px; white-space:nowrap;
+           font-variant-numeric:tabular-nums}
+.band-bis{opacity:.55; padding:0 1px}
+.band-punkt{position:relative; z-index:1; justify-self:center;
+            width:13px; height:13px; margin-top:3px;
+            border:3px solid var(--umriss); border-radius:50%;
+            background:var(--umriss)}
+.band-ort{font-size:16px; font-weight:700}
+/* Dasselbe Gleis-Chip wie in der Alternativen-Tabelle. Es stand hier als
+   blasse Pixelschrift und dort als Chip - dieselbe Angabe in zwei Formen
+   liest sich wie zwei verschiedene Angaben. */
+.band-gleis{font-family:var(--uhr); font-size:11.5px; font-weight:600;
+            padding:2px 6px; background:var(--flaeche-2);
+            color:var(--tinte); white-space:nowrap;              /* 14,02:1 */
+            justify-self:end; align-self:start}
 
-/* Der Zwischenhalt: hohler Punkt, duennere Schrift, kleinere Zeit. Er sagt
-   "hier haelt der Zug, aber du steigst nicht aus". */
-.band-halt--zwischen .band-punkt{background:var(--flaeche); border-width:2px;
-                                 width:9px; height:9px; margin-top:5px}
-.band-halt--zwischen .band-ort{font-size:14px; font-weight:400;
-                               color:var(--tinte-leise)}        /* 6,50:1 */
-.band-halt--zwischen .band-zeit{font-size:11.5px; color:var(--tinte-leise)}
-
-/* Die Luecke: was NICHT abgefragt wurde, bekommt keinen Punkt und keine Zeit,
-   sondern eine gestrichelte Linie. Ein gefuellter Halt an dieser Stelle waere
-   eine Behauptung ueber Halte, die niemand nachgesehen hat. */
-.band-halt--luecke{min-height:30px}
-.band-halt--luecke .band-punkt{background:none; border:none}
-.band-halt--luecke .band-punkt::after{background:none;
-  border-left:3px dashed var(--umriss); width:0; top:0; height:calc(100% + 28px)}
-.band-halt--luecke .band-ort{font-size:12.5px; font-style:italic;
-                             color:var(--tinte-leise); padding-top:2px}
+/* Die Faltung der Zwischenhalte. Zugeklappt sagt sie, WIE VIELE es sind -
+   eine Faltung, die ihren Inhalt verschweigt, wird nicht geoeffnet. Der Punkt
+   daneben ist ein Strich statt eines Kreises: hier haelt kein Zug, hier liegt
+   nur ein Stueck Strecke. */
+.band-halt--gruppe{min-height:32px}
+.band-halt--gruppe .band-punkt{width:3px; height:13px; border:none;
+                               border-radius:0; background:var(--umriss);
+                               margin-top:6px}
+.band-mitte{grid-column:3 / -1; display:flex; flex-wrap:wrap;
+            align-items:center; gap:8px 12px; padding:2px 0}
+.halte-mehr{flex:0 0 auto}
+.halte-mehr > summary{display:inline-flex; align-items:center; gap:7px;
+  cursor:pointer; list-style:none; padding:2px 0;
+  font-family:var(--sans); font-weight:700; font-size:12px;
+  color:var(--tinte-leise)}                                /* 6,50:1 */
+.halte-mehr > summary::-webkit-details-marker{display:none}
+.halte-mehr > summary::after{content:"▾"; font-size:13px; line-height:1}
+.halte-mehr[open] > summary::after{content:"▴"}
+.halte-mehr > summary:hover{color:var(--tinte)}
+/* Die innere Liste ruecht ein und wird leiser: sie ist die Aufklaerung zu
+   EINER Zeile des Bandes, nicht eine zweite Ebene daneben. */
+/* --sp1 ist hier BREITER als im aeusseren Band, nicht schmaler: dort steht je
+   Halt eine Zeit, hier stehen zwei mit Trenner ("14:45-14:51"). Mit den 52 px
+   des aeusseren Masses lief die Ankunftszeit in den Ortsnamen. */
+.band--tief{margin:6px 0 8px; --sp1:82px; --sp2:14px; --spalt:8px}
+.band--tief .band-halt{min-height:30px}
+.band--tief .band-punkt{width:9px; height:9px; border-width:2px;
+                        background:var(--flaeche); margin-top:4px}
+/* Die innere Linie traegt --linie statt --umriss: mit derselben Farbe wie die
+   Punkte verschluckte sie die Punkte, und die Zwischenhalte sahen aus wie ein
+   durchgezogener Strich ohne Halte. Sie ist rein dekorativ - was sie verbindet,
+   steht als Text daneben. */
+.band--tief .band-halt:not(:last-child)::before{top:8px; width:2px;
+  left:calc(var(--sp1) + var(--spalt) + var(--sp2) / 2 - 1px);
+  background:var(--linie)}
+.band--tief .band-ort{font-size:14px; font-weight:400;
+                      color:var(--tinte-leise)}            /* 6,50:1 */
+.band--tief .band-zeit{font-size:11.5px; color:var(--tinte-leise)}
+.band--tief .band-gleis{font-size:10.5px; padding:1px 5px}
 
 /* --- Kacheln: Ticket und Reservierung --- */
-.fahrt-kacheln{display:grid; gap:14px; margin-top:22px;
-               grid-template-columns:repeat(auto-fit, minmax(230px, 1fr))}
+.fahrt-kacheln{display:grid; gap:14px; margin-top:22px; align-items:start;
+               grid-template-columns:repeat(auto-fit, minmax(250px, 1fr))}
 .kachel{padding:13px 15px; background:var(--flaeche-2)}
 .kachel-titel{margin:0 0 10px; font-family:var(--zahl); font-size:10.5px;
               letter-spacing:.5px; text-transform:uppercase;
@@ -986,81 +1048,195 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 
 /* Das Sitzplatzschild. Wagen und Platz sind das Einzige hier, das man im Zug
    im Stehen mit einem Blick treffen muss - darum die grossen Ziffern. */
-.platz-felder{display:flex; gap:10px}
-.platz-feld{flex:1; padding:9px 11px; background:var(--flaeche);
-            border:2px solid var(--umriss)}
+/* Der Wagen. Die Nummer sitzt IM Riss, wie sie am echten Wagen an der Tuer
+   steht - dadurch braucht sie keine Beschriftung "das ist die Wagennummer".
+   Der Riss ist Kontur in currentColor und traegt damit den Rollensatz der
+   Tafel; eine eigene Farbe waere ein vierter gemessener Wert ohne Bedeutung. */
+.wagen{position:relative; color:var(--umriss)}
+.wagen-riss{display:block; width:100%; height:auto}
+/* Label und Zahl NEBENEINANDER, nicht uebereinander: uebereinander drueckten
+   sich beide in das eine freie Feld des Risses und ueberlappten den Rahmen. */
+.wagen-nr{position:absolute; inset:0; display:flex; align-items:center;
+          justify-content:center; gap:7px; padding-bottom:11px;
+          pointer-events:none}
+.wagen-nr .platz-kopf{display:inline; font-size:9px}
+.wagen-nr .platz-wert{display:inline; margin-top:0; font-size:27px; line-height:1}
+
+.sitze{margin-top:12px}
+.sitz-reihe{display:flex; gap:8px; margin-top:4px}
+/* Zwei Sitze, gezeichnet - aber ohne Ort im Wagen: welche Reihe und ob Fenster
+   oder Gang steht nicht in der Buchung, und ein Sitz an gezeichneter Stelle
+   waere dieselbe Erfindung wie eine geratene Wagenreihe. */
+.sitz{display:inline-flex; align-items:center; gap:6px; padding:5px 10px 5px 7px;
+      background:var(--flaeche); border:2px solid var(--umriss);
+      color:var(--umriss)}
+.sitz svg{width:22px; height:22px; flex:none}
+.sitz b{font-family:var(--uhr); font-weight:600; font-size:16px;
+        color:var(--tinte)}                                      /* 16,87:1 */
 .platz-kopf{display:block; font-family:var(--zahl); font-size:10px;
             letter-spacing:.5px; text-transform:uppercase;
             color:var(--tinte-leise)}
-.platz-wert{display:block; margin-top:2px; font-family:var(--wert);
-            font-weight:800; font-size:25px; line-height:1.15;
-            font-variant-numeric:tabular-nums; color:var(--tinte)}  /* 16,87:1 */
-.platz-fuss{margin:9px 0 0; font-size:12.5px; color:var(--tinte-leise)}
+/* --uhr, nicht --pixel: Pixelify Sans setzt 27 und 77 mit so aehnlichen
+   Ziffernformen, dass die Wagennummer im Zug beim schnellen Blick nicht
+   sicher zu lesen ist - und genau dafuer steht sie hier. Dieselbe Ueberlegung
+   wie bei den Fahrplanzeiten, sie war beim ersten Durchgang nur nicht bis in
+   diese Kachel durchgezogen. */
+.platz-wert{display:block; margin-top:3px; font-family:var(--uhr);
+            font-weight:600; font-size:23px; line-height:1.15;
+            letter-spacing:.5px; color:var(--tinte)}              /* 16,87:1 */
+.platz-fuss{margin:11px 0 0; font-size:12.5px; color:var(--tinte-leise)}
+/* Was NICHT auf dieser Seite steht, gehoert genauso hierher wie was darauf
+   steht - sonst sucht man den Bahnsteigabschnitt hier und findet ihn nie. */
+.platz-warn{margin:8px 0 0; padding:8px 10px; font-size:12px;
+            background:var(--flaeche); border-left:4px solid var(--tinte-leise);
+            color:var(--tinte-leise); max-width:44ch}            /* 6,50:1 */
 
-/* --- Alternativen --- */
+/* --- Alternativen als Zeitband ---
+   Eine Skala fuer alle Verbindungen einer Fahrt, nach der Methode aus
+   diagramm-grundlagen (Design_AI): jede Marke haengt an derselben Achse. Vorher
+   stand hier je Verbindung eine Kopfzeile aus Uhrzeiten und ein Absatz Prosa -
+   das beantwortete "wann" und sonst nichts.
+
+   Keine neue Farbe. Die Segmente nutzen die drei Paare, die die Palette schon
+   gemessen hat: Zug = --flaeche auf --umriss (18,33:1), Umstieg = --tinte-leise
+   auf --flaeche-2 (6,50:1), knapper Umstieg = --warn auf --warn-bg (5,18:1). */
+/* Die Alternativen sitzen IN der Fahrt, nicht daneben - abgesetzt durch eine
+   Linie und eine eigene Ueberschrift, damit die Tafel nicht als eine einzige
+   Flaeche gelesen wird. */
+.alt-block{margin-top:26px; padding-top:20px; border-top:3px solid var(--umriss)}
+.alt-kopfzeile{display:flex; flex-wrap:wrap; align-items:baseline;
+               gap:6px 14px; margin-bottom:14px}
+.alt-titel{margin:0; font-family:var(--pixel); font-size:17px;
+           color:var(--tinte)}                               /* 16,87:1 */
+/* Das Datum stand vorher nur oben an der Fahrt. Wer hierher scrollte, sah
+   sechs Uhrzeiten ohne Tag. */
+.alt-tag{font-family:var(--zahl); font-size:11px; letter-spacing:.5px;
+         padding:3px 7px; background:var(--flaeche-2);
+         color:var(--tinte-leise)}                           /* 6,50:1 */
+
 .regeln{margin:0 0 18px; padding:0 0 0 20px; font-size:13.5px;
         color:var(--tinte-leise)}
 .regeln li{margin:3px 0}
-.alt{border:2px solid var(--umriss); margin-bottom:12px;
-     background:var(--flaeche-2)}
-.alt-kopf{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 16px;
-          padding:11px 13px; cursor:pointer; list-style:none}
-.alt-kopf::-webkit-details-marker{display:none}
-.alt[open] .alt-kopf{background:var(--flaeche);
-                     border-bottom:2px solid var(--linie)}
-.alt-zeit{font-family:var(--wert); font-weight:800; font-size:19px;
-          font-variant-numeric:tabular-nums; display:flex;
-          align-items:baseline; gap:7px}
-.alt-zeit i{font-style:normal; font-size:14px; color:var(--tinte-leise)}
-.alt-dauer, .alt-ums{font-family:var(--wert); font-weight:700; font-size:12.5px;
-                     color:var(--tinte-leise)}
-/* Die Flagge ist im Normalfall STILL. Traegt sie immer die Warnfarbe, dann
-   steht "beste Reserve" in Rot neben "Reserve knapp" - und die Farbe hat
-   aufgehoert, etwas zu unterscheiden. */
-.alt-flagge{font-family:var(--zahl); font-size:10px; letter-spacing:.5px;
-            padding:3px 6px; background:var(--flaeche);
+
+/* Die Achse traegt die Stundenmarken. Ohne sie ist ein Balken irgendwo, nicht
+   ein Balken um 12:51. Der linke Rand haelt Platz fuer die Beschriftung frei,
+   die sonst aus der Flaeche laeuft - dasselbe Prinzip wie die viewBox-Raender
+   im Diagramm-Baustein. */
+.skala{--spur-links:0px; margin-top:4px}
+/* 14px = 2px Kartenrand + 12px Innenmass der Spur. Ohne das fluchten Achse
+   und Balken nicht, und eine Skala, die neben ihren Marken liegt, ist keine. */
+.achse{position:relative; height:19px; margin:0 16px 6px}
+.achse-tick{position:absolute; top:0; transform:translateX(-50%);
+            font-family:var(--uhr); font-size:12px; letter-spacing:0;
+            color:var(--tinte-leise); white-space:nowrap}     /* 6,50:1 */
+
+.verb{border:2px solid var(--umriss); margin-bottom:10px;
+      background:var(--flaeche)}
+.verb-kopf{display:block; padding:10px 0 2px; cursor:pointer; list-style:none}
+.verb-zeile{display:flex; flex-wrap:wrap; align-items:baseline; gap:5px 14px;
+            padding:0 12px 9px}
+.verb-kopf::-webkit-details-marker{display:none}
+.verb-kopf:hover{background:var(--flaeche-2)}
+.verb-kopf:hover .spur-teil--ums{background:var(--flaeche)}
+.verb-zeit{display:flex; align-items:center; gap:8px}
+.verb-zeit b{font-family:var(--uhr); font-size:16px; font-weight:600;
+             letter-spacing:.5px; padding:4px 8px; background:var(--flaeche-2);
+             border:2px solid var(--umriss); color:var(--tinte)}  /* 14,02:1 */
+.verb-zeit i{font-style:normal; font-size:15px; color:var(--tinte-leise)}
+.verb-dauer{font-family:var(--uhr); font-size:12.5px; font-weight:600}
+.verb-weg{font-size:13.5px; color:var(--tinte-leise)}         /* 6,50:1 */
+.verb-real{font-family:var(--zahl); font-size:10px; font-style:italic;
+           color:var(--tinte-leise)}
+.alt-flagge{margin-left:auto; font-family:var(--zahl); font-size:10px;
+            letter-spacing:.5px; padding:3px 6px; background:var(--flaeche);
             color:var(--tinte-leise); border:2px solid var(--linie)}
 .alt-flagge--warn{background:var(--warn-bg); color:var(--warn);   /* 5,18:1 */
                   border-color:var(--warn)}
-/* Die erwartete Ankunft steht neben der planmaessigen und muss auch so
-   aussehen: kleiner, leiser, kursiv - eine Rechnung, kein Fahrplanwert. */
-.alt-real{font-family:var(--wert); font-weight:700; font-size:12.5px; font-style:italic;
-          color:var(--tinte-leise)}                               /* 6,50:1 */
-.alt-inhalt{padding:13px}
-.alt-untertitel{margin:16px 0 8px; font-family:var(--zahl); font-size:10.5px;
-                letter-spacing:.5px; text-transform:uppercase;
-                color:var(--tinte-leise)}
-.abschnitte{list-style:none; margin:0; padding:0; display:grid; gap:7px}
-.abs{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:4px 12px;
-     align-items:baseline; font-size:14px}
-.abs-zug{font-family:var(--wert); font-weight:800; font-size:13px}
-.abs-gleis{font-family:var(--wert); font-weight:700; font-size:12px;
-           color:var(--tinte-leise)}
 
-/* Umsteigezeit als Balken gegen eine feste 60-Minuten-Skala: eine Zahl allein
-   laesst sich nicht vergleichen, ohne sie zu lesen - untereinanderliegende
-   Balken schon. Die Fuellung liegt bei 6,50:1 bzw. 5,18:1 gegen die Tafel und
-   damit weit ueber der 3:1-Schwelle fuer grafische Elemente (WCAG 1.4.11). */
-.umse{list-style:none; margin:0; padding:0; display:grid; gap:7px}
-.ums{display:grid; grid-template-columns:minmax(90px,auto) minmax(60px,1fr) auto;
-     gap:10px; align-items:center; font-size:13.5px}
-.ums-balken{height:10px; background:var(--flaeche);
-            border:2px solid var(--umriss)}
-.ums-balken i{display:block; height:100%; background:var(--tinte-leise)}
-.ums--knapp .ums-balken i{background:var(--warn)}
-.ums-zahl{font-family:var(--wert); font-weight:700; font-size:13px;
-          font-variant-numeric:tabular-nums; white-space:nowrap}
-.ums--knapp .ums-zahl{color:var(--warn); font-weight:700}
-.alt-robust{margin:14px 0 0; font-size:13.5px; color:var(--tinte-leise);
+/* Die Spur. Segmente liegen absolut auf der gemeinsamen Skala - dadurch steht
+   eine Verbindung, die spaeter faehrt, auch weiter rechts, und zwei
+   Verbindungen sind ohne Lesen vergleichbar. */
+.spur{position:relative; height:44px; margin:0 14px 12px}
+.spur-marke{position:absolute; top:-2px; bottom:-2px; width:1px;
+            background:var(--linie)}                       /* dekorativ, 1.4.11 */
+.spur-teil{position:absolute; top:0; height:44px; overflow:hidden;
+           display:flex; align-items:center; gap:7px; padding:0 7px;
+           white-space:nowrap; font-family:var(--uhr); font-size:12.5px;
+           font-weight:600}
+.spur-teil b{font-weight:600}
+.spur-teil i{font-style:normal; opacity:.75}
+/* Ein Fahrtabschnitt sieht aus wie ein Zug, nicht wie ein Rechteck: vorn eine
+   abgeschraegte Nase in Fahrtrichtung (die Zeit laeuft nach rechts, also zeigt
+   der Zug nach rechts), oben ein Fensterband, unten ein Fahrgestell.
+   
+   Das ist FORM, keine Aussage: der Balken behauptet nichts ueber Wagenzahl
+   oder Reihung - die gibt es erst 18 h vor Abfahrt. Er sagt nur, dass hier
+   gefahren und dort gewartet wird, und das sagt eine Zugform schneller als
+   zwei gleich aussehende Kaesten.
+
+   Fenster und Gestell liegen in den aeussersten 5 bzw. 3 px, der Text
+   bleibt mittig auf voller Flaeche - der gemessene Kontrast gilt also
+   unveraendert. */
+.spur-teil--zug{background:var(--umriss); color:var(--flaeche);   /* 18,33:1 */
+  padding-right:19px;
+  clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 40%, 100% 100%, 0 100%)}
+.spur-teil--zug::before{content:""; position:absolute; left:7px; right:22px;
+  top:6px; height:7px; opacity:.34; pointer-events:none;
+  background:repeating-linear-gradient(90deg,
+    currentColor 0 10px, transparent 10px 16px)}
+.spur-teil--zug::after{content:""; position:absolute; left:9px; right:16px;
+  bottom:4px; height:4px; opacity:.42; pointer-events:none;
+  background:repeating-linear-gradient(90deg,
+    transparent 0 9px, currentColor 9px 17px)}
+/* Die Zugart traegt die Farbe - der einzige Ort auf diesem Reiter, an dem
+   Farbe etwas UNTERSCHEIDET statt zu schmuecken. Gruen fuer die S-Bahn ist
+   keine Erfindung: es ist die Farbe, die auf jedem Bahnsteig dafuer steht.
+   Die Zugnummer steht im Balken, die Farbe ist also nie der einzige
+   Traeger der Information (WCAG 1.4.1). */
+.spur-teil--regio{background:var(--m-ubahn); color:var(--saum)}  /*  7,68:1 */
+.spur-teil--sbahn{background:var(--m-sbahn); color:var(--saum)}  /*  6,13:1 */
+.spur-teil--ums{background:var(--flaeche-2); color:var(--tinte);   /* 14,02:1 */
+                top:9px; height:26px; font-size:12px; padding:0 4px;
+                border:2px dashed var(--tinte-leise);
+                justify-content:center}
+/* Die Einheit haengt an der Klasse, nicht an jeder Zahl: schmale Felder
+   zeigen nur den Wert, breite den Wert mit "min". */
+.spur-teil--ums b.mit-einheit::after{content:" min"}
+.spur-teil--knapp{background:var(--warn-bg); color:var(--warn);  /* 5,18:1 */
+                  border-color:var(--warn)}
+.spur-teil--knapp b{font-weight:700}
+
+.verb-tief{padding:12px 12px 12px}
+.verb[open] .verb-kopf{border-bottom:2px solid var(--linie); padding-bottom:4px}
+
+.alt-robust{margin:12px 0 0; font-size:13.5px; color:var(--tinte-leise);
             max-width:58ch}
 /* Verworfene Optionen bleiben sichtbar, mit ihrem Grund - sonst werden sie in
    der naechsten Runde neu recherchiert, und die Arbeit sieht aus wie
    Fortschritt (Projektregel: comparison-method.md). */
 .alt-raus{margin:20px 0 0; padding:12px 14px; font-size:13px;
-          background:var(--flaeche-2); color:var(--tinte-leise);
-          max-width:60ch}
-.alt-raus b{color:var(--tinte)}                                   /* 14,02:1 */
-.alt-stand, .alt-leer{margin:16px 0 0; font-size:13px; color:var(--tinte-leise)}
+          background:var(--flaeche-2); color:var(--tinte-leise); max-width:60ch}
+.alt-raus b{color:var(--tinte)}                              /* 14,02:1 */
+/* Vorgaben und Quellenstand liegen zusammen in einem Aufklapp. Als Liste und
+   Absatz auf der Seite nahmen sie mehr Platz als die Verbindungen, fuer die
+   sie gelten - und beides sind Angaben ueber die RECHERCHE, nicht ueber die
+   Reise. Wer sie braucht, sucht sie; wer fahren will, nicht. */
+.wie{margin:0 0 16px}
+.wie > summary{display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+  list-style:none; padding:4px 9px; background:var(--flaeche-2);
+  font-family:var(--zahl); font-size:10px; letter-spacing:.5px;
+  text-transform:uppercase; color:var(--tinte-leise)}          /* 6,50:1 */
+.wie > summary::-webkit-details-marker{display:none}
+.wie > summary::before{content:"i"; display:inline-flex; align-items:center;
+  justify-content:center; width:14px; height:14px; font-family:var(--sans);
+  font-weight:700; font-size:10px; font-style:italic;
+  background:var(--tinte-leise); color:var(--flaeche)}         /* 6,50:1 */
+.wie > summary:hover{color:var(--tinte)}
+.wie-inhalt{padding:10px 0 0; font-size:13px; color:var(--tinte-leise);
+            max-width:62ch}
+.wie-inhalt ul{margin:0; padding-left:20px}
+.wie-inhalt p{margin:9px 0 0}
+.alt-leer{margin:16px 0 0; font-size:13px; color:var(--tinte-leise)}
 .alt-leer{padding:14px; background:var(--flaeche-2); max-width:58ch}
 
 
@@ -1277,7 +1453,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 @media (max-width:520px){
   .band-halt{grid-template-columns:52px 20px minmax(0,1fr); gap:0 8px}
   .band-gleis{grid-column:3; padding-top:1px}
-  .platz-felder{flex-direction:column}
+  .sitz-reihe{flex-wrap:wrap}
   .fahrt{padding:15px 14px}
 }
 
@@ -1392,3 +1568,359 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   #karte-hotel{ margin-top:4px }
   #weg-tafel{ margin-top:22px }
 }
+                             /* 16,87:1 */
+
+/* Das Zugschild. Bauart von den Linienschildern der Karte uebernommen -
+   kraeftige Flaeche, Umriss-Ring, fetter Grotesk -, damit "ICE 517" hier und
+   "S1" dort erkennbar dieselbe Art Sache sind. NICHT Silkscreen: die Karte hat
+   das fuer kleine Schilder schon verworfen, weil eine Pixelschrift ohne
+   Unterlaengen unter 10 px zerfaellt.
+
+   Die Farbe unterscheidet die Zugart und ist nie ihr einziger Traeger - die
+   Nummer steht daneben (WCAG 1.4.1). Alle drei mit kontrast.mjs gemessen. */
+.zug-schild{display:inline-block; font-family:var(--sans); font-weight:700;
+            font-size:13px; letter-spacing:.2px; padding:3px 8px;
+            white-space:nowrap;
+            background:var(--umriss); color:var(--flaeche);      /* 18,33:1 */
+            box-shadow:0 0 0 2px var(--umriss)}
+.zug-schild--regio{background:var(--m-ubahn); color:var(--saum);  /*  7,68:1 */
+                   box-shadow:0 0 0 2px var(--m-ubahn)}
+.zug-schild--sbahn{background:var(--m-sbahn); color:var(--saum);  /*  6,13:1 */
+                   box-shadow:0 0 0 2px var(--m-sbahn)}
+.zug-schild--klein{font-size:12px; padding:3px 7px; box-shadow:none}
+
+/* Gleis steht jetzt BEI Abfahrt und BEI Ankunft. Als ein Feld "Gl. 3 -> 7"
+   musste der Leser raten, welche Zahl zu welchem Bahnhof gehoert. */
+.gleis{font-family:var(--uhr); font-size:12.5px; padding:2px 7px;
+       background:var(--flaeche-2); color:var(--tinte)}          /* 14,02:1 */
+.gleis--offen{background:none; color:var(--tinte-leise);         /*  6,50:1 */
+              font-style:italic; padding-left:0}
+
+/* --- Etappen einer Ersatzverbindung ---
+   Loest die Abschnittstabelle ab. Die konnte die Zwischenhalte nicht
+   aufnehmen, ohne dass jede Verbindung fuenfzehn Zeilen lang wurde - der S 3
+   nach Mannheim haelt dreizehnmal. Jede Etappe faltet ihre Halte selbst auf
+   und benutzt dafuer dasselbe Band wie die gebuchte Fahrt oben. */
+.etappen{list-style:none; margin:0; padding:0; display:grid; gap:14px}
+.etappe{display:grid; gap:6px}
+.etappe-kopf{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px}
+.etappe-weg{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px;
+            font-size:14px}
+.etappe-halt{display:inline-flex; align-items:center; gap:7px}
+.etappe-halt b{font-family:var(--uhr); font-weight:600; font-size:14px;
+               font-variant-numeric:tabular-nums}
+.etappe-pfeil{font-style:normal; color:var(--tinte-leise)}   /* 6,50:1 */
+.etappe-durch{margin:0 0 0 2px; font-size:12px; font-style:italic;
+              color:var(--tinte-leise)}
+.etappe .halte-mehr{margin-left:2px}
+/* Innerhalb einer Etappe steht das Band schmaler: es haengt an EINER Etappe
+   und soll nicht wie eine zweite, gleichrangige Fahrt aussehen. */
+.etappe .band--tief{margin:2px 0 0; --sp1:74px}
+
+/* ===================== Bewegung im Bahn-Reiter =========================
+   Die Spuren wischen von links auf, gestaffelt von oben nach unten. Das ist
+   nicht Zierde: die Balken liegen auf einer Zeitachse, und eine Bewegung, die
+   der Achse folgt, macht sie in einem Zug begreifbar - man SIEHT die Fahrt als
+   Dauer statt als Rechteck.
+
+   Gestaffelt wird ueber --i im Markup, nicht ueber vierzehn CSS-Regeln: der
+   fuenfzehnte Eintrag waere sonst still unanimiert. Abstand 45 ms, damit die
+   ganze Staffel unter einer Sekunde bleibt - die Faustregel aus Design_AI
+   (bewegungs-werkbank) lautet abstand = 1000 / anzahl, bei 14 Zeilen also
+   hoechstens 70 ms.
+
+   --bewegung ist der EINE Schalter, den diese Seite ohnehin fuehrt (Zeile 140).
+   Als Faktor, nicht als zweiter Regelsatz: bei 0 bleibt 1 ms stehen, und die
+   Animation ist praktisch vorbei, bevor sie beginnt. 'backwards' sorgt dafuer,
+   dass vor dem Verzug der Anfangszustand gilt - ohne das blitzt jede Spur
+   einmal vollstaendig auf, bevor sie sich zusammenzieht. */
+@keyframes spur-auf { from { clip-path:inset(0 100% 0 0) } }
+@keyframes verb-ein {
+  from { transform:translateX(-52px); opacity:0 }
+  to   { transform:none; opacity:1 }
+}
+
+/* Die Zeile faehrt ein, die Spur wischt darin auf. Die erste Fassung hatte nur
+   das Wischen bei 520 ms - beim Laden vorbei, bevor man hinsieht. Jetzt traegt
+   die Zeile eine FEDER, und die Feder ist gerechnet, nicht geraten: eingegeben
+   sind 420 ms gefuehlte Dauer bei bounce 0,14, die Formel aus Design_AIs
+   bewegungs-werkbank liefert dafuer zeta 0,860 und eine SETZZEIT von 840 ms.
+   Das ist der Punkt der Vorlage - eine Feder hat keine Dauer, die man kuerzen
+   kann; die 840 ms sind die Wahrheit, die 420 die Absicht.
+
+   Die Staffelung deckelt bei acht: 14 x 60 ms waeren 840 ms Wartezeit, bevor
+   sich hinten etwas ruehrt, und beim zweiten Ansehen ist das nur noch Warten. */
+.verb{
+  animation:verb-ein calc(var(--bewegung) * 840ms + 1ms)
+            linear(0, 0.1015, 0.3016, 0.5062, 0.6766, 0.803, 0.8892, 0.9438,
+                   0.9759, 0.9932, 1.0014, 1.0045, 1.005, 1.0043, 1.0032,
+                   1.0023, 1.0014, 1.0009, 1.0005, 1.0002, 1.0001, 1, 1, 1, 1)
+            backwards;
+  animation-delay:calc(min(var(--i, 0), 8) * var(--bewegung) * 60ms)}
+.verb .spur{
+  animation:spur-auf calc(var(--bewegung) * 620ms + 1ms)
+            cubic-bezier(.22,.61,.36,1) backwards;
+  animation-delay:calc(min(var(--i, 0), 8) * var(--bewegung) * 60ms + 120ms)}
+
+/* Der Ruhezustand ist vollstaendig: ohne Animation steht die Spur einfach da.
+   Ein Effekt, der ohne Bewegung einen leeren Kasten hinterlaesst, ist keiner. */
+.verb:hover{border-color:var(--akzent-text)}          /* 6,12:1 gegen die Tafel */
+.verb{transition:border-color calc(var(--bewegung) * 140ms + 1ms) ease-out}
+.verb[open]{border-color:var(--umriss)}
+
+/* --- Die Check-in-Marke ---
+   --akzent-text, NICHT --akzent: der helle Akzent misst gegen die Tafel nur
+   2,56:1 und faellt damit unter die 3:1-Schwelle fuer grafische Elemente
+   (WCAG 1.4.11). Gemessen am 09.09.2026 mit kontrast.mjs. */
+.achse{overflow:visible}
+.achse-marke{position:absolute; top:-2px; bottom:-58px; width:2px;
+             background:var(--akzent-text); pointer-events:auto}
+.achse-marke b{position:absolute; top:-1px; left:5px; white-space:nowrap;
+               font-family:var(--zahl); font-size:9.5px; letter-spacing:.4px;
+               padding:2px 5px; background:var(--akzent-text);
+               color:var(--flaeche); font-weight:400}   /* 6,12:1 gemessen */
+
+/* ===================== Was sich aendert ================================
+   Der Design-Gutachter hat am 09.09.2026 gemessen, woran die Seite tot wirkt,
+   und Bewegung war keine der vier Ursachen. Die erste war: nichts auf der
+   Seite wusste, wie spaet es ist. Eine Staffelung laeuft einmal beim Laden
+   und sagt nichts - ein Wert, der sich aendert, ist der Unterschied zwischen
+   Bewegung und Leben. */
+
+/* Die Zeile, mit der man diesen Reiter am Reisetag aufschlaegt: was faehrt als
+   naechstes. Sie steht auf dem GRUND, nicht auf einer Tafel - darum der andere
+   Rollensatz. Mit --tinte-leise stuende sie hier bei 2,16:1. */
+.jetzt-satz{margin:0 0 18px; padding:11px 15px;
+            background:var(--grund-tief); border-left:5px solid var(--akzent);
+            font-size:15px; color:var(--auf-grund-leise)}   /*  9,45:1 */
+.jetzt-satz b{color:var(--auf-grund)}                       /* 17,39:1 */
+
+/* Die jetzt-Linie laeuft ueber ALLE Zeilen, nicht nur ueber die Achse: sie ist
+   der Bezug fuer vierzehn Balken, nicht fuer einen. Von der Check-in-Marke
+   getrennt durch die FORM - durchgezogen mit Dreieck gegen gestrichelt mit
+   Chip -, nicht durch die Farbe. Zwei Bedeutungen, die sich nur im Farbton
+   unterscheiden, sind eine Bedeutung. */
+.skala{position:relative}
+.jetzt-linie{position:absolute; top:0; bottom:0; width:2px; z-index:2;
+             background:var(--akzent-text); pointer-events:none}  /* 6,12:1 */
+.jetzt-linie::before{content:""; position:absolute; top:0; left:-5px;
+  border-left:6px solid transparent; border-right:6px solid transparent;
+  border-top:8px solid var(--akzent-text)}
+.jetzt-linie b{position:absolute; top:9px; left:5px; white-space:nowrap;
+               font-family:var(--zahl); font-size:9px; letter-spacing:.4px;
+               padding:2px 5px; background:var(--akzent-text);
+               color:var(--flaeche); font-weight:400}      /* 6,12:1 */
+
+/* Was vorbei ist, tritt zurueck - und die Tafel schrumpft im Tagesverlauf von
+   vierzehn brauchbaren Verbindungen auf sechs auf zwei, ohne dass jemand sie
+   anfasst. Nicht ausblenden: eine Verbindung, die man gerade verpasst hat,
+   will man noch sehen koennen. */
+.verb--vorbei{opacity:.42}
+.verb--vorbei .verb-zeit b{border-color:var(--linie)}
+.verb--vorbei:hover{opacity:.75}
+
+/* --- Das Urteil traegt Farbe, nicht das Fahrzeug ---
+   Die Zugart steht schon im Schild; ihre Farbe unterscheidet also etwas, das
+   ohnehin dasteht. Nicht eingefaerbt war die Angabe, die es NIRGENDS sonst
+   gibt: die Wertung. Sie stand in 10 px --tinte-leise, der kleinsten und
+   blassesten Type des Reiters, waehrend die Abfahrtszeit ein 16-px-Feld mit
+   Rahmen bekam - die Wertung war als Fussnote gestaltet.
+
+   --gut/--gut-bg ist seit jeher gemessen und wurde auf diesem Reiter nirgends
+   benutzt. */
+.alt-flagge{font-size:11.5px; padding:4px 8px;
+            background:var(--gut-bg); color:var(--gut);      /* 5,25:1 */
+            border:2px solid var(--gut)}
+.alt-flagge--warn{background:var(--warn-bg); color:var(--warn);  /* 5,18:1 */
+                  border-color:var(--warn)}
+
+/* Das rote Dach des ICE. .spur-teil--fern hatte bis heute keine eigene Regel
+   und fiel auf das Schwarz zurueck - 69,5 % der Balkenflaeche lagen damit in
+   DERSELBEN Farbe wie jeder Rahmen der Seite. Das Dach trennt Fern- von
+   Regionalverkehr auf einen Blick, zitiert den Streifen, den ein ICE wirklich
+   traegt, und bringt keine neue Bedeutung mit. 5,95:1 auf --umriss. */
+.spur-teil--fern::before{background:none; height:4px; top:0; left:0; right:14px;
+  opacity:1; background:var(--akzent)}
+
+/* --- Hierarchie: nicht alle vierzehn sind gleich viel wert ---
+   Vierzehn Zeilen, alle exakt 119 px hoch und gleich schwer, boten keinen
+   Einstiegspunkt. Das Gewicht haengt am URTEIL in den Daten, nicht an einer
+   Empfehlung im Stylesheet - sonst zeigt die Seite auf eine Verbindung, die
+   die Daten laengst nicht mehr hergeben. */
+.verb--tipp{border-width:3px; box-shadow:var(--schatten-klein)}
+.verb--tipp .verb-zeit b{font-size:19px}
+
+/* ===================== Was dauerhaft laeuft ============================
+   Vier Bewegungen, die nicht beim Laden aufhoeren. Jede sitzt an einer Stelle,
+   an der sie etwas HEISST - der Gutachter hat drei davon abgelehnt, und seine
+   Gruende stehen bei jeder dabei. Die Entscheidung dagegen fiel bewusst.
+
+   Alle vier haengen am selben --bewegung. Bei prefers-reduced-motion steht
+   jede still, und der Ruhezustand ist vollstaendig: kein leerer Kasten,
+   nirgends. */
+
+/* --- 1. Der Lichtrahmen um die empfohlene Verbindung ---
+   Bauart aus Design_AIs border-beam-panel: der Ring ist ein Kegelverlauf, mit
+   zwei Masken auf den Rahmen beschnitten - deshalb ist die Dicke ein PADDING
+   und keine border-width. Die Glut liegt als zweite, unscharfe Schicht darunter
+   und gehoert AUSSERHALB der Tafel; mit z-index:-1 innerhalb laege sie ueber
+   deren eigener Flaeche.
+
+   Ohne runde Ecken, anders als die Vorlage: die Bildsprache dieses Projekts
+   kennt keine (knowledge/design). Uebernommen wird das Muster, nicht die Haut.
+
+   Welche Zeile ihn traegt, steht in den DATEN (empfohlen: true) - im
+   Stylesheet stuende eine Empfehlung, die die Recherche laengst ueberholt hat. */
+@property --bb-winkel { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes bb-dreht { to { --bb-winkel: 360deg } }
+
+.verb{position:relative}
+.bb-ring, .bb-glut{opacity:0; transition:opacity calc(var(--bewegung) * 400ms + 1ms) ease-out}
+.verb--tipp .bb-ring{opacity:1}
+.bb-ring, .bb-glut{
+  position:absolute; inset:-6px; pointer-events:none; z-index:0;
+  /* Der Komet laeuft von fast nichts in einen harten Kopf und faellt dahinter
+     ab. Die Schweifspitze ist 6 % der Kometenfarbe und NICHT transparent:
+     transparent ist rgba(0,0,0,0), und ein Verlauf dorthin kippt sichtbar ins
+     Graue - der Hinweis stammt aus der Vorlage und stimmt. */
+  background:conic-gradient(from var(--bb-winkel),
+    color-mix(in srgb, var(--akzent) 6%, transparent) 0deg,
+    color-mix(in srgb, var(--akzent) 45%, transparent) 40deg,
+    color-mix(in srgb, var(--akzent) 85%, transparent) 62deg,
+    var(--saum) 72deg,
+    var(--akzent) 78deg,
+    color-mix(in srgb, var(--akzent) 6%, transparent) 96deg,
+    color-mix(in srgb, var(--akzent) 6%, transparent) 360deg);
+  animation:bb-dreht calc(var(--bewegung) * 3800ms + 1ms) linear infinite}
+.bb-ring{
+  padding:6px;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite:exclude}
+.verb--tipp .bb-glut{filter:blur(16px); opacity:.55}
+/* Der Inhalt liegt ueber dem Ring, sonst malt der Kegelverlauf ueber die
+   Tafel statt um sie. */
+.verb--tipp > summary, .verb--tipp > .verb-tief{position:relative; z-index:1}
+@media (forced-colors: active){
+  .bb-ring, .bb-glut{display:none}
+  .verb--tipp{border-color:CanvasText}
+}
+
+/* --- 2. Der Streifen wandert im Zugbalken ---
+   Ein fahrender Zug faehrt. Das Fensterband bewegt sich langsam nach rechts -
+   dieselbe Richtung wie die Zeitachse. 9 s je Durchlauf: schnell genug, um
+   sichtbar zu sein, langsam genug, um beim Lesen nicht zu stoeren. */
+@keyframes zug-faehrt { to { background-position:16px 0 } }
+.spur-teil--zug::before{animation:zug-faehrt calc(var(--bewegung) * 9000ms + 1ms)
+                                  linear infinite}
+
+/* --- 3. Die jetzt-Linie atmet ---
+   Ehrlich, weil dort wirklich etwas laeuft: eine Uhr. Nur die Deckkraft, nicht
+   die Groesse - eine wachsende Linie waere eine Zeitspanne, und das ist sie
+   nicht. Sichtbar erst am Reisetag, vorher liegt jetzt ausserhalb der Skala. */
+@keyframes jetzt-atmet { 50% { opacity:.55 } }
+.jetzt-linie{animation:jetzt-atmet calc(var(--bewegung) * 2400ms + 1ms)
+                       ease-in-out infinite}
+
+/* --- 4. Der Grund bewegt sich ---
+   Der Gutachter lehnt das ab: der Ziegelgrund solle still sein, damit die
+   Tafeln als Papier lesbar bleiben. Dagegen entschieden - aber in der
+   sparsamsten Form, die es gibt: zwei weiche Verlaufsflecken, die wandern.
+   Kein Canvas, keine Bildrate, kein Akku - der Browser bewegt zwei
+   Hintergrundpositionen.
+
+   Nur auf DIESEM Reiter (#feld-bahn), nicht auf der ganzen Seite: die Karte
+   braucht einen ruhigen Grund, damit die Marken darauf lesbar bleiben.
+   Deckkraft so niedrig, dass der Grund messbar --grund bleibt; die Werte
+   darauf sind gegen --grund gemessen und duerfen nicht wandern. */
+@keyframes grund-zieht {
+  to { background-position:120% 40%, -20% 70% }
+}
+#feld-bahn{position:relative; isolation:isolate}
+#feld-bahn::before{
+  /* Seitlich auf 0, nicht auf -20px: der Verlauf schob die Seite bei 320 px
+     um 6 px ueber den Rand. Ein Hintergrund, der die Seite breiter macht,
+     ist keiner. */
+  content:""; position:absolute; inset:-40px 0; z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(38% 30% at 10% 20%,
+      color-mix(in srgb, var(--akzent) 7%, transparent), transparent 70%),
+    radial-gradient(32% 26% at 90% 80%,
+      color-mix(in srgb, var(--m-ubahn) 9%, transparent), transparent 70%);
+  background-repeat:no-repeat;
+  background-position:-20% 20%, 120% 80%;
+  animation:grund-zieht calc(var(--bewegung) * 38000ms + 1ms)
+            ease-in-out infinite alternate}
+
+/* ===================== Hinweise im Popover =============================
+   Die Erklaertexte lagen als Absaetze in der Tafel und machten aus zwoelf
+   Zeilen eine Textwand: der Robustheitsabsatz allein ist je Verbindung rund
+   200 Zeichen. Sie stecken jetzt hinter einem Knopf.
+
+   Natives popover, nicht selbst gebaut: Escape schliesst, ein Klick daneben
+   schliesst, der Fokus kehrt zum Knopf zurueck, und das Panel liegt in der
+   obersten Ebene - es wird also von keiner Tafel und keinem Lichtrahmen
+   ueberdeckt. */
+.info-knopf{
+  display:inline-flex; align-items:center; justify-content:center;
+  /* 28px: WCAG 2.2 verlangt 24, pruef-breite.mjs meldet alles unter 44 als
+     unbequem. 28 ist der Kompromiss - groesser wuerde der Knopf neben einer
+     12px-Flagge zum eigenen Bedienelement statt zur Fussnote. */
+  width:28px; height:28px; flex:none; cursor:pointer;
+  font-family:var(--sans); font-weight:700; font-size:12px; font-style:italic;
+  background:var(--flaeche-2); color:var(--tinte-leise);      /* 6,50:1 */
+  border:2px solid var(--linie)}
+.info-knopf:hover{background:var(--tinte-leise); color:var(--flaeche);
+                  border-color:var(--tinte-leise)}            /* 6,50:1 */
+
+.pop{
+  margin:auto; max-width:46ch; padding:16px 18px;
+  background:var(--flaeche); color:var(--tinte);              /* 16,87:1 */
+  border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.pop p{margin:0; font-size:14px; line-height:1.55}
+.pop-titel{margin:0 0 8px; font-family:var(--zahl); font-size:10.5px;
+           letter-spacing:.5px; text-transform:uppercase;
+           color:var(--tinte-leise)}                          /* 6,50:1 */
+.pop::backdrop{background:rgba(23, 4, 10, .55)}
+
+/* Ohne Popover-Unterstuetzung bleibt der Text SICHTBAR statt zu verschwinden.
+   Ein Hinweis, den ein aelterer Browser verschluckt, ist schlimmer als einer,
+   der dort einfach als Absatz dasteht - und genau das passiert ohne diese
+   Regel, weil [popover] per Voreinstellung display:none traegt. */
+@supports not selector(:popover-open){
+  .info-knopf{display:none}
+  .pop{display:block; max-width:58ch; margin:12px 0 0; box-shadow:none;
+       border-width:0 0 0 4px; padding:10px 0 10px 14px;
+       background:none}
+}
+
+/* Zustandschip und sein Info-Knopf gehoeren zusammen: der Chip nennt den
+   Zustand, der Knopf erklaert ihn. Getrennt gesetzt wanderten sie auf schmalen
+   Geraeten in verschiedene Zeilen und sahen aus wie zwei Angaben. */
+.kopf-rechts{display:inline-flex; align-items:center; gap:8px}
+
+/* ===================== Auslastung =====================================
+   Drei Balken, gefuellt bis zur Stufe, plus das Wort daneben. Die Farbe ist
+   nie der einzige Traeger (WCAG 1.4.1): die Anzahl gefuellter Balken sagt
+   dasselbe, und wer die Toene nicht unterscheidet, liest die Form.
+
+   Alle drei am 09.09.2026 gegen --flaeche gemessen: gering 5,86:1, mittel
+   5,44:1, hoch 5,86:1. --m-ankunft trug bisher die Ankunftsmarke auf der
+   Karte; hier steht es fuer die mittlere Stufe, und beide Bedeutungen
+   begegnen sich nie auf derselben Flaeche. */
+.last{display:inline-flex; align-items:center; gap:6px;
+      font-family:var(--zahl); font-size:9.5px; letter-spacing:.4px;
+      text-transform:uppercase}
+.last-zeichen{display:inline-flex; align-items:flex-end; gap:2px; height:13px}
+.last-balken{width:4px; background:var(--linie)}
+.last-balken:nth-child(1){height:6px}
+.last-balken:nth-child(2){height:9px}
+.last-balken:nth-child(3){height:13px}
+.last--1{color:var(--gut)}                     /* 5,86:1 */
+.last--1 .last-balken--an{background:var(--gut)}
+.last--2{color:var(--m-ankunft)}               /* 5,44:1 */
+.last--2 .last-balken--an{background:var(--m-ankunft)}
+.last--3{color:var(--warn)}                    /* 5,86:1 */
+.last--3 .last-balken--an{background:var(--warn)}

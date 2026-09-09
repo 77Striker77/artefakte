@@ -132,12 +132,19 @@ const DATEN = {
     "id": "hin",
     "label": "Hinfahrt",
     "tag": "Do 10.09.2026",
+    "datum": "2026-09-10",
     "richtung": "Bruchsal → München Hbf",
     "status": "ausgefallen",
     "status_text": "fällt aus",
     "meldung": "Der gebuchte ICE 567 ist nicht mehr fahrbar — DB meldet eine Fahrplanänderung. Die Zugbindung ist aufgehoben: das Ticket gilt in jedem Zug innerhalb der Gültigkeit, ohne Aufpreis. Die Ersatzfahrt ist damit freie Wahl und keine Umbuchung.",
     "zug": "ICE 567",
     "dauer": "2 h 31",
+    "_halte": [
+     "Die Zwischenhalte stammen aus dem REGELFAHRPLAN des ICE 567, abgefragt fuer",
+     "Do 17.09.2026 - am 10.09. faehrt er nicht, und ein Zug, der nicht faehrt,",
+     "hat an dem Tag auch keine Halte. Das Gleis in Muenchen weicht deshalb ab:",
+     "die Buchung nennt Gl. 8, der Regelfahrplan Gl. 10. Gebucht war Gl. 8."
+    ],
     "halte": [
      {
       "ort": "Bruchsal",
@@ -145,9 +152,32 @@ const DATEN = {
       "gleis": "3"
      },
      {
-      "ort": "4 Zwischenhalte",
-      "zwischen": true,
-      "unbekannt": true
+      "ort": "Stuttgart Hbf",
+      "an": "14:45",
+      "ab": "14:51",
+      "gleis": "14",
+      "zwischen": true
+     },
+     {
+      "ort": "Ulm Hbf",
+      "an": "15:33",
+      "ab": "15:36",
+      "gleis": "2",
+      "zwischen": true
+     },
+     {
+      "ort": "Augsburg Hbf",
+      "an": "16:17",
+      "ab": "16:19",
+      "gleis": "4",
+      "zwischen": true
+     },
+     {
+      "ort": "München-Pasing",
+      "an": "16:40",
+      "ab": "16:42",
+      "gleis": "9",
+      "zwischen": true
      },
      {
       "ort": "München Hbf",
@@ -168,16 +198,1543 @@ const DATEN = {
      "platz": "75, 77",
      "bereich": "Handybereich",
      "hinweis": "verfällt mit dem Zug — Erstattung läuft als eigener Vorgang"
+    },
+    "alternativen": {
+     "titel": "Ersatzverbindungen an diesem Tag",
+     "lage": "An diesem Tag hält in Bruchsal kein einziger Fernzug — die Abfahrtstafel führt zwischen 07:50 und 17:05 nur RE, RB und S-Bahn. Das ist ein Ersatzfahrplan, kein Einzelausfall. Deshalb hat jede Verbindung hier mindestens einen Umstieg.",
+     "marke": {
+      "zeit": "15:00",
+      "text": "Check-in",
+      "grund": "Motel One, Check-in ab 15:00 — wer früher ankommt, muss das Gepäck unterbringen."
+     },
+     "regeln": [
+      "Umstieg nur in Mannheim, Karlsruhe oder Stuttgart",
+      "mindestens 20 Minuten Umsteigezeit",
+      "höchstens ein Umstieg",
+      "Abfahrt Bruchsal frühestens 12:00"
+     ],
+     "liste": [
+      {
+       "ab": "12:10",
+       "an": "16:27",
+       "dauer": "4 h 17",
+       "umstiege": 1,
+       "erwartet": "16:44",
+       "abschnitte": [
+        {
+         "zug": "S 3",
+         "von": "Bruchsal",
+         "ab": "12:10",
+         "nach": "Mannheim Hbf",
+         "an": "13:00",
+         "gleis_ab": "5",
+         "gleis_an": "1",
+         "halte": [
+          {
+           "ort": "Ubstadt-Weiher",
+           "an": "12:13",
+           "ab": "12:14",
+           "gleis": "2"
+          },
+          {
+           "ort": "Stettfeld-Weiher",
+           "an": "12:16",
+           "ab": "12:16",
+           "gleis": "unknown"
+          },
+          {
+           "ort": "Bad Schönborn Süd",
+           "an": "12:18",
+           "ab": "12:19",
+           "gleis": "1"
+          },
+          {
+           "ort": "Bad Schönborn-Kronau",
+           "an": "12:21",
+           "ab": "12:22",
+           "gleis": "1"
+          },
+          {
+           "ort": "Rot-Malsch, Bahnhof",
+           "an": "12:24",
+           "ab": "12:24",
+           "gleis": "2"
+          },
+          {
+           "ort": "Wiesloch-Walldorf, Bf",
+           "an": "12:28",
+           "ab": "12:29",
+           "gleis": "1"
+          },
+          {
+           "ort": "St. Ilgen, Bahnhof",
+           "an": "12:32",
+           "ab": "12:33",
+           "gleis": "1"
+          },
+          {
+           "ort": "Kirchheim/Rohrbach, Bf",
+           "an": "12:36",
+           "ab": "12:37",
+           "gleis": "2"
+          },
+          {
+           "ort": "Heidelberg, Hauptbahnhof",
+           "an": "12:41",
+           "ab": "12:43",
+           "gleis": "5"
+          },
+          {
+           "ort": "HD-Pfaffengrund/Wieblingen",
+           "an": "12:45",
+           "ab": "12:46",
+           "gleis": "1"
+          },
+          {
+           "ort": "MA-Friedrichsfeld, Südbahnhof",
+           "an": "12:50",
+           "ab": "12:50",
+           "gleis": "1"
+          },
+          {
+           "ort": "MA-Seckenheim, Bahnhof",
+           "an": "12:53",
+           "ab": "12:53",
+           "gleis": "1"
+          },
+          {
+           "ort": "Mannheim, Arena/Maimarkt (DB)",
+           "an": "12:55",
+           "ab": "12:55",
+           "gleis": "1"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel"
+         }
+        },
+        {
+         "zug": "ICE 517",
+         "von": "Mannheim Hbf",
+         "ab": "13:33",
+         "nach": "München Hbf",
+         "an": "16:27",
+         "gleis_ab": "5",
+         "gleis_an": "13",
+         "halte": [
+          {
+           "ort": "Stuttgart Hbf",
+           "an": "14:11",
+           "ab": "14:17",
+           "gleis": "15"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "15:13",
+           "ab": "15:15",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "15:56",
+           "ab": "15:58",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "hoch",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 33
+        }
+       ],
+       "robust": "Frueheste Verbindung im Zeitfenster und frueheste Ankunft ueberhaupt. Für S 3 führt zugfinder keinen Datensatz — die Pünktlichkeit ist unbekannt, die Umsteigereserve damit nicht berechenbar. ICE 517 29 % pünktlich, im Mittel +17 min. Fällt der Anschluss aus, fährt ICE 597 um 14:33 (an 17:13) — 60 min später.",
+       "puenktlich": 29,
+       "hinweis": "29 % pünktlich",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "12:51",
+       "an": "16:27",
+       "erwartet": "16:44",
+       "dauer": "3 h 36",
+       "umstiege": 1,
+       "abschnitte": [
+        {
+         "zug": "RE 1 (19011-Reihe)",
+         "von": "Bruchsal",
+         "ab": "12:51",
+         "nach": "Stuttgart Hbf",
+         "an": "13:30",
+         "gleis_ab": "3",
+         "gleis_an": "7",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "13:07",
+           "ab": "13:12",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 517",
+         "von": "Stuttgart Hbf",
+         "ab": "14:17",
+         "nach": "München Hbf",
+         "an": "16:27",
+         "gleis_ab": "15",
+         "gleis_an": "13",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "15:13",
+           "ab": "15:15",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "15:56",
+           "ab": "15:58",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "gering",
+          "klasse1": "gering"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 47
+        }
+       ],
+       "robust": "Der Zubringer ist der zuverlässige Teil: RE 1 im Mittel +3 min (77 % pünktlich), der ICE 517 dagegen +17 min (29 %). Bei 15 min Verspätung des RE bleiben noch 32 min zum Anschluss — er hält klar. Fällt der ICE 517 aus, fährt um 15:17 der ICE 597 (an 17:13).",
+       "puenktlich": 29,
+       "hinweis": "29 % pünktlich",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "13:43",
+       "an": "17:44",
+       "dauer": "4 h 01",
+       "umstiege": 1,
+       "erwartet": "17:59",
+       "abschnitte": [
+        {
+         "zug": "S 3",
+         "von": "Bruchsal",
+         "ab": "13:43",
+         "nach": "Mannheim Hbf",
+         "an": "14:29",
+         "gleis_ab": "unbekannt",
+         "gleis_an": "1",
+         "halte": [
+          {
+           "ort": "Ubstadt-Weiher",
+           "an": "13:47",
+           "ab": "13:47",
+           "gleis": "2"
+          },
+          {
+           "ort": "Stettfeld-Weiher",
+           "an": "13:49",
+           "ab": "13:49",
+           "gleis": "unknown"
+          },
+          {
+           "ort": "Bad Schönborn Süd",
+           "an": "13:51",
+           "ab": "13:51",
+           "gleis": "1"
+          },
+          {
+           "ort": "Bad Schönborn-Kronau",
+           "an": "13:53",
+           "ab": "13:54",
+           "gleis": "1"
+          },
+          {
+           "ort": "Rot-Malsch, Bahnhof",
+           "an": "13:56",
+           "ab": "13:56",
+           "gleis": "2"
+          },
+          {
+           "ort": "Wiesloch-Walldorf, Bf",
+           "an": "14:00",
+           "ab": "14:00",
+           "gleis": "1"
+          },
+          {
+           "ort": "St. Ilgen, Bahnhof",
+           "an": "14:04",
+           "ab": "14:04",
+           "gleis": "1"
+          },
+          {
+           "ort": "Kirchheim/Rohrbach, Bf",
+           "an": "14:07",
+           "ab": "14:07",
+           "gleis": "2"
+          },
+          {
+           "ort": "Heidelberg, Hauptbahnhof",
+           "an": "14:12",
+           "ab": "14:13",
+           "gleis": "4"
+          },
+          {
+           "ort": "HD-Pfaffengrund/Wieblingen",
+           "an": "14:16",
+           "ab": "14:16",
+           "gleis": "1"
+          },
+          {
+           "ort": "MA-Friedrichsfeld, Südbahnhof",
+           "an": "14:20",
+           "ab": "14:20",
+           "gleis": "1"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 919",
+         "von": "Mannheim Hbf",
+         "ab": "14:56",
+         "nach": "München Hbf",
+         "an": "17:44",
+         "gleis_ab": "5",
+         "gleis_an": "13",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "15:22",
+           "ab": "15:24",
+           "gleis": "2"
+          },
+          {
+           "ort": "Esslingen (N)",
+           "an": "15:48",
+           "ab": "15:52",
+           "gleis": "6"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "16:26",
+           "ab": "16:28",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "17:11",
+           "ab": "17:13",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 27
+        }
+       ],
+       "robust": "Frueher Nachmittag ueber Mannheim. Bei +15 min bleiben 12 min. Für S 3 führt zugfinder keinen Datensatz — die Pünktlichkeit ist unbekannt, die Umsteigereserve damit nicht berechenbar. ICE 919 35 % pünktlich, im Mittel +15 min. Fällt der Anschluss aus, fährt ICE 519 um 15:33 (an 18:27) — 37 min später.",
+       "puenktlich": 35,
+       "hinweis": "35 % pünktlich"
+      },
+      {
+       "ab": "13:52",
+       "an": "17:13",
+       "erwartet": "17:46",
+       "dauer": "3 h 21",
+       "umstiege": 1,
+       "puenktlich": 15,
+       "hinweis": "15 % pünktlich",
+       "hinweis_warn": true,
+       "abschnitte": [
+        {
+         "zug": "RE 1 (19017)",
+         "von": "Bruchsal",
+         "ab": "13:52",
+         "nach": "Stuttgart Hbf",
+         "an": "14:27",
+         "gleis_ab": "3",
+         "gleis_an": "8",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "14:09",
+           "ab": "14:10",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 597",
+         "von": "Stuttgart Hbf",
+         "ab": "15:17",
+         "nach": "München Hbf",
+         "an": "17:13",
+         "gleis_ab": "16",
+         "gleis_an": "14",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "16:00",
+           "ab": "16:02",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "16:41",
+           "ab": "16:43",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "gering"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 50
+        }
+       ],
+       "robust": "Der ICE 597 ist der unzuverlässigste im Feld: 15 % pünktlich, +33 min im Mittel. Fällt er aus, fährt eine Stunde später der ICE 519 ab Stuttgart (an 18:27) — als diese Zeile geschrieben wurde, war sie die späteste des Tages und hatte keinen Rückfall; das gilt nicht mehr."
+      },
+      {
+       "ab": "14:51",
+       "an": "18:27",
+       "dauer": "3 h 36",
+       "umstiege": 1,
+       "erwartet": "18:47",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "14:51",
+         "nach": "Stuttgart Hbf",
+         "an": "15:27",
+         "gleis_ab": "3",
+         "gleis_an": "13",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "15:08",
+           "ab": "15:10",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 519",
+         "von": "Stuttgart Hbf",
+         "ab": "16:17",
+         "nach": "München Hbf",
+         "an": "18:27",
+         "gleis_ab": "15",
+         "gleis_an": "13",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "17:13",
+           "ab": "17:15",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "17:56",
+           "ab": "17:58",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 50
+        }
+       ],
+       "robust": "Bestes rechenbares Risiko. Alle drei Groessen bekannt, Umstieg praktisch nicht kippbar. RE 1 74 % pünktlich, im Mittel +4 min. ICE 519 32 % pünktlich, im Mittel +20 min. Fällt der Anschluss aus, fährt ICE 599 um 17:17 (an 19:10) — 60 min später.",
+       "puenktlich": 32,
+       "hinweis": "32 % pünktlich"
+      },
+      {
+       "ab": "15:41",
+       "an": "19:42",
+       "dauer": "4 h 01",
+       "umstiege": 1,
+       "erwartet": "20:11",
+       "abschnitte": [
+        {
+         "zug": "S 3",
+         "von": "Bruchsal",
+         "ab": "15:41",
+         "nach": "Mannheim Hbf",
+         "an": "16:29",
+         "gleis_ab": "unbekannt",
+         "gleis_an": "1",
+         "halte": [
+          {
+           "ort": "Ubstadt-Weiher",
+           "an": "15:44",
+           "ab": "15:45",
+           "gleis": "2"
+          },
+          {
+           "ort": "Stettfeld-Weiher",
+           "an": "15:46",
+           "ab": "15:47",
+           "gleis": "unknown"
+          },
+          {
+           "ort": "Bad Schönborn Süd",
+           "an": "15:49",
+           "ab": "15:49",
+           "gleis": "1"
+          },
+          {
+           "ort": "Bad Schönborn-Kronau",
+           "an": "15:51",
+           "ab": "15:51",
+           "gleis": "1"
+          },
+          {
+           "ort": "Rot-Malsch, Bahnhof",
+           "an": "15:54",
+           "ab": "15:54",
+           "gleis": "2"
+          },
+          {
+           "ort": "Wiesloch-Walldorf, Bf",
+           "an": "15:58",
+           "ab": "15:59",
+           "gleis": "1"
+          },
+          {
+           "ort": "St. Ilgen, Bahnhof",
+           "an": "16:02",
+           "ab": "16:03",
+           "gleis": "1"
+          },
+          {
+           "ort": "Kirchheim/Rohrbach, Bf",
+           "an": "16:06",
+           "ab": "16:07",
+           "gleis": "2"
+          },
+          {
+           "ort": "Heidelberg, Hauptbahnhof",
+           "an": "16:12",
+           "ab": "16:13",
+           "gleis": "4"
+          },
+          {
+           "ort": "HD-Pfaffengrund/Wieblingen",
+           "an": "16:15",
+           "ab": "16:16",
+           "gleis": "1"
+          },
+          {
+           "ort": "MA-Friedrichsfeld, Südbahnhof",
+           "an": "16:20",
+           "ab": "16:20",
+           "gleis": "1"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 1011",
+         "von": "Mannheim Hbf",
+         "ab": "16:56",
+         "nach": "München Hbf",
+         "an": "19:42",
+         "gleis_ab": "5",
+         "gleis_an": "19",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "17:22",
+           "ab": "17:24",
+           "gleis": "2"
+          },
+          {
+           "ort": "Esslingen (N)",
+           "an": "17:48",
+           "ab": "17:52",
+           "gleis": "6"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "18:26",
+           "ab": "18:28",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "19:11",
+           "ab": "19:13",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 27
+        }
+       ],
+       "robust": "Knappster Umstieg der Hauptliste: bei +15 min bleiben 12 min. Für S 3 führt zugfinder keinen Datensatz — die Pünktlichkeit ist unbekannt, die Umsteigereserve damit nicht berechenbar. ICE 1011 39 % pünktlich, im Mittel +29 min. Fällt der Anschluss aus, fährt ICE 611 um 17:33 (an 20:32) — 37 min später.",
+       "puenktlich": 39,
+       "hinweis": "39 % pünktlich"
+      },
+      {
+       "ab": "15:51",
+       "an": "19:10",
+       "dauer": "3 h 19",
+       "umstiege": 1,
+       "erwartet": "19:44",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "15:51",
+         "nach": "Stuttgart Hbf",
+         "an": "16:25",
+         "gleis_ab": "3",
+         "gleis_an": "7",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "16:07",
+           "ab": "16:08",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 599",
+         "von": "Stuttgart Hbf",
+         "ab": "17:17",
+         "nach": "München Hbf",
+         "an": "19:10",
+         "gleis_ab": "15",
+         "gleis_an": "14",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "18:00",
+           "ab": "18:02",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "18:41",
+           "ab": "18:43",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 52
+        }
+       ],
+       "robust": "Kuerzeste Fahrzeit (3:19 h). Schwacher Zubringer (45 %) ist bei 52 min Umstieg folgenlos; der ICE selbst ist der Schwachpunkt. RE 1 45 % pünktlich, im Mittel +8 min. ICE 599 15 % pünktlich, im Mittel +34 min. Fällt der Anschluss aus, fährt ICE 611 um 18:17 (an 20:32) — 60 min später.",
+       "puenktlich": 15,
+       "hinweis": "15 % pünktlich",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "16:51",
+       "an": "20:32",
+       "dauer": "3 h 41",
+       "umstiege": 1,
+       "erwartet": "20:58",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "16:51",
+         "nach": "Stuttgart Hbf",
+         "an": "17:31",
+         "gleis_ab": "3",
+         "gleis_an": "14",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "17:08",
+           "ab": "17:12",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 611",
+         "von": "Stuttgart Hbf",
+         "ab": "18:17",
+         "nach": "München Hbf",
+         "an": "20:32",
+         "gleis_ab": "15",
+         "gleis_an": "12",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "19:13",
+           "ab": "19:15",
+           "gleis": "1"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "19:56",
+           "ab": "19:58",
+           "gleis": "4"
+          },
+          {
+           "ort": "Pasing",
+           "an": "20:20",
+           "ab": "20:22",
+           "gleis": "9"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "gering",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 46
+        }
+       ],
+       "robust": "Solider Nachmittag. Bei +15 min bleiben 31 min Umstieg. RE 1 65 % pünktlich, im Mittel +5 min. ICE 611 32 % pünktlich, im Mittel +26 min. Fällt der Anschluss aus, fährt ICE 691 um 19:17 (an 21:15) — 60 min später.",
+       "puenktlich": 32,
+       "hinweis": "32 % pünktlich"
+      },
+      {
+       "ab": "17:40",
+       "an": "21:47",
+       "dauer": "4 h 07",
+       "umstiege": 1,
+       "erwartet": "21:53",
+       "abschnitte": [
+        {
+         "zug": "S 3",
+         "von": "Bruchsal",
+         "ab": "17:40",
+         "nach": "Mannheim Hbf",
+         "an": "18:29",
+         "gleis_ab": "unbekannt",
+         "gleis_an": "1",
+         "halte": [
+          {
+           "ort": "Ubstadt-Weiher",
+           "an": "17:43",
+           "ab": "17:44",
+           "gleis": "2"
+          },
+          {
+           "ort": "Stettfeld-Weiher",
+           "an": "17:46",
+           "ab": "17:46",
+           "gleis": "unknown"
+          },
+          {
+           "ort": "Bad Schönborn Süd",
+           "an": "17:48",
+           "ab": "17:49",
+           "gleis": "1"
+          },
+          {
+           "ort": "Bad Schönborn-Kronau",
+           "an": "17:51",
+           "ab": "17:51",
+           "gleis": "1"
+          },
+          {
+           "ort": "Rot-Malsch, Bahnhof",
+           "an": "17:54",
+           "ab": "17:54",
+           "gleis": "2"
+          },
+          {
+           "ort": "Wiesloch-Walldorf, Bf",
+           "an": "17:58",
+           "ab": "17:59",
+           "gleis": "1"
+          },
+          {
+           "ort": "St. Ilgen, Bahnhof",
+           "an": "18:02",
+           "ab": "18:03",
+           "gleis": "1"
+          },
+          {
+           "ort": "Kirchheim/Rohrbach, Bf",
+           "an": "18:06",
+           "ab": "18:07",
+           "gleis": "2"
+          },
+          {
+           "ort": "Heidelberg, Hauptbahnhof",
+           "an": "18:12",
+           "ab": "18:13",
+           "gleis": "4"
+          },
+          {
+           "ort": "HD-Pfaffengrund/Wieblingen",
+           "an": "18:16",
+           "ab": "18:16",
+           "gleis": "1"
+          },
+          {
+           "ort": "MA-Friedrichsfeld, Südbahnhof",
+           "an": "18:20",
+           "ab": "18:20",
+           "gleis": "1"
+          },
+          {
+           "ort": "Mannheim, Arena/Maimarkt (DB)",
+           "an": "18:25",
+           "ab": "18:26",
+           "gleis": "1"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 1013",
+         "von": "Mannheim Hbf",
+         "ab": "19:03",
+         "nach": "München Hbf",
+         "an": "21:47",
+         "gleis_ab": "5",
+         "gleis_an": "12",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "19:29",
+           "ab": "19:31",
+           "gleis": "2"
+          },
+          {
+           "ort": "Esslingen (N)",
+           "an": "19:55",
+           "ab": "19:59",
+           "gleis": "6"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "20:33",
+           "ab": "20:35",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "21:18",
+           "ab": "21:20",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "mittel"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 34
+        }
+       ],
+       "robust": "Bester ICE des Tages (61 % / +6). Zubringer-Puenktlichkeit nicht messbar. Für S 3 führt zugfinder keinen Datensatz — die Pünktlichkeit ist unbekannt, die Umsteigereserve damit nicht berechenbar. ICE 1013 61 % pünktlich, im Mittel +6 min. Fällt der Anschluss aus, fährt ICE 613 um 19:33 (an 22:29) — 42 min später.",
+       "puenktlich": 61,
+       "hinweis": "61 % pünktlich"
+      },
+      {
+       "ab": "17:52",
+       "an": "21:15",
+       "dauer": "3 h 23",
+       "umstiege": 1,
+       "erwartet": "22:00",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "17:52",
+         "nach": "Stuttgart Hbf",
+         "an": "18:27",
+         "gleis_ab": "3",
+         "gleis_an": "7",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "18:09",
+           "ab": "18:10",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 691",
+         "von": "Stuttgart Hbf",
+         "ab": "19:17",
+         "nach": "München Hbf",
+         "an": "21:15",
+         "gleis_ab": "15",
+         "gleis_an": "14",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "20:00",
+           "ab": "20:02",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "20:41",
+           "ab": "20:43",
+           "gleis": "4"
+          },
+          {
+           "ort": "Pasing",
+           "an": "21:06",
+           "ab": "21:08",
+           "gleis": "9"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "gering"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 50
+        }
+       ],
+       "robust": "Umstieg sehr sicher, aber der ICE 691 hat +45 min Schnitt. RE 1 55 % pünktlich, im Mittel +6 min. ICE 691 23 % pünktlich, im Mittel +45 min. Fällt der Anschluss aus, fährt ICE 613 um 20:17 (an 22:29) — 60 min später.",
+       "puenktlich": 23,
+       "hinweis": "23 % pünktlich",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "18:51",
+       "an": "22:29",
+       "dauer": "3 h 38",
+       "umstiege": 1,
+       "erwartet": "23:16",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "18:51",
+         "nach": "Stuttgart Hbf",
+         "an": "19:27",
+         "gleis_ab": "3",
+         "gleis_an": "8",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "19:08",
+           "ab": "19:10",
+           "gleis": "2"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 613",
+         "von": "Stuttgart Hbf",
+         "ab": "20:17",
+         "nach": "München Hbf",
+         "an": "22:29",
+         "gleis_ab": "15",
+         "gleis_an": "18",
+         "halte": [
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "21:13",
+           "ab": "21:15",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "21:56",
+           "ab": "21:58",
+           "gleis": "4"
+          },
+          {
+           "ort": "Pasing",
+           "an": "22:20",
+           "ab": "22:22",
+           "gleis": "9"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "gering",
+          "klasse1": "gering"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 50
+        }
+       ],
+       "robust": "Spaeteste Stuttgart-Verbindung. Erscheint in der Standardsuche nicht, weil MOTIS den RE 1 in Vaihingen (Enz) abbricht; der Zuglauf zeigt die Weiterfahrt bis Stuttgart 19:27. RE 1 71 % pünktlich, im Mittel +4 min. ICE 613 19 % pünktlich, im Mittel +47 min. Fällt der Anschluss aus, fährt ICE 693 um 21:17 (an 23:13) — 60 min später.",
+       "puenktlich": 19,
+       "hinweis": "19 % pünktlich",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "19:43",
+       "an": "23:41",
+       "dauer": "3 h 58",
+       "umstiege": 1,
+       "erwartet": "00:04",
+       "abschnitte": [
+        {
+         "zug": "S 3",
+         "von": "Bruchsal",
+         "ab": "19:43",
+         "nach": "Mannheim Hbf",
+         "an": "20:29",
+         "gleis_ab": "2",
+         "gleis_an": "1",
+         "halte": [
+          {
+           "ort": "Ubstadt-Weiher",
+           "an": "19:47",
+           "ab": "19:47",
+           "gleis": "2"
+          },
+          {
+           "ort": "Stettfeld-Weiher",
+           "an": "19:49",
+           "ab": "19:49",
+           "gleis": "unknown"
+          },
+          {
+           "ort": "Bad Schönborn Süd",
+           "an": "19:51",
+           "ab": "19:52",
+           "gleis": "1"
+          },
+          {
+           "ort": "Bad Schönborn-Kronau",
+           "an": "19:54",
+           "ab": "19:54",
+           "gleis": "1"
+          },
+          {
+           "ort": "Rot-Malsch, Bahnhof",
+           "an": "19:56",
+           "ab": "19:57",
+           "gleis": "2"
+          },
+          {
+           "ort": "Wiesloch-Walldorf, Bf",
+           "an": "20:00",
+           "ab": "20:00",
+           "gleis": "1"
+          },
+          {
+           "ort": "St. Ilgen, Bahnhof",
+           "an": "20:04",
+           "ab": "20:04",
+           "gleis": "1"
+          },
+          {
+           "ort": "Kirchheim/Rohrbach, Bf",
+           "an": "20:07",
+           "ab": "20:07",
+           "gleis": "2"
+          },
+          {
+           "ort": "Heidelberg, Hauptbahnhof",
+           "an": "20:11",
+           "ab": "20:13",
+           "gleis": "4"
+          },
+          {
+           "ort": "HD-Pfaffengrund/Wieblingen",
+           "an": "20:16",
+           "ab": "20:16",
+           "gleis": "1"
+          },
+          {
+           "ort": "MA-Friedrichsfeld, Südbahnhof",
+           "an": "20:19",
+           "ab": "20:20",
+           "gleis": "1"
+          },
+          {
+           "ort": "Mannheim, Arena/Maimarkt (DB)",
+           "an": "20:25",
+           "ab": "20:25",
+           "gleis": "1"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 1015",
+         "von": "Mannheim Hbf",
+         "ab": "20:56",
+         "nach": "München Hbf",
+         "an": "23:41",
+         "gleis_ab": "5",
+         "gleis_an": "14",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "21:22",
+           "ab": "21:24",
+           "gleis": "2"
+          },
+          {
+           "ort": "Esslingen (N)",
+           "an": "21:48",
+           "ab": "21:52",
+           "gleis": "6"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "22:26",
+           "ab": "22:28",
+           "gleis": "1"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "23:11",
+           "ab": "23:13",
+           "gleis": "4"
+          }
+         ],
+         "auslastung": {
+          "klasse2": "mittel",
+          "klasse1": "gering"
+         }
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 27
+        }
+       ],
+       "robust": "Letzte Verbindung im Zeitfenster. Einzige ohne Rueckfall: wird der Anschluss verpasst, endet die Fahrt in Mannheim. Für S 3 führt zugfinder keinen Datensatz — die Pünktlichkeit ist unbekannt, die Umsteigereserve damit nicht berechenbar. ICE 1015 32 % pünktlich, im Mittel +23 min. Kein geprüfter Rückfall: ein verpasster Anschluss bedeutet hier eine Übernachtung unterwegs.",
+       "puenktlich": 32,
+       "hinweis": "kein Rückfall",
+       "hinweis_warn": true
+      }
+     ],
+     "_zu_frueh": [
+      "Aufbewahrt, nicht geloescht: die Vorgabe 'fruehestens 11:00' kam am",
+      "09.09.2026 und kann sich wieder aendern. Ohne diese beiden Saetze wuerde",
+      "beim naechsten Durchgang derselbe Fahrplan neu abgefragt."
+     ],
+     "zu_frueh": [
+      {
+       "ab": "10:51",
+       "an": "14:29",
+       "erwartet": "14:52",
+       "dauer": "3 h 38",
+       "umstiege": 1,
+       "weggelassen": "Abfahrt vor 11:00 — Vorgabe vom 09.09.2026.",
+       "hinweis": "früh da",
+       "abschnitte": [
+        {
+         "zug": "RE 1 (19011)",
+         "von": "Bruchsal",
+         "ab": "10:51",
+         "nach": "Stuttgart Hbf",
+         "an": "11:30",
+         "gleis_ab": "3",
+         "gleis_an": "7"
+        },
+        {
+         "zug": "ICE 515",
+         "von": "Stuttgart Hbf",
+         "ab": "12:17",
+         "nach": "München Hbf",
+         "an": "14:29",
+         "gleis_ab": "15",
+         "gleis_an": "13"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 47
+        }
+       ],
+       "robust": "RE 1 +3 min (77 %), ICE 515 +23 min (26 %). 44 min Reserve, bei 15 min Verzug noch 32 min. Ankunft vor dem Check-in um 15:00 — das Gepäck müsste bis dahin untergebracht werden. Rückfall: ICE 595 um 13:17 (an 15:13)."
+      },
+      {
+       "ab": "08:49",
+       "an": "12:29",
+       "erwartet": "12:37",
+       "dauer": "3 h 40",
+       "umstiege": 1,
+       "weggelassen": "Abfahrt vor 11:00 — Vorgabe vom 09.09.2026. Das ist der Preis dieser Vorgabe: der ICE 513 war mit +8 min und 55 % der zuverlässigste Fernzug im ganzen Feld.",
+       "hinweis": "zuverlässigster ICE",
+       "abschnitte": [
+        {
+         "zug": "RE 1 (19007)",
+         "von": "Bruchsal",
+         "ab": "08:49",
+         "nach": "Stuttgart Hbf",
+         "an": "09:29",
+         "gleis_ab": "3",
+         "gleis_an": "7"
+        },
+        {
+         "zug": "ICE 513",
+         "von": "Stuttgart Hbf",
+         "ab": "10:17",
+         "nach": "München Hbf",
+         "an": "12:29",
+         "gleis_ab": "15",
+         "gleis_an": "13"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 48
+        }
+       ],
+       "robust": "Der beste Hauptzug des Tages: ICE 513 nur +8 min im Mittel (55 % pünktlich), RE 1 +3 min (84 %). 45 min Reserve. Preis dafür ist der frühe Start und rund 2,5 h Wartezeit in München bis zum Check-in."
+      },
+      {
+       "ab": "11:42",
+       "an": "15:40",
+       "dauer": "3 h 58",
+       "umstiege": 1,
+       "weggelassen": "Abfahrt vor 12:00 — Vorgabe vom 09.09.2026, nachgeschärft von 11:00 auf 12:00.",
+       "hinweis": "Reserve knapp",
+       "hinweis_warn": true,
+       "abschnitte": [
+        {
+         "zug": "S 3",
+         "von": "Bruchsal",
+         "ab": "11:42",
+         "nach": "Mannheim Hbf",
+         "an": "12:29",
+         "gleis_ab": "unbekannt",
+         "gleis_an": "1"
+        },
+        {
+         "zug": "ICE 225",
+         "von": "Mannheim Hbf",
+         "ab": "12:56",
+         "nach": "München Hbf",
+         "an": "15:40",
+         "gleis_ab": "5",
+         "gleis_an": "unbekannt"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 27
+        }
+       ],
+       "robust": "Das ist der Anhalt aus den alten Unterlagen vom 28.08. — er fährt noch, aber München an 15:40, nicht 15:46. Die Pünktlichkeit der S 3 ist unbekannt (zugfinder führt die Linie nicht), der ICE 225 liegt bei +17 min (42 %). Bei 15 min Verzug bleiben nur 12 min Umstieg — unter der 20-Minuten-Vorgabe."
+      },
+      {
+       "ab": "11:51",
+       "an": "15:13",
+       "erwartet": "15:44",
+       "dauer": "3 h 22",
+       "umstiege": 1,
+       "weggelassen": "Abfahrt vor 12:00 — Vorgabe vom 09.09.2026, nachgeschärft von 11:00 auf 12:00.",
+       "hinweis": "schnell, aber wacklig",
+       "hinweis_warn": true,
+       "abschnitte": [
+        {
+         "zug": "RE 1 (19013)",
+         "von": "Bruchsal",
+         "ab": "11:51",
+         "nach": "Stuttgart Hbf",
+         "an": "12:27",
+         "gleis_ab": "3",
+         "gleis_an": "13"
+        },
+        {
+         "zug": "ICE 595",
+         "von": "Stuttgart Hbf",
+         "ab": "13:17",
+         "nach": "München Hbf",
+         "an": "15:13",
+         "gleis_ab": "16",
+         "gleis_an": "15"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Stuttgart Hbf",
+         "minuten": 50
+        }
+       ],
+       "robust": "Auf dem Papier 16 min schneller als die erste Wahl — der ICE 595 ist aber der zweitunzuverlässigste im Feld: +31 min im Mittel, nur 21 % pünktlich. Real landet man eher um 15:44 als um 15:13."
+      },
+      {
+       "ab": "13:07",
+       "an": "17:44",
+       "dauer": "4 h 37",
+       "umstiege": 2,
+       "erwartet": "17:59",
+       "hinweis": "alles rechenbar",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "13:07",
+         "nach": "Karlsruhe Hbf",
+         "an": "13:23",
+         "gleis_ab": "4",
+         "gleis_an": "6",
+         "halte": [
+          {
+           "ort": "Bruchsal Gew. Bildungszentrum",
+           "an": "13:08",
+           "ab": "13:09",
+           "gleis": "2a"
+          },
+          {
+           "ort": "Untergrombach",
+           "an": "13:11",
+           "ab": "13:12",
+           "gleis": "2a"
+          },
+          {
+           "ort": "Weingarten (Baden)",
+           "an": "13:14",
+           "ab": "13:15",
+           "gleis": "2a"
+          },
+          {
+           "ort": "Karlsruhe-Durlach",
+           "an": "13:19",
+           "ab": "13:20",
+           "gleis": "6"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 370",
+         "von": "Karlsruhe Hbf",
+         "ab": "13:59",
+         "nach": "Mannheim Hbf",
+         "an": "14:22",
+         "gleis_ab": "3",
+         "gleis_an": "2",
+         "halte": []
+        },
+        {
+         "zug": "ICE 919",
+         "von": "Mannheim Hbf",
+         "ab": "14:56",
+         "nach": "München Hbf",
+         "an": "17:44",
+         "gleis_ab": "5",
+         "gleis_an": "13",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "15:22",
+           "ab": "15:24",
+           "gleis": "2"
+          },
+          {
+           "ort": "Esslingen (N)",
+           "an": "15:48",
+           "ab": "15:52",
+           "gleis": "6"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "16:26",
+           "ab": "16:28",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "17:11",
+           "ab": "17:13",
+           "gleis": "4"
+          }
+         ]
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Karlsruhe Hbf",
+         "minuten": 36
+        },
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 34
+        }
+       ],
+       "robust": "Karlsruhe-Korridor. Gleiche Ankunft wie Rang 5, aber ein Umstieg mehr und 36 min frueher los. Dafuer alle drei Zuege gemessen. RE 1 61 % pünktlich, im Mittel +6 min. ICE 370 52 % pünktlich, im Mittel +11 min. ICE 919 35 % pünktlich, im Mittel +15 min. Fällt der Anschluss aus, fährt ICE 519 um 15:33 (an 18:27) — 43 min später.",
+       "weggelassen": "Zwei Umstiege — herausgenommen am 09.09.2026. Beide gingen über Karlsruhe, das keinen eigenen München-Zug hat und nur Mannheim speist; ihr Vorzug war allein, dass jede Umsteigereserve rechenbar ist."
+      },
+      {
+       "ab": "15:04",
+       "an": "19:42",
+       "dauer": "4 h 38",
+       "umstiege": 2,
+       "erwartet": "20:11",
+       "hinweis": "alles rechenbar",
+       "abschnitte": [
+        {
+         "zug": "RE 1",
+         "von": "Bruchsal",
+         "ab": "15:04",
+         "nach": "Karlsruhe Hbf",
+         "an": "15:20",
+         "gleis_ab": "4",
+         "gleis_an": "6",
+         "halte": [
+          {
+           "ort": "Bruchsal Gew. Bildungszentrum",
+           "an": "15:05",
+           "ab": "15:06",
+           "gleis": "2a"
+          },
+          {
+           "ort": "Untergrombach",
+           "an": "15:08",
+           "ab": "15:09",
+           "gleis": "2a"
+          },
+          {
+           "ort": "Weingarten (Baden)",
+           "an": "15:11",
+           "ab": "15:12",
+           "gleis": "2a"
+          },
+          {
+           "ort": "Karlsruhe-Durlach",
+           "an": "15:16",
+           "ab": "15:17",
+           "gleis": "6"
+          }
+         ]
+        },
+        {
+         "zug": "ICE 278",
+         "von": "Karlsruhe Hbf",
+         "ab": "15:59",
+         "nach": "Mannheim Hbf",
+         "an": "16:22",
+         "gleis_ab": "3",
+         "gleis_an": "2",
+         "halte": []
+        },
+        {
+         "zug": "ICE 1011",
+         "von": "Mannheim Hbf",
+         "ab": "16:56",
+         "nach": "München Hbf",
+         "an": "19:42",
+         "gleis_ab": "5",
+         "gleis_an": "19",
+         "halte": [
+          {
+           "ort": "Vaihingen (E)",
+           "an": "17:22",
+           "ab": "17:24",
+           "gleis": "2"
+          },
+          {
+           "ort": "Esslingen (N)",
+           "an": "17:48",
+           "ab": "17:52",
+           "gleis": "6"
+          },
+          {
+           "ort": "Ulm Hauptbahnhof",
+           "an": "18:26",
+           "ab": "18:28",
+           "gleis": "2"
+          },
+          {
+           "ort": "Augsburg Hbf",
+           "an": "19:11",
+           "ab": "19:13",
+           "gleis": "4"
+          }
+         ]
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Karlsruhe Hbf",
+         "minuten": 39
+        },
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 34
+        }
+       ],
+       "robust": "Karlsruhe-Korridor. Gleiche Ankunft wie Rang 4, aber alle Reserven rechenbar statt unknown. RE 1 66 % pünktlich, im Mittel +6 min. ICE 278 58 % pünktlich, im Mittel +8 min. ICE 1011 39 % pünktlich, im Mittel +29 min. Fällt der Anschluss aus, fährt ICE 611 um 17:33 (an 20:32) — 50 min später.",
+       "weggelassen": "Zwei Umstiege — herausgenommen am 09.09.2026. Beide gingen über Karlsruhe, das keinen eigenen München-Zug hat und nur Mannheim speist; ihr Vorzug war allein, dass jede Umsteigereserve rechenbar ist."
+      }
+     ],
+     "ausgeschieden": "Die schnellste Fahrt überhaupt wäre Vaihingen (Enz) 10:08 → ICE 563 gewesen (3 h 01) — Umstieg dort ist nicht erlaubt. Ebenso zwei Heidelberger Varianten. Eine Karlsruher Variante über ICE 372 bräuchte zwei Umstiege für dieselbe Ankunft wie die Mannheimer.",
+     "auslastung_stand": "Auslastungsprognose der DB, abgefragt 09.09.2026 über bahn.de/web/api/angebote/fahrplan. Sie gilt je Teilstrecke und hängt am Einstiegsbahnhof: derselbe ICE 517 ist ab Mannheim in der 2. Klasse hoch ausgelastet und ab Stuttgart gering. Für RE 1 und die meisten S 3 führt die Quelle keine Prognose — das ist eine gemessene Leerangabe, keine fehlgeschlagene Abfrage. Prognose für den 10.09., kein Istwert.",
+     "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 09.09.2026 17:14–17:21 und 19:41 · Pünktlichkeitswerte zugfinder.net, 30-Tage-Mittel · Alles Plandaten — für den 10.09. lag noch keine Echtzeit vor. Am Reisetag neu abfragen. Unbekannt geblieben: Gleis der S 3 ab Bruchsal, Ankunftsgleis des ICE 225, Pünktlichkeit der S 3, die Zwischenhalte Stuttgart→München. Hintergrund: Bauarbeiten im Knoten Stuttgart bis 12.09. und Karlsruhe–Bruchsal bis 11.09."
     }
    },
    {
     "id": "rueck",
     "label": "Rückfahrt",
     "tag": "Sa 12.09.2026",
+    "datum": "2026-09-12",
     "richtung": "München Hbf → Bruchsal",
     "status": "gebucht",
     "status_text": "gebucht",
-    "meldung": "Keine Störung gemeldet, Stand 09.09.2026. Der Zug fährt weiter nach Karlsruhe — Bruchsal ist nicht die Endstation, also rechtzeitig zur Tür.",
+    "meldung": "Keine Störung gemeldet, Stand 09.09.2026. Der Zug fährt weiter nach Karlsruhe — Bruchsal ist nicht die Endstation, also rechtzeitig an die Tür.",
     "zug": "ICE 266",
     "dauer": "2 h 41",
     "halte": [
@@ -233,221 +1790,78 @@ const DATEN = {
      "platz": "75, 77",
      "bereich": "Handybereich",
      "hinweis": "Stornierung der Reservierung ausgeschlossen"
+    },
+    "alternativen": {
+     "titel": "Wenn der ICE 266 ausfällt",
+     "lage": "Das Ticket gilt nur im ICE 266. Ein anderer Zug ist erst zulässig, wenn dieser ausfällt oder absehbar mindestens 20 Minuten zu spät ankommt — die beiden hier stehen für genau diesen Fall, nicht zum freien Umsteigen.",
+     "regeln": [
+      "gilt nur bei Ausfall oder ≥ 20 min Verspätung des ICE 266",
+      "Umstieg nur in Mannheim, Karlsruhe oder Stuttgart",
+      "mindestens 20 Minuten Umsteigezeit"
+     ],
+     "liste": [
+      {
+       "ab": "19:00",
+       "an": "21:37",
+       "erwartet": "21:40",
+       "dauer": "2 h 37",
+       "umstiege": 0,
+       "hinweis": "der Rückfall",
+       "abschnitte": [
+        {
+         "zug": "ICE 560",
+         "von": "München Hbf",
+         "ab": "19:00",
+         "nach": "Bruchsal",
+         "an": "21:37",
+         "gleis_ab": "12",
+         "gleis_an": "4"
+        }
+       ],
+       "umstieg": [],
+       "robust": "Zwei Stunden nach dem gebuchten Zug, ohne Umstieg und sogar vier Minuten kürzer. Der ICE 560 liegt bei 74 % Pünktlichkeit und +3 min im Mittel — der beste Wert unter allen hier geprüften Fernzügen. Wenn der ICE 266 ausfällt, ist das die Antwort."
+      },
+      {
+       "ab": "19:28",
+       "an": "23:28",
+       "dauer": "4 h 00",
+       "umstiege": 1,
+       "hinweis": "nur als Notnagel",
+       "hinweis_warn": true,
+       "abschnitte": [
+        {
+         "zug": "ICE 510",
+         "von": "München Hbf",
+         "ab": "19:28",
+         "nach": "Mannheim Hbf",
+         "an": "22:26",
+         "gleis_ab": "13",
+         "gleis_an": "3"
+        },
+        {
+         "zug": "RE 73 (15999)",
+         "von": "Mannheim Hbf",
+         "ab": "22:58",
+         "nach": "Bruchsal",
+         "an": "23:28",
+         "gleis_ab": "10",
+         "gleis_an": "3"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 32
+        }
+       ],
+       "robust": "Eine Stunde und 51 Minuten länger als der ICE 560, mit Umstieg und Ankunft um halb zwölf. Der ICE 510 liegt bei 60 % und +14 min; für den RE 73 (15999) führt zugfinder keinen Datensatz, seine Pünktlichkeit ist unbekannt. Nehmen, wenn der ICE 560 auch weg ist."
+      }
+     ],
+     "ausgeschieden": "Was nach 20:45 fährt, kommt nur mit zwei Umstiegen und mitten in der Nacht an — 00:56 bis 02:04. Als Ersatz für einen Zug um 16:58 ist das keine Verbindung mehr.",
+     "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 09.09.2026 17:39 · Pünktlichkeit zugfinder.net, 30-Tage-Mittel, abgerufen 09.09.2026 · Plandaten, keine Echtzeit. Die Regel zur Zugbindung stammt aus den DB-Beförderungsbedingungen und wurde für diesen Fall nicht einzeln geprüft."
     }
    }
   ],
-  "alternativen": {
-   "lage": "Am 10.09. hält in Bruchsal kein einziger Fernzug — die Abfahrtstafel führt zwischen 07:50 und 17:05 nur RE, RB und S-Bahn. Der ICE 567 ist damit kein Einzelausfall, sondern Teil eines Ersatzfahrplans. Jede Fahrt an diesem Tag hat mindestens einen Umstieg.",
-   "regeln": [
-    "Umstieg nur in Mannheim, Karlsruhe oder Stuttgart",
-    "mindestens 20 Minuten Umsteigezeit",
-    "Abfahrt Bruchsal zwischen 08:00 und 16:00"
-   ],
-   "liste": [
-    {
-     "ab": "12:51",
-     "an": "16:27",
-     "erwartet": "16:44",
-     "dauer": "3 h 36",
-     "umstiege": 1,
-     "hinweis": "beste Reserve",
-     "abschnitte": [
-      {
-       "zug": "RE 1 (19011-Reihe)",
-       "von": "Bruchsal",
-       "ab": "12:51",
-       "nach": "Stuttgart Hbf",
-       "an": "13:30",
-       "gleis": "3 → 7"
-      },
-      {
-       "zug": "ICE 517",
-       "von": "Stuttgart Hbf",
-       "ab": "14:17",
-       "nach": "München Hbf",
-       "an": "16:27",
-       "gleis": "15 → 13"
-      }
-     ],
-     "umstieg": [
-      {
-       "ort": "Stuttgart Hbf",
-       "minuten": 47
-      }
-     ],
-     "robust": "Der Zubringer ist der zuverlässige Teil: RE 1 im Mittel +3 min (77 % pünktlich), der ICE 517 dagegen +17 min (29 %). Bei 15 min Verspätung des RE bleiben noch 32 min zum Anschluss — er hält klar. Fällt der ICE 517 aus, fährt um 15:17 der ICE 597 (an 17:13)."
-    },
-    {
-     "ab": "10:51",
-     "an": "14:29",
-     "erwartet": "14:52",
-     "dauer": "3 h 38",
-     "umstiege": 1,
-     "hinweis": "früh da",
-     "abschnitte": [
-      {
-       "zug": "RE 1 (19011)",
-       "von": "Bruchsal",
-       "ab": "10:51",
-       "nach": "Stuttgart Hbf",
-       "an": "11:30",
-       "gleis": "3 → 7"
-      },
-      {
-       "zug": "ICE 515",
-       "von": "Stuttgart Hbf",
-       "ab": "12:17",
-       "nach": "München Hbf",
-       "an": "14:29",
-       "gleis": "15 → 13"
-      }
-     ],
-     "umstieg": [
-      {
-       "ort": "Stuttgart Hbf",
-       "minuten": 47
-      }
-     ],
-     "robust": "RE 1 +3 min (77 %), ICE 515 +23 min (26 %). 44 min Reserve, bei 15 min Verzug noch 32 min. Ankunft vor dem Check-in um 15:00 — das Gepäck müsste bis dahin untergebracht werden. Rückfall: ICE 595 um 13:17 (an 15:13)."
-    },
-    {
-     "ab": "08:49",
-     "an": "12:29",
-     "erwartet": "12:37",
-     "dauer": "3 h 40",
-     "umstiege": 1,
-     "hinweis": "zuverlässigster ICE",
-     "abschnitte": [
-      {
-       "zug": "RE 1 (19007)",
-       "von": "Bruchsal",
-       "ab": "08:49",
-       "nach": "Stuttgart Hbf",
-       "an": "09:29",
-       "gleis": "3 → 7"
-      },
-      {
-       "zug": "ICE 513",
-       "von": "Stuttgart Hbf",
-       "ab": "10:17",
-       "nach": "München Hbf",
-       "an": "12:29",
-       "gleis": "15 → 13"
-      }
-     ],
-     "umstieg": [
-      {
-       "ort": "Stuttgart Hbf",
-       "minuten": 48
-      }
-     ],
-     "robust": "Der beste Hauptzug des Tages: ICE 513 nur +8 min im Mittel (55 % pünktlich), RE 1 +3 min (84 %). 45 min Reserve. Preis dafür ist der frühe Start und rund 2,5 h Wartezeit in München bis zum Check-in."
-    },
-    {
-     "ab": "11:42",
-     "an": "15:40",
-     "dauer": "3 h 58",
-     "umstiege": 1,
-     "hinweis": "Reserve knapp",
-     "hinweis_warn": true,
-     "abschnitte": [
-      {
-       "zug": "S 3",
-       "von": "Bruchsal",
-       "ab": "11:42",
-       "nach": "Mannheim Hbf",
-       "an": "12:29",
-       "gleis": "unbekannt → 1"
-      },
-      {
-       "zug": "ICE 225",
-       "von": "Mannheim Hbf",
-       "ab": "12:56",
-       "nach": "München Hbf",
-       "an": "15:40",
-       "gleis": "5 → unbekannt"
-      }
-     ],
-     "umstieg": [
-      {
-       "ort": "Mannheim Hbf",
-       "minuten": 27
-      }
-     ],
-     "robust": "Das ist der Anhalt aus den alten Unterlagen vom 28.08. — er fährt noch, aber München an 15:40, nicht 15:46. Die Pünktlichkeit der S 3 ist unbekannt (zugfinder führt die Linie nicht), der ICE 225 liegt bei +17 min (42 %). Bei 15 min Verzug bleiben nur 12 min Umstieg — unter der 20-Minuten-Vorgabe."
-    },
-    {
-     "ab": "11:51",
-     "an": "15:13",
-     "erwartet": "15:44",
-     "dauer": "3 h 22",
-     "umstiege": 1,
-     "hinweis": "schnell, aber wacklig",
-     "hinweis_warn": true,
-     "abschnitte": [
-      {
-       "zug": "RE 1 (19013)",
-       "von": "Bruchsal",
-       "ab": "11:51",
-       "nach": "Stuttgart Hbf",
-       "an": "12:27",
-       "gleis": "3 → 13"
-      },
-      {
-       "zug": "ICE 595",
-       "von": "Stuttgart Hbf",
-       "ab": "13:17",
-       "nach": "München Hbf",
-       "an": "15:13",
-       "gleis": "16 → 15"
-      }
-     ],
-     "umstieg": [
-      {
-       "ort": "Stuttgart Hbf",
-       "minuten": 50
-      }
-     ],
-     "robust": "Auf dem Papier 16 min schneller als die erste Wahl — der ICE 595 ist aber der zweitunzuverlässigste im Feld: +31 min im Mittel, nur 21 % pünktlich. Real landet man eher um 15:44 als um 15:13."
-    },
-    {
-     "ab": "13:52",
-     "an": "17:13",
-     "erwartet": "17:46",
-     "dauer": "3 h 21",
-     "umstiege": 1,
-     "hinweis": "spät, kein Rückfall",
-     "hinweis_warn": true,
-     "abschnitte": [
-      {
-       "zug": "RE 1 (19017)",
-       "von": "Bruchsal",
-       "ab": "13:52",
-       "nach": "Stuttgart Hbf",
-       "an": "14:27",
-       "gleis": "3 → 8"
-      },
-      {
-       "zug": "ICE 597",
-       "von": "Stuttgart Hbf",
-       "ab": "15:17",
-       "nach": "München Hbf",
-       "an": "17:13",
-       "gleis": "16 → 14"
-      }
-     ],
-     "umstieg": [
-      {
-       "ort": "Stuttgart Hbf",
-       "minuten": 50
-      }
-     ],
-     "robust": "Formal die schnellste, praktisch die schlechteste: ICE 597 mit +33 min und 15 % Pünktlichkeit. Was danach fährt, wurde nicht abgefragt — für diese Verbindung gibt es keinen geprüften Rückfall."
-    }
-   ],
-   "ausgeschieden": "Die schnellste Fahrt überhaupt wäre Vaihingen (Enz) 10:08 → ICE 563 gewesen (3 h 01) — Umstieg dort ist nicht erlaubt. Ebenso zwei Heidelberger Varianten. Eine Karlsruher Variante über ICE 372 bräuchte zwei Umstiege für dieselbe Ankunft wie die Mannheimer.",
-   "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 09.09.2026 17:14–17:21 · Pünktlichkeitswerte zugfinder.net, 30-Tage-Mittel · Alles Plandaten — für den 10.09. lag noch keine Echtzeit vor. Am Reisetag neu abfragen. Unbekannt geblieben: Gleis der S 3 ab Bruchsal, Ankunftsgleis des ICE 225, Pünktlichkeit der S 3, die Zwischenhalte Stuttgart→München. Hintergrund: Bauarbeiten im Knoten Stuttgart bis 12.09. und Karlsruhe–Bruchsal bis 11.09."
-  },
   "quelle": "DB-Tickets und Reisedetails, gelesen 09.09.2026 · Zuglauf ICE 266 aus api.transitous.org (MOTIS 2), abgefragt 09.09.2026 17:18"
  },
  "quelle": {
