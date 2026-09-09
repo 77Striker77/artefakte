@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700;800&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=b78533e2">
+<link rel="stylesheet" href="stil.css?v=7a908b28">
 </head>
 <body>
 
@@ -45,6 +45,18 @@
   <section class="ansicht" id="feld-hotel" aria-labelledby="menue-hotel" tabindex="-1" hidden>
     <h2 class="ansicht-titel">Hotel</h2>
     <div id="hotel-tafel"></div>
+
+    <!-- Der Weg vom Hauptbahnhof steht VOR der Umgebungskarte: am Ankunftstag
+         ist "wie komme ich hin" die erste Frage, "was ist nebenan" die zweite.
+         Ein Unterknopf je Verkehrsmittel, weil die Antwort nicht eine ist -
+         schnell, oberirdisch oder ohne Ticket sind drei verschiedene Wuensche.
+         Die Knoepfe kommen aus den Daten, nicht aus dem HTML. -->
+    <h3 class="tafel-titel">Vom Hauptbahnhof zum Hotel</h3>
+    <nav class="untermenue" id="weg-reiter" aria-label="Womit vom Hauptbahnhof"></nav>
+    <div id="weg-tafel"></div>
+    <div id="karte-weg" role="region"
+         aria-label="Karte des Wegs vom Hauptbahnhof zur Unterkunft"></div>
+    <p class="grund-fuss" id="weg-fuss"></p>
 
     <h3 class="tafel-titel">Was in Gehweite liegt</h3>
     <div id="karte-hotel" role="region" aria-label="Karte der Umgebung um die Unterkunft"></div>
@@ -116,7 +128,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=b78533e2"></script>
-<script src="karte.js?v=b78533e2"></script>
+<script src="orte.js?v=7a908b28"></script>
+<script src="karte.js?v=7a908b28"></script>
 </body>
 </html>

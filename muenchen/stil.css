@@ -375,9 +375,22 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    gefuelltes Viereck neben einem gezeichneten Symbol sah aus wie zwei
    verschiedene Kartenwerke. 800er Schnitt, weil ein normal starker Buchstabe
    bei 20 px gegen die Kachelzeichnung untergeht. */
+/* 800 IST JETZT AUCH GELADEN. Bis zum 09.09.2026 stand hier font-weight:800,
+   waehrend die Schrift-URL nur 400;600;700 holte - der Browser nahm also 700
+   oder rechnete sich ein Fett zurecht, und die Buchstaben standen duenner auf
+   der Karte als beabsichtigt. Ein Gewicht, das nicht geladen ist, wirkt nicht:
+   das steht im Stylesheet und faellt trotzdem nicht auf.
+
+   Dazu ein STAERKERER Saum als bei den Ortszeichen: ein Buchstabe hat duennere
+   Striche als ein gezeichnetes Symbol und braucht mehr Rand, um sich vom
+   Kartenbild zu loesen. Vier Schlagschatten bleiben es trotzdem - die Startseite
+   traegt 143 dieser Marken, und jeder weitere Schatten kostet dort. */
 .halt-pin{
   width:26px; height:26px; font-family:var(--sans); font-style:normal;
-  font-weight:800; font-size:20px; line-height:1}
+  font-weight:800; font-size:21.5px; line-height:1; letter-spacing:-.02em;
+  filter:
+    drop-shadow( 2.2px 0 0 var(--saum)) drop-shadow(-2.2px 0 0 var(--saum))
+    drop-shadow(0  2.2px 0 var(--saum)) drop-shadow(0 -2.2px 0 var(--saum))}
 .halt-pin.sbahn{color:var(--m-sbahn)}
 .halt-pin.ubahn{color:var(--m-ubahn)}
 /* .tram, NICHT .linie: '.linie' ist die Linienmarke in der Sprechblase, und
@@ -572,7 +585,12 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Zeile traegt Name, Ort, Wochenstreifen und Note; die Prosa liegt in <details>
    und kommt auf Abruf. Das ist der Unterschied zwischen 19 000 px Scrollhoehe
    und 2 600 px bei gleichem Inhalt. */
-.katalog{background:var(--flaeche); color:var(--tinte);
+/* position:relative ist Pflicht, nicht Kosmetik: eine Zeile, die gerade
+   verschwindet, wird kurz auf position:absolute gelegt, damit sie ihren Platz
+   SOFORT freigibt und die Nachbarn waehrend der Blende nachruecken statt am
+   Ende zu springen. Ohne einen positionierten Vorfahren bezoege sie ihre
+   Koordinaten auf die Seite und flaege quer durchs Bild. */
+.katalog{position:relative; background:var(--flaeche); color:var(--tinte);
          border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
 .ort{border-top:2px solid var(--linie); border-left:5px solid transparent}
 .ort:first-child{border-top:0}
@@ -906,6 +924,105 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .alt-raus b{color:var(--tinte)}                                   /* 14,02:1 */
 .alt-stand, .alt-leer{margin:16px 0 0; font-size:13px; color:var(--tinte-leise)}
 .alt-leer{padding:14px; background:var(--flaeche-2); max-width:58ch}
+
+
+/* --- Weg vom Hauptbahnhof zum Hotel ---------------------------------------
+   Dasselbe Bauprinzip wie das Streckenband des Bahn-Reiters: eine Folge liest
+   man als Linie. Zwei Unterschiede, beide bewusst.
+
+   1. KEINE Uhrzeitspalte. Der Weg ist ein Rezept fuer jeden Tag und keine
+      gebuchte Fahrt - eine Uhrzeit daneben liest sich als Termin. Die Dauer
+      des Abschnitts steht im Text, wo sie hingehoert.
+   2. Die Spur traegt die FARBE des Verkehrsmittels und wechselt sie genau am
+      Halt. Damit ist das Band dieselbe Zeichnung wie die Linie auf der Karte;
+      zwei Darstellungen desselben Wegs, die verschieden aussehen, liest man
+      als zwei Wege.
+
+   Eine Zeile ist EIN Abschnitt und traegt den Halt, an dem er beginnt. Halte
+   und Fahrten als getrennte Zeilen haetten in der Spur an jedem Halt eine Naht
+   hinterlassen - und eine unterbrochene Linie liest man als unterbrochenen
+   Weg. */
+.weg{list-style:none; margin:20px 0 0; padding:0}
+.weg > li{display:grid; grid-template-columns:26px minmax(0,1fr); gap:0 14px}
+.weg-spur{position:relative}
+.weg-haupt{display:block; padding:0 0 20px}
+.weg > li:last-child .weg-haupt{padding-bottom:0}
+
+/* Der Balken laeuft vom eigenen Punkt bis zum Punkt der naechsten Zeile durch.
+   top:11px setzt ihn unter die Mitte des Punkts, bottom:0 an die Zeilenkante -
+   die naechste Zeile setzt dort ihren eigenen an. */
+.weg-teil .weg-spur::before{content:""; position:absolute; left:50%;
+  top:11px; bottom:0; width:9px; margin-left:-4.5px;
+  background:var(--spur,var(--tinte-leise))}
+/* Der Fussweg ist schmaler und gestrichelt - dieselbe Unterscheidung, die die
+   Karte zwischen gefahren und gelaufen macht. */
+.weg-teil--fuss .weg-spur::before{width:5px; margin-left:-2.5px;
+  background:repeating-linear-gradient(var(--spur) 0 6px, transparent 6px 12px)}
+.weg-teil--fuss{--spur:var(--tinte-leise)}
+.weg-teil--sbahn{--spur:var(--m-sbahn)}
+.weg-teil--ubahn{--spur:var(--m-ubahn)}
+.weg-teil--tram{--spur:var(--m-tram)}
+.weg-teil--bus{--spur:var(--m-ankunft)}
+
+.weg-spur::after{content:""; position:absolute; left:50%; top:4px;
+  width:15px; height:15px; margin-left:-7.5px; border-radius:50%;
+  background:var(--flaeche); border:3px solid var(--umriss); z-index:1}
+/* Start und Ziel sind gefuellt: sie sind die Enden, nicht Zwischenstationen. */
+.weg > li:first-child .weg-spur::after,
+.weg-ziel .weg-spur::after{background:var(--akzent)}
+
+.weg-ort{display:block; font-size:16px; font-weight:700; line-height:1.25;
+  padding-top:1px}
+.weg-ziel .weg-ort, .weg > li:first-child .weg-ort{
+  font-family:var(--pixel); font-size:17px}
+.weg-marken{display:flex; flex-wrap:wrap; gap:4px; margin:7px 0 0}
+.weg-tat{display:block; margin:6px 0 0; font-size:14px; color:var(--tinte-leise)}
+.weg-tat b{font-family:var(--zahl); font-size:13px; color:var(--tinte)}  /* 16,87:1 */
+.weg-fein{display:block; margin:3px 0 0; font-size:12.5px;
+  color:var(--tinte-leise); line-height:1.5}                            /* 6,50:1 */
+
+/* Die drei Kennzahlen ueber dem Band nutzen die Felder des Bahn-Reiters weiter:
+   dieselbe Sache - eine Zahl, die man mit einem Blick treffen will -, also
+   dieselbe Form. Nur die Zeile darunter kommt dazu. */
+.weg-feld-fein{display:block; margin-top:3px; font-family:var(--sans);
+  font-size:11.5px; color:var(--tinte-leise); line-height:1.4}          /* 6,50:1 */
+.platz-felder--um{flex-wrap:wrap}
+
+/* Die Telefonnummer steht als eigenes Ziel im Kopf der Hoteltafel, nicht als
+   Zeile in einer Liste: unterwegs ist sie das Einzige auf diesem Reiter, das
+   man ANTIPPT statt liest. Als dd unter sechs anderen war sie ein 14-px-Link
+   zwischen Fliesstext. */
+.hotel-tel{font-family:var(--zahl); font-size:13px; letter-spacing:.5px;
+  color:var(--akzent-text); text-decoration:none;                       /* 6,12:1 */
+  padding:8px 12px; min-height:44px; display:inline-flex; align-items:center;
+  border:2px solid var(--umriss); background:var(--flaeche-2)}
+.hotel-tel:hover{background:var(--akzent); color:var(--tinte)}          /* 5,95:1 */
+.hotel-kenn{margin-top:18px}
+/* Ein unbekannter Wert traegt "xx" und wird als Aussage gesetzt, nicht als
+   Ergebnis - dieselbe Auszeichnung wie in der Infobox. */
+.platz-wert--offen{color:var(--akzent-text)}                            /* 6,12:1 */
+
+/* Der Strich im Unterknopf ist die Legende der Karte: dieselbe Farbe, dieselbe
+   Strichart. Eine zweite Legende unter der Karte waere dieselbe Auskunft ein
+   zweites Mal - und die zweite driftet. */
+.weg-strich{height:5px; border:1px solid var(--umriss)}
+.weg-strich--sbahn{background:var(--m-sbahn)}
+.weg-strich--ubahn{background:var(--m-ubahn)}
+.weg-strich--tram{background:var(--m-tram)}
+.weg-strich--bus{background:var(--m-ankunft)}
+.weg-strich--fuss{border:0; height:5px;
+  background:repeating-linear-gradient(90deg,
+    var(--auf-grund-leise) 0 4px, transparent 4px 9px)}
+.unterknopf[aria-pressed="true"] .weg-strich--fuss{
+  background:repeating-linear-gradient(90deg,
+    var(--tinte-leise) 0 4px, transparent 4px 9px)}
+
+/* Die Wegkarte zeigt dreieinhalb Kilometer - mehr als die Umgebungskarte, viel
+   weniger als die Stadtkarte. Sie darf darum niedriger sein als beide: auf ihr
+   liegen vier Marken und eine Linie, nicht vierzig Punkte. */
+#karte-weg{height:clamp(320px,42vh,480px); margin:18px 0 0;
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
 
 @media (max-width:520px){
   .band-halt{grid-template-columns:52px 20px minmax(0,1fr); gap:0 8px}
