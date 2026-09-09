@@ -146,7 +146,9 @@ const DATEN = {
    "ubahn": 97,
    "sbahn": 46,
    "linien": 1,
-   "linienhalte": 23
+   "linienhalte": 23,
+   "halte_linien_unbekannt": 0,
+   "halte_linien_leer": 1
   },
   "halte": [
    {
@@ -154,1001 +156,1792 @@ const DATEN = {
     "art": "ubahn",
     "lat": 48.097887,
     "lon": 11.525195,
-    "osm": "node/2650093383"
+    "osm": "node/2650093383",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Allach",
     "art": "sbahn",
     "lat": 48.190034,
     "lon": 11.468105,
-    "osm": "node/2488012710"
+    "osm": "node/2488012710",
+    "linien": [
+     "S2"
+    ],
+    "fern": 0
    },
    {
     "name": "Alte Heide",
     "art": "ubahn",
     "lat": 48.178552,
     "lon": 11.602555,
-    "osm": "node/1927202335"
+    "osm": "node/1927202335",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Am Hart",
     "art": "ubahn",
     "lat": 48.195925,
     "lon": 11.571815,
-    "osm": "node/28201702"
+    "osm": "node/28201702",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Arabellapark",
     "art": "ubahn",
     "lat": 48.153555,
     "lon": 11.622063,
-    "osm": "node/2660339813"
+    "osm": "node/2660339813",
+    "linien": [
+     "U4"
+    ],
+    "fern": 0
    },
    {
     "name": "Aubing",
     "art": "sbahn",
     "lat": 48.155971,
     "lon": 11.413159,
-    "osm": "node/2488173642"
+    "osm": "node/2488173642",
+    "linien": [
+     "S4",
+     "S20"
+    ],
+    "fern": 0
    },
    {
     "name": "Basler Straße",
     "art": "ubahn",
     "lat": 48.091273,
     "lon": 11.491169,
-    "osm": "node/2650093388"
+    "osm": "node/2650093388",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Berg am Laim",
     "art": "sbahn",
     "lat": 48.133971,
     "lon": 11.6336,
-    "osm": "node/3033367121"
+    "osm": "node/3033367121",
+    "linien": [
+     "S2",
+     "S4",
+     "S6"
+    ],
+    "fern": 0
    },
    {
     "name": "Böhmerwaldplatz",
     "art": "ubahn",
     "lat": 48.143505,
     "lon": 11.6156,
-    "osm": "node/2660339814"
+    "osm": "node/2660339814",
+    "linien": [
+     "U4"
+    ],
+    "fern": 0
    },
    {
     "name": "Bonner Platz",
     "art": "ubahn",
     "lat": 48.166667,
     "lon": 11.57829,
-    "osm": "node/2650093393"
+    "osm": "node/2650093393",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Brudermühlstraße",
     "art": "ubahn",
     "lat": 48.112522,
     "lon": 11.548722,
-    "osm": "node/2650093399"
+    "osm": "node/2650093399",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Candidplatz",
     "art": "ubahn",
     "lat": 48.1131,
     "lon": 11.571645,
-    "osm": "node/73793044"
+    "osm": "node/73793044",
+    "linien": [
+     "U1"
+    ],
+    "fern": 0
    },
    {
     "name": "Daglfing",
     "art": "sbahn",
     "lat": 48.149637,
     "lon": 11.649305,
-    "osm": "node/2504953877"
+    "osm": "node/2504953877",
+    "linien": [
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Dietlindenstraße",
     "art": "ubahn",
     "lat": 48.167122,
     "lon": 11.590853,
-    "osm": "node/2660339815"
+    "osm": "node/2660339815",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Donnersbergerbrücke",
     "art": "sbahn",
     "lat": 48.142669,
     "lon": 11.536523,
-    "osm": "node/2470092007"
+    "osm": "node/2470092007",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S7",
+     "S8",
+     "RB 55",
+     "RB 56",
+     "RB 57",
+     "RB 58"
+    ],
+    "fern": 0
    },
    {
     "name": "Dülferstraße",
     "art": "ubahn",
     "lat": 48.212297,
     "lon": 11.563645,
-    "osm": "node/3095464861"
+    "osm": "node/3095464861",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Englschalking",
     "art": "sbahn",
     "lat": 48.156763,
     "lon": 11.648351,
-    "osm": "node/2504953878"
+    "osm": "node/2504953878",
+    "linien": [
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Fasanerie",
     "art": "sbahn",
     "lat": 48.197775,
     "lon": 11.525866,
-    "osm": "node/2499566263"
+    "osm": "node/2499566263",
+    "linien": [
+     "S1"
+    ],
+    "fern": 0
    },
    {
     "name": "Fasangarten",
     "art": "sbahn",
     "lat": 48.093167,
     "lon": 11.60582,
-    "osm": "node/2478760680"
+    "osm": "node/2478760680",
+    "linien": [
+     "S3"
+    ],
+    "fern": 0
    },
    {
     "name": "Feldmoching",
     "art": "sbahn",
     "lat": 48.213822,
     "lon": 11.541283,
-    "osm": "node/2499552238"
+    "osm": "node/2499552238",
+    "linien": [
+     "S1",
+     "RB 33"
+    ],
+    "fern": 0
    },
    {
     "name": "Feldmoching",
     "art": "ubahn",
     "lat": 48.213791,
     "lon": 11.541019,
-    "osm": "node/3189921161"
+    "osm": "node/3189921161",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Forstenrieder Allee",
     "art": "ubahn",
     "lat": 48.095069,
     "lon": 11.499333,
-    "osm": "node/2650093404"
+    "osm": "node/2650093404",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Frankfurter Ring",
     "art": "ubahn",
     "lat": 48.186817,
     "lon": 11.57272,
-    "osm": "node/28201749"
+    "osm": "node/28201749",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Fraunhoferstraße",
     "art": "ubahn",
     "lat": 48.129429,
     "lon": 11.574103,
-    "osm": "node/73783822"
+    "osm": "node/73783822",
+    "linien": [
+     "U1",
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Freiham",
     "art": "sbahn",
     "lat": 48.140008,
     "lon": 11.41007,
-    "osm": "node/2507006563"
+    "osm": "node/2507006563",
+    "linien": [
+     "S5",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Freimann",
     "art": "ubahn",
     "lat": 48.191958,
     "lon": 11.614275,
-    "osm": "node/1594808593"
+    "osm": "node/1594808593",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Friedenheimer Straße",
     "art": "ubahn",
     "lat": 48.135125,
     "lon": 11.510856,
-    "osm": "node/2660339816"
+    "osm": "node/2660339816",
+    "linien": [
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Fröttmaning",
     "art": "ubahn",
     "lat": 48.211886,
     "lon": 11.616713,
-    "osm": "node/2644689596"
+    "osm": "node/2644689596",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Fürstenried West",
     "art": "ubahn",
     "lat": 48.088366,
     "lon": 11.48083,
-    "osm": "node/2650093410"
+    "osm": "node/2650093410",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Georg-Brauchle-Ring",
     "art": "ubahn",
     "lat": 48.177499,
     "lon": 11.529059,
-    "osm": "node/28238954"
+    "osm": "node/28238954",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Gern",
     "art": "ubahn",
     "lat": 48.16279,
     "lon": 11.529113,
-    "osm": "node/84322745"
+    "osm": "node/84322745",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Giesing",
     "art": "sbahn",
     "lat": 48.11113,
     "lon": 11.596084,
-    "osm": "node/2473495234"
+    "osm": "node/2473495234",
+    "linien": [
+     "S3",
+     "S5"
+    ],
+    "fern": 0
    },
    {
     "name": "Giesing",
     "art": "ubahn",
     "lat": 48.111036,
     "lon": 11.595819,
-    "osm": "node/3189921261"
+    "osm": "node/3189921261",
+    "linien": [
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Giselastraße",
     "art": "ubahn",
     "lat": 48.156559,
     "lon": 11.584048,
-    "osm": "node/2644689600"
+    "osm": "node/2644689600",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Goetheplatz",
     "art": "ubahn",
     "lat": 48.129034,
     "lon": 11.557355,
-    "osm": "node/2644689602"
+    "osm": "node/2644689602",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Großhadern",
     "art": "ubahn",
     "lat": 48.114805,
     "lon": 11.477062,
-    "osm": "node/2644689605"
+    "osm": "node/2644689605",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Hackerbrücke",
     "art": "sbahn",
     "lat": 48.141964,
     "lon": 11.548527,
-    "osm": "node/2470092008"
+    "osm": "node/2470092008",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Haderner Stern",
     "art": "ubahn",
     "lat": 48.118383,
     "lon": 11.488922,
-    "osm": "node/2644689606"
+    "osm": "node/2644689606",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Harras",
     "art": "ubahn",
     "lat": 48.116874,
     "lon": 11.538062,
-    "osm": "node/2500604016"
+    "osm": "node/2500604016",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Harras",
     "art": "sbahn",
     "lat": 48.118399,
     "lon": 11.536535,
-    "osm": "node/3189921361"
+    "osm": "node/3189921361",
+    "linien": [
+     "S7",
+     "RB 55",
+     "RB 56",
+     "RB 57",
+     "RB 58"
+    ],
+    "fern": 0
    },
    {
     "name": "Harthof",
     "art": "ubahn",
     "lat": 48.204344,
     "lon": 11.569393,
-    "osm": "node/28205595"
+    "osm": "node/28205595",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Hasenbergl",
     "art": "ubahn",
     "lat": 48.213429,
     "lon": 11.554914,
-    "osm": "node/28205626"
+    "osm": "node/28205626",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Hauptbahnhof",
     "art": "ubahn",
     "lat": 48.139293,
     "lon": 11.559975,
-    "osm": "node/3278115761"
+    "osm": "node/3278115761",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Hauptbahnhof",
     "art": "ubahn",
     "lat": 48.140146,
     "lon": 11.561096,
-    "osm": "node/3278115861"
+    "osm": "node/3278115861",
+    "linien": [
+     "U1",
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Hauptbahnhof (tief)",
     "art": "sbahn",
     "lat": 48.141256,
     "lon": 11.560027,
-    "osm": "node/3183012396"
+    "osm": "node/3183012396",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Heimeranplatz",
     "art": "sbahn",
     "lat": 48.13301,
     "lon": 11.531443,
-    "osm": "node/2499689861"
+    "osm": "node/2499689861",
+    "linien": [
+     "S7",
+     "S20",
+     "RB 58"
+    ],
+    "fern": 0
    },
    {
     "name": "Heimeranplatz",
     "art": "ubahn",
     "lat": 48.133541,
     "lon": 11.532214,
-    "osm": "node/3189921262"
+    "osm": "node/3189921262",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Hirschgarten",
     "art": "sbahn",
     "lat": 48.143552,
     "lon": 11.519469,
-    "osm": "node/2468901140"
+    "osm": "node/2468901140",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Hohenzollernplatz",
     "art": "ubahn",
     "lat": 48.162368,
     "lon": 11.568765,
-    "osm": "node/3142725229"
+    "osm": "node/3142725229",
+    "linien": [
+     "U2",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Holzapfelkreuth",
     "art": "ubahn",
     "lat": 48.116315,
     "lon": 11.501838,
-    "osm": "node/2644689608"
+    "osm": "node/2644689608",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Implerstraße",
     "art": "ubahn",
     "lat": 48.120199,
     "lon": 11.548451,
-    "osm": "node/2562202514"
+    "osm": "node/2562202514",
+    "linien": [
+     "U3",
+     "U6",
+     "Bus 132"
+    ],
+    "fern": 0
    },
    {
     "name": "Innsbrucker Ring",
     "art": "ubahn",
     "lat": 48.120437,
     "lon": 11.61879,
-    "osm": "node/4711533262"
+    "osm": "node/4711533262",
+    "linien": [
+     "U2",
+     "U5",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Isartor",
     "art": "sbahn",
     "lat": 48.134213,
     "lon": 11.583136,
-    "osm": "node/2473615158"
+    "osm": "node/2473615158",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Johanneskirchen",
     "art": "sbahn",
     "lat": 48.167608,
     "lon": 11.646009,
-    "osm": "node/2515108020"
+    "osm": "node/2515108020",
+    "linien": [
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Josephsburg",
     "art": "ubahn",
     "lat": 48.126573,
     "lon": 11.633809,
-    "osm": "node/1692348402"
+    "osm": "node/1692348402",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Josephsplatz",
     "art": "ubahn",
     "lat": 48.155744,
     "lon": 11.567093,
-    "osm": "node/247674448"
+    "osm": "node/247674448",
+    "linien": [
+     "U2",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Karl-Preis-Platz",
     "art": "ubahn",
     "lat": 48.1179,
     "lon": 11.608404,
-    "osm": "node/68655296"
+    "osm": "node/68655296",
+    "linien": [
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Karlsfeld",
     "art": "sbahn",
     "lat": 48.211262,
     "lon": 11.459523,
-    "osm": "node/2487884333"
+    "osm": "node/2487884333",
+    "linien": [
+     "S2"
+    ],
+    "fern": 0
    },
    {
     "name": "Karlsplatz (Stachus)",
     "art": "sbahn",
     "lat": 48.139486,
     "lon": 11.565622,
-    "osm": "node/2473297785"
+    "osm": "node/2473297785",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Karlsplatz (Stachus)",
     "art": "ubahn",
     "lat": 48.140335,
     "lon": 11.567021,
-    "osm": "node/2473297786"
+    "osm": "node/2473297786",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Kieferngarten",
     "art": "ubahn",
     "lat": 48.203841,
     "lon": 11.613242,
-    "osm": "node/2056183985"
+    "osm": "node/2056183985",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Klinikum Großhadern",
     "art": "ubahn",
     "lat": 48.109078,
     "lon": 11.473577,
-    "osm": "node/2644689613"
+    "osm": "node/2644689613",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Kolumbusplatz",
     "art": "ubahn",
     "lat": 48.119815,
     "lon": 11.576652,
-    "osm": "node/2524117388"
+    "osm": "node/2524117388",
+    "linien": [
+     "U1",
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Königsplatz",
     "art": "ubahn",
     "lat": 48.14501,
     "lon": 11.563209,
-    "osm": "node/3114658668"
+    "osm": "node/3114658668",
+    "linien": [
+     "U2",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Kreillerstraße",
     "art": "ubahn",
     "lat": 48.125754,
     "lon": 11.646852,
-    "osm": "node/4726482189"
+    "osm": "node/4726482189",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Laim",
     "art": "sbahn",
     "lat": 48.144497,
     "lon": 11.502966,
-    "osm": "node/2468901141"
+    "osm": "node/2468901141",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Laimer Platz",
     "art": "ubahn",
     "lat": 48.135461,
     "lon": 11.501976,
-    "osm": "node/2660339821"
+    "osm": "node/2660339821",
+    "linien": [
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Langwied",
     "art": "sbahn",
     "lat": 48.163044,
     "lon": 11.432452,
-    "osm": "node/2468831364"
+    "osm": "node/2468831364",
+    "linien": [
+     "S3"
+    ],
+    "fern": 0
    },
    {
     "name": "Lehel",
     "art": "ubahn",
     "lat": 48.139656,
     "lon": 11.587921,
-    "osm": "node/2660339818"
+    "osm": "node/2660339818",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Leienfelsstraße",
     "art": "sbahn",
     "lat": 48.154534,
     "lon": 11.42858,
-    "osm": "node/2488177587"
+    "osm": "node/2488177587",
+    "linien": [
+     "S4",
+     "S20"
+    ],
+    "fern": 0
    },
    {
     "name": "Leuchtenbergring",
     "art": "sbahn",
     "lat": 48.134287,
     "lon": 11.615994,
-    "osm": "node/2488169605"
+    "osm": "node/2488169605",
+    "linien": [
+     "S1",
+     "S2",
+     "S4",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Lochhausen",
     "art": "sbahn",
     "lat": 48.176031,
     "lon": 11.408717,
-    "osm": "node/2468655152"
+    "osm": "node/2468655152",
+    "linien": [
+     "S3"
+    ],
+    "fern": 0
    },
    {
     "name": "Machtlfinger Straße",
     "art": "ubahn",
     "lat": 48.097374,
     "lon": 11.51504,
-    "osm": "node/2650093415"
+    "osm": "node/2650093415",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Maillingerstraße",
     "art": "ubahn",
     "lat": 48.149988,
     "lon": 11.545605,
-    "osm": "node/84322751"
+    "osm": "node/84322751",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Mangfallplatz",
     "art": "ubahn",
     "lat": 48.09706,
     "lon": 11.579177,
-    "osm": "node/73800962"
+    "osm": "node/73800962",
+    "linien": [
+     "U1"
+    ],
+    "fern": 0
    },
    {
     "name": "Marienplatz",
     "art": "sbahn",
     "lat": 48.137144,
     "lon": 11.575399,
-    "osm": "node/2941687118"
+    "osm": "node/2941687118",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Marienplatz",
     "art": "ubahn",
     "lat": 48.138361,
     "lon": 11.576183,
-    "osm": "node/3189921461"
+    "osm": "node/3189921461",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Max-Weber-Platz",
     "art": "ubahn",
     "lat": 48.135703,
     "lon": 11.597871,
-    "osm": "node/5184176689"
+    "osm": "node/5184176689",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Messestadt Ost",
     "art": "ubahn",
     "lat": 48.133378,
     "lon": 11.703407,
-    "osm": "node/1692348440"
+    "osm": "node/1692348440",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Messestadt West",
     "art": "ubahn",
     "lat": 48.13343,
     "lon": 11.690541,
-    "osm": "node/1692348451"
+    "osm": "node/1692348451",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Michaelibad",
     "art": "ubahn",
     "lat": 48.118349,
     "lon": 11.631823,
-    "osm": "node/27214338"
+    "osm": "node/27214338",
+    "linien": [
+     "U5",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Milbertshofen",
     "art": "ubahn",
     "lat": 48.180904,
     "lon": 11.573153,
-    "osm": "node/28202314"
+    "osm": "node/28202314",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Mittersendling",
     "art": "sbahn",
     "lat": 48.107796,
     "lon": 11.536379,
-    "osm": "node/2500623009"
+    "osm": "node/2500623009",
+    "linien": [
+     "S7",
+     "S20",
+     "RB 58"
+    ],
+    "fern": 0
    },
    {
     "name": "Moosach",
     "art": "sbahn",
     "lat": 48.18004,
     "lon": 11.506022,
-    "osm": "node/2499632761"
+    "osm": "node/2499632761",
+    "linien": [
+     "S1",
+     "RB 33"
+    ],
+    "fern": 0
    },
    {
     "name": "Moosach",
     "art": "ubahn",
     "lat": 48.180964,
     "lon": 11.508181,
-    "osm": "node/3157666761"
+    "osm": "node/3157666761",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Moosacher St.-Martins-Platz",
     "art": "ubahn",
     "lat": 48.181835,
     "lon": 11.518814,
-    "osm": "node/2650093421"
+    "osm": "node/2650093421",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Moosfeld",
     "art": "ubahn",
     "lat": 48.130772,
     "lon": 11.670984,
-    "osm": "node/1692348456"
+    "osm": "node/1692348456",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "München Hauptbahnhof",
     "art": "sbahn",
     "lat": 48.140725,
     "lon": 11.556943,
-    "osm": "node/2470201868"
+    "osm": "node/2470201868",
+    "linien": [
+     "RB 16",
+     "RB 33",
+     "RB 86",
+     "RB 87",
+     "RE 1",
+     "RE 2",
+     "RE 3",
+     "RE 4",
+     "RE 9",
+     "RE 25",
+     "RE 80",
+     "930"
+    ],
+    "fern": 41
    },
    {
     "name": "München Hbf Gleis 27-36, Starnberger Bahnhof",
     "art": "sbahn",
     "lat": 48.141533,
     "lon": 11.55562,
-    "osm": "node/3192902576"
+    "osm": "node/3192902576",
+    "linien": [
+     "S7",
+     "RB 6",
+     "RB 6/S6",
+     "RB 55",
+     "RB 56",
+     "RB 57",
+     "RB 58",
+     "RB 60",
+     "RB 65",
+     "RB 66",
+     "RB 68",
+     "RB 74",
+     "RE 61",
+     "RE 62",
+     "RE 70",
+     "RE 76",
+     "RE 96"
+    ],
+    "fern": 2
    },
    {
     "name": "München Hbf Gleis 5-10, Holzkirchner Bahnhof",
     "art": "sbahn",
     "lat": 48.140147,
     "lon": 11.553162,
-    "osm": "node/3192904758"
+    "osm": "node/3192904758",
+    "linien": [
+     "RB 40",
+     "RB 54",
+     "RE 4",
+     "RE 5"
+    ],
+    "fern": 3
    },
    {
     "name": "München Ost",
     "art": "sbahn",
     "lat": 48.127721,
     "lon": 11.605519,
-    "osm": "node/2465304880"
+    "osm": "node/2465304880",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8",
+     "RB 40",
+     "RB 48",
+     "RB 54",
+     "RE 4",
+     "RE 5"
+    ],
+    "fern": 24
    },
    {
     "name": "München Süd",
     "art": "sbahn",
     "lat": 48.121566,
     "lon": 11.552973,
-    "osm": "node/3256321608"
+    "osm": "node/3256321608",
+    "linien": [],
+    "fern": 0
    },
    {
     "name": "München-Pasing",
     "art": "sbahn",
     "lat": 48.149956,
     "lon": 11.461767,
-    "osm": "node/2476438979"
+    "osm": "node/2476438979",
+    "linien": [
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8",
+     "S20",
+     "RB 6",
+     "RB 6/S6",
+     "RB 60",
+     "RB 65",
+     "RB 66",
+     "RB 68",
+     "RB 74",
+     "RB 86",
+     "RB 87",
+     "RE 9",
+     "RE 61",
+     "RE 62",
+     "RE 70",
+     "RE 76",
+     "RE 80",
+     "RE 96"
+    ],
+    "fern": 4
    },
    {
     "name": "Münchner Freiheit",
     "art": "ubahn",
     "lat": 48.161985,
     "lon": 11.586531,
-    "osm": "node/2644689618"
+    "osm": "node/2644689618",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Neuaubing",
     "art": "sbahn",
     "lat": 48.141692,
     "lon": 11.422085,
-    "osm": "node/2507009458"
+    "osm": "node/2507009458",
+    "linien": [
+     "S5",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Neuperlach Süd",
     "art": "sbahn",
     "lat": 48.088822,
     "lon": 11.64502,
-    "osm": "node/2476467535"
+    "osm": "node/2476467535",
+    "linien": [
+     "S5"
+    ],
+    "fern": 0
    },
    {
     "name": "Neuperlach Süd",
     "art": "ubahn",
     "lat": 48.088855,
     "lon": 11.645194,
-    "osm": "node/3419919093"
+    "osm": "node/3419919093",
+    "linien": [
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Neuperlach Zentrum",
     "art": "ubahn",
     "lat": 48.101184,
     "lon": 11.646174,
-    "osm": "node/2568050650"
+    "osm": "node/2568050650",
+    "linien": [
+     "U5",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Nordfriedhof",
     "art": "ubahn",
     "lat": 48.173188,
     "lon": 11.596986,
-    "osm": "node/3157044270"
+    "osm": "node/3157044270",
+    "linien": [
+     "U6",
+     "Bus 150",
+     "Bus LHX"
+    ],
+    "fern": 0
    },
    {
     "name": "Obermenzing",
     "art": "sbahn",
     "lat": 48.164217,
     "lon": 11.478022,
-    "osm": "node/2699799616"
+    "osm": "node/2699799616",
+    "linien": [
+     "S2"
+    ],
+    "fern": 0
    },
    {
     "name": "Obersendling",
     "art": "ubahn",
     "lat": 48.098233,
     "lon": 11.535934,
-    "osm": "node/2650093427"
+    "osm": "node/2650093427",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Oberwiesenfeld",
     "art": "ubahn",
     "lat": 48.185998,
     "lon": 11.547622,
-    "osm": "node/2650093433"
+    "osm": "node/2650093433",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Odeonsplatz",
     "art": "ubahn",
     "lat": 48.143343,
     "lon": 11.578045,
-    "osm": "node/1927202337"
+    "osm": "node/1927202337",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Odeonsplatz",
     "art": "ubahn",
     "lat": 48.142766,
     "lon": 11.576317,
-    "osm": "node/3372671294"
+    "osm": "node/3372671294",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Olympia-Einkaufszentrum",
     "art": "ubahn",
     "lat": 48.182126,
     "lon": 11.530922,
-    "osm": "node/2541407104"
+    "osm": "node/2541407104",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Olympia-Einkaufszentrum",
     "art": "ubahn",
     "lat": 48.182719,
     "lon": 11.530241,
-    "osm": "node/3500554803"
+    "osm": "node/3500554803",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Olympiazentrum",
     "art": "ubahn",
     "lat": 48.179298,
     "lon": 11.55609,
-    "osm": "node/2650093438"
+    "osm": "node/2650093438",
+    "linien": [
+     "U3",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Ostbahnhof",
     "art": "ubahn",
     "lat": 48.128078,
     "lon": 11.60363,
-    "osm": "node/3189921561"
+    "osm": "node/3189921561",
+    "linien": [
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Partnachplatz",
     "art": "ubahn",
     "lat": 48.116941,
     "lon": 11.526726,
-    "osm": "node/2644689619"
+    "osm": "node/2644689619",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Perlach",
     "art": "sbahn",
     "lat": 48.09341,
     "lon": 11.63152,
-    "osm": "node/2476467539"
+    "osm": "node/2476467539",
+    "linien": [
+     "S5"
+    ],
+    "fern": 0
    },
    {
     "name": "Petuelring",
     "art": "ubahn",
     "lat": 48.175668,
     "lon": 11.565901,
-    "osm": "node/2650093444"
+    "osm": "node/2650093444",
+    "linien": [
+     "U3",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Poccistraße",
     "art": "ubahn",
     "lat": 48.125488,
     "lon": 11.550244,
-    "osm": "node/2644689622"
+    "osm": "node/2644689622",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Prinzregentenplatz",
     "art": "ubahn",
     "lat": 48.139266,
     "lon": 11.607034,
-    "osm": "node/2660339820"
+    "osm": "node/2660339820",
+    "linien": [
+     "U4"
+    ],
+    "fern": 0
    },
    {
     "name": "Quiddestraße",
     "art": "ubahn",
     "lat": 48.108112,
     "lon": 11.646674,
-    "osm": "node/1544801370"
+    "osm": "node/1544801370",
+    "linien": [
+     "U5",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Richard-Strauss-Straße",
     "art": "ubahn",
     "lat": 48.148333,
     "lon": 11.616601,
-    "osm": "node/2660339822"
+    "osm": "node/2660339822",
+    "linien": [
+     "U4"
+    ],
+    "fern": 0
    },
    {
     "name": "Riem",
     "art": "sbahn",
     "lat": 48.143969,
     "lon": 11.677772,
-    "osm": "node/2472241431"
+    "osm": "node/2472241431",
+    "linien": [
+     "S2"
+    ],
+    "fern": 0
    },
    {
     "name": "Rosenheimer Platz",
     "art": "sbahn",
     "lat": 48.129184,
     "lon": 11.593075,
-    "osm": "node/2473550316"
+    "osm": "node/2473550316",
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Rotkreuzplatz",
     "art": "ubahn",
     "lat": 48.154048,
     "lon": 11.533019,
-    "osm": "node/84322749"
+    "osm": "node/84322749",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Sankt-Martin-Straße",
     "art": "sbahn",
     "lat": 48.118558,
     "lon": 11.595778,
-    "osm": "node/2411834909"
+    "osm": "node/2411834909",
+    "linien": [
+     "S3",
+     "S5"
+    ],
+    "fern": 0
    },
    {
     "name": "Sankt-Quirin-Platz",
     "art": "ubahn",
     "lat": 48.10443,
     "lon": 11.581396,
-    "osm": "node/73800960"
+    "osm": "node/73800960",
+    "linien": [
+     "U1"
+    ],
+    "fern": 0
    },
    {
     "name": "Scheidplatz",
     "art": "ubahn",
     "lat": 48.171416,
     "lon": 11.572852,
-    "osm": "node/1927183970"
+    "osm": "node/1927183970",
+    "linien": [
+     "U2",
+     "U3",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Schwanthalerhöhe",
     "art": "ubahn",
     "lat": 48.133782,
     "lon": 11.541057,
-    "osm": "node/2660339823"
+    "osm": "node/2660339823",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Sendlinger Tor",
     "art": "ubahn",
     "lat": 48.133461,
     "lon": 11.566864,
-    "osm": "node/2539850174"
+    "osm": "node/2539850174",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Sendlinger Tor",
     "art": "ubahn",
     "lat": 48.133523,
     "lon": 11.567094,
-    "osm": "node/3372671694"
+    "osm": "node/3372671694",
+    "linien": [
+     "U1",
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Siemenswerke",
     "art": "sbahn",
     "lat": 48.094307,
     "lon": 11.53273,
-    "osm": "node/2500671102"
+    "osm": "node/2500671102",
+    "linien": [
+     "S7",
+     "S20",
+     "RB 55",
+     "RB 56",
+     "RB 57",
+     "RB 58"
+    ],
+    "fern": 0
    },
    {
     "name": "Silberhornstraße",
     "art": "ubahn",
     "lat": 48.114904,
     "lon": 11.580433,
-    "osm": "node/99191054"
+    "osm": "node/99191054",
+    "linien": [
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Solln",
     "art": "sbahn",
     "lat": 48.079937,
     "lon": 11.526937,
-    "osm": "node/2500732468"
+    "osm": "node/2500732468",
+    "linien": [
+     "S7",
+     "S20",
+     "RB 55",
+     "RB 56",
+     "RB 57",
+     "RB 58"
+    ],
+    "fern": 0
    },
    {
     "name": "Stiglmaierplatz",
     "art": "ubahn",
     "lat": 48.147896,
     "lon": 11.556977,
-    "osm": "node/84322752"
+    "osm": "node/84322752",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Studentenstadt",
     "art": "ubahn",
     "lat": 48.183494,
     "lon": 11.60763,
-    "osm": "node/1927202338"
+    "osm": "node/1927202338",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Thalkirchen",
     "art": "ubahn",
     "lat": 48.10284,
     "lon": 11.545979,
-    "osm": "node/2650093598"
+    "osm": "node/2650093598",
+    "linien": [
+     "U3"
+    ],
+    "fern": 0
    },
    {
     "name": "Therese-Giehse-Allee",
     "art": "ubahn",
     "lat": 48.09473,
     "lon": 11.642716,
-    "osm": "node/2660339824"
+    "osm": "node/2660339824",
+    "linien": [
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Theresienstraße",
     "art": "ubahn",
     "lat": 48.15151,
     "lon": 11.564452,
-    "osm": "node/211557411"
+    "osm": "node/211557411",
+    "linien": [
+     "U2",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Theresienwiese",
     "art": "ubahn",
     "lat": 48.135672,
     "lon": 11.552232,
-    "osm": "node/2660347912"
+    "osm": "node/2660347912",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Trudering",
     "art": "sbahn",
     "lat": 48.126036,
     "lon": 11.663338,
-    "osm": "node/2491219767"
+    "osm": "node/2491219767",
+    "linien": [
+     "S4",
+     "S6"
+    ],
+    "fern": 0
    },
    {
     "name": "Trudering",
     "art": "ubahn",
     "lat": 48.125653,
     "lon": 11.662592,
-    "osm": "node/3189921562"
+    "osm": "node/3189921562",
+    "linien": [
+     "U2"
+    ],
+    "fern": 0
    },
    {
     "name": "Universität",
     "art": "ubahn",
     "lat": 48.150354,
     "lon": 11.581144,
-    "osm": "node/2644689645"
+    "osm": "node/2644689645",
+    "linien": [
+     "U3",
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Untermenzing",
     "art": "sbahn",
     "lat": 48.177712,
     "lon": 11.472685,
-    "osm": "node/2488012895"
+    "osm": "node/2488012895",
+    "linien": [
+     "S2"
+    ],
+    "fern": 0
    },
    {
     "name": "Untersbergstraße",
     "art": "ubahn",
     "lat": 48.112595,
     "lon": 11.587508,
-    "osm": "node/73778052"
+    "osm": "node/73778052",
+    "linien": [
+     "U2",
+     "U7",
+     "U8"
+    ],
+    "fern": 0
    },
    {
     "name": "Westendstraße",
     "art": "ubahn",
     "lat": 48.134738,
     "lon": 11.521112,
-    "osm": "node/2660347913"
+    "osm": "node/2660347913",
+    "linien": [
+     "U4",
+     "U5"
+    ],
+    "fern": 0
    },
    {
     "name": "Westfriedhof",
     "art": "ubahn",
     "lat": 48.170381,
     "lon": 11.528459,
-    "osm": "node/1189888870"
+    "osm": "node/1189888870",
+    "linien": [
+     "U1",
+     "U7"
+    ],
+    "fern": 0
    },
    {
     "name": "Westkreuz",
     "art": "sbahn",
     "lat": 48.148897,
     "lon": 11.443763,
-    "osm": "node/2499527320"
+    "osm": "node/2499527320",
+    "linien": [
+     "S5",
+     "S6",
+     "S8"
+    ],
+    "fern": 0
    },
    {
     "name": "Westpark",
     "art": "ubahn",
     "lat": 48.117986,
     "lon": 11.516253,
-    "osm": "node/2644689647"
+    "osm": "node/2644689647",
+    "linien": [
+     "U6"
+    ],
+    "fern": 0
    },
    {
     "name": "Wettersteinplatz",
     "art": "ubahn",
     "lat": 48.108206,
     "lon": 11.57574,
-    "osm": "node/2554223954"
+    "osm": "node/2554223954",
+    "linien": [
+     "U1"
+    ],
+    "fern": 0
    }
   ],
   "linien": [
@@ -1165,139 +1958,272 @@ const DATEN = {
       "name": "Grünwald, Derbolfinger Platz",
       "lat": 48.041959,
       "lon": 11.524029,
-      "osm": "node/60535737"
+      "osm": "node/60535737",
+      "linien": [
+       "Tram 25"
+      ],
+      "fern": 0
      },
      {
       "name": "Grünwald, Ludwig-Thoma-Straße",
       "lat": 48.049471,
       "lon": 11.53549,
-      "osm": "node/1670410326"
+      "osm": "node/1670410326",
+      "linien": [
+       "Tram 25"
+      ],
+      "fern": 0
      },
      {
       "name": "Grünwald, Parkplatz",
       "lat": 48.05503,
       "lon": 11.540615,
-      "osm": "node/1495572899"
+      "osm": "node/1495572899",
+      "linien": [
+       "Tram 25"
+      ],
+      "fern": 0
      },
      {
       "name": "Robert-Koch-Straße",
       "lat": 48.062466,
       "lon": 11.544967,
-      "osm": "node/1670410340"
+      "osm": "node/1670410340",
+      "linien": [
+       "Tram 25"
+      ],
+      "fern": 0
      },
      {
       "name": "Grünwald, Bavariafilmplatz",
       "lat": 48.067426,
       "lon": 11.546298,
-      "osm": "node/1493475916"
+      "osm": "node/1493475916",
+      "linien": [
+       "Tram 25"
+      ],
+      "fern": 0
      },
      {
       "name": "Schilcherweg",
       "lat": 48.071429,
       "lon": 11.547498,
-      "osm": "node/1493475923"
+      "osm": "node/1493475923",
+      "linien": [
+       "Tram 25"
+      ],
+      "fern": 0
      },
      {
       "name": "Großhesseloher Brücke",
       "lat": 48.077212,
       "lon": 11.550391,
-      "osm": "node/1670410322"
+      "osm": "node/1670410322",
+      "linien": [
+       "Tram 25",
+       "Tram N27",
+       "Bus N272"
+      ],
+      "fern": 0
      },
      {
       "name": "Menterschwaige",
       "lat": 48.080148,
       "lon": 11.551786,
-      "osm": "node/1495572898"
+      "osm": "node/1495572898",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Klinikum Harlaching",
       "lat": 48.086681,
       "lon": 11.554822,
-      "osm": "node/1493439816"
+      "osm": "node/1493439816",
+      "linien": [
+       "Tram 25",
+       "Tram N27",
+       "Bus 139"
+      ],
+      "fern": 0
      },
      {
       "name": "Theodolindenplatz",
       "lat": 48.090395,
       "lon": 11.557067,
-      "osm": "node/1493398941"
+      "osm": "node/1493398941",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Authariplatz",
       "lat": 48.091813,
       "lon": 11.562382,
-      "osm": "node/1493399025"
+      "osm": "node/1493399025",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Tiroler Platz",
       "lat": 48.096288,
       "lon": 11.563724,
-      "osm": "node/1493340358"
+      "osm": "node/1493340358",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Südtiroler Straße",
       "lat": 48.100785,
       "lon": 11.566687,
-      "osm": "node/1493333370"
+      "osm": "node/1493333370",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Kurzstraße",
       "lat": 48.104445,
       "lon": 11.569711,
-      "osm": "node/1493333396"
+      "osm": "node/1493333396",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Wettersteinplatz",
       "lat": 48.109471,
       "lon": 11.574986,
-      "osm": "node/1496660322"
+      "osm": "node/1496660322",
+      "linien": [
+       "Tram 25",
+       "Tram N27"
+      ],
+      "fern": 0
      },
      {
       "name": "Tegernseer Landstraße",
       "lat": 48.112407,
       "lon": 11.576456,
-      "osm": "node/1493315919"
+      "osm": "node/1493315919",
+      "linien": [
+       "Tram 25",
+       "Tram N27",
+       "Bus 54",
+       "Bus 153",
+       "Bus N43",
+       "Bus N44",
+       "Bus X30",
+       "Bus X204"
+      ],
+      "fern": 0
      },
      {
       "name": "Silberhornstraße",
       "lat": 48.115579,
       "lon": 11.579931,
-      "osm": "node/1493315933"
+      "osm": "node/1493315933",
+      "linien": [
+       "Tram 25",
+       "Tram N27",
+       "Bus N45",
+       "Bus X30"
+      ],
+      "fern": 0
      },
      {
       "name": "Ostfriedhof",
       "lat": 48.119404,
       "lon": 11.583965,
-      "osm": "node/1670275570"
+      "osm": "node/1670275570",
+      "linien": [
+       "Tram 18",
+       "Tram 25",
+       "Tram E7",
+       "Tram N27",
+       "Bus 58",
+       "Bus 68",
+       "Bus N45",
+       "Bus X30"
+      ],
+      "fern": 0
      },
      {
       "name": "Carl-Amery-Platz",
       "lat": 48.121445,
       "lon": 11.585677,
-      "osm": "node/6875392408"
+      "osm": "node/6875392408",
+      "linien": [
+       "Tram 25",
+       "Tram E7",
+       "Bus 58",
+       "Bus 68",
+       "Bus N45"
+      ],
+      "fern": 0
      },
      {
       "name": "Regerplatz",
       "lat": 48.124248,
       "lon": 11.587956,
-      "osm": "node/1294816254"
+      "osm": "node/1294816254",
+      "linien": [
+       "Tram 25",
+       "Tram E7",
+       "Bus 62",
+       "Bus N45"
+      ],
+      "fern": 0
      },
      {
       "name": "Rosenheimer Platz",
       "lat": 48.128975,
       "lon": 11.594187,
-      "osm": "node/1293262020"
+      "osm": "node/1293262020",
+      "linien": [
+       "Tram 25",
+       "Tram E7"
+      ],
+      "fern": 0
      },
      {
       "name": "Wörthstraße",
       "lat": 48.13185,
       "lon": 11.597567,
-      "osm": "node/1293262076"
+      "osm": "node/1293262076",
+      "linien": [
+       "Tram 21",
+       "Tram 25",
+       "Tram E7",
+       "Tram N19"
+      ],
+      "fern": 0
      },
      {
       "name": "Max-Weber-Platz (Johannisplatz)",
       "lat": 48.134429,
       "lon": 11.598195,
-      "osm": "node/1744600782"
+      "osm": "node/1744600782",
+      "linien": [
+       "Tram 21",
+       "Tram 25",
+       "Tram N19"
+      ],
+      "fern": 0
      }
     ],
     "verlauf": [

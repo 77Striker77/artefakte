@@ -310,6 +310,23 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
                           font-size:17px; color:var(--tinte)}
 .leaflet-popup-content p{margin:0; color:var(--tinte-leise)}
 .leaflet-popup-content .popup-fein{margin-top:6px; font-size:12px}
+/* "unbekannt" ist ein offener Posten, kein Nebensatz - es sieht darum aus wie
+   die offenen Felder der Infobox und nicht wie Kleingedrucktes. */
+.leaflet-popup-content .popup-unbekannt{color:var(--akzent-text)}   /* 6,12:1 */
+
+/* ---------- Linienmarken in der Sprechblase ----------
+   Sie tragen dieselben Farben wie die Ebenen auf der Karte, damit "U-Bahn" in
+   der Legende und "U3" in der Sprechblase erkennbar dasselbe meinen. Jede Tinte
+   gegen IHRE Markenflaeche gemessen, nicht gegen die Tafel darunter. */
+.leaflet-popup-content .linien{margin-top:8px; display:flex; flex-wrap:wrap; gap:4px}
+.leaflet-popup-content .linie{
+  font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+  padding:4px 6px; color:var(--tinte); box-shadow:0 0 0 2px var(--umriss)}
+.linie--u{background:var(--p-ubahn)}       /* 7,02:1 */
+.linie--s{background:var(--p-sbahn)}       /* 6,51:1 */
+.linie--t{background:var(--p-film)}        /* 7,80:1 */
+.linie--r{background:var(--p-ankunft)}     /* 11,92:1 */
+.linie--b{background:var(--flaeche-2)}     /* 14,02:1 */
 .leaflet-popup-content a{color:var(--akzent-text)}
 .leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
 

@@ -18,6 +18,28 @@
   // Leaflet braucht einen echten Farbwert, kein var(). Aus dem Stylesheet holen
   // statt den Hex-Wert hier zu wiederholen: zwei Fassungen einer Farbe driften
   // auseinander, und dann stimmt die Legende nicht mehr mit der Karte ueberein.
+  // Linien als Marken in der Sprechblase. Drei Faelle, und sie duerfen NICHT
+  // zusammenfallen: null = nicht abgerufen (unbekannt), leer = in OSM keine
+  // Route eingetragen, gefuellt = Befund. Ein "keine" ueber einem gescheiterten
+  // Abruf ist eine Behauptung, die niemand mehr nachprueft.
+  var linienBlock = function (h) {
+    if (h.linien === null || h.linien === undefined) {
+      return '<p class="popup-fein popup-unbekannt">Linien: unbekannt — nicht abgerufen</p>';
+    }
+    if (!h.linien.length) {
+      return '<p class="popup-fein">In OpenStreetMap ist an diesem Halt keine Linie eingetragen.</p>';
+    }
+    var marken = h.linien.map(function (l) {
+      var art = /^U[0-9]/.test(l) ? "u" : /^S[0-9]/.test(l) ? "s"
+              : /^Tram/.test(l) ? "t" : /^Bus/.test(l) ? "b" : "r";
+      return '<span class="linie linie--' + art + '">' + l + "</span>";
+    }).join("");
+    var fern = h.fern
+      ? '<p class="popup-fein">dazu ' + h.fern + " Fernverkehrslinie" + (h.fern === 1 ? "" : "n") + "</p>"
+      : "";
+    return '<p class="linien">' + marken + "</p>" + fern;
+  };
+
   var token = function (name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   };
@@ -73,6 +95,19 @@
     attribution: "Luftbild: Esri, Maxar, Earthstar Geographics"
   });
 
+  // Ein Orientierungspunkt kann derselbe OSM-Knoten sein wie ein Halt - der
+  // Hauptbahnhof ist beides. Ohne diese Verknuepfung zeigte die goldene Marke
+  // keine Linien, waehrend der S-Bahn-Punkt zwei Pixel daneben sie auflistete.
+  var haltNachOsm = {};
+  if (DATEN.bahn) {
+    (DATEN.bahn.halte || []).forEach(function (h) { haltNachOsm[h.osm] = h; });
+    (DATEN.bahn.linien || []).forEach(function (l) {
+      l.halte.forEach(function (h) {
+        if (!haltNachOsm[h.osm]) haltNachOsm[h.osm] = h;
+      });
+    });
+  }
+
   // --- Orientierungspunkte -------------------------------------------------
   // Die Marke selbst ist ein Quadrat auf der exakten Koordinate; der Name haengt
   // als Leaflet-Tooltip daneben. Grund: Hauptbahnhof, Marienplatz und
@@ -101,6 +136,7 @@
                              className: "marke-name" })
       .bindPopup(
         "<h3>" + o.name + "</h3><p>" + o.notiz + "</p>" +
+        (haltNachOsm[o.osm] ? linienBlock(haltNachOsm[o.osm]) : "") +
         (o.web ? '<p class="popup-fein"><a href="' + o.web + '">' + o.web.replace(/^https?:\/\//, "") + "</a></p>" : "") +
         '<p class="popup-fein">OSM ' + o.osm + "</p>"
       );
@@ -187,6 +223,7 @@
           .addTo(g)
           .bindPopup("<h3>" + h.name + "</h3><p>Tram " + linie.ref + " · " +
             linie.von + " → " + linie.nach + "</p>" +
+            linienBlock(h) +
             '<p class="popup-fein">OSM ' + h.osm + "</p>");
       });
 
@@ -264,9 +301,18 @@
                  return "Tram " + l.ref + " (" + l.halte.length + " Halte, " + l.zweck.replace(/\.$/, "") + ")";
                }).join(" und ") + ". "
              : "")
-         + "LÜCKE, benannt statt verschwiegen: die Haltestellen enden an der Stadtgrenze, "
-         + "und Tram- und Bushaltestellen sind darin nicht enthalten. Was außerhalb liegt, "
-         + "steht nur über eine ausdrücklich aufgenommene Linie auf der Karte."
+         + "Je Halt sind die Linien eingetragen, die dort laut OpenStreetMap halten; "
+         + "Fernverkehr wird gezählt statt aufgelistet, weil er am Hauptbahnhof 53 Einträge "
+         + "lang ist und nichts darüber sagt, wie man sich in der Stadt bewegt. "
+         + (DATEN.bahn.anzahl.halte_linien_unbekannt
+             ? DATEN.bahn.anzahl.halte_linien_unbekannt + " Halte tragen „unbekannt“ — "
+               + "dort kam der Abruf nicht durch. "
+             : "")
+         + "ZWEI LÜCKEN, benannt statt verschwiegen: die Haltestellen enden an der "
+         + "Stadtgrenze und enthalten keine Tram- und Bushaltestellen — was außerhalb liegt, "
+         + "steht nur über eine ausdrücklich aufgenommene Linie auf der Karte. Und Buslinien "
+         + "hängen in OpenStreetMap überwiegend an eigenen Haltestellen statt am Bahnhof, "
+         + "erscheinen an einem Bahnhalt also nur, wo sie dort ausdrücklich eingetragen sind."
     });
   }
   quellen.push({
