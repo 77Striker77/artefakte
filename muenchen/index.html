@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>München — Reise-Cockpit</title>
+<meta name="description" content="Karte von München mit dem Ankunftspunkt am Hauptbahnhof und den Orientierungspunkten der Stadt.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+<header class="kopf">
+  <div class="kopf-inner">
+    <span class="marke" id="marke">München</span>
+    <span class="eyebrow" id="eyebrow">Reiseziel · Deutschland</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="titel" id="titel">München<em>erst die Stadt, dann die Tage</em></h1>
+  <p class="unterzeile" id="unterzeile"></p>
+  <p><span class="stand">Im Aufbau · Stand 09.09.2026</span></p>
+
+  <div id="karte" role="region" aria-label="Karte von München mit Ankunftspunkt und Orientierungspunkten"></div>
+
+  <ul class="legende" id="legende"></ul>
+
+  <section class="quellen">
+    <h2>Quellen</h2>
+    <p id="quelle-orte"></p>
+    <p>Kartenkacheln: <a href="https://www.openstreetmap.org/copyright">OpenStreetMap-Mitwirkende</a>, Luftbild: Esri World Imagery. Kartenbibliothek: Leaflet, lokal abgelegt unter <code>vendor/</code>.</p>
+    <p>Diese Seite trägt bewusst <strong>keine</strong> Reisedaten, keine Unterkunft und keine Buchungsangaben. Was hier steht, gilt für München und nicht für einen bestimmten Aufenthalt.</p>
+  </section>
+</main>
+
+<script src="vendor/leaflet.js"></script>
+<script src="orte.js"></script>
+<script src="karte.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+/* Muenchen 2026 — Ziegel und Kalk.
+ *
+ * Richtung: der Grund ist ein tiefes, fast schwarzes Rot; die Inhalte sind helle
+ * Kalktafeln, die darauf liegen — dicker Umriss, harter Versatz, keine runden
+ * Ecken. Die FORM ist die der Kreta-Seite, die PALETTE ist es nicht: dort trug
+ * Hue 195 die Flaeche, hier tragen sie Hue 350-10.
+ *
+ * EINE Palette, kein Umschalter. Die Seite malt ihren Grund selbst und sieht auf
+ * jedem Geraet gleich aus.
+ *
+ * ZWEI Rollen-Saetze, und das ist der Kern: --tinte* steht auf hellen Tafeln,
+ * --auf-grund* steht direkt auf dem dunklen Grund. Wer die verwechselt, schreibt
+ * dunkel auf dunkel. Alle Paare am 09.09.2026 mit kontrast.mjs gemessen, jeweils
+ * gegen den Grund, auf dem sie TATSAECHLICH stehen — ein Scan ueber die ganze
+ * Datei taugt hier nicht, weil zwei Gruende im Spiel sind.
+ */
+
+:root{
+  color-scheme: dark;
+
+  /* --- Der Ziegelgrund: Flaeche --- */
+  --grund:#2A0A11;          /* Seitengrund */
+  --grund-tief:#17040A;     /* Kopfleiste, Umriss, tiefste Lage */
+
+  /* --- Die Fenster: helle Kalktafeln --- */
+  --flaeche:#FDF4F2; --flaeche-2:#F6DCD6;
+
+  /* --- Rollensatz 1: Text auf HELLER Tafel --- */
+  --tinte:#2A0A11;          /* 16,87:1 auf --flaeche · 14,02:1 auf --flaeche-2 */
+  --tinte-leise:#7A3A34;    /*  6,50:1 auf --flaeche-2, dem schlechteren Fall */
+
+  /* --- Rollensatz 2: Text auf DUNKLEM Grund --- */
+  --auf-grund:#FBEDEA;      /* 16,00:1 auf --grund · 17,39:1 auf --grund-tief */
+  --auf-grund-leise:#E0AFA8;/*  9,45:1 auf --grund */
+
+  /* --- Kanten --- */
+  --umriss:#17040A;         /* 18,33:1 auf der hellen Tafel */
+  --linie:#E3BDB6;          /* dekorative Trennlinie, WCAG 1.4.11 ausgenommen */
+  /* Der Versatzblock ist auf dunklem Grund HELLER als der Grund — ein dunkler
+     Schatten faellt hier unter 2:1 und verschwindet. 2,22:1 traegt als Flaeche;
+     er ist Dekoration, keine Information. */
+  --schattenfarbe:#8A3034;
+  --schatten:5px 5px 0 var(--schattenfarbe);
+  --schatten-klein:3px 3px 0 var(--schattenfarbe);
+
+  /* --- Akzent, drei Stufen: eine Stufe kann nicht beide Gruende bedienen --- */
+  --akzent:#FF4A3D;         /* Flaeche, Marke, Rand. Tinte darauf 5,95:1 */
+  --akzent-text:#B3231A;    /*  6,12:1 — Text auf heller Tafel */
+  --akzent-hell:#FF9B85;    /*  8,94:1 — Text auf dunklem Grund */
+
+  /* --- Ortsarten: reine FLAECHEN mit dickem Umriss, nie Textfarbe.
+         Der Umriss traegt die Abgrenzung zum Grund; diese Werte muessen sich
+         darum voneinander unterscheiden, nicht vom Untergrund. Kleinster
+         gemessener Hue-Abstand zum Nachbarn: 27 Grad. --- */
+  --p-ankunft:#F0C34A;      /* H 44 · Tinte darauf 11,92:1 */
+  --p-zentrum:#FF4A3D;      /* H  4 · Tinte darauf  5,95:1 */
+  --p-wahrzeichen:#FF7FB0;  /* H337 · Tinte darauf  8,42:1 */
+  --p-park:#5FD08A;         /* H143 · Tinte darauf 10,28:1 */
+
+  /* --- Fokus: zwei Lagen, weil kein einzelner Ring 3:1 gegen BEIDE Gruende
+         schafft — der helle Ring faellt auf der Kalktafel durch, der dunkle
+         auf dem Ziegelgrund. --- */
+  --fokus-innen:#17040A;
+  --fokus-aussen:#FF4A3D;
+
+  --rand:3px;
+  --mass:1180px;
+
+  --sans:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --pixel:"Pixelify Sans", "Courier New", monospace;
+  --zahl:"Silkscreen", "Courier New", monospace;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0; background:var(--grund); color:var(--auf-grund);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ---------- Kopf ---------- */
+.kopf{
+  background:var(--grund-tief);
+  border-bottom:var(--rand) solid var(--akzent);
+  padding:18px 20px;
+}
+.kopf-inner{max-width:var(--mass); margin:0 auto;
+            display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.marke{font-family:var(--pixel); font-size:26px; font-weight:700;
+       color:var(--akzent-hell); letter-spacing:.5px}
+.eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:1px;
+         color:var(--auf-grund-leise); text-transform:uppercase}
+
+main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
+
+/* ---------- Titelblock ---------- */
+.titel{font-family:var(--pixel); font-size:clamp(30px,6vw,52px); line-height:1.12;
+       margin:0 0 12px; color:var(--auf-grund); font-weight:700}
+.titel em{font-style:normal; color:var(--akzent-hell); display:block;
+          font-size:.55em; margin-top:6px}
+.unterzeile{max-width:62ch; margin:0 0 22px; color:var(--auf-grund-leise);
+            font-size:17px}
+
+/* Der Baustellenhinweis. Eine Seite, die offensichtlich noch waechst, muss das
+   sagen — sonst liest sich ein duenner Stand wie ein fertiger. */
+.stand{display:inline-block; margin:0 0 22px; padding:7px 12px;
+       background:var(--akzent); color:var(--tinte);
+       font-family:var(--zahl); font-size:11px; letter-spacing:.5px;
+       box-shadow:var(--schatten-klein)}
+
+/* ---------- Die Karte ist der Inhalt dieser Seite ----------
+   Muenchen ist rund 20 km breit und 21 km hoch, also nahezu quadratisch — anders
+   als bei einer langgestreckten Insel begrenzt hier weder Breite noch Hoehe
+   allein den Zoom. 62vh fuellt die Flaeche, ohne auf dem Handy die ganze Seite
+   zu uebernehmen. */
+#karte{height:clamp(420px,62vh,660px);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+.leaflet-container{font-family:var(--sans); background:var(--grund-tief)}
+/* Leaflets Attributionsleiste liegt von Haus aus halbtransparent auf den
+   Kacheln: gemessen 3,13:1 fuer den Link — sie faellt durch, und zwar je nach
+   Kachel unterschiedlich stark. Ein Wert, der vom Kartenausschnitt abhaengt,
+   ist nicht pruefbar; darum bekommt die Leiste einen eigenen, deckenden Grund.
+   Der Selektor muss .leaflet-container mitfuehren: Leaflet setzt den Grund
+   ueber .leaflet-container .leaflet-control-attribution, und ein einstufiger
+   Selektor verliert das Spezifitaetsduell stillschweigend - die Regel steht
+   dann in der Datei und wirkt nicht. */
+.leaflet-container .leaflet-control-attribution{font-size:10.5px;
+  background:var(--flaeche); color:var(--tinte-leise)}
+.leaflet-container .leaflet-control-attribution a{color:var(--akzent-text)}  /* 6,12:1 */
+
+/* ---------- Marken ----------
+   Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben
+   Stylesheet wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
+   und wuerde width/height sonst ignorieren.
+   Der Umriss liegt als box-shadow AUSSEN, nicht als border innen — bei dieser
+   Kantenlaenge frisst ein 3-px-Rahmen sonst einen Grossteil der Farbflaeche. */
+.marke-pin{
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--zahl); font-style:normal; font-size:10px;
+  color:var(--tinte); image-rendering:pixelated;
+  /* 26 px hoch, nicht 22: WCAG 2.5.8 (AA) verlangt 24x24 CSS-Pixel fuer ein
+     Tastziel, und eine Marke auf einer Karte IST eines - sie oeffnet die
+     Sprechblase. 44x44 (AAA) waere auf dieser Karte nicht zu haben, ohne dass
+     die Marken einander verdecken; das steht so im Pruefbericht. */
+  height:26px; padding:0 8px; white-space:nowrap;
+  box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34);
+}
+.marke-pin.ankunft{background:var(--p-ankunft); height:30px; font-size:11px}
+.marke-pin.zentrum{background:var(--p-zentrum)}
+.marke-pin.wahrzeichen{background:var(--p-wahrzeichen)}
+.marke-pin.park{background:var(--p-park)}
+
+/* Leaflets eigene Sprechblase traegt die Palette der Seite, sonst steht ein
+   weisser Systemkasten mitten in einer durchgestalteten Karte. */
+.leaflet-popup-content-wrapper{
+  background:var(--flaeche); color:var(--tinte); border-radius:0;
+  border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.leaflet-popup-tip{background:var(--flaeche);
+                   border:var(--rand) solid var(--umriss)}
+.leaflet-popup-content{margin:12px 14px; font-size:14px; line-height:1.5}
+.leaflet-popup-content h3{margin:0 0 4px; font-family:var(--pixel);
+                          font-size:17px; color:var(--tinte)}
+.leaflet-popup-content p{margin:0; color:var(--tinte-leise)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
+
+/* ---------- Legende ---------- */
+.legende{display:flex; flex-wrap:wrap; gap:10px 18px; margin:16px 0 0;
+         padding:14px 16px; list-style:none;
+         background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.legende li{display:flex; align-items:center; gap:8px; font-size:14px}
+.legende .swatch{width:16px; height:16px; flex:none;
+                 box-shadow:0 0 0 2px var(--umriss)}
+
+/* ---------- Quellenfuss ---------- */
+.quellen{margin:28px 0 0; padding:16px 18px;
+         background:var(--flaeche-2); color:var(--tinte-leise);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+         font-size:13.5px}
+.quellen h2{margin:0 0 6px; font-family:var(--pixel); font-size:16px;
+            color:var(--tinte)}
+.quellen p{margin:0 0 6px}
+.quellen p:last-child{margin-bottom:0}
+.quellen a{color:var(--akzent-text)}
+
+/* ---------- Fokus ---------- */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+  outline:3px solid var(--fokus-innen); outline-offset:0;
+  box-shadow:0 0 0 6px var(--fokus-aussen)}
+
+@media (max-width:520px){
+  main{padding:22px 14px 36px}
+  .legende{gap:8px 12px}
+}
