@@ -547,11 +547,13 @@
     // on-site/breakfast.md nannte am 09.09.2026 "elf von zwoelf" Koordinaten
     // nicht auf dem Betrieb, waehrend die Datei danebenan vier auf dem Betrieb
     // fuehrte. Was hier steht, kommt aus den Daten, die auch die Karte zeichnet.
+    // (Der Fall selbst ist seit der Umstellung auf die Places API erledigt -
+    // die Lehre daraus nicht.)
     var gz = function (id, pruef) {
       return DATEN.gastro.orte.filter(function (o) { return o.kueche === id && pruef(o); }).length;
     };
-    var ohneBetrieb = function (o) { return o.koordinate && o.koordinate !== "betrieb"; };
-    var keineZeit = function (o) { return !o.oeffnungszeiten || o.oeffnungszeiten === "unknown"; };
+    var keineZeit = function (o) { return !Array.isArray(o.oeffnungszeiten); };
+    var abweichendeProbe = function (o) { return o.namensprobe === "abweichend"; };
     var wortzahl = ["null", "eine", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht",
                     "neun", "zehn", "elf", "zwölf"];
     var wort = function (n) { return wortzahl[n] || String(n); };
@@ -569,23 +571,25 @@
           + " Häusern stammen die Einzelpreise nicht vom Haus selbst; das steht je Haus dabei.";
       },
       fruehstueck: function (n) {
-        return "Kuratiert im Abrufskript, nicht abgefragt — mit einem zweiten, benannten Maßstab "
-          + "statt eines Gefühls. Die Noten sind <em>secondary</em>: sie kommen über Wanderlog "
-          + "bzw. RestaurantGuru, die Googles Wert weitergeben, nicht aus der Places-API — es "
-          + "fehlt die place_id. Bei " + wort(gz("fruehstueck", ohneBetrieb)) + " der " + n
-          + " Orte trifft die Koordinate nicht den Betrieb, sondern das Haus, einen Markt oder "
-          + "sogar einen anderen Laden unter derselben Adresse; welcher Fall vorliegt, sagt jede "
-          + "Sprechblase einzeln. Kein Preis ist von einer Karte vor Ort abgelesen.";
+        return "Die AUSWAHL ist kuratiert und steht im Abrufskript — mit einem zweiten, "
+          + "benannten Maßstab statt eines Gefühls. Koordinate, Adresse, Note und "
+          + "Öffnungszeiten kommen seit dem 09.09.2026 aus der Places API und damit vom Betrieb "
+          + "selbst; vorher lagen sie auf einer Adresssuche, die bei sieben der " + n
+          + " Orte nur das Haus traf und einmal einen anderen Laden darin. "
+          + "Was <strong>nicht</strong> von dort kommt: kein Preis ist von einer Karte vor Ort "
+          + "abgelesen, und " + wort(gz("fruehstueck", keineZeit)) + " Öffnungszeit"
+          + (gz("fruehstueck", keineZeit) === 1 ? " liegt" : "en liegen")
+          + " gar nicht vor und steht als <em>unbekannt</em>.";
       },
       burger: function (n) {
         return "Smash-Burger-Läden aus der Münchner Food-Presse, je Eintrag mit Beleg. "
-          + "Nur " + wort(n - gz("burger", ohneBetrieb)) + " davon ist in OpenStreetMap als "
-          + "Betrieb verzeichnet, die anderen " + wort(gz("burger", ohneBetrieb)) + " sind "
-          + "Adresspunkte — bei einem führt OSM unter derselben Adresse einen anderen Betrieb. "
-          + wort(gz("burger", keineZeit)).replace(/^./, function (c) { return c.toUpperCase(); })
-          + " der " + wort(n) + " Öffnungszeiten sind <strong>unbekannt</strong> und werden auch "
-          + "so gezeigt, nicht geschätzt. Bei einem Haus widersprechen sich zwei Preisquellen aus "
-          + "derselben Zeit; keine gilt als gesichert.";
+          + "Die Namensprobe beim Umstellen auf die Places API hat hier zwei Fehler gefunden, "
+          + "die vorher unbemerkt in den Daten standen: „SMASH – Burger &amp; Bar“ heißt "
+          + "„SMASH OR PASS – BURGER &amp; BAR“, und King Loui war mit einer Adresse verzeichnet, "
+          + "unter der heute ein Nudelrestaurant sitzt — das Lokal liegt am Harras. "
+          + "Die Bewertungen sind neu: vorher hatte keiner der " + wort(n) + " eine. "
+          + "Bei einem Haus widersprechen sich zwei Preisquellen aus derselben Zeit; keine gilt "
+          + "als gesichert.";
       }
     };
     GASTRO.forEach(function (k) {
@@ -961,52 +965,20 @@
       return w;
     };
 
-    // "Mo, Di, Fr 8–17, Sa 9–17; Mi, Do, So geschlossen" ist die schwierigste
-    // Form: das Komma trennt hier Tage UND Abschnitte. Geloest wird das nicht
-    // durch eine schlauere Regel, sondern durch Sammeln - Tagesangaben ohne
-    // Zeit werden aufgehoben, bis eine Zeit kommt, und gelten dann mit.
-    var ausText = function (s) {
-      var w = [null, null, null, null, null, null, null];
-      if (!s || s === "unknown") return w;
-      var halde = [];
-      s.replace(/\([^)]*\)/g, " ").split(/[;,]/).forEach(function (roh) {
-        var st = roh.trim();
-        if (!st) return;
-        var zu = /geschlossen|ruhetag/i.exec(st);
-        var zahl = st.search(/\d/);
-        var grenze = zu ? zu.index : (zahl >= 0 ? zahl : -1);
-        var tagteil = (grenze >= 0 ? st.slice(0, grenze) : st).trim();
-        var tage = [];
-        // "und" trennt hier Tage - ausser wenn danach eine Ziffer steht, dann
-        // verbindet es zwei Zeitspannen ("11:30–15:00 und 18:00–21:30").
-        tagteil.split(/\s+(?:und|u\.)\s+(?!\d)/i).forEach(function (teil) {
-          var t = teil.trim().replace(/[.:]$/, "");
-          if (!t) return;
-          if (/^(täglich|taeglich|tgl\.?|alle tage)$/i.test(t)) {
-            tage = [0, 1, 2, 3, 4, 5, 6];
-            return;
-          }
-          var r = /^([A-Za-zäöü]+)\s*[–\-]\s*([A-Za-zäöü]+)$/.exec(t);
-          if (r) {
-            var a = TAG_NR[r[1].toLowerCase()], b = TAG_NR[r[2].toLowerCase()];
-            if (a === undefined || b === undefined) return;
-            for (var i = a; ; i = (i + 1) % 7) { tage.push(i); if (i === b) break; }
-            return;
-          }
-          var n = TAG_NR[t.toLowerCase()];
-          if (n !== undefined) tage.push(n);
-        });
-        if (grenze < 0) { halde = halde.concat(tage); return; }   // nur Tage: aufheben
-        var wert = zu ? [] : spannen(st.slice(grenze));
-        halde.concat(tage).forEach(function (i) { w[i] = wert; });
-        halde = [];
-      });
-      return w;
-    };
-
+    // Alles, was KEIN Sieben-Tage-Feld ist, gilt als unbekannt. Hier stand bis
+    // zum 09.09.2026 ein Freitext-Zerleger, der Formen wie
+    // "Mo, Di, Fr 8–17, Sa 9–17; Mi, Do, So geschlossen" auseinandernahm - das
+    // Komma trennte dort Tage UND Abschnitte. Er lief richtig, war aber nur
+    // noetig, weil die Zeiten von Hand abgeschrieben waren.
+    //
+    // Seit alle drei Bestaende ihre Zeiten aus der Places API beziehen, liefern
+    // sie dasselbe Sieben-Zeilen-Feld, und der Zerleger hatte keinen einzigen
+    // Fall mehr. Er ist darum weg: der sicherste Parser ist der, den man nicht
+    // braucht. Kaeme wieder ein Freitext, stuende die Woche auf unbekannt -
+    // sichtbar, nicht stillschweigend falsch.
     var woche = function (o) {
       return Array.isArray(o.oeffnungszeiten) ? ausArray(o.oeffnungszeiten)
-           : ausText(o.oeffnungszeiten);
+           : [null, null, null, null, null, null, null];
     };
 
     // Der Streifen: sieben Spalten, oben Mitternacht, unten Mitternacht. Drei
@@ -1105,12 +1077,24 @@
         + (von * 8 - 2) + '" height="10" aria-hidden="true">' + k + "</svg>";
     };
 
-    var KOORDINATE = {
-      betrieb: "Der Punkt sitzt auf dem Betrieb selbst.",
-      adresse: "Der Punkt trifft das Haus, nicht den Laden darin.",
-      markt: "Der Punkt ist die Mitte des Marktes, nicht der Stand.",
-      "fremder-treffer": "Unter derselben Adresse steht in OpenStreetMap ein anderer Betrieb — "
-        + "die Marke sitzt am richtigen Gebäude, aber auf dem Nachbarn."
+    // KEINE Koordinaten-Entschuldigungen mehr. Bis zum 09.09.2026 stand an
+    // dreizehn Orten ein Satz wie "Der Punkt trifft das Haus, nicht den Laden
+    // darin" - weil die Koordinaten aus Nominatim kamen, einer ADRESSSUCHE.
+    // Seither loesen hol-fruehstueck.mjs und hol-burger.mjs ueber die Google
+    // Places API auf, die BETRIEBE sucht. Die Warnung ist weg, weil ihr Grund
+    // weg ist; das ist der Unterschied zwischen eine Luecke benennen und eine
+    // Luecke schliessen.
+    //
+    // Was BLEIBT, ist die Namensprobe: gefunden_als kommt aus der Antwort,
+    // nicht aus der Frage. Steht dort "abweichend", wurde etwas anderes
+    // gefunden als gemeint war, und das gehoert auf die Seite. Beim Umstellen
+    // hat sie einen echten Fehler gefunden - King Loui stand in der Recherche
+    // in der Kazmairstrasse, wo heute ein Nudelrestaurant sitzt.
+    var namensWarnung = function (o) {
+      return o.namensprobe === "abweichend"
+        ? "Gesucht wurde „" + o.name + "“, gefunden hat Google „" + o.gefunden_als
+          + "“ — ob es derselbe Betrieb ist, ist nicht geprüft."
+        : "";
     };
 
     // ===== Der Bestand: Gastro plus Sehenswertes ============================
@@ -1170,8 +1154,7 @@
       if (e.w) z.push(zeile("popup-fein", zeitenKurz(e.w)));
       if (o.adresse) z.push(zeile("popup-fein", o.adresse));
       [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis,
-       o.koordinate_hinweis || (o.koordinate && o.koordinate !== "betrieb" ? KOORDINATE[o.koordinate] : ""),
-       o.stadtteil_hinweis].forEach(function (wn) {
+       namensWarnung(o), o.adress_hinweis, o.stadtteil_hinweis].forEach(function (wn) {
         if (wn) z.push(zeile("popup-unbekannt", wn));
       });
       var ziel = o.web || o.beleg;
@@ -1279,8 +1262,7 @@
             + (o.google.rang === "secondary" ? " (weitergegeben, nicht aus der Places-API)" : "")) : "");
 
       var warnungen = [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis,
-        o.koordinate_hinweis || (o.koordinate && o.koordinate !== "betrieb" ? KOORDINATE[o.koordinate] : ""),
-        o.stadtteil_hinweis].filter(Boolean);
+        namensWarnung(o), o.adress_hinweis].filter(Boolean);
 
       var ziel = o.web || o.beleg;
       d.innerHTML = "<summary>" + kopf + "</summary>"
@@ -1486,15 +1468,18 @@
     var gz = function (id, pruef) {
       return g.orte.filter(function (o) { return o.kueche === id && pruef(o); }).length;
     };
-    var ohneZeit = g.orte.filter(function (o) {
-      return !o.oeffnungszeiten || o.oeffnungszeiten === "unknown";
-    }).length;
+    var ohneZeit = g.orte.filter(function (o) { return !Array.isArray(o.oeffnungszeiten); }).length;
+    // Gerechnet, nicht geschrieben: die Spanne der Noten aendert sich mit jedem
+    // Abruf, und eine Zahl im Text altert unsichtbar.
+    var noten = g.orte.map(function (o) { return o.google && o.google.note; }).filter(Boolean);
     var mitWarnung = g.orte.filter(function (o) {
       return (o.speisekarte && o.speisekarte.warnung) || o.warnung || o.preise_hinweis;
     }).length;
-    var nichtBetrieb = g.orte.filter(function (o) {
-      return o.koordinate && o.koordinate !== "betrieb";
-    }).length;
+    // Die Namensprobe ist die verbliebene Unsicherheit bei den Koordinaten -
+    // und sie steht auf der Seite, auch wenn sie gerade auf null steht. Eine
+    // Zahl, die nur erscheint, wenn sie ungleich null ist, sieht am Tag danach
+    // aus wie eine, die es nie gab.
+    var abweichend = g.orte.filter(function (o) { return o.namensprobe === "abweichend"; }).length;
     var q = g.quellen;
 
     // Die Kennzahlen als Zeile, der Volltext auf Abruf: die Luecken MUESSEN
@@ -1509,30 +1494,41 @@
           }).join("")
         + '<b>' + ohneZeit + "</b> Öffnungszeiten unbekannt"
         + '<b>' + mitWarnung + "</b> mit Einschränkung"
-        + '<b>' + nichtBetrieb + "</b> Marke nicht auf dem Betrieb"
+        + '<b>' + abweichend + "</b> Namensprobe abweichend"
       + "</span>"
       + "<details class=\"fuss-mehr\"><summary>Woher die Angaben kommen, und was fehlt</summary>"
-      + "<p>Drei Bestände, drei Ränge, alle abgerufen am "
-        + deutsch(q.wirtshaus ? q.wirtshaus.abgerufen : q.burger.abgerufen) + ". "
-      + "Die <strong>Wirtshäuser</strong> sind das einzige der drei mit Bewertungen aus der "
-      + "Places-API"
+      + "<p>Alle drei Bestände stehen auf <em>primary</em> und sind am "
+        + deutsch(q.wirtshaus ? q.wirtshaus.abgerufen : q.burger.abgerufen) + " abgerufen: "
+      + "Koordinate, Adresse, Bewertung und Öffnungszeiten kommen aus der <strong>Google "
+      + "Places API</strong>. Bis zum selben Tag lagen Frühstück und Burger auf einer "
+      + "Adresssuche — dreizehn Marken saßen dadurch auf dem Gebäude statt auf dem Laden, und "
+      + "jede trug dafür eine Entschuldigung an der Stelle, an der eine Koordinate stehen "
+      + "sollte.</p>"
+      + "<p><strong>Der angezeigte Name kommt aus der Antwort, nicht aus der Frage.</strong> "
+      + "Diese Probe hat beim Umstellen zwei Fehler gefunden: „SMASH – Burger &amp; Bar“ heißt "
+      + "in Wirklichkeit „SMASH OR PASS – BURGER &amp; BAR“, und King Loui stand mit einer "
+      + "Adresse in der Liste, unter der heute ein Nudelrestaurant sitzt — das Lokal selbst "
+      + "liegt am Harras. Zurzeit weichen <strong>" + abweichend + "</strong> Namen ab; wo eine "
+      + "abweicht, steht es beim Ort.</p>"
       + (q.wirtshaus && q.wirtshaus.anzahl
-          ? "; " + q.wirtshaus.anzahl.karte_geprueft + " der " + (g.anzahl.wirtshaus || 0)
-            + " Speisekarten sind einzeln geöffnet worden" : "")
-      + ". Die <strong>Frühstücksnoten</strong> sind weitergegebene Google-Werte ohne place_id "
-      + "und darum <em>secondary</em>. Bei <strong>" + nichtBetrieb + "</strong> Orten sitzt die "
-      + "Marke nicht auf dem Betrieb, sondern auf dem Haus, einem Marktplatz oder einem anderen "
-      + "Laden unter derselben Adresse; welcher Fall vorliegt, sagt jede Sprechblase einzeln.</p>"
+          ? "<p>Bei den <strong>Wirtshäusern</strong> sind zusätzlich "
+            + q.wirtshaus.anzahl.karte_geprueft + " der " + (g.anzahl.wirtshaus || 0)
+            + " Speisekarten einzeln geöffnet worden — die Einzelpreise stammen von dort, nicht "
+            + "aus der API.</p>"
+          : "")
       + "<p>„Geflügel“ hat <strong>fünf</strong> Stufen, nicht zwei: bei "
       + gz("wirtshaus", function (o) { return o.gefluegel && o.gefluegel.stufe === "salat"; })
       + " Häusern kommt es nur als Salat auf den Tisch — wer ein Hendl will, steht dort falsch. "
       + "<strong>" + ohneZeit + "</strong> Öffnungszeiten sind unbekannt und werden auch so "
       + "gezeigt, nicht geschätzt.</p>"
-      + "<p><strong>Der Wochenstreifen ist gerechnet, nicht abgeschrieben</strong> — aus der "
-      + "Öffnungszeit des Bestands. Was sich nicht eindeutig auflösen ließ, steht als "
-      + "<em>unbekannt</em> und nicht als „zu“. Die Quellzeile steht im aufgeklappten Teil "
-      + "daneben. Die Notenachse ist ein <strong>Ausschnitt von 4,0 bis 5,0</strong>: alle Noten "
-      + "liegen zwischen 4,1 und 4,9, eine Achse ab null zeigte 34 gleich lange Balken.</p>"
+      + "<p><strong>Der Wochenstreifen ist gezeichnet, nicht abgeschrieben</strong> — aus den "
+      + "sieben Tageszeilen des Bestands. Wo keine stehen, bleibt der Streifen <em>unbekannt</em> "
+      + "und wird nicht als „zu“ gezeichnet; die Zeilen selbst stehen im aufgeklappten Teil "
+      + "daneben. Die Notenachse ist ein <strong>Ausschnitt von 4,0 bis 5,0</strong>: alle "
+      + noten.length + " Noten liegen zwischen "
+      + String(Math.min.apply(null, noten)).replace(".", ",") + " und "
+      + String(Math.max.apply(null, noten)).replace(".", ",")
+      + ", eine Achse ab null zeigte " + noten.length + " gleich lange Balken.</p>"
       + "<p><strong>Nicht gemessen:</strong> niemand war vor Ort, kein Preis stammt von einer "
       + "Karte am Tisch, und die Entfernung ist Luftlinie, keine Gehzeit.</p>"
       + "</details>";
