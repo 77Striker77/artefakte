@@ -11773,6 +11773,54 @@ const DATEN = {
     "web": "http://www.schnitzel-und-hendlhaus.de/"
    },
    {
+    "id": "waldwirtschaft-grosshesselohe",
+    "name": "Waldwirtschaft Großhesselohe",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Waldwirtschaft",
+    "lat": 48.066987,
+    "lon": 11.539593,
+    "notiz": "Der einzige nennenswerte Gastrobetrieb im Umkreis der Bavaria Filmstadt — 1,1 km entfernt. Google führt den Betrieb als Biergarten; der Name trägt die Öffnungsregel gleich mit: Biergarten bei schönem Wetter täglich ab 10 Uhr, das Restaurant hat Montag und Dienstag Ruhetag.",
+    "adresse": "Georg-Kalb-Straße 3, 82049 Pullach im Isartal-Großhesselohe",
+    "stadtteil": "Großhesselohe (Pullach)",
+    "gefunden_als": "Waldwirtschaft Großhesselohe - Biergarten: täglich bei schönem Wetter ab 10:00 Uhr - Restaurant : Mo & Di Ruhetag",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.5,
+     "stimmen": 3024,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJa4E_r6TenUcR3Qc0T4cNAsU",
+     "maps": "https://maps.google.com/?cid=14195923850225780701",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "ungeprueft"
+    },
+    "vegetarisch": {
+     "stufe": "ungeprueft"
+    },
+    "speisekarte": {
+     "geprueft": false,
+     "quelle": null,
+     "rang": null,
+     "warnung": "Die Speisekarte wurde NICHT geöffnet — anders als bei den 22 Häusern der Wirtshaus-Runde. Zu Geflügel und Vegetarischem liegt hier nichts vor."
+    },
+    "oeffnungszeiten": [
+     "Montag: 10:30–22:00 Uhr",
+     "Dienstag: 10:00–22:00 Uhr",
+     "Mittwoch: 11:30–23:00 Uhr",
+     "Donnerstag: 11:30–23:00 Uhr",
+     "Freitag: 11:30–23:00 Uhr",
+     "Samstag: 11:30–23:00 Uhr",
+     "Sonntag: 11:30–23:00 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "https://waldwirtschaft.de/"
+   },
+   {
     "id": "coffee-twins",
     "name": "Coffee Twins",
     "art": "essen",
@@ -12759,6 +12807,50 @@ const DATEN = {
     "web": "http://www.mcmueller.org/"
    },
    {
+    "id": "last-call-nyc",
+    "name": "Last Call NYC❤️",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Last Call",
+    "lat": 48.131427,
+    "lon": 11.58817,
+    "auswahl": "abfrage",
+    "auswahl_hinweis": "Unter der Stimmen-Schwelle von 500 — mit 4,9 aus 276 Stimmen die höchste Note im Bestand, 400 m von der Unterkunft. Aufgenommen, weil eine Schwelle gegen Zufallstreffer schützen soll und nicht gegen Befunde.",
+    "smash": {
+     "art": "unklar",
+     "rang": null,
+     "quelle": "nicht geprüft"
+    },
+    "adresse": "Rosenheimer Str. 2, 81669 München, Deutschland",
+    "stadtteil": "Au",
+    "gesucht": "Last Call NYC, Rosenheimer Straße 2, München",
+    "gefunden_als": "Last Call NYC❤️",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.9,
+     "stimmen": 276,
+     "place_id": "ChIJjYa5IgffnUcR6-0gVT11GnY",
+     "maps": "https://maps.google.com/?cid=8510243352151649771&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 16:00–22:00 Uhr",
+     "Dienstag: 16:00–22:00 Uhr",
+     "Mittwoch: 16:00–22:00 Uhr",
+     "Donnerstag: 16:00–22:00 Uhr",
+     "Freitag: 16:00–22:30 Uhr",
+     "Samstag: 12:00–22:30 Uhr",
+     "Sonntag: 12:00–22:00 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "http://www.lastcallnyc.de/"
+   },
+   {
     "id": "ff-rhzgp1_gewaq",
     "name": "Burger King München",
     "art": "essen",
@@ -13240,6 +13332,43 @@ const DATEN = {
     "web": "https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/munchen/goethestrasse-74/8&cid=listing_0008"
    },
    {
+    "id": "ff-r9ipc7_yu1aq",
+    "name": "McDonald's",
+    "art": "essen",
+    "kueche": "fastfood",
+    "kette": "McDonald's",
+    "kurz": "McDonald's",
+    "lat": 48.121007,
+    "lon": 11.585892,
+    "adresse": "Regerstraße 25, 81541 München-Au-Haidhausen, Deutschland",
+    "strasse": "Regerstraße 25",
+    "entfernung_m": 1956,
+    "auswahl": "abfrage",
+    "google": {
+     "note": 3.8,
+     "stimmen": 2063,
+     "place_id": "ChIJ4Z7tHXHfnUcR9ipc7_YU1AQ",
+     "maps": "https://maps.google.com/?cid=347926122024676086&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Fast-Food-Restaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchNearby und searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 07:00–02:00 Uhr",
+     "Dienstag: 07:00–02:00 Uhr",
+     "Mittwoch: 07:00–02:00 Uhr",
+     "Donnerstag: 07:00–02:00 Uhr",
+     "Freitag: 07:00–05:00 Uhr",
+     "Samstag: 07:00–05:00 Uhr",
+     "Sonntag: 08:00–02:00 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/munchen/regerstrasse-25/1372&cid=listing_1372"
+   },
+   {
     "id": "ff-r-stlry876tw",
     "name": "NORDSEE München Viktualienmarkt",
     "art": "essen",
@@ -13396,11 +13525,12 @@ const DATEN = {
     "lizenz": "Google Places (Koordinaten und Bewertungen)",
     "datei": "muenchen-wirtshaeuser.json",
     "anzahl": {
-     "gesamt": 22,
+     "gesamt": 23,
      "mit_gefluegelschnitzel": 5,
      "mit_gefluegel_hauptgericht": 5,
      "gefluegel_nur_salat": 10,
-     "karte_geprueft": 21
+     "karte_geprueft": 21,
+     "karte_nicht_geprueft": 2
     }
    },
    "fruehstueck": {
@@ -13427,16 +13557,16 @@ const DATEN = {
     "auswahl": "kuratiert im Skript, nicht abgefragt",
     "datei": "muenchen-essen.json",
     "anzahl": {
-     "gesamt": 11,
+     "gesamt": 12,
      "aus_presse": 6,
-     "aus_abfrage": 5,
+     "aus_abfrage": 6,
      "smash_laden": 6,
      "smash_gericht": 4,
      "smash_keins": 1,
-     "smash_unklar": 0,
-     "namensprobe_gleich": 11,
+     "smash_unklar": 1,
+     "namensprobe_gleich": 12,
      "namensprobe_abweichend": 0,
-     "mit_oeffnungszeiten": 11,
+     "mit_oeffnungszeiten": 12,
      "nicht_gefunden": 0
     }
    },
@@ -13446,36 +13576,46 @@ const DATEN = {
     "rang": "primary",
     "lizenz": "Google Places",
     "auswahl": "die Ketten sind im Skript festgelegt, die Filialen abgefragt",
+    "kreise": [
+     {
+      "bezug": "Marienplatz",
+      "radius_m": 1500
+     },
+     {
+      "bezug": "Motel One München-Deutsches Museum",
+      "radius_m": 800
+     }
+    ],
     "umkreis_m": 1500,
     "bezug": "Marienplatz",
     "datei": "muenchen-fastfood.json",
     "anzahl": {
-     "gesamt": 17,
+     "gesamt": 18,
      "ketten": 8,
      "je_kette": {
       "Burger King": 1,
       "dean&david": 6,
       "Five Guys": 1,
       "KFC": 1,
-      "McDonald's": 4,
+      "McDonald's": 5,
       "NORDSEE": 1,
       "Pizza Hut": 1,
       "Subway": 2
      }
     },
     "gekappt": [
-     "fast_food_restaurant",
-     "sandwich_shop",
-     "pizza_restaurant"
+     "Marienplatz/fast_food_restaurant",
+     "Marienplatz/sandwich_shop",
+     "Marienplatz/pizza_restaurant"
     ]
    }
   },
   "anzahl": {
-   "wirtshaus": 22,
+   "wirtshaus": 23,
    "fruehstueck": 12,
-   "burger": 11,
-   "fastfood": 17,
-   "gesamt": 62
+   "burger": 12,
+   "fastfood": 18,
+   "gesamt": 65
   }
  },
  "bahn": {
