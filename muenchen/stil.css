@@ -360,6 +360,8 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .legende .ort-pin{width:30px; height:30px}
 .legende .ort-pin svg{width:26px; height:26px}
 .legende .halt-pin{width:24px; height:24px; font-size:19px}
+/* Ein Netz ist eine Linie, keine Marke - die Legende zeigt darum einen Strich. */
+.netz-strich{display:block; width:26px; height:4px}
 
 .filter-zahl{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-leise)}  /* 7,81:1 */
 

@@ -245,6 +245,30 @@
                       marke: '<i class="halt-pin ubahn">U</i>', ebene: gruppen.ubahn });
   }
 
+  // --- Netze: die Linienverlaeufe -------------------------------------------
+  // Sie liegen unter den Marken, nicht darueber: Leaflet zeichnet Linien in den
+  // overlayPane und Marken in den markerPane, der darueber liegt - ohne
+  // Zutun die richtige Reihenfolge. Duenn und leicht durchscheinend, weil sie
+  // Orientierung sind und nicht der Inhalt: an einem Knoten liegen bis zu
+  // sechs Linien uebereinander, und deckende Striche werden dort zu einem Klotz.
+  if (DATEN.bahn && DATEN.bahn.netze) {
+    DATEN.bahn.netze.forEach(function (netz) {
+      var g = L.layerGroup();
+      var farbe = token(netz.farbe);
+      netz.linien.forEach(function (linie) {
+        linie.verlauf.forEach(function (abschnitt) {
+          L.polyline(abschnitt, {
+            color: farbe, weight: 2.5, opacity: 0.6, interactive: false
+          }).addTo(g);
+        });
+      });
+      g.addTo(karte);
+      kategorien.push({ id: netz.id, label: netz.label, zahl: netz.linien.length,
+                        marke: '<span class="netz-strich" style="background:' + farbe + '"></span>',
+                        ebene: g });
+    });
+  }
+
   // --- Linien: der Verlauf plus die eigenen Halte -------------------------
   // Warum ueberhaupt eine Linie und nicht nur Punkte: die Filmstadt liegt in
   // Gruenwald, also AUSSERHALB der Stadtgrenze, nach der die Haltestellen oben
@@ -260,7 +284,9 @@
       // Stadt ziehen - und die saehe aus wie eine echte Strecke.
       linie.verlauf.forEach(function (abschnitt) {
         L.polyline(abschnitt, {
-          color: token("--m-tram"), weight: 4, opacity: 0.95, interactive: false
+          // Dicker als das Netz darunter: die Linie ist hier nicht Orientierung,
+          // sondern die eine Verbindung, um die es geht.
+          color: token("--m-tram"), weight: 4.5, opacity: 1, interactive: false
         }).addTo(g);
       });
 
