@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700;800&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=64e7b6c0">
+<link rel="stylesheet" href="stil.css?v=43715fe5">
 </head>
 <body>
 
@@ -46,20 +46,17 @@
     <h2 class="ansicht-titel">Hotel</h2>
     <div id="hotel-tafel"></div>
 
-    <!-- Der Weg vom Hauptbahnhof steht VOR der Umgebungskarte: am Ankunftstag
-         ist "wie komme ich hin" die erste Frage, "was ist nebenan" die zweite.
-         Ein Unterknopf je Verkehrsmittel, weil die Antwort nicht eine ist -
-         schnell, oberirdisch oder ohne Ticket sind drei verschiedene Wuensche.
-         Die Knoepfe kommen aus den Daten, nicht aus dem HTML. -->
-    <h3 class="tafel-titel">Vom Hauptbahnhof zum Hotel</h3>
-    <nav class="untermenue" id="weg-reiter" aria-label="Womit vom Hauptbahnhof"></nav>
+    <!-- EINE Karte fuer beides. Das Untermenue schaltet den AUSSCHNITT -
+         Umgebung oder ganzer Weg vom Hauptbahnhof -, die Legende darunter
+         schaltet Kartenebenen. Zwei Steuerungen, jede fuer genau eine Sache.
+         Zwei getrennte Karten standen hier am 09.09.2026 kurz untereinander und
+         zeigten dieselbe Stadt zweimal; ein Ausschnitt ist kein Grund fuer eine
+         zweite Karte, sondern ein Zustand derselben. -->
+    <h3 class="tafel-titel">Wo es liegt und wie man hinkommt</h3>
+    <nav class="untermenue" id="weg-reiter" aria-label="Was die Karte zeigt"></nav>
     <div id="weg-tafel"></div>
-    <div id="karte-weg" role="region"
-         aria-label="Karte des Wegs vom Hauptbahnhof zur Unterkunft"></div>
-    <p class="grund-fuss" id="weg-fuss"></p>
-
-    <h3 class="tafel-titel">Was in Gehweite liegt</h3>
-    <div id="karte-hotel" role="region" aria-label="Karte der Umgebung um die Unterkunft"></div>
+    <div id="karte-hotel" role="region"
+         aria-label="Karte der Unterkunft, ihrer Umgebung und des Wegs vom Hauptbahnhof"></div>
     <ul class="legende" id="legende-hotel"></ul>
     <!-- .grund-fuss, NICHT .tafel-fuss: dieser Fuss liegt auf dem dunklen Grund,
          nicht auf einer hellen Tafel, und braucht darum den anderen Rollensatz.
@@ -128,7 +125,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=64e7b6c0"></script>
-<script src="karte.js?v=64e7b6c0"></script>
+<script src="orte.js?v=43715fe5"></script>
+<script src="karte.js?v=43715fe5"></script>
 </body>
 </html>

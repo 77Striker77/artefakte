@@ -290,7 +290,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    zu uebernehmen. */
 /* Die Umgebungskarte ist flacher als die Stadtkarte: sie zeigt einen Kilometer
    Umkreis, nicht zwanzig - mehr Hoehe waere leerer Stadtplan. */
-#karte-hotel{height:clamp(340px,46vh,520px);
+#karte-hotel{height:clamp(340px,46vh,520px); margin:18px 0 0;
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
        background:var(--grund-tief); z-index:0}
 /* Die Innenstadtkarte zeigt rund drei Kilometer und traegt 40 Marken - zwischen
@@ -1016,12 +1016,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   background:repeating-linear-gradient(90deg,
     var(--tinte-leise) 0 4px, transparent 4px 9px)}
 
-/* Die Wegkarte zeigt dreieinhalb Kilometer - mehr als die Umgebungskarte, viel
-   weniger als die Stadtkarte. Sie darf darum niedriger sein als beide: auf ihr
-   liegen vier Marken und eine Linie, nicht vierzig Punkte. */
-#karte-weg{height:clamp(320px,42vh,480px); margin:18px 0 0;
-       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
-       background:var(--grund-tief); z-index:0}
+
 
 @media (max-width:520px){
   .band-halt{grid-template-columns:52px 20px minmax(0,1fr); gap:0 8px}
