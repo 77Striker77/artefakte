@@ -26,6 +26,10 @@
                + '<path d="M14 21V9a2 2 0 0 1 4 0v12"/><path d="M10 21v-6h4v6"/>',
     film: '<path d="M3 10h18v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>'
         + '<path d="m3 10 1.5-5 4 1L7 11M9 6l4 1-1.5 4M14 7.2l4 1-1.5 3.8"/>',
+    // Saeule mit Kapitell - steht fuer Tore, Denkmaeler und historische Bauten
+    // gleichermassen; ein Kirchturm haette bei Isartor und Bavaria nicht gepasst.
+    museum: '<path d="M2 21h20"/><path d="M4 21V9M9 21V9M15 21V9M20 21V9"/>'
+          + '<path d="m12 2 9 5H3z"/>',
     park: '<path d="M12 21v-5"/>'
         + '<path d="M12 16a5 5 0 0 0 5-5 4 4 0 0 0-1-2.6A4 4 0 0 0 12 3a4 4 0 0 0-4 5.4A4 4 0 0 0 7 11a5 5 0 0 0 5 5z"/>'
   };
@@ -35,6 +39,7 @@
     ankunft:     { label: "Ankunft" },
     zentrum:     { label: "Zentrum" },
     wahrzeichen: { label: "Wahrzeichen" },
+    museum:      { label: "Museen" },
     film:        { label: "Filmstudios" },
     park:        { label: "Park" }
   };
@@ -121,10 +126,14 @@
     dl.appendChild(dt);
     dl.appendChild(dd);
   });
-  setzeText("infobox-fuss", offen === 0
-    ? "Alle Felder stehen fest."
-    : offen + " von " + DATEN.reisedaten.length + " Feldern stehen noch aus — "
-      + "xx heißt unbekannt, nicht geschätzt.");
+  // Die Fusszeile erscheint NUR, solange etwas offen ist. "Alle Felder stehen
+  // fest" ist keine Information, sondern eine Selbstauskunft der Seite - sie
+  // sagt dem Leser nichts ueber die Reise. Was vollstaendig ist, sieht man an
+  // der Tabelle darueber.
+  var fuss = document.getElementById("infobox-fuss");
+  if (offen === 0) fuss.remove();
+  else fuss.textContent = offen + " von " + DATEN.reisedaten.length
+    + " Feldern stehen noch aus — xx heißt unbekannt, nicht geschätzt.";
 
   // --- Karte ---------------------------------------------------------------
   // scrollWheelZoom ist AN. Es war bis zum 09.09.2026 aus und wurde erst durch
@@ -439,11 +448,28 @@
       abgerufen: DATEN.quelle.abgerufen,
       rang: DATEN.quelle.rang,
       lizenz: DATEN.quelle.lizenz,
-      was: "Koordinaten von Hauptbahnhof, Marienplatz, Frauenkirche, Bavaria Filmstadt, "
-         + "Englischem Garten und Olympiapark. Jeder Punkt trägt seine OSM-Kennung in der Sprechblase, "
-         + "also die Stelle, an der sich der Wert nachschlagen lässt."
+      was: "Ankunftspunkt, Unterkunft, Zentrum, Parks und die Bavaria Filmstadt. Jeder Punkt "
+         + "trägt seine OSM-Kennung in der Sprechblase, also die Stelle, an der sich der Wert "
+         + "nachschlagen lässt."
     }
   ];
+  if (DATEN.wahrzeichen_quelle) {
+    var wzz = DATEN.orte.filter(function (o) { return o.art === "wahrzeichen" || o.art === "museum"; });
+    quellen.push({
+      titel: "Wahrzeichen und Museen",
+      menge: wzz.filter(function (o) { return o.art === "wahrzeichen"; }).length + " Wahrzeichen · "
+           + wzz.filter(function (o) { return o.art === "museum"; }).length + " Museen",
+      quelle: DATEN.wahrzeichen_quelle.name,
+      abgerufen: DATEN.wahrzeichen_quelle.abgerufen,
+      rang: DATEN.wahrzeichen_quelle.rang,
+      lizenz: DATEN.wahrzeichen_quelle.lizenz,
+      was: "Die AUSWAHL ist kuratiert, nicht abgefragt: eine Abfrage auf Sehenswürdigkeiten "
+         + "liefert in München hunderte Treffer, von der Staatsoper bis zum Gedenkstein im "
+         + "Hinterhof. Was auf eine Reisekarte gehört, ist eine Entscheidung. Geholt wird nur "
+         + "die Koordinate — und der angezeigte Name kommt aus der Antwort, nicht aus der "
+         + "Suche: so fällt auf, wenn etwas anderes gefunden wurde als gemeint war."
+    });
+  }
   if (DATEN.bahn) {
     quellen.push({
       titel: "Bahnhaltestellen",

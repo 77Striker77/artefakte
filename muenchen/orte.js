@@ -183,8 +183,257 @@ const DATEN = {
    "lon": 11.5496527,
    "notiz": "Das Gelände der Spiele von 1972 im Norden, mit Zeltdach, See und Turm.",
    "osm": "way/10053878"
+  },
+  {
+   "id": "peter",
+   "name": "St. Peter",
+   "art": "wahrzeichen",
+   "kurz": "Peter",
+   "lat": 48.136462,
+   "lon": 11.576031,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "way/228534603",
+   "gesucht": "Alter Peter, München"
+  },
+  {
+   "id": "residenz",
+   "name": "Residenz München",
+   "art": "wahrzeichen",
+   "kurz": "Residenz",
+   "lat": 48.140809,
+   "lon": 11.577555,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "node/12898612562",
+   "gesucht": "Residenz München, Residenzstraße, München"
+  },
+  {
+   "id": "theatiner",
+   "name": "Theatinerkirche St. Kajetan",
+   "art": "wahrzeichen",
+   "kurz": "Theatiner",
+   "lat": 48.14203,
+   "lon": 11.576615,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "way/25514390",
+   "gesucht": "Theatinerkirche, München"
+  },
+  {
+   "id": "asamkirche",
+   "name": "Sankt Johann Nepomuk",
+   "art": "wahrzeichen",
+   "kurz": "Asamkirche",
+   "lat": 48.13521,
+   "lon": 11.569523,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "way/47515468",
+   "gesucht": "Asamkirche, Sendlinger Straße, München"
+  },
+  {
+   "id": "hofbr-u",
+   "name": "Hofbräuhaus",
+   "art": "wahrzeichen",
+   "kurz": "Hofbräu",
+   "lat": 48.137633,
+   "lon": 11.579979,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "node/11829267544",
+   "gesucht": "Hofbräuhaus am Platzl, München"
+  },
+  {
+   "id": "viktualien",
+   "name": "Viktualienmarkt",
+   "art": "wahrzeichen",
+   "kurz": "Viktualien",
+   "lat": 48.135329,
+   "lon": 11.576222,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "way/1168914701",
+   "gesucht": "Viktualienmarkt, München"
+  },
+  {
+   "id": "siegestor",
+   "name": "Siegestor",
+   "art": "wahrzeichen",
+   "kurz": "Siegestor",
+   "lat": 48.15235,
+   "lon": 11.58214,
+   "stadtteil": "Schwabing",
+   "osm": "way/22727580",
+   "gesucht": "Siegestor, München"
+  },
+  {
+   "id": "feldherrn",
+   "name": "Feldherrnhalle",
+   "art": "wahrzeichen",
+   "kurz": "Feldherrn",
+   "lat": 48.141678,
+   "lon": 11.577316,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "way/25505402",
+   "gesucht": "Feldherrnhalle, München"
+  },
+  {
+   "id": "isartor",
+   "name": "Isartor",
+   "art": "wahrzeichen",
+   "kurz": "Isartor",
+   "lat": 48.135105,
+   "lon": 11.58204,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "relation/6035286",
+   "gesucht": "Isartor, München"
+  },
+  {
+   "id": "sendlinger-tor",
+   "name": "Sendlinger Tor",
+   "art": "wahrzeichen",
+   "kurz": "Sendlinger Tor",
+   "lat": 48.133461,
+   "lon": 11.566864,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "node/2539850174",
+   "gesucht": "Sendlinger Tor, München"
+  },
+  {
+   "id": "karlstor",
+   "name": "Karlstor",
+   "art": "wahrzeichen",
+   "kurz": "Karlstor",
+   "lat": 48.13901,
+   "lon": 11.566764,
+   "stadtteil": "Altstadt-Lehel",
+   "osm": "way/52103816",
+   "gesucht": "Karlstor, München"
+  },
+  {
+   "id": "nymphenburg",
+   "name": "Schloss Nymphenburg",
+   "art": "wahrzeichen",
+   "kurz": "Nymphenburg",
+   "lat": 48.158325,
+   "lon": 11.503292,
+   "stadtteil": "Nymphenburg",
+   "osm": "relation/2144986",
+   "gesucht": "Schloss Nymphenburg, München"
+  },
+  {
+   "id": "olympiaturm",
+   "name": "Olympiaturm",
+   "art": "wahrzeichen",
+   "kurz": "Olympiaturm",
+   "lat": 48.174416,
+   "lon": 11.55374,
+   "stadtteil": "Milbertshofen-Am Hart",
+   "osm": "way/164084344",
+   "gesucht": "Olympiaturm, München"
+  },
+  {
+   "id": "chines-turm",
+   "name": "Chinesischer Turm",
+   "art": "wahrzeichen",
+   "kurz": "Chines. Turm",
+   "lat": 48.153098,
+   "lon": 11.593448,
+   "stadtteil": "Schwabing",
+   "osm": "way/377796546",
+   "gesucht": "Chinesischer Turm, Englischer Garten, München"
+  },
+  {
+   "id": "maximilianeum",
+   "name": "Maximilianeum",
+   "art": "wahrzeichen",
+   "kurz": "Maximilianeum",
+   "lat": 48.136411,
+   "lon": 11.594416,
+   "stadtteil": "Haidhausen",
+   "osm": "way/325929848",
+   "gesucht": "Maximilianeum, München"
+  },
+  {
+   "id": "bavaria",
+   "name": "Ruhmeshalle",
+   "art": "wahrzeichen",
+   "kurz": "Bavaria",
+   "lat": 48.130686,
+   "lon": 11.545643,
+   "stadtteil": "Schwanthalerhöhe",
+   "osm": "way/400345387",
+   "gesucht": "Ruhmeshalle, Theresienhöhe, München"
+  },
+  {
+   "id": "allianz-arena",
+   "name": "Allianz Arena",
+   "art": "wahrzeichen",
+   "kurz": "Allianz Arena",
+   "lat": 48.21879,
+   "lon": 11.623623,
+   "stadtteil": "Schwabing-Freimann",
+   "osm": "relation/18413487",
+   "gesucht": "Allianz Arena, München"
+  },
+  {
+   "id": "dt-museum",
+   "name": "Deutsches Museum",
+   "art": "museum",
+   "kurz": "Dt. Museum",
+   "lat": 48.130041,
+   "lon": 11.582909,
+   "stadtteil": "Isarvorstadt",
+   "osm": "relation/3866522",
+   "gesucht": "Deutsches Museum, München"
+  },
+  {
+   "id": "alte-pinak-",
+   "name": "Alte Pinakothek",
+   "art": "museum",
+   "kurz": "Alte Pinak.",
+   "lat": 48.148284,
+   "lon": 11.56998,
+   "stadtteil": "Maxvorstadt",
+   "osm": "way/4647135",
+   "gesucht": "Alte Pinakothek, München"
+  },
+  {
+   "id": "pinak-moderne",
+   "name": "Pinakothek der Moderne",
+   "art": "museum",
+   "kurz": "Pinak. Moderne",
+   "lat": 48.14716,
+   "lon": 11.572227,
+   "stadtteil": "Maxvorstadt",
+   "osm": "way/10053440",
+   "gesucht": "Pinakothek der Moderne, München"
+  },
+  {
+   "id": "lenbachhaus",
+   "name": "Lenbachhaus",
+   "art": "museum",
+   "kurz": "Lenbachhaus",
+   "lat": 48.14694,
+   "lon": 11.563503,
+   "stadtteil": "Maxvorstadt",
+   "osm": "way/237426208",
+   "gesucht": "Lenbachhaus, München"
+  },
+  {
+   "id": "bmw-museum",
+   "name": "BMW Museum",
+   "art": "museum",
+   "kurz": "BMW Museum",
+   "lat": 48.176903,
+   "lon": 11.559069,
+   "stadtteil": "Milbertshofen-Am Hart",
+   "osm": "way/298266716",
+   "gesucht": "BMW Museum, München"
   }
  ],
+ "wahrzeichen_quelle": {
+  "name": "OpenStreetMap über Nominatim (Namenssuche)",
+  "abgerufen": "2026-09-09",
+  "rang": "primary",
+  "lizenz": "ODbL",
+  "auswahl": "kuratiert im Skript, nicht abgefragt"
+ },
  "bahn": {
   "quelle": {
    "name": "OpenStreetMap über die Overpass-API",

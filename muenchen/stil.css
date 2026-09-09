@@ -59,7 +59,7 @@
      und damit nicht pruefbar. Genau dieselbe Falle wie bei Leaflets
      Attributionsleiste, dort gemessen mit 3,13:1 statt 4,5:1.
 
-     Alle neun gegen den Saum gemessen (09.09.2026), Hue-Abstand zum Nachbarn
+     Alle zehn gegen den Saum gemessen (09.09.2026), Hue-Abstand zum Nachbarn
      mindestens 26 Grad. --- */
   --saum:#FFFFFF;
 
@@ -71,6 +71,7 @@
   --m-unterkunft:#0B6E70;   /* 6,04:1 · H181 */
   --m-ankunft:#7C6100;      /* 5,89:1 · H 47 */
   --m-park:#4D7C0F;         /* 4,99:1 · H 86 */
+  --m-museum:#2E7D32;       /* 5,13:1 · H123 */
   --m-sbahn:#00713A;        /* 6,13:1 · H151 */
   --m-ubahn:#14539A;        /* 7,68:1 · H212 */
   --m-film:#6D28D9;         /* 7,10:1 · H263 */
@@ -315,6 +316,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-pin.zentrum{color:var(--m-zentrum)}
 .ort-pin.wahrzeichen{color:var(--m-wahrzeichen)}
 .ort-pin.film{color:var(--m-film)}
+.ort-pin.museum{color:var(--m-museum)}
 .ort-pin.park{color:var(--m-park)}
 
 /* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
