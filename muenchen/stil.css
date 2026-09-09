@@ -48,19 +48,28 @@
   --akzent-text:#B3231A;    /*  6,12:1 — Text auf heller Tafel */
   --akzent-hell:#FF9B85;    /*  8,94:1 — Text auf dunklem Grund */
 
-  /* --- Zwei Markenfamilien, und die Trennung ist der Punkt ---------------
-     ORTE tragen ein Symbol auf heller Tafel, alle in derselben Farbe: was sie
-     unterscheidet, ist das Zeichen. BAHNEN tragen eine Farbe je Verkehrsmittel
-     und ihr Kuerzel. Vorher trugen beide Farbflaechen - Filmstudios und
-     Tram 25 sogar dieselbe -, und dann sieht ein Ziel aus wie eine Haltestelle.
+  /* --- Die Marken: NUR Zeichen, keine Flaechen -------------------------
+     Orte tragen ihr Symbol, Bahnen ihren Buchstaben - beide farbig, beide ohne
+     Kasten darunter. Was sie trennt, ist die Zeichenart: gezeichnetes Symbol
+     gegen Buchstabe.
 
-     Die drei Bahnfarben sind gegen WEISS gemessen, nicht gegen den Grund: der
-     dicke Umriss traegt die Abgrenzung zur Karte, die Schrift steht auf der
-     Marke. Hue-Abstand untereinander mindestens 61 Grad. --- */
-  --bahn-s:#00713A;         /* Weiss darauf 6,13:1 · H151 */
-  --bahn-u:#14539A;         /* Weiss darauf 7,68:1 · H212 */
-  --bahn-t:#B21229;         /* Weiss darauf 6,97:1 · H351 */
-  --bahn-schrift:#FFFFFF;
+     Der weisse Saum ist keine Zierde, sondern der GRUND, gegen den gemessen
+     wird. Ein Zeichen liegt sonst direkt auf Kartenkacheln, und die wechseln
+     unter ihm - der Kontrast waere eine Zahl, die vom Kartenausschnitt abhaengt
+     und damit nicht pruefbar. Genau dieselbe Falle wie bei Leaflets
+     Attributionsleiste, dort gemessen mit 3,13:1 statt 4,5:1.
+
+     Alle acht gegen den Saum gemessen (09.09.2026), Hue-Abstand zum Nachbarn
+     mindestens 26 Grad. --- */
+  --saum:#FFFFFF;
+  --m-zentrum:#C2410C;      /* 5,18:1 · H 17 */
+  --m-ankunft:#7C6100;      /* 5,89:1 · H 47 */
+  --m-park:#4D7C0F;         /* 4,99:1 · H 86 */
+  --m-sbahn:#00713A;        /* 6,13:1 · H151 */
+  --m-ubahn:#14539A;        /* 7,68:1 · H212 */
+  --m-film:#6D28D9;         /* 7,10:1 · H263 */
+  --m-wahrzeichen:#A21CAF;  /* 6,32:1 · H295 */
+  --m-tram:#B21229;         /* 6,97:1 · H351 */
 
   /* --- Fokus: zwei Lagen, weil kein einzelner Ring 3:1 gegen BEIDE Gruende
          schafft — der helle Ring faellt auf der Kalktafel durch, der dunkle
@@ -253,34 +262,41 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben
    Stylesheet wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
    und wuerde width/height sonst ignorieren.
-   Der Umriss liegt als box-shadow AUSSEN, nicht als border innen - bei dieser
-   Kantenlaenge frisst ein 3-px-Rahmen sonst einen Grossteil der Flaeche. */
 
-/* ORTE: helle Tafel, dunkles Zeichen. 28 px, damit das Symbol bei 16 px noch
-   lesbar ist und die Marke ueber der 24-px-Tastschwelle (WCAG 2.5.8) liegt. */
-.ort-pin{
+   Der Saum entsteht aus vier harten Schlagschatten ohne Weichzeichnung - ein
+   weichgezeichneter Schein wuerde die Kanten aufweichen, und die Seite lebt von
+   harten Kanten. */
+.ort-pin, .halt-pin{
   display:flex; align-items:center; justify-content:center;
-  width:28px; height:28px; background:var(--flaeche); color:var(--tinte);  /* 16,87:1 */
-  box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34)}
-.ort-pin.gross{width:32px; height:32px}
-.ort-pin svg{width:17px; height:17px}
-.ort-pin.gross svg{width:20px; height:20px}
+  filter:
+    drop-shadow( 1.6px 0 0 var(--saum)) drop-shadow(-1.6px 0 0 var(--saum))
+    drop-shadow(0  1.6px 0 var(--saum)) drop-shadow(0 -1.6px 0 var(--saum))}
 
-/* BAHNEN: Farbe je Verkehrsmittel plus Kuerzel. Die FORM unterscheidet
-   zusaetzlich zur Farbe (WCAG 1.4.1) - S rund, U eckig, Tram auf der Spitze,
-   so wie man es auf jedem Netzplan der Stadt sieht. */
+/* ORTE: gezeichnetes Symbol. 34 px Kiste, 30 px Zeichen - gross genug, dass
+   Bahnhof, Rathaus, Kirche, Filmklappe und Baum auf einen Blick zu trennen
+   sind, und ueber der 24-px-Tastschwelle (WCAG 2.5.8). */
+.ort-pin{width:34px; height:34px}
+.ort-pin.gross{width:40px; height:40px}
+.ort-pin svg{width:30px; height:30px; stroke-width:2.3}
+.ort-pin.gross svg{width:36px; height:36px}
+.ort-pin.ankunft{color:var(--m-ankunft)}
+.ort-pin.zentrum{color:var(--m-zentrum)}
+.ort-pin.wahrzeichen{color:var(--m-wahrzeichen)}
+.ort-pin.film{color:var(--m-film)}
+.ort-pin.park{color:var(--m-park)}
+
+/* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
+   keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
+   gefuelltes Viereck neben einem gezeichneten Symbol sah aus wie zwei
+   verschiedene Kartenwerke. 800er Schnitt, weil ein normal starker Buchstabe
+   bei 20 px gegen die Kachelzeichnung untergeht. */
 .halt-pin{
-  display:flex; align-items:center; justify-content:center;
-  width:22px; height:22px; font-family:var(--zahl); font-style:normal;
-  font-size:11px; color:var(--bahn-schrift);
-  box-shadow:0 0 0 2px var(--umriss)}
-.halt-pin.sbahn{background:var(--bahn-s); border-radius:50%}
-.halt-pin.ubahn{background:var(--bahn-u)}
-/* Die Tram steht auf der Spitze. Das Kuerzel dreht im inneren <b> zurueck -
-   ueber ::before waere es ein zweites T neben dem, das die Karte schon setzt. */
-.halt-pin.linie{width:20px; height:20px; background:var(--bahn-t);
-                transform:rotate(45deg)}
-.halt-pin.linie b{font-weight:inherit; display:block; transform:rotate(-45deg)}
+  width:26px; height:26px; font-family:var(--sans); font-style:normal;
+  font-weight:800; font-size:20px; line-height:1}
+.halt-pin.sbahn{color:var(--m-sbahn)}
+.halt-pin.ubahn{color:var(--m-ubahn)}
+.halt-pin.linie{width:24px; height:24px; font-size:18px; color:var(--m-tram)}
+.halt-pin.linie b{font-weight:inherit}
 
 /* Leaflets eigene Sprechblase traegt die Palette der Seite, sonst steht ein
    weisser Systemkasten mitten in einer durchgestalteten Karte. */
@@ -311,9 +327,9 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Bus, reine Nummern - liegt auf der hellen Tafel: dort traegt der Text selbst
    die Unterscheidung, und eine vierte Farbe waere eine Bedeutung, die es nicht
    gibt. */
-.linie--u{background:var(--bahn-u); color:var(--bahn-schrift)}   /* 7,68:1 */
-.linie--s{background:var(--bahn-s); color:var(--bahn-schrift)}   /* 6,13:1 */
-.linie--t{background:var(--bahn-t); color:var(--bahn-schrift)}   /* 6,97:1 */
+.linie--u{background:var(--m-ubahn); color:var(--saum)}   /* 7,68:1 */
+.linie--s{background:var(--m-sbahn); color:var(--saum)}   /* 6,13:1 */
+.linie--t{background:var(--m-tram);  color:var(--saum)}   /* 6,97:1 */
 .linie--r, .linie--b{background:var(--flaeche-2); color:var(--tinte)}  /* 14,02:1 */
 .leaflet-popup-content a{color:var(--akzent-text)}
 .leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
@@ -325,10 +341,10 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
          border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
 .legende li{display:flex; align-items:center; gap:8px; font-size:14px}
 .legende-marke{flex:none; display:flex; align-items:center; justify-content:center;
-               width:30px; height:30px}
-/* Die Marken bringen ihren eigenen Versatzschatten mit; in der Legende steht er
-   im Weg, weil dort kein Kartengrund unter ihnen liegt. */
-.legende .ort-pin{box-shadow:0 0 0 2px var(--umriss)}
+               width:36px; height:34px}
+/* In der Legende liegen die Marken auf der hellen Tafel, nicht auf Kacheln -
+   der Saum waere dort unsichtbar und kostet nur Rechenzeit. */
+.legende .ort-pin, .legende .halt-pin{filter:none}
 
 /* ---------- Quellenfuss ---------- */
 .quellen{margin:28px 0 0; padding:16px 18px;

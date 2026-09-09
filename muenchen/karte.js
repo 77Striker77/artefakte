@@ -41,7 +41,7 @@
   };
 
   var ortSymbol = function (art, gross) {
-    return '<i class="ort-pin' + (gross ? " gross" : "") + '">'
+    return '<i class="ort-pin ' + art + (gross ? " gross" : "") + '">'
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
       + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
       + (SYMBOL[art] || "") + "</svg></i>";
@@ -159,7 +159,7 @@
   DATEN.orte.forEach(function (o) {
     if (!ortEbenen[o.art]) ortEbenen[o.art] = L.layerGroup().addTo(karte);
     var gross = o.art === "ankunft";
-    var kante = gross ? 32 : 28;
+    var kante = gross ? 40 : 34;
     L.marker([o.lat, o.lon], {
       icon: L.divIcon({
         className: "",
@@ -214,8 +214,8 @@
           // Muss zur Kantenlaenge in stil.css passen: Leaflet setzt den Anker
           // auf DIESE Kiste, waehrend das <i> darin seine eigene Groesse hat -
           // stehen sie auseinander, sitzt die Marke neben ihrer Koordinate.
-          iconSize: [22, 22],
-          iconAnchor: [11, 11]
+          iconSize: [26, 26],
+          iconAnchor: [13, 13]
         }),
         title: h.name,
         // keyboard:false, sonst liegen 143 Haltepunkte in der Tabreihenfolge:
@@ -251,7 +251,7 @@
       // Stadt ziehen - und die saehe aus wie eine echte Strecke.
       linie.verlauf.forEach(function (abschnitt) {
         L.polyline(abschnitt, {
-          color: token("--bahn-t"), weight: 4, opacity: 0.95, interactive: false
+          color: token("--m-tram"), weight: 4, opacity: 0.95, interactive: false
         }).addTo(g);
       });
 
@@ -260,8 +260,8 @@
           icon: L.divIcon({
             className: "",
             html: '<i class="halt-pin linie"><b>' + VERKEHR.linie.kuerzel + "</b></i>",
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
           }),
           title: h.name,
           keyboard: false
