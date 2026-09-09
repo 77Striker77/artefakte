@@ -869,16 +869,19 @@
       + deutsch(u.quellen.lokale.abgerufen) + ".";
   })();
 
-  // --- Innenstadt: die dritte Karte, mit Suche und Filter -------------------
-  // Sie beantwortet eine andere Frage als die beiden anderen: die Stadtkarte
-  // sagt "wo liegt was in Muenchen", die Umgebungskarte "was erreiche ich vom
-  // Hotel zu Fuss", diese "wo esse ich was". Darum ein eigener Ausschnitt, eine
-  // eigene Legende - und als einzige der drei ein SUCHFELD: 40 Marken auf drei
-  // Kilometern sind mehr, als man durch Hinsehen durchsucht.
+  // --- Innenstadt -----------------------------------------------------------
+  // Die Karte ist hier der Inhalt, nicht die Illustration: sie steht ganz oben,
+  // ohne Infobox und ohne Kennzahlentafel davor. Beides stand am 09.09.2026
+  // darueber und schob sie unter die Falzkante.
   //
-  // Welche Kategorien es gibt und warum es drei sind, steht oben bei GASTRO -
-  // einmal, nicht hier ein zweites Mal.
-
+  // EIN Untermenue schaltet Karte UND Liste zugleich. Vorher lagen 40 gleich
+  // gebaute Prosakarten untereinander - 19 000 px Scrollhoehe auf dem Handy, und
+  // was ein Katalog sein sollte, war eine Textwand. Ein Katalog braucht Dichte,
+  // keine Absaetze: eine Zeile je Ort, die Prosa erst auf Abruf.
+  //
+  // Die Bahnhalte haengen NICHT am Untermenue. Sie sind Orientierung, kein
+  // Thema - wer nach einem Wirtshaus sucht, will die U-Bahn daneben sehen und
+  // nicht statt dessen.
   // Die Suche faltet Umlaute in BEIDE Richtungen: wer "fruehstueck" tippt, meint
   // "Frühstück", und wer "fruhstuck" tippt, auch. Je Ort ein Heuhaufen pro
   // Faltung ist billiger und durchschaubarer als eine Regel, die beides zugleich
@@ -898,51 +901,210 @@
 
     var LABEL = {}, ZEICHEN = {};
     GASTRO.forEach(function (k) { LABEL[k.id] = k.label; ZEICHEN[k.id] = k.symbol; });
+    LABEL.wahrzeichen = "Wahrzeichen"; LABEL.museum = "Museum";
+    ZEICHEN.wahrzeichen = "wahrzeichen"; ZEICHEN.museum = "museum";
 
-    // Der Marienplatz ist der Bezug des Ausschnitts, aber KEINE Marke: die Karte
-    // traegt genau die 40 Gastro-Punkte, damit der Zaehler "n von m" und das Bild
-    // dasselbe sagen. Ein 41. Punkt in derselben Farbe wie die Wirtshaeuser
-    // (--m-zentrum) waere zusaetzlich eine Verwechslung.
+    // Der Marienplatz ist der Bezug des Ausschnitts, aber keine eigene Marke -
+    // die Karte traegt genau die Orte, die auch in der Liste stehen.
     var bezug = DATEN.orte.filter(function (o) { return o.art === "zentrum"; })[0]
              || { name: DATEN.ziel.name, lat: DATEN.ziel.mitte.lat, lon: DATEN.ziel.mitte.lon };
     var START_ZOOM = 14;
 
-    // Naeherung fuer Stadtmasse, nicht fuer Navigation - und sie ist als
-    // LUFTLINIE ausgewiesen, nicht als Weg. Die Umgebungskarte zeigt, wie weit
-    // die beiden auseinanderliegen: 210 m Luft sind dort 354 m Weg.
+    // Naeherung fuer Stadtmasse. Ausgewiesen als LUFTLINIE, nicht als Weg: die
+    // Umgebungskarte zeigt, wie weit die beiden auseinanderliegen - 210 m Luft
+    // sind dort 354 m Weg.
     var meter = function (a, b, c, d) {
       var R = 6371000, t = Math.PI / 180;
       var x = (d - b) * t * Math.cos((a + c) / 2 * t), y = (c - a) * t;
       return Math.round(R * Math.sqrt(x * x + y * y));
     };
+    var weite = function (m) {
+      return m >= 1000 ? (m / 1000).toFixed(1).replace(".", ",") + " km" : m + " m";
+    };
 
-    karteInnen = L.map("karte-innenstadt", { scrollWheelZoom: true })
-      .setView([bezug.lat, bezug.lon], START_ZOOM);
-    // Nur die Strassenkarte, kein Luftbild: ein Luftbild hilft beim Wiedererkennen
-    // eines Gebaeudes, nicht beim Finden eines Wirtshauses - und ein Umschalter,
-    // der nichts beantwortet, ist ein Bedienelement zu viel.
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(karteInnen);
+    // ===== Öffnungszeiten: aus Text gerechnet, nicht abgeschrieben ===========
+    // Die laengste Zeile je Ort ist die Oeffnungszeit - genau die, die als
+    // Fliesstext den Katalog zur Wand macht und als Streifen in 54 px passt.
+    //
+    // Gerechnet wird nur, was eindeutig dasteht. Was nicht aufgeht, bleibt
+    // UNBEKANNT und wird als dritter Zustand gezeigt - nicht als "zu", denn das
+    // waere eine Aussage, die niemand geprueft hat. Die Quellzeile steht im
+    // aufgeklappten Teil immer daneben: der Streifen ist eine Zusammenfassung,
+    // kein Ersatz.
+    var TAG_KURZ = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    var TAG_NR = { mo: 0, di: 1, mi: 2, do: 3, fr: 4, sa: 5, so: 6,
+      montag: 0, dienstag: 1, mittwoch: 2, donnerstag: 3, freitag: 4, samstag: 5, sonntag: 6 };
 
-    // gefluegel.stufe hat FUENF Zustaende, nicht zwei. Ein Haus mit 'salat'
-    // erfuellt die Bedingung formal und serviert einen Salatteller - wer ein
-    // Hendl wollte, steht dort falsch. Die Stufen werden darum ausgeschrieben
-    // und nie zu ja/nein zusammengefasst.
+    var minuten = function (h, m) { return (+h) * 60 + (m ? +m : 0); };
+    // Eine Spanne, die vor ihrem Anfang endet, laeuft ueber Mitternacht:
+    // 17:00-01:00 sind acht Stunden, nicht minus sechzehn.
+    var spannen = function (text) {
+      if (/geschlossen|ruhetag|closed/i.test(text)) return [];
+      var re = /(\d{1,2})(?::(\d{2}))?\s*[–\-]\s*(\d{1,2})(?::(\d{2}))?/g, m, out = [];
+      while ((m = re.exec(text))) {
+        var von = minuten(m[1], m[2]), bis = minuten(m[3], m[4]);
+        if (bis <= von) bis += 1440;
+        out.push([von, bis]);
+      }
+      return out.length ? out : null;
+    };
+
+    var ausArray = function (arr) {
+      var w = [null, null, null, null, null, null, null];
+      arr.forEach(function (z) {
+        var m = /^\s*([A-Za-zäöüÄÖÜ]+)\s*:\s*(.+?)\s*$/.exec(z);
+        if (!m) return;
+        var i = TAG_NR[m[1].toLowerCase()];
+        if (i === undefined) return;
+        w[i] = spannen(m[2]);
+      });
+      return w;
+    };
+
+    // "Mo, Di, Fr 8–17, Sa 9–17; Mi, Do, So geschlossen" ist die schwierigste
+    // Form: das Komma trennt hier Tage UND Abschnitte. Geloest wird das nicht
+    // durch eine schlauere Regel, sondern durch Sammeln - Tagesangaben ohne
+    // Zeit werden aufgehoben, bis eine Zeit kommt, und gelten dann mit.
+    var ausText = function (s) {
+      var w = [null, null, null, null, null, null, null];
+      if (!s || s === "unknown") return w;
+      var halde = [];
+      s.replace(/\([^)]*\)/g, " ").split(/[;,]/).forEach(function (roh) {
+        var st = roh.trim();
+        if (!st) return;
+        var zu = /geschlossen|ruhetag/i.exec(st);
+        var zahl = st.search(/\d/);
+        var grenze = zu ? zu.index : (zahl >= 0 ? zahl : -1);
+        var tagteil = (grenze >= 0 ? st.slice(0, grenze) : st).trim();
+        var tage = [];
+        // "und" trennt hier Tage - ausser wenn danach eine Ziffer steht, dann
+        // verbindet es zwei Zeitspannen ("11:30–15:00 und 18:00–21:30").
+        tagteil.split(/\s+(?:und|u\.)\s+(?!\d)/i).forEach(function (teil) {
+          var t = teil.trim().replace(/[.:]$/, "");
+          if (!t) return;
+          if (/^(täglich|taeglich|tgl\.?|alle tage)$/i.test(t)) {
+            tage = [0, 1, 2, 3, 4, 5, 6];
+            return;
+          }
+          var r = /^([A-Za-zäöü]+)\s*[–\-]\s*([A-Za-zäöü]+)$/.exec(t);
+          if (r) {
+            var a = TAG_NR[r[1].toLowerCase()], b = TAG_NR[r[2].toLowerCase()];
+            if (a === undefined || b === undefined) return;
+            for (var i = a; ; i = (i + 1) % 7) { tage.push(i); if (i === b) break; }
+            return;
+          }
+          var n = TAG_NR[t.toLowerCase()];
+          if (n !== undefined) tage.push(n);
+        });
+        if (grenze < 0) { halde = halde.concat(tage); return; }   // nur Tage: aufheben
+        var wert = zu ? [] : spannen(st.slice(grenze));
+        halde.concat(tage).forEach(function (i) { w[i] = wert; });
+        halde = [];
+      });
+      return w;
+    };
+
+    var woche = function (o) {
+      return Array.isArray(o.oeffnungszeiten) ? ausArray(o.oeffnungszeiten)
+           : ausText(o.oeffnungszeiten);
+    };
+
+    // Der Streifen: sieben Spalten, oben Mitternacht, unten Mitternacht. Drei
+    // Zustaende, und sie unterscheiden sich in der FORM, nicht nur in der Farbe
+    // (WCAG 1.4.1): gefuellter Block = offen, Schraegstrich = zu, Punktreihe =
+    // unbekannt.
+    var streifen = function (w, titel) {
+      var teile = w.map(function (sp, i) {
+        var x = i * 8;
+        var bahn = '<rect class="wo-bahn" x="' + x + '" y="0" width="6" height="22"/>';
+        if (sp === null) {
+          return bahn + '<circle class="wo-punkt" cx="' + (x + 3) + '" cy="6" r="1"/>'
+            + '<circle class="wo-punkt" cx="' + (x + 3) + '" cy="11" r="1"/>'
+            + '<circle class="wo-punkt" cx="' + (x + 3) + '" cy="16" r="1"/>';
+        }
+        if (!sp.length) {
+          return bahn + '<path class="wo-strich" d="M' + x + ' 22L' + (x + 6) + ' 0"/>';
+        }
+        return bahn + sp.map(function (s) {
+          var y0 = 22 * Math.min(s[0], 1440) / 1440;
+          var y1 = 22 * Math.min(s[1], 1440) / 1440;
+          return '<rect class="wo-offen" x="' + x + '" y="' + y0.toFixed(1)
+            + '" width="6" height="' + Math.max(2, y1 - y0).toFixed(1) + '"/>';
+        }).join("");
+      }).join("");
+      return '<svg class="woche" viewBox="0 0 54 22" width="54" height="22" role="img"'
+        + ' aria-label="' + titel + '">' + teile + "</svg>";
+    };
+
+    // Der Streifen zeigt WELCHE Tage; die Zeile darunter sagt WANN. Gleiche
+    // Zeiten an Nachbartagen werden zusammengefasst - 22 Wirtshaeuser mit je
+    // sieben Zeilen waeren 154 Zeilen Oeffnungszeit im Katalog.
+    // Mitternacht als SCHLUSSZEIT heisst 24, nicht 0: "17–0" liest sich wie ein
+    // Tippfehler, "17–24" wie eine Uhrzeit. Nach Mitternacht zaehlt wieder
+    // normal weiter - 01:00 des Folgetags bleibt "1".
+    var uhr = function (m, schluss) {
+      if (schluss && m >= 1440 && m % 1440 === 0) return "24";
+      var h = Math.floor((m % 1440) / 60), r = m % 60;
+      return h + (r ? ":" + String(r).padStart(2, "0") : "");
+    };
+    var zeitenKurz = function (w) {
+      var schluessel = w.map(function (sp) {
+        return sp === null ? "?" : !sp.length ? "zu"
+          : sp.map(function (s) { return uhr(s[0]) + "–" + uhr(s[1], true); }).join(" + ");
+      });
+      var out = [], lauf = null;
+      schluessel.forEach(function (k, i) {
+        if (lauf && lauf.k === k) { lauf.bis = i; return; }
+        lauf = { k: k, von: i, bis: null };
+        out.push(lauf);
+      });
+      return out.map(function (b) {
+        var tage = b.bis === null ? TAG_KURZ[b.von] : TAG_KURZ[b.von] + "–" + TAG_KURZ[b.bis];
+        return b.k === "?" ? tage + " unbekannt" : b.k === "zu" ? tage + " zu" : tage + " " + b.k;
+      }).join(" · ");
+    };
+
+    // ===== Note: Punkt auf einer BENANNTEN Achse ============================
+    // Die Achse laeuft von 4,0 bis 5,0 und nicht ab null. Das ist ein
+    // Ausschnitt, und er wird ausgeschrieben statt versteckt: alle 34 Noten
+    // liegen zwischen 4,1 und 4,9 - eine Achse ab null zeigte 34 gleich lange
+    // Balken und damit nichts.
+    var NOTE_VON = 4, NOTE_BIS = 5;
+    var noteSkala = function (note) {
+      var t = Math.max(0, Math.min(1, (note - NOTE_VON) / (NOTE_BIS - NOTE_VON)));
+      return '<svg class="note-skala" viewBox="0 0 44 12" width="44" height="12" aria-hidden="true">'
+        + '<path class="ns-achse" d="M2 8h40"/>'
+        + '<path class="ns-tick" d="M2 5v6M22 6v4M42 5v6"/>'
+        + '<circle class="ns-punkt" cx="' + (2 + 40 * t).toFixed(1) + '" cy="8" r="3.2"/>'
+        + "</svg>";
+    };
+
+    // ===== Geflügel: vier Stufen plus "ungeprueft" ==========================
+    // Sie duerfen NICHT zu ja/nein zusammenfallen: ein Haus mit 'salat' serviert
+    // einen Salatteller, kein Hendl. Die Skala zeigt die Stufe, das Wort
+    // daneben nennt sie - die Grafik ersetzt die Aussage nicht, sie verkuerzt
+    // den Weg zu ihr.
     var GEFLUEGEL = {
-      schnitzel:    "Geflügelschnitzel auf der Karte",
-      hauptgericht: "Geflügel als Hauptgericht",
-      salat:        "Geflügel nur als Salat — kein Hendl",
-      keins:        "kein Geflügel",
-      ungeprueft:   "Geflügel ungeprüft"
+      schnitzel:    { stufe: 4, text: "Geflügelschnitzel auf der Karte" },
+      hauptgericht: { stufe: 3, text: "Geflügel als Hauptgericht" },
+      salat:        { stufe: 2, text: "Geflügel nur als Salat — kein Hendl" },
+      keins:        { stufe: 1, text: "kein Geflügel" },
+      ungeprueft:   { stufe: 0, text: "Geflügel ungeprüft" }
     };
     var VEGETARISCH = {
-      hauptgericht: "vegetarisches Hauptgericht",
-      "nur-salat":  "vegetarisch nur als Salat",
-      keins:        "nichts Vegetarisches",
-      ungeprueft:   "ungeprüft"
+      hauptgericht: "vegetarisches Hauptgericht", "nur-salat": "vegetarisch nur als Salat",
+      keins: "nichts Vegetarisches", ungeprueft: "ungeprüft"
     };
+    var stufenSkala = function (stufe, von) {
+      var k = "";
+      for (var i = 1; i <= von; i++) {
+        k += '<rect class="st-feld' + (i <= stufe ? " st-voll" : "") + '" x="'
+          + ((i - 1) * 8) + '" y="0" width="6" height="10"/>';
+      }
+      return '<svg class="stufen" viewBox="0 0 ' + (von * 8 - 2) + ' 10" width="'
+        + (von * 8 - 2) + '" height="10" aria-hidden="true">' + k + "</svg>";
+    };
+
     var KOORDINATE = {
       betrieb: "Der Punkt sitzt auf dem Betrieb selbst.",
       adresse: "Der Punkt trifft das Haus, nicht den Laden darin.",
@@ -951,228 +1113,277 @@
         + "die Marke sitzt am richtigen Gebäude, aber auf dem Nachbarn."
     };
 
-    // 22 Wirtshaeuser mit je sieben Zeilen waeren 154 Zeilen Oeffnungszeiten in
-    // der Liste. Gleiche Zeiten an aufeinanderfolgenden Tagen werden darum
-    // zusammengefasst - gerechnet aus den Daten, nicht von Hand gekuerzt. Passt
-    // eine Zeile nicht ins Muster, bleibt die Liste unveraendert stehen: eine
-    // Kuerzung, die raet, waere schlimmer als eine lange Zeile.
-    var TAG_KURZ = { Montag: "Mo", Dienstag: "Di", Mittwoch: "Mi", Donnerstag: "Do",
-                     Freitag: "Fr", Samstag: "Sa", Sonntag: "So" };
-    var zeitenKurz = function (arr) {
-      var teile = arr.map(function (z) {
-        var m = /^([^:]+):\s*(.*)$/.exec(z);
-        return m && TAG_KURZ[m[1]] ? { tag: TAG_KURZ[m[1]], zeit: m[2].replace(/\s*Uhr\s*$/, "") } : null;
-      });
-      if (teile.some(function (t) { return !t; })) return arr.join(" · ");
-      var out = [], lauf = null;
-      teile.forEach(function (t) {
-        if (lauf && lauf.zeit === t.zeit) { lauf.bis = t.tag; return; }
-        lauf = { von: t.tag, bis: null, zeit: t.zeit };
-        out.push(lauf);
-      });
-      return out.map(function (b) {
-        return (b.bis ? b.von + "–" + b.bis : b.von) + " " + b.zeit;
-      }).join(" · ");
-    };
+    // ===== Der Bestand: Gastro plus Sehenswertes ============================
+    // Sehenswertes kommt aus DATEN.orte, wo auch die Stadtkarte es hernimmt -
+    // eine zweite Fassung derselben Punkte driftet ab.
+    var sehenswert = DATEN.orte.filter(function (o) {
+      return (o.art === "wahrzeichen" || o.art === "museum")
+        && meter(bezug.lat, bezug.lon, o.lat, o.lon) <= 2600;
+    });
 
-    // "unknown" ist kein fehlender Wert, sondern eine Aussage - und wird als
-    // solche gezeigt. Weglassen liesse die Zeile aussehen, als sei sie geprueft.
-    var zeitenText = function (o, kurz) {
-      var z = o.oeffnungszeiten;
-      if (!z) return "unbekannt — nicht erhoben";
-      if (Array.isArray(z)) return kurz ? zeitenKurz(z) : z.join("<br>");
-      return z === "unknown" ? "unbekannt — nicht erhoben" : z;
-    };
+    var alle = g.orte.map(function (o) { return { o: o, gruppe: o.kueche }; })
+      .concat(sehenswert.map(function (o) { return { o: o, gruppe: o.art }; }));
+    alle.forEach(function (e) {
+      e.m = meter(bezug.lat, bezug.lon, e.o.lat, e.o.lon);
+      e.note = (e.o.google && e.o.google.note) || 0;
+      e.w = e.o.oeffnungszeiten ? woche(e.o) : null;
+    });
 
-    var note = function (o) {
-      if (!o.google || !o.google.note) return "";
-      return String(o.google.note).replace(".", ",") + " ★";
-    };
-    // mapsLink() erwartet das Feld `maps`; die Wirtshaeuser tragen es unter
-    // google.maps, weil es aus der Places-API kommt. Die amtliche URL zeigt auf
-    // DEN Eintrag, die Koordinate nur auf die Stelle - darum hat sie Vorrang.
+    var REITER = [
+      { id: "alle",        label: "Alles",       gruppen: GASTRO.map(function (k) { return k.id; }).concat(["wahrzeichen", "museum"]) },
+      { id: "fruehstueck", label: "Frühstück",   gruppen: ["fruehstueck"] },
+      { id: "wirtshaus",   label: "Abendessen",  gruppen: ["wirtshaus"] },
+      { id: "burger",      label: "Burger",      gruppen: ["burger"] },
+      { id: "sehenswert",  label: "Sehenswertes", gruppen: ["wahrzeichen", "museum"] }
+    ];
+    var reiterAktiv = "alle";
+
+    // ===== Karte ============================================================
+    karteInnen = L.map("karte-innenstadt", { scrollWheelZoom: true })
+      .setView([bezug.lat, bezug.lon], START_ZOOM);
+    // Nur die Strassenkarte: ein Luftbild hilft beim Wiedererkennen eines
+    // Gebaeudes, nicht beim Finden eines Wirtshauses.
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(karteInnen);
+
+    var ebene = L.layerGroup().addTo(karteInnen);
+
     var mapsZiel = function (o) {
       return { lat: o.lat, lon: o.lon, maps: (o.google && o.google.maps) || o.maps };
     };
+    var zeile = function (klasse, inhalt) { return '<p class="' + klasse + '">' + inhalt + "</p>"; };
 
-    var sprechblase = function (o) {
-      var z = ["<h3>" + o.name + "</h3>",
-               "<p>" + LABEL[o.kueche] + " · " + o.stadtteil + "</p>"];
-      if (o.google && o.google.note) {
-        z.push('<p class="bewertung"><strong>' + note(o) + "</strong> aus "
+    var sprechblase = function (e) {
+      var o = e.o, z = ["<h3>" + o.name + "</h3>",
+        "<p>" + LABEL[e.gruppe] + " · " + (o.stadtteil || weite(e.m) + " zum " + bezug.name) + "</p>"];
+      if (e.note) {
+        z.push('<p class="bewertung"><strong>' + String(e.note).replace(".", ",") + " ★</strong> aus "
           + o.google.stimmen.toLocaleString("de-DE") + " Bewertungen"
-          + (o.google.rang === "secondary" ? " — weitergegebener Wert, nicht aus der Places-API" : "")
-          + "</p>");
+          + (o.google.rang === "secondary" ? " — weitergegeben, nicht aus der Places-API" : "") + "</p>");
       }
       z.push("<p>" + o.notiz + "</p>");
-
-      if (o.gefluegel) {
-        z.push('<p class="popup-fein"><strong>' + GEFLUEGEL[o.gefluegel.stufe] + "</strong>"
-          + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
-          + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "") + "</p>");
-      }
-      if (o.vegetarisch) {
-        z.push('<p class="popup-fein">' + VEGETARISCH[o.vegetarisch.stufe]
-          + (o.vegetarisch.beispiel ? " — " + o.vegetarisch.beispiel : "") + "</p>");
-      }
-      if (o.fruehstueck_bis) {
-        z.push('<p class="popup-fein">Frühstück bis <strong>' + o.fruehstueck_bis + "</strong></p>");
-      }
-      if (o.preise) {
-        z.push('<p class="popup-fein">' + (o.preise === "unknown" ? "Preise unbekannt — nicht erhoben"
-          : o.preise + (o.preise_stand ? " (Stand " + deutsch(o.preise_stand) + ")" : "")) + "</p>");
-      }
-      z.push('<p class="popup-fein">' + zeitenText(o, false)
-        + (o.oeffnungszeiten_stand ? "<br>Stand " + deutsch(o.oeffnungszeiten_stand) : "") + "</p>");
-      if (o.adresse) z.push('<p class="popup-fein">' + o.adresse + "</p>");
-
-      // Jede Einschraenkung steht in der Sprechblase, nicht nur in den Daten.
-      // Ein Wert ohne seine Einschraenkung behauptet mehr, als er weiss.
+      if (o.gefluegel) z.push(zeile("popup-fein", "<strong>" + GEFLUEGEL[o.gefluegel.stufe].text
+        + "</strong>" + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
+        + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "")));
+      if (e.w) z.push(zeile("popup-fein", zeitenKurz(e.w)));
+      if (o.adresse) z.push(zeile("popup-fein", o.adresse));
       [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis,
        o.koordinate_hinweis || (o.koordinate && o.koordinate !== "betrieb" ? KOORDINATE[o.koordinate] : ""),
-       o.stadtteil_hinweis
-      ].forEach(function (w) {
-        if (w) z.push('<p class="popup-unbekannt">' + w + "</p>");
+       o.stadtteil_hinweis].forEach(function (wn) {
+        if (wn) z.push(zeile("popup-unbekannt", wn));
       });
-
       var ziel = o.web || o.beleg;
-      if (ziel) {
-        z.push('<p class="popup-fein"><a href="' + ziel + '" target="_blank" rel="noopener noreferrer">'
-          + (o.web ? "Website" : "Beleg") + "</a></p>");
-      }
+      if (ziel) z.push('<p class="popup-fein"><a href="' + ziel + '" target="_blank" '
+        + 'rel="noopener noreferrer">' + (o.web ? "Website" : "Beleg") + "</a></p>");
       z.push(mapsLink(mapsZiel(o)));
-      if (o.osm) z.push('<p class="popup-fein">OSM ' + o.osm + "</p>");
+      if (o.osm) z.push(zeile("popup-fein", "OSM " + o.osm));
       return z.join("");
     };
 
-    // Kuechen in der Reihenfolge des Tages, darin die bessere Note zuerst. Wo
-    // keine Note vorliegt, steht der Ort hinten - und NICHT mit einer geratenen
-    // Null, die wie eine Messung aussaehe.
-    var reihe = GASTRO.map(function (k) { return k.id; });
-    var sortiert = g.orte.slice().sort(function (a, b) {
-      var d = reihe.indexOf(a.kueche) - reihe.indexOf(b.kueche);
-      if (d) return d;
-      var na = (a.google && a.google.note) || 0, nb = (b.google && b.google.note) || 0;
-      if (na !== nb) return nb - na;
-      return a.name.localeCompare(b.name, "de");
-    });
-
-    var ebene = L.layerGroup().addTo(karteInnen);
-    var listeEl = document.getElementById("gastro-liste");
-    var eintraege = [];
-
-    sortiert.forEach(function (o) {
-      var m = L.marker([o.lat, o.lon], {
+    alle.forEach(function (e) {
+      e.marke = L.marker([e.o.lat, e.o.lon], {
         icon: L.divIcon({
-          className: "",
-          html: ortSymbol(ZEICHEN[o.kueche], false),
-          // 34 px MUSS die Kantenlaenge von .ort-pin in stil.css sein: Leaflet
-          // ankert an SEINER Kiste, waehrend das <i> darin seine eigene Groesse
-          // hat - stehen die beiden auseinander, sitzt die Marke daneben.
+          className: "", html: ortSymbol(ZEICHEN[e.gruppe], false),
+          // 34 px MUSS der Kantenlaenge von .ort-pin in stil.css entsprechen -
+          // Leaflet ankert an SEINER Kiste, sonst sitzt die Marke daneben.
           iconSize: [34, 34], iconAnchor: [17, 17]
         }),
-        title: o.name + " — " + LABEL[o.kueche] + ", " + o.stadtteil
-             + (note(o) ? ", " + note(o) : ""),
-        // keyboard:false - 40 Marken waeren 40 Tab-Stopps vor dem naechsten
-        // Bedienelement. Erreichbar sind die Orte ueber die Liste darunter, und
-        // die ist der bessere Weg: sie zeigt den Inhalt statt nur die Stelle.
-        keyboard: false,
-        riseOnHover: true
-      }).bindPopup(sprechblase(o));
+        title: e.o.name + " — " + LABEL[e.gruppe]
+             + (e.o.stadtteil ? ", " + e.o.stadtteil : "")
+             + (e.note ? ", " + String(e.note).replace(".", ",") + " ★" : ""),
+        // keyboard:false - 59 Marken waeren 59 Tab-Stopps vor dem naechsten
+        // Bedienelement. Der Weg ueber die Tastatur fuehrt durch die Liste, und
+        // die ist der bessere: sie zeigt den Inhalt statt nur die Stelle.
+        keyboard: false, riseOnHover: true
+      }).bindPopup(sprechblase(e));
+    });
 
-      var art = document.createElement("article");
-      art.className = "gastro-karte";
-      var fakten = [
-        ["Küche", LABEL[o.kueche]],
-        ["Stadtteil", o.stadtteil],
-        ["Offen", zeitenText(o, true)],
-        ["Adresse", o.adresse || "unbekannt"],
-        ["Luftlinie", meter(bezug.lat, bezug.lon, o.lat, o.lon) >= 1000
-          ? (meter(bezug.lat, bezug.lon, o.lat, o.lon) / 1000).toFixed(1).replace(".", ",")
-            + " km zum " + bezug.name
-          : meter(bezug.lat, bezug.lon, o.lat, o.lon) + " m zum " + bezug.name]
-      ];
-      if (o.fruehstueck_bis) fakten.splice(3, 0, ["Frühstück bis", o.fruehstueck_bis]);
-      if (o.gefluegel) fakten.splice(3, 0, ["Geflügel", GEFLUEGEL[o.gefluegel.stufe]]);
-      if (o.preise && o.preise !== "unknown") fakten.splice(3, 0, ["Preise", o.preise]);
+    // Bahnhalte: eigene Ebene, eigener Schalter, NICHT am Untermenue. Beim
+    // Aufschlagen aus - 34 Halte auf demselben Ausschnitt decken die Lokale zu,
+    // und die sind hier das Thema. Der Schalter nennt seine Zahl, damit die
+    // Ebene nicht unsichtbar bleibt, weil man sie nicht vermutet.
+    // Je Verkehrsmittel eine EIGENE Ebene, nicht eine Sammelebene "Halte" -
+    // dieselbe Regel wie auf der Umgebungskarte: wer die S-Bahn sucht, soll die
+    // U-Bahn nicht mit einschalten muessen.
+    var halteEbenen = { sbahn: L.layerGroup(), ubahn: L.layerGroup() };
+    var halteZahl = { sbahn: 0, ubahn: 0 };
+    if (DATEN.bahn && DATEN.bahn.halte) {
+      DATEN.bahn.halte.forEach(function (h) {
+        if (meter(bezug.lat, bezug.lon, h.lat, h.lon) > 2600) return;
+        if (!halteEbenen[h.art]) return;
+        halteZahl[h.art]++;
+        L.marker([h.lat, h.lon], {
+          icon: L.divIcon({ className: "",
+            html: '<i class="halt-pin ' + h.art + '">' + VERKEHR[h.art].kuerzel + "</i>",
+            iconSize: [26, 26], iconAnchor: [13, 13] }),
+          title: h.name + (h.linien && h.linien.length ? " — " + h.linien.join(", ") : ""),
+          keyboard: false
+        }).addTo(halteEbenen[h.art]).bindPopup("<h3>" + h.name + "</h3><p>"
+          + (h.art === "ubahn" ? "U-Bahn-Station" : "S-Bahn / DB-Halt") + "</p>"
+          + linienBlock(h) + mapsLink(h) + zeile("popup-fein", "OSM " + h.osm));
+      });
+    }
 
-      art.innerHTML =
-        '<div class="gastro-kopf">'
-          + '<span aria-hidden="true">' + ortSymbol(ZEICHEN[o.kueche], false) + "</span>"
-          + '<h4><button type="button" class="ort-zeigen">' + o.name + "</button></h4>"
-          + (note(o) ? '<span class="gastro-note">' + note(o) + "</span>" : "")
-        + "</div>"
-        + '<dl class="gastro-fakten">'
-          + fakten.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("")
-        + "</dl>"
-        + '<p class="gastro-notiz">' + o.notiz + "</p>"
-        + [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis]
-            .filter(Boolean)
-            .map(function (w) { return '<p class="gastro-warnung">' + w + "</p>"; }).join("");
+    // ===== Die Liste: ein Katalog, keine Kartenstapel =======================
+    // Eine Zeile je Ort in EINER Tafel, getrennt durch Haarlinien statt durch 40
+    // eigene Rahmen. Die Prosa liegt in <details> - das bringt Tastatur und
+    // Vorlesehilfe von selbst mit, und der Pruefstand klappt es zum Messen auf.
+    var listeEl = document.getElementById("gastro-liste");
+    var tafelEl = document.createElement("div");
+    tafelEl.className = "katalog";
+    listeEl.appendChild(tafelEl);
 
-      // Der Name schwenkt die Karte auf den Ort und oeffnet seine Sprechblase.
-      // Ohne das waeren Liste und Karte zwei Darstellungen, die nichts
-      // voneinander wissen - und die Liste der einzige Weg zu einem Ort, den man
-      // auf der Karte nicht findet.
-      art.querySelector(".ort-zeigen").addEventListener("click", function () {
+    var faktenZeile = function (n, v) {
+      return v ? "<dt>" + n + "</dt><dd>" + v + "</dd>" : "";
+    };
+
+    alle.forEach(function (e) {
+      var o = e.o;
+      var d = document.createElement("details");
+      d.className = "ort";
+      // Die Kategoriefarbe lag bisher NUR im Pin. Als Kante an der Zeile
+      // gruppiert sie den nach Kueche sortierten Katalog sichtbar, ohne eine
+      // Zwischenueberschrift zu kosten - und sie bleibt dabei das, was die
+      // Bildsprache erlaubt: eine Kante, keine Flaeche.
+      d.dataset.gruppe = e.gruppe;
+
+      var streifenTitel = e.w ? "Öffnungszeiten: " + zeitenKurz(e.w) : "Öffnungszeiten unbekannt";
+      var kopf = '<span class="ort-marke" aria-hidden="true">' + ortSymbol(ZEICHEN[e.gruppe], false) + "</span>"
+        + '<span class="ort-name">' + o.name + "</span>"
+        + '<span class="ort-meta">' + (o.stadtteil ? o.stadtteil + " · " : "") + weite(e.m) + "</span>"
+        // Der Platzhalter bleibt, auch wo es keine Oeffnungszeit gibt: sonst
+        // rutscht die ganze Zeile um ein Feld nach links und die Noten der
+        // Nachbarzeilen fluchten nicht mehr.
+        + '<span class="ort-woche">' + (e.w ? streifen(e.w, streifenTitel) : "") + "</span>"
+        + (e.note
+            ? '<span class="ort-note">' + noteSkala(e.note)
+              + '<b>' + String(e.note).replace(".", ",") + "</b></span>"
+            : '<span class="ort-note ort-note--ohne">ohne Note</span>');
+
+      var fakten = faktenZeile("Offen", e.w ? zeitenKurz(e.w) : "unbekannt — nicht erhoben")
+        + faktenZeile("Adresse", o.adresse)
+        + (o.fruehstueck_bis ? faktenZeile("Frühstück bis", o.fruehstueck_bis) : "")
+        + (o.preise && o.preise !== "unknown" ? faktenZeile("Preise", o.preise) : "")
+        + (o.gefluegel
+            ? "<dt>Geflügel</dt><dd>" + stufenSkala(GEFLUEGEL[o.gefluegel.stufe].stufe, 4)
+              + " " + GEFLUEGEL[o.gefluegel.stufe].text
+              + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
+              + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "") + "</dd>"
+            : "")
+        + (o.vegetarisch ? faktenZeile("Vegetarisch", VEGETARISCH[o.vegetarisch.stufe]
+            + (o.vegetarisch.beispiel ? " — " + o.vegetarisch.beispiel : "")) : "")
+        + (e.note ? faktenZeile("Bewertung", String(e.note).replace(".", ",") + " ★ aus "
+            + o.google.stimmen.toLocaleString("de-DE") + " Stimmen"
+            + (o.google.rang === "secondary" ? " (weitergegeben, nicht aus der Places-API)" : "")) : "");
+
+      var warnungen = [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis,
+        o.koordinate_hinweis || (o.koordinate && o.koordinate !== "betrieb" ? KOORDINATE[o.koordinate] : ""),
+        o.stadtteil_hinweis].filter(Boolean);
+
+      var ziel = o.web || o.beleg;
+      d.innerHTML = "<summary>" + kopf + "</summary>"
+        + '<div class="ort-tief">'
+          + '<p class="ort-notiz">' + o.notiz + "</p>"
+          + (fakten ? '<dl class="ort-fakten">' + fakten + "</dl>" : "")
+          + warnungen.map(function (wn) { return '<p class="ort-warnung">' + wn + "</p>"; }).join("")
+          + '<p class="ort-wege">'
+            + '<button type="button" class="ort-zeigen">Auf der Karte zeigen</button>'
+            + (ziel ? ' <a href="' + ziel + '" target="_blank" rel="noopener noreferrer">'
+                + (o.web ? "Website" : "Beleg") + " ↗</a>" : "")
+            + ' <a href="' + ((o.google && o.google.maps) || "https://www.google.com/maps/search/?api=1&query="
+                + encodeURIComponent(o.lat + "," + o.lon))
+              + '" target="_blank" rel="noopener noreferrer">Google Maps ↗</a>'
+          + "</p>"
+        + "</div>";
+
+      d.querySelector(".ort-zeigen").addEventListener("click", function () {
         karteInnen.setView([o.lat, o.lon], Math.max(karteInnen.getZoom(), 16));
-        m.openPopup();
+        e.marke.openPopup();
         document.getElementById("karte-innenstadt").scrollIntoView({ block: "center" });
       });
 
-      listeEl.appendChild(art);
-      var heu = [o.name, o.kurz, LABEL[o.kueche], o.kueche, o.stadtteil].join(" ");
-      eintraege.push({ o: o, m: m, el: art, heu1: falte(heu, false), heu2: falte(heu, true) });
+      tafelEl.appendChild(d);
+      e.el = d;
+      var heu = [o.name, o.kurz, LABEL[e.gruppe], e.gruppe, o.stadtteil].filter(Boolean).join(" ");
+      e.heu1 = falte(heu, false);
+      e.heu2 = falte(heu, true);
     });
 
-    // --- Suche und Filter greifen ZUSAMMEN ----------------------------------
-    // Der Filter sagt, welche Kuechen gelten; die Suche schraenkt darin ein.
-    // Nacheinander statt zusammen waere die haeufigere, falsche Bauform: dann
-    // hebt jeder Tastendruck den Filter auf.
-    var an = {};
-    GASTRO.forEach(function (k) { an[k.id] = true; });
+    // ===== FLIP: die Zeilen wandern, statt zu springen ======================
+    // Uebernommen aus artefakt-bausteine/vorlagen/umordnen-flip.html. Erst ALLE
+    // messen, dann das DOM aendern, dann zurueckschieben und zurueckfuehren -
+    // eine Messung je Element nach der Aenderung waere ein Layout je Element.
+    // Nur transform wird animiert, also laeuft die Bewegung auf dem Compositor.
+    var ruhig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var flip = function (elemente, aendern) {
+      if (ruhig) return aendern();
+      var vorher = new Map();
+      elemente.forEach(function (el) {
+        el.style.transform = "";
+        vorher.set(el, el.getBoundingClientRect());
+      });
+      aendern();
+      var bewegte = [];
+      elemente.forEach(function (el) {
+        var alt = vorher.get(el), neu = el.getBoundingClientRect();
+        if (!neu.width && !neu.height) return;          // ausgehaengt: kein "nachher"
+        var dx = alt.left - neu.left, dy = alt.top - neu.top;
+        if (!dx && !dy) return;
+        el.style.transform = "translate(" + dx + "px," + dy + "px)";
+        bewegte.push([el, dx, dy]);
+      });
+      void document.body.offsetWidth;                   // Startzustand erzwingen
+      bewegte.forEach(function (b) {
+        var el = b[0];
+        el.style.willChange = "transform";
+        var a = el.animate(
+          [{ transform: "translate(" + b[1] + "px," + b[2] + "px)" }, { transform: "translate(0,0)" }],
+          { duration: 450, easing: "cubic-bezier(.22,1,.36,1)", fill: "none" });
+        el.style.transform = "";
+        a.finished.then(function () { el.style.willChange = ""; }).catch(function () {});
+      });
+    };
 
+    // ===== Suche und Untermenü greifen zusammen ============================
     var feld = document.getElementById("gastro-suche");
     var zahlEl = document.getElementById("gastro-zahl");
     var leerEl = document.getElementById("gastro-leer");
 
     function neuZeichnen(springen) {
       var begriff = feld.value.trim();
-      // Mehrere Woerter sind eine UND-Bedingung: "au wirtshaus" meint beides,
-      // nicht irgendeins davon.
       var worte = falte(begriff, false).split(/\s+/).filter(Boolean);
+      var reiter = REITER.filter(function (r) { return r.id === reiterAktiv; })[0];
       var sichtbar = [];
-      eintraege.forEach(function (e) {
-        var passt = an[e.o.kueche] && worte.every(function (w) {
-          return e.heu1.indexOf(w) >= 0 || e.heu2.indexOf(w) >= 0;
+
+      flip(alle.map(function (e) { return e.el; }), function () {
+        alle.forEach(function (e) {
+          var passt = reiter.gruppen.indexOf(e.gruppe) >= 0 && worte.every(function (wo) {
+            return e.heu1.indexOf(wo) >= 0 || e.heu2.indexOf(wo) >= 0;
+          });
+          if (passt) {
+            if (!ebene.hasLayer(e.marke)) ebene.addLayer(e.marke);
+            sichtbar.push(e);
+          } else if (ebene.hasLayer(e.marke)) {
+            ebene.removeLayer(e.marke);
+          }
+          e.el.hidden = !passt;
         });
-        if (passt) {
-          if (!ebene.hasLayer(e.m)) ebene.addLayer(e.m);
-          sichtbar.push(e);
-        } else if (ebene.hasLayer(e.m)) {
-          ebene.removeLayer(e.m);
-        }
-        e.el.hidden = !passt;
       });
 
-      zahlEl.textContent = sichtbar.length + " von " + eintraege.length + " Orten";
+      zahlEl.textContent = sichtbar.length + " von " + alle.length + " Orten";
       leerEl.hidden = sichtbar.length > 0;
       if (!sichtbar.length) {
-        var ausGeschaltet = GASTRO.filter(function (k) { return !an[k.id]; })
-          .map(function (k) { return k.label; });
         leerEl.textContent = begriff
-          ? "Kein Ort passt zu „" + begriff + "“"
-            + (ausGeschaltet.length ? " in den angehakten Kategorien" : "")
+          ? "Kein Ort passt zu „" + begriff + "“ unter " + reiter.label
             + ". Gesucht wird in Name, Küche und Stadtteil."
-          : "Alle Kategorien sind ausgeschaltet — kein Ort auf der Karte.";
+          : "Unter " + reiter.label + " liegt hier nichts.";
       }
 
-      // Der Ausschnitt folgt der SUCHE, nicht dem Filter. Grund: sieben der 40
-      // Haeuser liegen mehr als drei Kilometer vom Marienplatz. Wer "Aubing"
-      // sucht, saehe sonst "1 von 40" und eine leere Innenstadt - genau die
-      // Falle, gegen die der Zaehler gebaut ist. Ein Filter dagegen behaelt den
-      // Ausschnitt: die Karte soll nicht springen, weil man eine Kategorie
-      // ausblendet.
+      // Der Ausschnitt folgt der SUCHE, nicht dem Untermenue: sieben Haeuser
+      // liegen weiter als 3 km vom Marienplatz, der weiteste 11,5 km. Wer
+      // "Aubing" sucht, saehe sonst "1 von 59" und eine leere Innenstadt.
       if (!springen) return;
       if (begriff && sichtbar.length) {
         karteInnen.fitBounds(L.latLngBounds(sichtbar.map(function (e) {
@@ -1183,8 +1394,6 @@
       }
     }
 
-    // Zaehler und Liste sofort, der Ausschnitt nach der Tippause: eine Karte,
-    // die bei jedem Buchstaben springt, ist nicht zu lesen.
     var wartend = null;
     feld.addEventListener("input", function () {
       neuZeichnen(false);
@@ -1192,92 +1401,141 @@
       wartend = setTimeout(function () { neuZeichnen(true); }, 320);
     });
 
-    // Die Legende IST der Filter - gleiche Bauform wie auf den beiden anderen
-    // Reitern, damit ein Knopf hier nicht etwas anderes tut als dort.
-    var ulI = document.getElementById("legende-innenstadt");
-    GASTRO.forEach(function (k) {
-      var n = eintraege.filter(function (e) { return e.o.kueche === k.id; }).length;
+    // ===== Untermenü ========================================================
+    // Ein Satz Knoepfe mit aria-pressed, nicht role="tablist": eine echte
+    // Registerkarte verpflichtet zu Pfeiltasten mit EINEM Tabstopp und zu
+    // tabpanel-Rollen. Hier schaltet die Auswahl zwei Dinge zugleich - Karte und
+    // Liste -, das ist ein Filter und keine Registerkarte.
+    var navEl = document.getElementById("innenstadt-reiter");
+    var knoepfeI = [];
+    REITER.forEach(function (r) {
+      var n = alle.filter(function (e) { return r.gruppen.indexOf(e.gruppe) >= 0; }).length;
       if (!n) return;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "unterknopf";
+      b.dataset.id = r.id;
+      b.setAttribute("aria-pressed", r.id === reiterAktiv ? "true" : "false");
+      b.innerHTML = (r.id === "alle" ? "" : '<span class="unter-marke" aria-hidden="true">'
+          + ortSymbol(ZEICHEN[r.gruppen[0]], false) + "</span>")
+        + r.label + ' <span class="unter-zahl">' + n + "</span>";
+      b.addEventListener("click", function () {
+        reiterAktiv = r.id;
+        knoepfeI.forEach(function (x) {
+          x.setAttribute("aria-pressed", x.dataset.id === r.id ? "true" : "false");
+        });
+        neuZeichnen(false);
+      });
+      knoepfeI.push(b);
+      navEl.appendChild(b);
+    });
+
+    // ===== Kartenebenen, die nicht am Untermenü hängen ======================
+    var ulI = document.getElementById("legende-innenstadt");
+    var legendeEintrag = function (markeHtml, text, zahl, an, schalten) {
       var li = document.createElement("li");
       var b = document.createElement("button");
       b.type = "button";
       b.className = "filter";
-      b.setAttribute("aria-pressed", "true");
-      b.innerHTML = '<span class="legende-marke" aria-hidden="true">'
-          + ortSymbol(k.symbol, false) + "</span>"
-        + '<span class="filter-text">' + k.label
-          + ' <span class="filter-zahl">' + n + "</span></span>";
+      b.setAttribute("aria-pressed", an ? "true" : "false");
+      b.innerHTML = '<span class="legende-marke" aria-hidden="true">' + markeHtml + "</span>"
+        + '<span class="filter-text">' + text
+        + (zahl ? ' <span class="filter-zahl">' + zahl + "</span>" : "") + "</span>";
       b.addEventListener("click", function () {
         var jetzt = b.getAttribute("aria-pressed") === "true";
         b.setAttribute("aria-pressed", jetzt ? "false" : "true");
-        an[k.id] = !jetzt;
-        neuZeichnen(false);
+        schalten(!jetzt);
       });
       li.appendChild(b);
       ulI.appendChild(li);
+      return b;
+    };
+    // "Bahnhalte" heisst der Knopf, nicht "Bahnhalte einblenden": der Aus-Zustand
+    // streicht den Text durch, und "einblenden" durchgestrichen liest sich wie
+    // "geht nicht" statt wie "ist aus".
+    ["sbahn", "ubahn"].forEach(function (art) {
+      if (!halteZahl[art]) return;
+      legendeEintrag('<i class="halt-pin ' + art + '">' + VERKEHR[art].kuerzel + "</i>",
+        VERKEHR[art].label, halteZahl[art], false, function (an) {
+          if (an) halteEbenen[art].addTo(karteInnen); else karteInnen.removeLayer(halteEbenen[art]);
+        });
     });
+    // Die Legende erklaert den Wochenstreifen. Ohne diese Zeile ist er Zierrat:
+    // drei Zustaende, die niemand zuordnen kann, sind schlimmer als kein Bild.
+    var erk = document.createElement("li");
+    erk.className = "legende-erklaerung";
+    erk.innerHTML = '<span class="legende-marke" aria-hidden="true">'
+      + streifen([[[480, 1020]], [[480, 1020]], null, [], [[480, 1020]], [[540, 1020]], []], "") + "</span>"
+      + '<span class="filter-text">Wochenstreifen Mo–So: <b>Block</b> offen, '
+      + "<b>Strich</b> zu, <b>Punkte</b> unbekannt — oben Mitternacht, unten Mitternacht</span>";
+    ulI.appendChild(erk);
 
     neuZeichnen(false);
 
-    // --- Die Tafel ueber der Karte ------------------------------------------
-    var weit = g.orte.filter(function (o) {
-      return meter(bezug.lat, bezug.lon, o.lat, o.lon) > 3000;
-    });
-    var weitest = g.orte.reduce(function (a, o) {
-      return meter(bezug.lat, bezug.lon, o.lat, o.lon)
-           > meter(bezug.lat, bezug.lon, a.lat, a.lon) ? o : a;
-    }, g.orte[0]);
-    tafel("innenstadt-tafel", [
-      ["Was hier liegt", g.anzahl.gesamt + " Orte — "
-        + GASTRO.map(function (k) { return (g.anzahl[k.id] || 0) + " " + k.label; }).join(", ")],
-      ["Ausschnitt", "Innenstadt um den " + bezug.name + ", Zoom " + START_ZOOM],
-      ["Außerhalb", weit.length + " davon liegen weiter als 3 km vom " + bezug.name
-        + " und beim Aufschlagen außerhalb des Bildes — der weiteste "
-        + (meter(bezug.lat, bezug.lon, weitest.lat, weitest.lon) / 1000).toFixed(1).replace(".", ",")
-        + " km (" + weitest.name + "). Die Suche schwenkt zu ihnen."]
-    ], "Die Auswahl ist recherchiert, nicht abgefragt: was auf eine Reisekarte gehört, ist eine "
-     + "Entscheidung. Frühstück und Wirtshäuser stehen als Liste in ihren Abrufskripten.");
+    // ===== Was unter der Karte und unter der Liste stehen MUSS ==============
+    var weit = g.orte.filter(function (o) { return meter(bezug.lat, bezug.lon, o.lat, o.lon) > 3000; });
+    document.getElementById("karte-fuss").innerHTML =
+      "<strong>Ausschnitt: Innenstadt um den " + bezug.name + ".</strong> "
+      + weit.length + " der " + g.anzahl.gesamt + " Lokale liegen weiter als 3 km entfernt und "
+      + "beim Aufschlagen außerhalb des Bildes — die Suche schwenkt zu ihnen. "
+      + (halteZahl.sbahn + halteZahl.ubahn
+          ? "Die " + (halteZahl.sbahn + halteZahl.ubahn) + " Bahnhalte sind ausgeschaltet, weil sie "
+            + "den Ausschnitt zudecken; ein Klick auf die Legende holt sie dazu. " : "")
+      + "Entfernungen sind Luftlinie, keine Gehzeit.";
 
-    // --- Was unter der Karte genannt werden MUSS -----------------------------
-    // Jede Quelle mit Rang und Datum, und jede Luecke ausdruecklich: eine
-    // gefilterte, kuratierte Liste ohne diese Zahlen sieht aus wie eine
-    // vollstaendige.
+    var gz = function (id, pruef) {
+      return g.orte.filter(function (o) { return o.kueche === id && pruef(o); }).length;
+    };
     var ohneZeit = g.orte.filter(function (o) {
       return !o.oeffnungszeiten || o.oeffnungszeiten === "unknown";
     }).length;
     var mitWarnung = g.orte.filter(function (o) {
       return (o.speisekarte && o.speisekarte.warnung) || o.warnung || o.preise_hinweis;
     }).length;
-    var nurAdresse = g.orte.filter(function (o) {
+    var nichtBetrieb = g.orte.filter(function (o) {
       return o.koordinate && o.koordinate !== "betrieb";
     }).length;
     var q = g.quellen;
+
+    // Die Kennzahlen als Zeile, der Volltext auf Abruf: die Luecken MUESSEN
+    // genannt werden, aber ein Absatz von zwoelf Zeilen unter der Liste wird
+    // nicht gelesen und ist damit dieselbe Textwand in klein.
     document.getElementById("gastro-fuss").innerHTML =
-      "<strong>Drei Bestände, drei Ränge — je Ort steht die Quelle in der Sprechblase.</strong> "
-      + GASTRO.map(function (k) {
-          var qq = q[k.id];
-          if (!qq) return "";
-          return k.label + ": " + (g.anzahl[k.id] || 0) + " Orte, " + qq.rang
-               + ", abgerufen " + deutsch(qq.abgerufen);
-        }).filter(Boolean).join(" · ") + ". "
-      + "Die Wirtshäuser sind das einzige der drei mit Bewertungen aus der Places-API; "
-      + "die Frühstücksnoten sind weitergegebene Google-Werte ohne place_id und darum "
-      + "<em>secondary</em>. "
+      '<span class="fuss-zahlen">'
+        + GASTRO.map(function (k) {
+            var qq = q[k.id];
+            return '<b>' + (g.anzahl[k.id] || 0) + "</b> " + k.label
+              + (qq ? ' <i>' + qq.rang + "</i>" : "");
+          }).join("")
+        + '<b>' + ohneZeit + "</b> Öffnungszeiten unbekannt"
+        + '<b>' + mitWarnung + "</b> mit Einschränkung"
+        + '<b>' + nichtBetrieb + "</b> Marke nicht auf dem Betrieb"
+      + "</span>"
+      + "<details class=\"fuss-mehr\"><summary>Woher die Angaben kommen, und was fehlt</summary>"
+      + "<p>Drei Bestände, drei Ränge, alle abgerufen am "
+        + deutsch(q.wirtshaus ? q.wirtshaus.abgerufen : q.burger.abgerufen) + ". "
+      + "Die <strong>Wirtshäuser</strong> sind das einzige der drei mit Bewertungen aus der "
+      + "Places-API"
       + (q.wirtshaus && q.wirtshaus.anzahl
-          ? "Von " + (g.anzahl.wirtshaus || 0) + " Speisekarten sind "
-            + q.wirtshaus.anzahl.karte_geprueft + " einzeln geöffnet worden. "
-            + "„Geflügel“ hat fünf Stufen, nicht zwei: bei "
-            + q.wirtshaus.anzahl.gefluegel_nur_salat + " Häusern kommt es nur als Salat auf den "
-            + "Tisch — wer ein Hendl will, steht dort falsch. "
-          : "")
-      + mitWarnung + " der " + g.anzahl.gesamt + " Orte tragen eine ausdrückliche Einschränkung "
-      + "zu Preis, Karte oder Öffnungszeit; sie steht in der Sprechblase und in der Liste. "
-      + ohneZeit + " Öffnungszeiten sind <strong>unbekannt</strong> und werden auch so gezeigt — "
-      + "nicht geschätzt. Bei " + nurAdresse + " Orten sitzt die Marke <strong>nicht auf dem "
-      + "Betrieb</strong>, sondern auf dem Haus, einem Marktplatz oder sogar einem anderen Laden "
-      + "unter derselben Adresse; welcher Fall vorliegt, sagt jede Sprechblase einzeln. "
-      + "Nicht gemessen: <strong>niemand war vor Ort</strong>, und die Entfernung in der Liste ist "
-      + "Luftlinie, keine Gehzeit.";
+          ? "; " + q.wirtshaus.anzahl.karte_geprueft + " der " + (g.anzahl.wirtshaus || 0)
+            + " Speisekarten sind einzeln geöffnet worden" : "")
+      + ". Die <strong>Frühstücksnoten</strong> sind weitergegebene Google-Werte ohne place_id "
+      + "und darum <em>secondary</em>. Bei <strong>" + nichtBetrieb + "</strong> Orten sitzt die "
+      + "Marke nicht auf dem Betrieb, sondern auf dem Haus, einem Marktplatz oder einem anderen "
+      + "Laden unter derselben Adresse; welcher Fall vorliegt, sagt jede Sprechblase einzeln.</p>"
+      + "<p>„Geflügel“ hat <strong>fünf</strong> Stufen, nicht zwei: bei "
+      + gz("wirtshaus", function (o) { return o.gefluegel && o.gefluegel.stufe === "salat"; })
+      + " Häusern kommt es nur als Salat auf den Tisch — wer ein Hendl will, steht dort falsch. "
+      + "<strong>" + ohneZeit + "</strong> Öffnungszeiten sind unbekannt und werden auch so "
+      + "gezeigt, nicht geschätzt.</p>"
+      + "<p><strong>Der Wochenstreifen ist gerechnet, nicht abgeschrieben</strong> — aus der "
+      + "Öffnungszeit des Bestands. Was sich nicht eindeutig auflösen ließ, steht als "
+      + "<em>unbekannt</em> und nicht als „zu“. Die Quellzeile steht im aufgeklappten Teil "
+      + "daneben. Die Notenachse ist ein <strong>Ausschnitt von 4,0 bis 5,0</strong>: alle Noten "
+      + "liegen zwischen 4,1 und 4,9, eine Achse ab null zeigte 34 gleich lange Balken.</p>"
+      + "<p><strong>Nicht gemessen:</strong> niemand war vor Ort, kein Preis stammt von einer "
+      + "Karte am Tisch, und die Entfernung ist Luftlinie, keine Gehzeit.</p>"
+      + "</details>";
   })();
 
   // --- Menueleiste ---------------------------------------------------------
@@ -1307,6 +1565,15 @@
       // auskommt.
       b.parentNode.dataset.aktiv = an ? "true" : "false";
     });
+    // Die Infobox steht ueber ALLEN Ansichten - ausser wo ein Reiter sie
+    // ausdruecklich abbestellt. 'Innenstadt' tut das: der Reiter handelt von der
+    // Stadt, nicht von der Buchung, und die Box schob dort die Karte unter die
+    // Falzkante. Der Schalter steht in reise.json, nicht hier: der naechste
+    // Reiter stellt dieselbe Frage, und ein Sonderfall im Skript beantwortet
+    // sie nur einmal.
+    var eintrag = DATEN.menue.filter(function (m) { return m.id === id; })[0];
+    var box = document.querySelector(".infobox");
+    if (box) box.hidden = eintrag && eintrag.reisedaten === false;
     // Leaflet vermisst seinen Behaelter beim Anlegen. Eine Karte, die in einem
     // ausgeblendeten Abschnitt entstand, bleibt grau, bis invalidateSize() sie
     // neu vermisst - das gilt fuer ALLE DREI Karten. Wer eine vierte dazustellt

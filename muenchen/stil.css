@@ -515,7 +515,10 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    zusammen: der Filter sagt, welche Kuechen gelten, die Suche schraenkt darin
    ein. Der Zaehler daneben ist Pflicht, nicht Zierde - eine gefilterte Karte
    sieht sonst aus wie eine leere. */
-.suchleiste{display:grid; grid-template-columns:1fr auto; gap:8px 14px;
+/* Das Feld ist auf 42 Zeichen gedeckelt und der Zaehler steht DANEBEN, nicht am
+   rechten Rand: ein 1000 px breites Suchfeld sieht leer aus, und ein Zaehler
+   einen Meter weiter rechts gehoert optisch nicht mehr dazu. */
+.suchleiste{display:grid; grid-template-columns:minmax(0,42ch) auto 1fr; gap:8px 14px;
             align-items:center; padding:12px 14px;
             background:var(--flaeche); color:var(--tinte);
             border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
@@ -539,40 +542,169 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
            font-size:14px; font-weight:600}
 
-/* ---------- Trefferliste ----------
-   Dieselbe Auswahl wie die Karte, in Worten: was die Suche wegnimmt,
-   verschwindet aus beidem. Die Karte sagt WO, die Liste sagt WAS - Oeffnungs-
-   zeiten und Preise liest man nicht aus einer Marke ab. */
-#gastro-liste{display:grid; gap:14px;
-              grid-template-columns:repeat(auto-fit, minmax(280px, 1fr))}
-.gastro-karte{padding:14px 16px; background:var(--flaeche); color:var(--tinte-leise);
-              border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
-.gastro-kopf{display:flex; align-items:center; gap:8px; margin:0 0 8px}
-.gastro-kopf .ort-pin{flex:none; filter:none}   /* auf der Tafel traegt kein Saum */
-.gastro-karte h4{margin:0; flex:1 1 auto; font-family:var(--pixel); font-size:17px}
-/* Der Name ist ein Knopf: er schwenkt die Karte auf den Ort und oeffnet seine
-   Sprechblase. Das ist die Verbindung zwischen Liste und Karte - ohne sie waeren
-   es zwei Darstellungen, die nichts voneinander wissen. Unterstrichen, weil ein
-   Knopf, der wie eine Ueberschrift aussieht, sonst keiner ist. */
-.ort-zeigen{display:inline-flex; align-items:center; min-height:32px;
-            padding:0; font:inherit; text-align:left; cursor:pointer;
-            color:var(--tinte); background:transparent; border:0;
-            text-decoration:underline; text-decoration-thickness:2px;
-            text-underline-offset:3px; text-decoration-color:var(--akzent)}
-.ort-zeigen:hover{color:var(--akzent-text)}                      /* 6,12:1 */
-.gastro-note{flex:none; font-family:var(--zahl); font-size:11px; color:var(--tinte)}
-.gastro-fakten{display:grid; grid-template-columns:auto 1fr; gap:4px 10px;
-               margin:0 0 10px; padding:10px 0; font-size:13px;
-               border-top:2px solid var(--linie); border-bottom:2px solid var(--linie)}
-.gastro-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
-                  text-transform:uppercase; padding-top:2px}
-.gastro-fakten dd{margin:0; color:var(--tinte)}
-.gastro-notiz{margin:0; font-size:13.5px; line-height:1.55}
+/* ---------- Untermenue: waehlt EINE Sache, schaltet Karte UND Liste ----------
+   Nicht dieselbe Form wie die Hauptnavigation im Kopf: die kippt um ihre
+   Unterkante und traegt die Seite, diese hier sitzt im Inhalt und schaltet
+   darin. Zwei Navigationen, die gleich aussehen, sehen aus wie eine kaputte. */
+.untermenue{display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 12px}
+.unterknopf{
+  display:inline-flex; align-items:center; gap:7px; min-height:40px;
+  padding:6px 12px 6px 7px; cursor:pointer;
+  font-family:var(--pixel); font-size:16px; line-height:1;
+  color:var(--auf-grund-leise);                      /* 9,45:1 auf --grund */
+  background:transparent; border:2px solid var(--auf-grund-leise)}
+.unterknopf:hover{color:var(--auf-grund); border-color:var(--auf-grund)}
+/* Der Aktivzustand haengt NICHT allein an der Farbe (WCAG 1.4.1): der Knopf
+   wechselt den Grund und wird zur hellen Tafel - dieselbe Umkehr wie im
+   Hauptmenue, damit "aktiv" auf der Seite ueberall dasselbe heisst. */
+.unterknopf[aria-pressed="true"]{
+  background:var(--flaeche); color:var(--tinte);     /* 16,87:1 */
+  border-color:var(--umriss); box-shadow:var(--schatten-klein)}
+.unter-marke{flex:none; display:flex; width:26px; height:26px}
+.unter-marke .ort-pin{width:26px; height:26px; filter:none}
+.unter-marke .ort-pin svg{width:22px; height:22px}
+.unter-zahl{font-family:var(--zahl); font-size:10.5px}
+
+/* ---------- Der Katalog ----------
+   EINE Tafel mit Haarlinien dazwischen, nicht 40 eigene Rahmen: 40 Kaesten mit
+   dickem Umriss und hartem Versatz sind kein Katalog, sondern ein Stapel. Die
+   Zeile traegt Name, Ort, Wochenstreifen und Note; die Prosa liegt in <details>
+   und kommt auf Abruf. Das ist der Unterschied zwischen 19 000 px Scrollhoehe
+   und 2 600 px bei gleichem Inhalt. */
+.katalog{background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.ort{border-top:2px solid var(--linie); border-left:5px solid transparent}
+.ort:first-child{border-top:0}
+/* Die Kategoriefarbe als KANTE, nicht als Flaeche - so will es die Bildsprache
+   ("warme Toene sind Punkte und Kanten, nie Flaechen"). Sie gruppiert den nach
+   Kueche sortierten Katalog sichtbar und spart die Zwischenueberschrift. Alle
+   fuenf Werte liegen ueber 3:1 gegen die Tafel, also ueber der Schwelle fuer
+   grafische Elemente (WCAG 1.4.11). */
+.ort[data-gruppe="fruehstueck"]{border-left-color:var(--m-ankunft)}    /* 5,44:1 */
+.ort[data-gruppe="wirtshaus"]  {border-left-color:var(--m-zentrum)}    /* 4,78:1 */
+.ort[data-gruppe="burger"]     {border-left-color:var(--m-film)}       /* 6,56:1 */
+.ort[data-gruppe="wahrzeichen"]{border-left-color:var(--m-wahrzeichen)}
+.ort[data-gruppe="museum"]     {border-left-color:var(--m-museum)}
+
+/* Benannte Felder statt Spaltenzaehlen: die Zeile hat sechs Teile, und einer
+   davon (der Wochenstreifen) fehlt bei Sehenswuertem. Mit reinen Spalten
+   rutschte dort alles um eins nach links und die Noten fluchteten nicht mehr.
+   Der leere Platzhalter kommt aus dem Skript, die Zuordnung von hier. */
+.ort > summary{
+  display:grid; align-items:center; gap:4px 12px; padding:9px 14px;
+  cursor:pointer; list-style:none;
+  grid-template-columns:auto minmax(0,1fr) auto auto auto auto;
+  grid-template-areas:"marke name meta woche note zeichen"}
+.ort-marke{grid-area:marke}
+.ort-name{grid-area:name}
+.ort-meta{grid-area:meta}
+.ort-woche{grid-area:woche}
+.ort-note{grid-area:note}
+.ort > summary::after{grid-area:zeichen}
+.ort > summary::-webkit-details-marker{display:none}
+.ort > summary:hover{background:var(--flaeche-2)}
+/* Das Auf-und-Zu-Zeichen ist ein Zeichen, kein Dreieck: die Seite hat keine
+   runden Formen, und ein gedrehtes Dreieck braucht eine Drehung, die es hier
+   sonst nirgends gibt. */
+.ort > summary::after{
+  content:"+"; font-family:var(--zahl); font-size:14px; color:var(--akzent-text);
+  justify-self:end}                                  /* 6,12:1 */
+.ort[open] > summary::after{content:"–"}
+.ort[open] > summary{background:var(--flaeche-2)}
+
+.ort-marke{flex:none; display:flex; width:30px; height:30px}
+.ort-marke .ort-pin{width:30px; height:30px; filter:none}
+.ort-marke .ort-pin svg{width:26px; height:26px}
+.ort-name{font-family:var(--pixel); font-size:17px; line-height:1.15;
+          overflow-wrap:anywhere}
+.ort-meta{font-size:12.5px; color:var(--tinte-leise); white-space:nowrap}
+.ort-woche{display:flex}
+/* Tabellenziffern: die Noten stehen untereinander und sollen fluchten. */
+.ort-note{display:flex; align-items:center; gap:6px;
+          font-family:var(--zahl); font-size:12px;
+          font-variant-numeric:tabular-nums; white-space:nowrap}
+.ort-note--ohne{color:var(--tinte-leise); font-size:10.5px}  /* 6,50:1 */
+
+/* --- Der Wochenstreifen: sieben Spalten, oben und unten Mitternacht ---
+   Drei Zustaende, unterschieden in der FORM und nicht nur in der Farbe
+   (WCAG 1.4.1). Die Bahn dahinter ist Dekoration; was etwas bedeutet - Block,
+   Strich, Punkte - steht in Tinte auf der Tafel: 16,87:1. */
+.woche{display:block; flex:none}
+.wo-bahn{fill:var(--flaeche-2)}
+.wo-offen{fill:var(--tinte)}
+.wo-strich{stroke:var(--tinte-leise); stroke-width:1.2; fill:none}
+.wo-punkt{fill:var(--tinte-leise)}
+
+/* --- Die Notenachse: ein AUSSCHNITT von 4,0 bis 5,0, kein Balken ab null ---
+   Der Punkt ist der Wert, die Achse der Rahmen. Warme Toene sind auf dieser
+   Seite Punkte und Kanten, nie Flaechen - ein Punkt ist genau der Fall. */
+.note-skala{display:block; flex:none}
+.ns-achse{stroke:var(--tinte-leise); stroke-width:1.5; fill:none}
+.ns-tick{stroke:var(--tinte-leise); stroke-width:1; fill:none}
+.ns-punkt{fill:var(--akzent-text)}                   /* 6,12:1 */
+
+/* --- Stufenskala: vier Felder, gefuellt bis zur Stufe --- */
+.stufens, .stufen{display:inline-block; vertical-align:-1px; margin-right:6px}
+.st-feld{fill:none; stroke:var(--tinte-leise); stroke-width:1}
+.st-voll{fill:var(--tinte); stroke:var(--tinte)}
+
+/* --- Der aufgeklappte Teil --- */
+.ort-tief{padding:2px 14px 14px 56px; border-top:2px solid var(--linie)}
+.ort-notiz{margin:10px 0 0; font-size:14px; line-height:1.55;
+           color:var(--tinte-leise); max-width:68ch}   /* Lesemass, ~68 Zeichen */
+.ort-fakten{display:grid; grid-template-columns:auto minmax(0,1fr); gap:5px 12px;
+            margin:12px 0 0; padding:12px 0 0; font-size:13.5px;
+            border-top:2px solid var(--linie)}
+.ort-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+               text-transform:uppercase; color:var(--tinte-leise); padding-top:3px}
+.ort-fakten dd{margin:0; color:var(--tinte)}
 /* Eine Einschraenkung wird nicht kleiner gesetzt als der Wert, den sie
    einschraenkt - sonst liest man den Wert und die Warnung nicht. */
-.gastro-warnung{margin:10px 0 0; padding:8px 10px; font-size:12.5px;
-                background:var(--warn-bg); color:var(--warn)}    /* 5,18:1 */
-.gastro-karte a{color:var(--akzent-text)}                        /* 6,12:1 */
+.ort-warnung{margin:10px 0 0; padding:8px 10px; font-size:13px;
+             background:var(--warn-bg); color:var(--warn)}   /* 5,18:1 */
+.ort-wege{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px;
+          margin:14px 0 0; font-size:13.5px}
+.ort-wege a{color:var(--akzent-text); font-weight:700}       /* 6,12:1 */
+/* 44 px, nicht 34: der projekteigene Pruefstand misst gegen 44x44 (WCAG 2.5.5),
+   und dieser Knopf ist ein echtes Bedienziel im Fliesstext - anders als eine
+   Kartenmarke, bei der die Seite die Unterschreitung begruendet in Kauf nimmt. */
+.ort-zeigen{
+  min-height:44px; padding:8px 14px; cursor:pointer;
+  font-family:var(--sans); font-size:13.5px; font-weight:700;
+  color:var(--tinte); background:var(--flaeche);
+  border:2px solid var(--umriss); box-shadow:2px 2px 0 var(--schattenfarbe)}
+.ort-zeigen:hover{background:var(--akzent); color:var(--tinte)}  /* 5,95:1 */
+.ort-zeigen:active{box-shadow:none; transform:translate(2px,2px)}
+
+/* Die Erklaerzeile des Streifens steht IN der Legende, nicht in einer Fussnote:
+   drei Zustaende, die niemand zuordnen kann, sind schlimmer als kein Bild.
+   Eigene Zeile (flex-basis 100 %), sonst quetscht sie sich neben die Schalter
+   und beide werden unlesbar - so gesehen im ersten Rendering. */
+.legende-erklaerung{flex:1 0 100%; display:flex; align-items:center; gap:10px;
+                    margin-top:8px; padding-top:10px;
+                    border-top:2px solid var(--linie);
+                    font-size:12.5px; color:var(--tinte-leise)}  /* 6,50:1 */
+/* Die Beispielmarke ist hier ein 54 px breiter Streifen, keine 34-px-Marke -
+   ohne diese Zeile schneidet .legende-marke ihn ab, und das Beispiel zeigt
+   dann vier Tage statt sieben. */
+.legende-erklaerung .legende-marke{width:auto; height:auto}
+.legende-erklaerung .filter-text{max-width:60ch}
+.legende-erklaerung b{color:var(--tinte)}
+
+/* ---------- Der Fuss: Zahlen als Zeile, Volltext auf Abruf ----------
+   Die Luecken MUESSEN genannt werden. Ein Absatz von zwoelf Zeilen unter der
+   Liste wird aber nicht gelesen und ist damit dieselbe Textwand in klein. */
+.fuss-zahlen{display:flex; flex-wrap:wrap; gap:6px 20px; margin:0 0 10px;
+             font-size:12.5px; align-items:baseline}
+.fuss-zahlen b{font-family:var(--zahl); font-size:15px; color:var(--auf-grund);
+               margin-right:5px; font-variant-numeric:tabular-nums}
+.fuss-zahlen i{font-family:var(--zahl); font-size:10px; font-style:normal;
+               letter-spacing:.5px; margin-left:5px; opacity:.8}
+.fuss-mehr summary{cursor:pointer; font-family:var(--zahl); font-size:10.5px;
+                   letter-spacing:.5px; text-transform:uppercase;
+                   color:var(--akzent-hell)}          /* 8,94:1 auf --grund */
+.fuss-mehr p{margin:10px 0 0; max-width:74ch}
+.fuss-mehr strong, .fuss-mehr em{color:var(--auf-grund)}
 
 /* ---------- Quellenfuss ---------- */
 .quellen{margin:28px 0 0; padding:16px 18px;
@@ -590,10 +722,27 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   outline:3px solid var(--fokus-innen); outline-offset:0;
   box-shadow:0 0 0 6px var(--fokus-aussen)}
 
+/* Die Katalogzeile bricht frueher um als die Seite: sechs Teile nebeneinander
+   brauchen rund 680 px, sonst wird der Name auf zwei Zeichen gequetscht. Die
+   Marke steht dann links ueber alle drei Zeilen, die Note rechts daneben. */
+@media (max-width:680px){
+  .ort > summary{
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "marke name  zeichen"
+      "marke meta  note"
+      "marke woche note"}
+  .ort-marke{align-self:start; margin-top:2px}
+  .ort > summary::after{align-self:start}
+  .ort-tief{padding-left:14px}
+}
+
 @media (max-width:520px){
   main{padding:22px 14px 36px}
   .legende{gap:8px 12px}
   /* Feld und Zaehler untereinander: nebeneinander bleibt fuer das Feld auf
      320 px keine Breite uebrig, in der man einen Ortsnamen noch liest. */
   .suchleiste{grid-template-columns:1fr}
+  .untermenue{gap:6px}
+  .unterknopf{font-size:15px; padding:6px 10px 6px 6px}
 }

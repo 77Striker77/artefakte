@@ -40,7 +40,8 @@ const DATEN = {
   {
    "id": "innenstadt",
    "label": "Innenstadt",
-   "ansicht": "feld-innenstadt"
+   "ansicht": "feld-innenstadt",
+   "reisedaten": false
   },
   {
    "id": "bahn",
@@ -2128,7 +2129,7 @@ const DATEN = {
     "kurz": "Coffee Twins",
     "lat": 48.121111,
     "lon": 11.560789,
-    "notiz": "Specialty Coffee von JB Kaffee (Sulzemoos) und eine eigene Backstube unter einem Dach — von den Zwillingen Daniel und Jonas Fondaj 2022 eroeffnet. Theke mit hausgemachtem Kuchen und Gebaeck, veganes Bananenbrot, Hafer- und Sojamilch ohne Aufpreis.",
+    "notiz": "Specialty Coffee von JB Kaffee (Sulzemoos) und eine eigene Backstube unter einem Dach — von den Zwillingen Daniel und Jonas Fondaj 2022 eröffnet. Theke mit hausgemachtem Kuchen und Gebäck, veganes Bananenbrot, Hafer- und Sojamilch ohne Aufpreis.",
     "adresse": "Ehrengutstraße 18, 80469 München",
     "stadtteil": "Ludwigsvorstadt",
     "koordinate": "adresse",
@@ -2157,7 +2158,7 @@ const DATEN = {
     "kurz": "Botanista",
     "lat": 48.130584,
     "lon": 11.567119,
-    "notiz": "Urban Jungle: Ziegelwaende, Pflanzendecke, Makramee, gesessen wird zum Teil auf Haengeschaukeln. Bowls, Protein-Shakes, vegane Kuchen, zucker- und glutenfreie Varianten. Am Wochenende reservieren, abends voll.",
+    "notiz": "Urban Jungle: Ziegelwände, Pflanzendecke, Makramee, gesessen wird zum Teil auf Hängeschaukeln. Bowls, Protein-Shakes, vegane Kuchen, zucker- und glutenfreie Varianten. Am Wochenende reservieren, abends voll.",
     "adresse": "Pestalozzistraße 20, 80469 München",
     "stadtteil": "Isarvorstadt",
     "koordinate": "adresse",
@@ -2185,7 +2186,7 @@ const DATEN = {
     "kurz": "Anna Ekke",
     "lat": 48.130109,
     "lon": 11.571682,
-    "notiz": "Die breiteste Fruehstueckskarte im Glockenbach: Shakshuka, Eggs Benedict, vegane Pancakes, French Toast, Hummus Brekkie, Huevos Rancheros. Fairtrade-Kaffee, grosse Fensterfront, Terrasse, Wandillustrationen.",
+    "notiz": "Die breiteste Frühstückskarte im Glockenbach: Shakshuka, Eggs Benedict, vegane Pancakes, French Toast, Hummus Brekkie, Huevos Rancheros. Fairtrade-Kaffee, große Fensterfront, Terrasse, Wandillustrationen.",
     "adresse": "Kolosseumstraße 6, 80469 München",
     "stadtteil": "Isarvorstadt",
     "koordinate": "adresse",
@@ -2213,7 +2214,7 @@ const DATEN = {
     "kurz": "Rosi",
     "lat": 48.131299,
     "lon": 11.588145,
-    "notiz": "Kaffeehaus und Bar am Gasteig, durchgehend von morgens bis nachts. Die Karte spannt vom Bircher-Muesli bis zur Weisswurst, vegetarisch, vegan und glutenfrei sind ausgewiesen. Lebhaft und laut, zentral, rund 20–30 Euro pro Kopf beim Fruehstueck.",
+    "notiz": "Kaffeehaus und Bar am Gasteig, durchgehend von morgens bis nachts. Die Karte spannt vom Bircher-Müsli bis zur Weißwurst, vegetarisch, vegan und glutenfrei sind ausgewiesen. Lebhaft und laut, zentral, rund 20–30 Euro pro Kopf beim Frühstück.",
     "adresse": "Rosenheimer Straße 2, 81669 München",
     "stadtteil": "Au",
     "koordinate": "adresse",
@@ -2230,7 +2231,7 @@ const DATEN = {
     "oeffnungszeiten": "Mo–Do 8–24, Fr und Sa 8–1, So 9–24",
     "oeffnungszeiten_stand": "2026-09-09",
     "fruehstueck_bis": "16:00",
-    "phoenix_naehe": "teilweise — grosse Karte statt Vitrine",
+    "phoenix_naehe": "teilweise — große Karte statt Vitrine",
     "beleg": "https://rosi-muenchen.de/fruehstueck/"
    },
    {
@@ -2241,7 +2242,7 @@ const DATEN = {
     "kurz": "Luffy",
     "lat": 48.130316,
     "lon": 11.567096,
-    "notiz": "Japanische Souffle-Pancakes, 10–13 Euro, seit 2022 der lauteste Gastro-Hype der Stadt. Am Wochenende steht eine Schlange vor der Tuer; der Betreiber empfiehlt selbst, unter der Woche zu kommen. Monoprodukt — kein Fruehstueckssortiment.",
+    "notiz": "Japanische Souffle-Pancakes, 10–13 Euro, seit 2022 der lauteste Gastro-Hype der Stadt. Am Wochenende steht eine Schlange vor der Tür; der Betreiber empfiehlt selbst, unter der Woche zu kommen. Monoprodukt — kein Frühstückssortiment.",
     "adresse": "Pestalozzistraße 24, 80469 München",
     "stadtteil": "Isarvorstadt",
     "koordinate": "adresse",
@@ -2255,7 +2256,7 @@ const DATEN = {
      "rang": "secondary",
      "abgerufen": "2026-09-09"
     },
-    "oeffnungszeiten": "Di–So 9–20 (Kueche bis 19:30), Mo Ruhetag",
+    "oeffnungszeiten": "Di–So 9–20 (Küche bis 19:30), Mo Ruhetag",
     "oeffnungszeiten_stand": "2026-09-09",
     "fruehstueck_bis": "20:00",
     "phoenix_naehe": "Hype-Pol",
@@ -2269,7 +2270,7 @@ const DATEN = {
     "kurz": "Café Blá",
     "lat": 48.129309,
     "lon": 11.58627,
-    "notiz": "Islaendisch: 'Blá' ist Blau, und Blau traegt den ganzen Raum. Specialty Coffee mit Bohnenverkauf, Waffeln suess 5,20 Euro und herzhaft 5,80 Euro, Kuchen und Bowls alles selbst gemacht. Keine Tischreservierung.",
+    "notiz": "Isländisch: 'Blá' ist Blau, und Blau trägt den ganzen Raum. Specialty Coffee mit Bohnenverkauf, Waffeln süß 5,20 Euro und herzhaft 5,80 Euro, Kuchen und Bowls alles selbst gemacht. Keine Tischreservierung.",
     "adresse": "Lilienstraße 34, 81669 München",
     "stadtteil": "Au",
     "koordinate": "adresse",
@@ -2287,7 +2288,7 @@ const DATEN = {
     "oeffnungszeiten_stand": "2026-09-09",
     "fruehstueck_bis": "18:00",
     "phoenix_naehe": "mittel",
-    "warnung": "Oeffnet unter der Woche erst um 11 — als frueher Fruehstuecksort faellt es damit aus.",
+    "warnung": "Öffnet unter der Woche erst um 11 — als früher Frühstücksort fällt es damit aus.",
     "beleg": "https://cafebla.de/pages/location-munich"
    },
    {
@@ -2298,7 +2299,7 @@ const DATEN = {
     "kurz": "Schuntner",
     "lat": 48.121246,
     "lon": 11.540876,
-    "notiz": "Der strukturelle Zwilling des Phoenix: eigene Kaffeeroestung UND eigene Backstube seit 1947, grosse Torten- und Kuchentheke, ausgiebiges Fruehstueck, dazu ein Kaffeegarten. Sieben Tage offen. Das Publikum ist deutlich aelter als in den Glockenbach-Laeden.",
+    "notiz": "Der strukturelle Zwilling des Phoenix: eigene Kaffeeröstung UND eigene Backstube seit 1947, große Torten- und Kuchentheke, ausgiebiges Frühstück, dazu ein Kaffeegarten. Sieben Tage offen. Das Publikum ist deutlich älter als in den Glockenbach-Läden.",
     "adresse": "Plinganserstraße 10, 81369 München",
     "stadtteil": "Sendling",
     "koordinate": "betrieb",
@@ -2315,8 +2316,8 @@ const DATEN = {
     "oeffnungszeiten": "Mo–So 8–18",
     "oeffnungszeiten_stand": "2026-09-09",
     "fruehstueck_bis": "durchgehend",
-    "phoenix_naehe": "1:1, ausser beim Publikum",
-    "warnung": "Zur Roestung widersprechen sich die Quellen: Mit Vergnuegen schreibt 'eigene Kaffeeroestung', eine zweite Quelle nennt Kaffee der Muenchner Roesterei Emilo. Vor Ort pruefen.",
+    "phoenix_naehe": "1:1, außer beim Publikum",
+    "warnung": "Zur Röstung widersprechen sich die Quellen: Mit Vergnügen schreibt 'eigene Kaffeeröstung', eine zweite Quelle nennt Kaffee der Münchner Rösterei Emilo. Vor Ort prüfen.",
     "beleg": "https://muenchen.mitvergnuegen.com/tipps/eigene-kaffeeroestung-und-backstube-im-cafe-schuntner/"
    },
    {
@@ -2327,7 +2328,7 @@ const DATEN = {
     "kurz": "Standl 20",
     "lat": 48.15677,
     "lon": 11.574365,
-    "notiz": "Marktstand auf dem Elisabethmarkt, seit 2015. Bohnen von JB Kaffee, alles von Hand gemahlen und gebrueht, dazu hausgemachte Kuchen und Zimtschnecken. Seit 2025 arbeitet hier das Team des bean batter.",
+    "notiz": "Marktstand auf dem Elisabethmarkt, seit 2015. Bohnen von JB Kaffee, alles von Hand gemahlen und gebrüht, dazu hausgemachte Kuchen und Zimtschnecken. Seit 2025 arbeitet hier das Team des bean batter.",
     "adresse": "Elisabethmarkt, Stand 20, 80796 München",
     "stadtteil": "Schwabing",
     "koordinate": "markt",
@@ -2346,7 +2347,7 @@ const DATEN = {
     "oeffnungszeiten_stand": "2026-09-09",
     "fruehstueck_bis": "17:00",
     "phoenix_naehe": "mittel",
-    "warnung": "Das bean batter im Westend (Schwanthalerstr. 123) ist geschlossen — Waffeln und Shakshuka gibt es am Standl NICHT. Redaktionslisten von 2026 fuehren den Laden noch.",
+    "warnung": "Das bean batter im Westend (Schwanthalerstr. 123) ist geschlossen — Waffeln und Shakshuka gibt es am Standl NICHT. Redaktionslisten von 2026 führen den Laden noch.",
     "beleg": "https://www.standl20.de/"
    },
    {
@@ -2357,7 +2358,7 @@ const DATEN = {
     "kurz": "Carlotta",
     "lat": 48.130066,
     "lon": 11.567484,
-    "notiz": "Neu im Glockenbach und schnell zum Liebling geworden: italienisches Fruehstueck, franzoesischer Brunch. Hausgemachte Croissants und Brioche brulee, Sauerteigbrot mit Hummus, pochiertem Ei, Avocado oder Caprese. Vegetarisch und vegan taeglich ohne Nachfrage, keine Reservierung noetig.",
+    "notiz": "Neu im Glockenbach und schnell zum Liebling geworden: italienisches Frühstück, französischer Brunch. Hausgemachte Croissants und Brioche brulee, Sauerteigbrot mit Hummus, pochiertem Ei, Avocado oder Caprese. Vegetarisch und vegan täglich ohne Nachfrage, keine Reservierung nötig.",
     "adresse": "Holzstraße 18, 80469 München",
     "stadtteil": "Isarvorstadt",
     "koordinate": "betrieb",
@@ -2375,7 +2376,7 @@ const DATEN = {
     "oeffnungszeiten_stand": "2026-09-09",
     "fruehstueck_bis": "durchgehend",
     "phoenix_naehe": "mittel",
-    "warnung": "Erst 111 Google-Stimmen — die Note traegt weniger als bei den anderen.",
+    "warnung": "Erst 111 Google-Stimmen — die Note trägt weniger als bei den anderen.",
     "beleg": "https://cafecarlotta.de/"
    },
    {
@@ -2386,7 +2387,7 @@ const DATEN = {
     "kurz": "Faber",
     "lat": 48.125115,
     "lon": 11.580639,
-    "notiz": "Von Hannah und Leon gefuehrt, Specialty Coffee wechselnder Roestereien (u. a. Stray Coffee aus Muenchen). Die kurze Karte wechselt alle paar Wochen: Eggs Benedict auf Sauerteig mit Chili-Pilzen, veganes Porridge, Grilled Cheese. Hausgebackener Kuchen und Zimtschnecken.",
+    "notiz": "Von Hannah und Leon geführt, Specialty Coffee wechselnder Röstereien (u. a. Stray Coffee aus München). Die kurze Karte wechselt alle paar Wochen: Eggs Benedict auf Sauerteig mit Chili-Pilzen, veganes Porridge, Grilled Cheese. Hausgebackener Kuchen und Zimtschnecken.",
     "adresse": "Zeppelinstraße 5, 81541 München",
     "stadtteil": "Au",
     "koordinate": "betrieb",
@@ -2414,7 +2415,7 @@ const DATEN = {
     "kurz": "Mary's",
     "lat": 48.151743,
     "lon": 11.577851,
-    "notiz": "Muenchens Instagram-Urgestein, 2018 eroeffnet, im Hinterhof der Amalienpassage: dunkelgruene Fliesen, rosa Stuehle, Neonschrift. Fruehstuecksburger, Avocado-Toast, Bowls, Bananenbrot, Bio-Eiskaffee. Schnelles WLAN, viele Arbeitende.",
+    "notiz": "Münchens Instagram-Urgestein, 2018 eröffnet, im Hinterhof der Amalienpassage: dunkelgrüne Fliesen, rosa Stühle, Neonschrift. Frühstücksburger, Avocado-Toast, Bowls, Bananenbrot, Bio-Eiskaffee. Schnelles WLAN, viele Arbeitende.",
     "adresse": "Türkenstraße 86a, 80799 München",
     "stadtteil": "Maxvorstadt",
     "koordinate": "betrieb",
@@ -2443,7 +2444,7 @@ const DATEN = {
     "kurz": "Fräulein",
     "lat": 48.134528,
     "lon": 11.578172,
-    "notiz": "Am Viktualienmarkt, seit ueber zwoelf Jahren. Alles aus der hauseigenen Kuchenmanufaktur — die warmen Zimtschnecken sind das Markenzeichen, dazu die kleinen 'Fraeulein'-Kuechlein. Vegetarische und vegane Fruehstuecksvarianten gleichwertig. Sehr klein, schnell voll.",
+    "notiz": "Am Viktualienmarkt, seit über zwölf Jahren. Alles aus der hauseigenen Kuchenmanufaktur — die warmen Zimtschnecken sind das Markenzeichen, dazu die kleinen 'Fräulein'-Küchlein. Vegetarische und vegane Frühstücksvarianten gleichwertig. Sehr klein, schnell voll.",
     "adresse": "Frauenstraße 11, 80469 München",
     "stadtteil": "Altstadt-Lehel",
     "koordinate": "betrieb",
