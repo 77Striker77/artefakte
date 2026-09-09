@@ -109,13 +109,20 @@
       + "xx heißt unbekannt, nicht geschätzt.");
 
   // --- Karte ---------------------------------------------------------------
-  var karte = L.map("karte", { scrollWheelZoom: false })
+  // scrollWheelZoom ist AN. Es war bis zum 09.09.2026 aus und wurde erst durch
+  // einen Klick in die Karte scharf geschaltet - gedacht, damit die Seite auf
+  // dem Handy scrollbar bleibt. Zwei Fehler darin:
+  //
+  //   1. Auf dem Handy gibt es kein Mausrad. Dort zoomt man mit zwei Fingern,
+  //      und das ist touchZoom, eine andere Sache - die Sperre hat auf dem
+  //      Geraet, fuer das sie gedacht war, nie etwas bewirkt.
+  //   2. Am Rechner war die Karte damit tot, bis man sie anklickte. Das sah aus
+  //      wie eine Seite, die noch laedt - und wurde auch so gemeldet.
+  //
+  // Die Seite bleibt trotzdem scrollbar: ueber der Karte stehen Titel und
+  // Infobox, darunter Filterleiste und Quellen.
+  var karte = L.map("karte")
     .setView([DATEN.ziel.mitte.lat, DATEN.ziel.mitte.lon], DATEN.ziel.zoom);
-
-  // scrollWheelZoom aus, damit die Seite auf dem Handy scrollbar bleibt; per
-  // Klick in die Karte wird es angeschaltet, sonst laesst sie sich am Rechner
-  // nicht bedienen.
-  karte.on("click", function () { karte.scrollWheelZoom.enable(); });
 
   var strasse = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
