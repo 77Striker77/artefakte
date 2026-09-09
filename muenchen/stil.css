@@ -510,33 +510,34 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .filter[aria-pressed="false"] .legende-marke{opacity:.32}
 .filter[aria-pressed="false"] .filter-zahl{text-decoration:none}
 
-/* ---------- Suche ueber der Innenstadtkarte ----------
-   Sie steht UEBER der Karte, die Filterleiste gleich darunter, und beide greifen
-   zusammen: der Filter sagt, welche Kuechen gelten, die Suche schraenkt darin
-   ein. Der Zaehler daneben ist Pflicht, nicht Zierde - eine gefilterte Karte
-   sieht sonst aus wie eine leere. */
-/* Das Feld ist auf 42 Zeichen gedeckelt und der Zaehler steht DANEBEN, nicht am
-   rechten Rand: ein 1000 px breites Suchfeld sieht leer aus, und ein Zaehler
-   einen Meter weiter rechts gehoert optisch nicht mehr dazu. */
-.suchleiste{display:grid; grid-template-columns:minmax(0,42ch) auto 1fr; gap:8px 14px;
-            align-items:center; padding:12px 14px;
-            background:var(--flaeche); color:var(--tinte);
-            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
-.such-label{grid-column:1/-1; margin:0; font-family:var(--zahl); font-size:10.5px;
-            letter-spacing:.5px; text-transform:uppercase;
-            color:var(--tinte-leise)}                            /* 7,81:1 */
-/* 16 px ist keine Geschmacksfrage: unter 16 px zoomt iOS beim Hineintippen die
-   ganze Seite auf. min-height statt Innenabstand, damit das Tastziel unabhaengig
-   von der Zeilenhoehe des Geraets steht. */
-.suchfeld{width:100%; min-width:0; min-height:44px; padding:9px 11px;
-          font-family:var(--sans); font-size:16px;
-          color:var(--tinte); background:var(--flaeche-2);      /* 14,02:1 */
-          border:2px solid var(--umriss); border-radius:0; appearance:none}
-.suchfeld::placeholder{color:var(--tinte-leise); opacity:1}      /* 6,50:1 */
-.such-zahl{margin:0; white-space:nowrap; font-family:var(--zahl); font-size:11px;
-           color:var(--tinte)}                                   /* 16,87:1 */
+/* ---------- Die Kopfzeile des Katalogs: Sortieren ----------
+   Sie sitzt IM Katalog, nicht darueber: eine Sortierleiste, die neben der Tafel
+   schwebt, gehoert optisch nicht zu ihr. Nicht auf die Spalten ausgerichtet -
+   die Zeile bricht unter 680 px auf drei Zeilen um, und eine Kopfzeile ueber
+   der falschen Spalte ist schlimmer als gar keine. */
+.katalog-kopf{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px;
+              padding:9px 14px; background:var(--flaeche-2); color:var(--tinte);
+              border-bottom:var(--rand) solid var(--umriss)}
+.katalog-kopf-label{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+                    text-transform:uppercase; color:var(--tinte-leise);
+                    margin-right:4px}                    /* 6,50:1 auf --flaeche-2 */
+.sortknopf{
+  display:inline-flex; align-items:center; gap:5px; min-height:34px;
+  padding:5px 9px; cursor:pointer;
+  font-family:var(--sans); font-size:13.5px; line-height:1;
+  color:var(--tinte); background:transparent;
+  border:2px solid transparent}
+.sortknopf:hover{border-color:var(--linie)}
+/* Die aktive Spalte haengt NICHT allein an der Farbe (WCAG 1.4.1): sie traegt
+   den Umriss, die helle Flaeche UND den Richtungspfeil. */
+.sortknopf[aria-pressed="true"]{
+  background:var(--flaeche); border-color:var(--umriss); font-weight:700}
+.sort-pfeil{font-family:var(--zahl); font-size:10px; color:var(--akzent-text)}  /* 6,12:1 */
+
 /* Kein Treffer ist ein ERGEBNIS und wird als solches gesagt. Eine leere Karte
-   ohne diesen Satz sieht aus wie eine kaputte Seite. */
+   ohne diesen Satz sieht aus wie eine kaputte Seite. Das Suchfeld, das hier bis
+   zum 09.09.2026 stand, ist entfallen - bei 59 Zeilen, die man ganz sieht,
+   beantwortet Sortieren die Frage besser als Tippen. */
 .such-leer{margin:14px 0 0; padding:12px 14px;
            background:var(--warn-bg); color:var(--warn);         /* 5,18:1 */
            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
@@ -676,20 +677,31 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-zeigen:hover{background:var(--akzent); color:var(--tinte)}  /* 5,95:1 */
 .ort-zeigen:active{box-shadow:none; transform:translate(2px,2px)}
 
-/* Die Erklaerzeile des Streifens steht IN der Legende, nicht in einer Fussnote:
-   drei Zustaende, die niemand zuordnen kann, sind schlimmer als kein Bild.
-   Eigene Zeile (flex-basis 100 %), sonst quetscht sie sich neben die Schalter
-   und beide werden unlesbar - so gesehen im ersten Rendering. */
-.legende-erklaerung{flex:1 0 100%; display:flex; align-items:center; gap:10px;
-                    margin-top:8px; padding-top:10px;
-                    border-top:2px solid var(--linie);
-                    font-size:12.5px; color:var(--tinte-leise)}  /* 6,50:1 */
-/* Die Beispielmarke ist hier ein 54 px breiter Streifen, keine 34-px-Marke -
-   ohne diese Zeile schneidet .legende-marke ihn ab, und das Beispiel zeigt
-   dann vier Tage statt sieben. */
-.legende-erklaerung .legende-marke{width:auto; height:auto}
-.legende-erklaerung .filter-text{max-width:60ch}
-.legende-erklaerung b{color:var(--tinte)}
+/* ---------- Die vollständige Legende ----------
+   Drei Gruppen mit Überschrift, jede auf eigener Zeile. Vorher stand hier nur
+   der Bahn-Schalter und eine Streifen-Erklaerung: sechs Zeichen auf der Karte,
+   zwei davon erklaert. Eine Karte, deren Legende einen Teil auslaesst, muss man
+   raten. */
+.legende{flex-direction:column; align-items:stretch; gap:0}
+.legende-gruppe{display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px;
+                padding:10px 0}
+.legende-gruppe + .legende-gruppe{border-top:2px solid var(--linie)}
+.legende-titel{flex:1 0 100%; font-family:var(--zahl); font-size:10.5px;
+               letter-spacing:.5px; text-transform:uppercase;
+               color:var(--tinte-leise)}                          /* 7,81:1 */
+/* Erklaerter Eintrag: kein Knopf. Wer hier einen Rahmen setzt, verspricht eine
+   Bedienung, die es nicht gibt - geschaltet wird ueber das Untermenue. */
+.legende-zeichen{display:flex; align-items:center; gap:8px;
+                 font-size:13px; color:var(--tinte)}
+.legende-zeichen .filter-text{max-width:62ch}
+.legende-zeichen b{font-weight:700}
+/* Die Beispielmarken der Lesehilfen sind breiter als eine 34-px-Ortsmarke -
+   ohne diese Zeile schneidet .legende-marke den Wochenstreifen ab, und das
+   Beispiel zeigt vier Tage statt sieben. */
+.legende-zeichen .legende-marke{width:auto; height:auto; flex:none}
+.legende-kante{display:block; width:22px; height:22px;
+               border-left:5px solid var(--m-zentrum);
+               background:var(--flaeche-2)}
 
 /* ---------- Der Fuss: Zahlen als Zeile, Volltext auf Abruf ----------
    Die Luecken MUESSEN genannt werden. Ein Absatz von zwoelf Zeilen unter der
@@ -739,10 +751,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 
 @media (max-width:520px){
   main{padding:22px 14px 36px}
-  .legende{gap:8px 12px}
-  /* Feld und Zaehler untereinander: nebeneinander bleibt fuer das Feld auf
-     320 px keine Breite uebrig, in der man einen Ortsnamen noch liest. */
-  .suchleiste{grid-template-columns:1fr}
+  .legende-gruppe{gap:8px 14px}
   .untermenue{gap:6px}
   .unterknopf{font-size:15px; padding:6px 10px 6px 6px}
 }

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=05ac81ea">
+<link rel="stylesheet" href="stil.css?v=82de3ed8">
 </head>
 <body>
 
@@ -75,21 +75,23 @@
 
     <nav class="untermenue" id="innenstadt-reiter" aria-label="Was die Karte und die Liste zeigen"></nav>
 
-    <div class="suchleiste">
-      <label class="such-label" for="gastro-suche">Suchen</label>
-      <input class="suchfeld" id="gastro-suche" type="search" autocomplete="off"
-             placeholder="Name, Küche oder Stadtteil"
-             aria-describedby="gastro-zahl">
-      <p class="such-zahl" id="gastro-zahl" role="status" aria-live="polite"></p>
-    </div>
     <p class="such-leer" id="gastro-leer" hidden></p>
 
     <div id="gastro-liste"></div>
     <p class="grund-fuss" id="gastro-fuss"></p>
   </section>
 
+  <!-- Bahn: ein Untermenue je Fahrt, plus 'Alternativen' fuer die ausgefallene
+       Hinfahrt. Die Knoepfe stehen NICHT hier, sondern kommen aus reise.json -
+       eine dritte Fahrt soll ein Datensatz sein und keine HTML-Aenderung.
+
+       Das Streckenband statt einer Tabelle: eine Fahrt ist eine Folge, und eine
+       Folge liest man als Linie. Zeiten links, Gleis rechts, Zwischenhalte
+       leiser - so beantwortet ein Blick "wann bin ich wo", was eine Tabelle
+       erst nach dem Lesen aller Zeilen kann. -->
   <section class="ansicht" id="feld-bahn" aria-labelledby="menue-bahn" tabindex="-1" hidden>
     <h2 class="ansicht-titel">Bahn</h2>
+    <nav class="untermenue" id="bahn-reiter" aria-label="Welche Fahrt"></nav>
     <div id="bahn-tafel"></div>
   </section>
 
@@ -100,7 +102,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=05ac81ea"></script>
-<script src="karte.js?v=05ac81ea"></script>
+<script src="orte.js?v=82de3ed8"></script>
+<script src="karte.js?v=82de3ed8"></script>
 </body>
 </html>
