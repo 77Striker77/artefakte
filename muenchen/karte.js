@@ -1432,13 +1432,25 @@
       ulI.appendChild(li);
       return b;
     };
+    // BEIM AUFSCHLAGEN AN. Sie waren bis zum 09.09.2026 aus, mit der Begruendung
+    // "37 Marken decken den Ausschnitt zu" - und das war genau der Fehler, den
+    // diese Seite an anderer Stelle schon einmal gemacht und aufgeschrieben hat:
+    // was man nicht sieht, benutzt man nicht. Wer in der Innenstadt vor einem
+    // Wirtshaus steht, will wissen, welche Bahn dort haelt; ein Schalter, den man
+    // erst finden muss, beantwortet das nicht.
+    //
+    // Zugedeckt wird nichts: ein Halt ist ein 26-px-Buchstabe, ein Lokal ein
+    // 34-px-Zeichen - die Groesse trennt Beiwerk von Inhalt, nicht die
+    // Anwesenheit. Wem es zu voll ist, der schaltet sie ab.
+    //
     // "Bahnhalte" heisst der Knopf, nicht "Bahnhalte einblenden": der Aus-Zustand
     // streicht den Text durch, und "einblenden" durchgestrichen liest sich wie
     // "geht nicht" statt wie "ist aus".
     ["sbahn", "ubahn"].forEach(function (art) {
       if (!halteZahl[art]) return;
+      halteEbenen[art].addTo(karteInnen);
       legendeEintrag('<i class="halt-pin ' + art + '">' + VERKEHR[art].kuerzel + "</i>",
-        VERKEHR[art].label, halteZahl[art], false, function (an) {
+        VERKEHR[art].label, halteZahl[art], true, function (an) {
           if (an) halteEbenen[art].addTo(karteInnen); else karteInnen.removeLayer(halteEbenen[art]);
         });
     });
@@ -1461,8 +1473,10 @@
       + weit.length + " der " + g.anzahl.gesamt + " Lokale liegen weiter als 3 km entfernt und "
       + "beim Aufschlagen außerhalb des Bildes — die Suche schwenkt zu ihnen. "
       + (halteZahl.sbahn + halteZahl.ubahn
-          ? "Die " + (halteZahl.sbahn + halteZahl.ubahn) + " Bahnhalte sind ausgeschaltet, weil sie "
-            + "den Ausschnitt zudecken; ein Klick auf die Legende holt sie dazu. " : "")
+          ? "Dazu " + (halteZahl.sbahn + halteZahl.ubahn) + " Bahnhalte — ein Klick auf einen Halt "
+            + "zeigt, welche Linien dort fahren. <strong>Nur S- und U-Bahn:</strong> Tram- und "
+            + "Bushaltestellen stehen in diesem Bestand nicht, die Karte zeigt hier also weniger "
+            + "als die Stadt hat. Über die Legende abschaltbar. " : "")
       + "Entfernungen sind Luftlinie, keine Gehzeit.";
 
     var gz = function (id, pruef) {
