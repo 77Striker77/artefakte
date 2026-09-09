@@ -55,11 +55,11 @@ const DATEN = {
   },
   {
    "feld": "Hinfahrt",
-   "wert": "xx"
+   "wert": "Do 10.09.2026"
   },
   {
    "feld": "Rückfahrt",
-   "wert": "xx"
+   "wert": "Sa 12.09.2026"
   },
   {
    "feld": "Nächte",
@@ -88,8 +88,17 @@ const DATEN = {
   "art": "Bahn",
   "von": "Bruchsal",
   "nach": "München Hbf",
-  "hinfahrt_status": "offen",
-  "rueckfahrt_status": "gebucht"
+  "hinfahrt": {
+   "tag": "Do 10.09.2026",
+   "status": "offen",
+   "text": "Der gebuchte ICE 567 (ab 14:18) fällt aus, die Zugbindung ist aufgehoben — das Ticket gilt in jedem Zug des Tages. Ersatzverbindung noch nicht gewählt."
+  },
+  "rueckfahrt": {
+   "tag": "Sa 12.09.2026",
+   "status": "gebucht",
+   "text": "ICE 266, München Hbf ab 16:58 Gleis 12, Bruchsal an 19:39 — 2 h 41 ohne Umstieg."
+  },
+  "quelle": "DB-Tickets und Reisedetails, gelesen 09.09.2026"
  },
  "quelle": {
   "name": "OpenStreetMap über die Overpass-API",

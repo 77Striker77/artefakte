@@ -516,10 +516,11 @@
   kasten.appendChild(hinweis);
 
   // --- Hotel und Anreise ----------------------------------------------------
-  // Beide bewusst duenn: sie werden separat ausgearbeitet. Was hier NICHT steht,
-  // steht auch nicht zufaellig nicht da - Zeitraum, Zuege, Zeiten und Gleise
-  // sperrt das Datenschutz-Tor, und eine Fahrplanzeile ist genau das, was eine
-  // Reise verraet. Die vollstaendigen Angaben liegen im Repo, nicht hier.
+  // Beide bewusst knapp: sie werden separat ausgearbeitet. Was hier NICHT steht,
+  // fehlt aus einem Grund - seit dem 09.09.2026 ist das nicht mehr "alles, was
+  // nach Reise aussieht", sondern nur noch, was NICHT oeffentlich einsehbar ist:
+  // Auftragsnummer, Sitzplatz, Name, Zahlungsdaten. Zuege und Zeiten stehen auf
+  // jeder Abfahrtstafel und duerfen hier stehen.
   var tafel = function (id, zeilen, fuss) {
     var el = document.getElementById(id);
     if (!el) return;
@@ -539,8 +540,7 @@
     ["Zimmer", ho.zimmer],
     ["Check-in", ho.checkin],
     ["Check-out", ho.checkout]
-  ], (ho.quelle || "") + " · Preis, Buchungsnummer und Stornofristen stehen bewusst nicht "
-     + "auf dieser Seite.");
+  ], (ho.quelle || "") + " · Preis, Auftragsnummer und Stornofristen stehen nicht auf dieser Seite.");
 
   var an = DATEN.anreise || {};
   var stand = function (s) {
@@ -548,13 +548,17 @@
       ? '<span class="zustand zustand--fest">gebucht</span>'
       : '<span class="zustand zustand--offen">offen</span>';
   };
+  var fahrt = function (f) {
+    if (!f) return "";
+    return stand(f.status) + " · " + f.tag + '<p class="tafel-fein">' + f.text + "</p>";
+  };
   tafel("anreise-tafel", [
     ["Verkehrsmittel", an.art],
     ["Strecke", an.von && an.nach ? an.von + " ↔ " + an.nach : ""],
-    ["Hinfahrt", an.hinfahrt_status ? stand(an.hinfahrt_status) : ""],
-    ["Rückfahrt", an.rueckfahrt_status ? stand(an.rueckfahrt_status) : ""]
-  ], "Züge, Zeiten und Gleise stehen hier nicht: eine Fahrplanzeile verrät den Reisezeitraum, "
-   + "und den sperrt das Datenschutz-Tor. Dieser Punkt wird noch ausgearbeitet.");
+    ["Hinfahrt", fahrt(an.hinfahrt)],
+    ["Rückfahrt", fahrt(an.rueckfahrt)]
+  ], (an.quelle || "") + " · Auftragsnummer, Sitzplatz und Name stehen nicht auf dieser Seite. "
+   + "Dieser Punkt wird noch ausgearbeitet.");
 
   // --- Menueleiste ---------------------------------------------------------
   // Aufgebaut aus DATEN.menue, nicht aus dem HTML. Ein Eintrag mit `seite` wird

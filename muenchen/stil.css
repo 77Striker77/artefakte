@@ -228,6 +228,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
           color:var(--tinte-leise); text-transform:uppercase}   /* 7,81:1 */
 .tafel dd{margin:0; font-size:16px}
 .tafel a{color:var(--akzent-text)}                              /* 6,12:1 */
+.tafel-fein{margin:6px 0 0; font-size:13.5px; color:var(--tinte-leise); max-width:58ch}
 .tafel-fuss{margin:14px 0 0; padding-top:12px;
             border-top:2px solid var(--linie);
             font-size:13px; color:var(--tinte-leise)}
