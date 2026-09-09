@@ -568,7 +568,7 @@
     ["Check-out", ho.checkout]
   ], (ho.quelle || "") + " · Preis, Auftragsnummer und Stornofristen stehen nicht auf dieser Seite.");
 
-  var an = DATEN.anreise || {};
+  var an = DATEN.bahn_reise || {};
   var stand = function (s) {
     return s === "gebucht"
       ? '<span class="zustand zustand--fest">gebucht</span>'
@@ -578,7 +578,7 @@
     if (!f) return "";
     return stand(f.status) + " · " + f.tag + '<p class="tafel-fein">' + f.text + "</p>";
   };
-  tafel("anreise-tafel", [
+  tafel("bahn-tafel", [
     ["Verkehrsmittel", an.art],
     ["Strecke", an.von && an.nach ? an.von + " ↔ " + an.nach : ""],
     ["Hinfahrt", fahrt(an.hinfahrt)],

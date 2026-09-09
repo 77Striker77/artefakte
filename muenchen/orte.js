@@ -38,9 +38,9 @@ const DATEN = {
    "ansicht": "feld-hotel"
   },
   {
-   "id": "anreise",
-   "label": "Anreise",
-   "ansicht": "feld-anreise"
+   "id": "bahn",
+   "label": "Bahn",
+   "ansicht": "feld-bahn"
   },
   {
    "id": "quellen",
@@ -84,7 +84,7 @@ const DATEN = {
   "checkout": "bis 12:00",
   "quelle": "Buchungsbestätigung, gelesen 09.09.2026 · Koordinate OSM way/28261161"
  },
- "anreise": {
+ "bahn_reise": {
   "art": "Bahn",
   "von": "Bruchsal",
   "nach": "München Hbf",
