@@ -53,6 +53,15 @@
     // Smash-Laeden tragen DASSELBE Zeichen wie die Burgerlokale, nur in einer
     // anderen Farbe: es ist dieselbe Sache in zwei Auspraegungen, kein zweites
     // Ding. Ein eigenes Zeichen wuerde behaupten, es waere eines.
+    //
+    // Fast Food dagegen bekommt ein EIGENES: eine Pommestuete. Das ist keine
+    // Auspraegung von Burger, sondern eine andere Sache - dean&david und
+    // NORDSEE verkaufen keine Burger, und McDonald's ist kein Lokal, das man
+    // wegen seiner Kueche aufsucht. Die schraege Tuete mit den Stangen darin
+    // liest sich bei 30 px, ohne mit Tasse, Krug oder Burger zu kollidieren.
+    fastfood: '<path d="M6 9h12l-1.4 11.2a1 1 0 0 1-1 .8H8.4a1 1 0 0 1-1-.8z"/>'
+            + '<path d="M9 9V4.5M12 9V3M15 9V4.5"/>'
+            + '<path d="M5.6 12.4h12.8"/>',
     park: '<path d="M12 21v-5"/>'
         + '<path d="M12 16a5 5 0 0 0 5-5 4 4 0 0 0-1-2.6A4 4 0 0 0 12 3a4 4 0 0 0-4 5.4A4 4 0 0 0 7 11a5 5 0 0 0 5 5z"/>'
   };
@@ -703,6 +712,12 @@
     + "hier steht, gilt für München und nicht für einen bestimmten Aufenthalt.";
   kasten.appendChild(hinweis);
 
+  // Das Kuerzel im Halt-Zeichen. Steht hier oben, weil zwei Bloecke es brauchen:
+  // die Anbindungszeilen der Hoteltafel und die Marken der Hotelkarte weiter
+  // unten. Als var im unteren Block war es beim Bau der Tafel noch undefined -
+  // gehoben wird die Deklaration, nicht die Zuweisung.
+  var HALT_KUERZEL = { sbahn: "S", ubahn: "U", tram: "T", bus: "B" };
+
   // --- Hotel: eine Tafel statt zweier Kaesten -------------------------------
   // Bis zum 09.09.2026 standen hier zwei Boxen uebereinander, die dasselbe
   // erzaehlten: die Infobox mit "Unterkunft: Motel One ..." und darunter die
@@ -799,38 +814,53 @@
       + ausstattung
       + zeileH("Gebucht", [ho.vermittelt, ho.bestaetigt].filter(Boolean).join(" · "));
 
-    // --- Die Lage in gemessenen Gehminuten ----------------------------------
-    // Ein Balken je Anker, alle an derselben Skala: "22 Minuten" allein sagt
-    // nichts darueber, ob das nah oder weit ist - nebeneinander schon.
-    var lage = "";
-    if (he && he.lage && he.lage.length) {
-      var hoch = Math.max.apply(null, he.lage.map(function (l) { return l.gehzeit_s || 0; }));
-      lage = '<h4 class="lage-titel">Zu Fuß von hier</h4>'
-        + '<ul class="lage">' + he.lage.map(function (l) {
-          var min = l.gehzeit_s == null ? null : Math.round(l.gehzeit_s / 60);
-          var weg = l.gehweg_m == null ? ""
-            : (l.gehweg_m >= 1000
-                ? (l.gehweg_m / 1000).toFixed(1).replace(".", ",") + " km"
-                : l.gehweg_m + " m");
-          return '<li class="lage-zeile">'
-            + '<span class="lage-ort">' + l.label
-            + '<span class="lage-was">' + l.was + "</span></span>"
-            + '<span class="lage-balken" aria-hidden="true">'
-            + (min == null ? "" : '<i style="width:'
-                + Math.round((l.gehzeit_s / hoch) * 100) + '%"></i>') + "</span>"
-            + '<span class="lage-zahl">'
-            + (min == null
-                ? '<span class="kenn-offen">kein Fußweg gefunden</span>'
-                : "<b>" + min + " min</b>" + (weg ? " · " + weg : ""))
-            + "</span></li>";
-        }).join("") + "</ul>";
+    // --- Anbindung: womit kommt man vom Haus weg -----------------------------
+    // Erst stand hier die Gehzeit zu fuenf Ankern der Stadt - Marienplatz,
+    // Ostbahnhof, Viktualienmarkt. Auf Ansage des Nutzers raus: gefragt ist
+    // nicht, wie lange man zum Marienplatz LAEUFT, sondern womit man wegkommt.
+    //
+    // Die Antwort steht schon in den Daten und braucht keinen zweiten Abruf: je
+    // Verkehrsmittel die naechstgelegene Haltestelle mit ihren Linien. Zwei,
+    // drei Zeilen - die Karte darunter zeigt dasselbe raeumlich, hier steht es
+    // zum Ablesen.
+    //
+    // Eine Haltestelle OHNE eingetragene Linien faellt weg. Sie stuende sonst
+    // als leere Zeile da und saehe aus wie eine Haltestelle, an der nichts
+    // faehrt - der Bushalt am Rosenheimer Platz ist genau dieser Fall: in OSM
+    // ist dort keine Linie erfasst, gefahren wird trotzdem.
+    var anbindung = "";
+    if (DATEN.umgebung && DATEN.umgebung.halte) {
+      var naechste = {};
+      DATEN.umgebung.halte.forEach(function (h) {
+        if (!h.linien || !h.linien.length || h.gehzeit_s == null) return;
+        if (!naechste[h.art] || h.gehzeit_s < naechste[h.art].gehzeit_s) naechste[h.art] = h;
+      });
+      var zeilen = ["sbahn", "ubahn", "tram", "bus"].filter(function (a) {
+        return naechste[a];
+      }).map(function (a) {
+        var h = naechste[a];
+        return '<li class="anb-zeile">'
+          + '<span class="anb-marke" aria-hidden="true"><i class="halt-pin ' + a + '">'
+          + (HALT_KUERZEL[a] || "?") + "</i></span>"
+          + '<span class="anb-ort">' + h.name
+          + '<span class="anb-weg">' + Math.round(h.gehzeit_s / 60) + " min zu Fuß</span></span>"
+          + '<span class="anb-linien">'
+          + h.linien.map(function (l) { return linienMarke(l, true); }).join("")
+          + "</span></li>";
+      });
+      if (zeilen.length) {
+        anbindung = '<h4 class="lage-titel">Anbindung</h4>'
+          + '<ul class="anbindung">' + zeilen.join("") + "</ul>";
+      }
     }
 
     var quellen = [ho.quelle,
                    ho.ausstattung_quelle,
-                   he ? he.quellen.eintrag.name + " (Bewertung), "
-                        + he.quellen.gehzeit.name + " (Gehzeit), abgerufen "
-                        + deutsch(he.quellen.eintrag.abgerufen) : null]
+                   he ? he.quellen.eintrag.name + " (Bewertung), abgerufen "
+                        + deutsch(he.quellen.eintrag.abgerufen) : null,
+                   DATEN.umgebung && DATEN.umgebung.quellen
+                     ? DATEN.umgebung.quellen.halte.name + " (Haltestellen und Linien)"
+                     : null]
       .filter(Boolean).join(" · ");
 
     el.innerHTML = '<div class="fahrt">'
@@ -848,9 +878,16 @@
       +   feldH("Abreise", reisewert("rueckfahrt"), ho.checkout ? "Check-out " + ho.checkout : "")
       + "</div>"
       + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")
-      + lage
-      + '<p class="tafel-fuss">' + quellen
+      + anbindung
+      // Die Quellen stehen HINTER einem Aufklapper, nicht als Absatz darunter.
+      // Sie muessen da sein - jede Angabe traegt ihre Herkunft, das ist die
+      // Projektregel -, aber sie sind nichts, was man beim Aufschlagen liest.
+      // Als Block war es eine Textwand unter der Tafel; zugeklappt ist es eine
+      // Zeile, die man aufmacht, wenn man fragt "woher wisst ihr das".
+      + '<details class="quell-klapp"><summary>Woher diese Angaben kommen</summary>'
+      + "<p>" + quellen
       + " · Preis, Auftragsnummer und Stornofristen stehen nicht auf dieser Seite.</p>"
+      + "</details>"
       + "</div>";
   }());
 
@@ -1085,7 +1122,6 @@
     cafe:    { label: "Café",       farbe: "--m-ankunft" },
     einkauf: { label: "Einkaufen",  farbe: "--m-museum" }
   };
-  var HALT_KUERZEL = { sbahn: "S", ubahn: "U", tram: "T", bus: "B" };
   var ART_LABEL = { sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" };
 
   var karteHotel = null;

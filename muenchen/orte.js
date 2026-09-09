@@ -5784,65 +5784,18 @@ const DATEN = {
     "name": "Google Places API (New), searchText",
     "abgerufen": "2026-09-09",
     "rang": "secondary"
-   },
-   "gehzeit": {
-    "name": "Google Routes API, computeRouteMatrix (travelMode WALK)",
-    "abgerufen": "2026-09-09",
-    "rang": "secondary"
    }
   },
   "eintrag": {
    "name": "Hotel Motel One München-Deutsches Museum",
    "adresse": "Rablstraße 2, 81669 München-Au-Haidhausen, Deutschland",
    "bewertung": 4.4,
-   "stimmen": 3618,
+   "stimmen": 3619,
    "art": "Hotel",
    "website": "https://www.motel-one.com/hotels/muenchen/hotel-muenchen-deutsches-museum/",
    "maps": "https://maps.google.com/?cid=16263973978559739224&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
    "status": "OPERATIONAL"
-  },
-  "lage": [
-   {
-    "label": "Orient Shop",
-    "was": "der nächste Supermarkt",
-    "lat": 48.129322,
-    "lon": 11.59242,
-    "gehzeit_s": 388,
-    "gehweg_m": 479
-   },
-   {
-    "label": "Deutsches Museum",
-    "was": "der Namensgeber, gleich um die Ecke",
-    "lat": 48.130041,
-    "lon": 11.582909,
-    "gehzeit_s": 744,
-    "gehweg_m": 923
-   },
-   {
-    "label": "Viktualienmarkt",
-    "was": "Markt und Biergarten",
-    "lat": 48.135329,
-    "lon": 11.576222,
-    "gehzeit_s": 1309,
-    "gehweg_m": 1609
-   },
-   {
-    "label": "Ostbahnhof",
-    "was": "der zweite Fernbahnhof",
-    "lat": 48.128078,
-    "lon": 11.60363,
-    "gehzeit_s": 1327,
-    "gehweg_m": 1567
-   },
-   {
-    "label": "Marienplatz",
-    "was": "die Mitte der Altstadt",
-    "lat": 48.1371436,
-    "lon": 11.5753989,
-    "gehzeit_s": 1360,
-    "gehweg_m": 1649
-   }
-  ]
+  }
  },
  "gastro": {
   "orte": [

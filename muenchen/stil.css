@@ -1049,23 +1049,38 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .hotel-note b{display:block; font-family:var(--wert); font-weight:800;
   font-size:20px; color:var(--tinte); font-variant-numeric:tabular-nums}
 
-/* --- Zu Fuss von hier -----------------------------------------------------
-   Ein Balken je Anker, alle an derselben Skala: "22 Minuten" allein sagt
-   nichts darueber, ob das nah oder weit ist - nebeneinander schon. */
+/* --- Anbindung ------------------------------------------------------------
+   Je Verkehrsmittel die naechste Haltestelle mit ihren Linien. Zwei, drei
+   Zeilen: die Karte darunter zeigt dasselbe raeumlich, hier steht es zum
+   Ablesen. Die Linienmarken sind die kleinen - an einem Halt haengen bis zu
+   sieben. */
 .lage-titel{margin:22px 0 10px; font-family:var(--zahl); font-size:10.5px;
   letter-spacing:.5px; text-transform:uppercase; color:var(--tinte-leise)}
-.lage{list-style:none; margin:0; padding:0; display:grid; gap:9px}
-.lage-zeile{display:grid; grid-template-columns:minmax(0,1fr) minmax(60px,90px) auto;
+.anbindung{list-style:none; margin:0; padding:0; display:grid; gap:10px}
+.anb-zeile{display:grid; grid-template-columns:26px minmax(0,1fr) auto;
   align-items:center; gap:4px 12px}
-.lage-ort{font-size:15px; font-weight:700; min-width:0}
-.lage-was{display:block; font-size:12.5px; font-weight:400;
-  color:var(--tinte-leise)}                                        /* 6,50:1 */
-.lage-balken{height:10px; background:var(--flaeche-2);
-  border:2px solid var(--umriss)}
-.lage-balken i{display:block; height:100%; background:var(--tinte-leise)}
-.lage-zahl{font-size:13px; color:var(--tinte-leise); white-space:nowrap}
-.lage-zahl b{font-family:var(--wert); font-weight:800; font-size:15px;
-  color:var(--tinte); font-variant-numeric:tabular-nums}           /* 16,87:1 */
+.anb-marke{display:flex}
+.anb-marke .halt-pin{width:24px; height:24px; filter:none}
+.anb-ort{font-size:15px; font-weight:700; min-width:0}
+.anb-weg{display:block; font-family:var(--wert); font-weight:700;
+  font-size:12.5px; color:var(--tinte-leise);
+  font-variant-numeric:tabular-nums}                               /* 6,50:1 */
+.anb-linien{display:flex; flex-wrap:wrap; gap:3px; justify-content:flex-end}
+
+/* --- Die Quellen hinter einem Aufklapper ----------------------------------
+   Sie MUESSEN da sein, jede Angabe traegt ihre Herkunft. Aber sie sind nichts,
+   was man beim Aufschlagen liest: als Absatz waren sie eine Textwand unter der
+   Tafel, zugeklappt sind sie eine Zeile. */
+.quell-klapp{margin:20px 0 0; padding-top:14px;
+  border-top:2px solid var(--linie)}
+.quell-klapp summary{cursor:pointer; font-family:var(--zahl); font-size:10.5px;
+  letter-spacing:.5px; text-transform:uppercase; color:var(--akzent-text);
+  list-style:none}                                                 /* 6,12:1 */
+.quell-klapp summary::-webkit-details-marker{display:none}
+.quell-klapp summary::after{content:" ▸"; font-family:var(--sans)}
+.quell-klapp[open] summary::after{content:" ▾"}
+.quell-klapp p{margin:10px 0 0; font-size:12.5px; line-height:1.6;
+  color:var(--tinte-leise); max-width:62ch}                        /* 6,50:1 */
 /* Ein unbekannter Wert traegt "xx" und wird als Aussage gesetzt, nicht als
    Ergebnis - dieselbe Auszeichnung wie in der Infobox. */
 .platz-wert--offen{color:var(--akzent-text)}                            /* 6,12:1 */
@@ -1148,8 +1163,10 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
     display:grid; grid-template-columns:auto auto 1fr; align-items:baseline;
     gap:0 10px; border-top-width:2px}
   .takt-band-takt{text-align:right}
-  .lage-zeile{grid-template-columns:minmax(0,1fr) auto}
-  .lage-balken{grid-column:1/-1; order:3}
+  /* Der Halt und seine Linien untereinander: nebeneinander bleiben von den
+     Linienmarken bei 360 px zwei uebrig, der Rest bricht unter die Zeile. */
+  .anb-zeile{grid-template-columns:26px minmax(0,1fr)}
+  .anb-linien{grid-column:2; justify-content:flex-start; margin-top:2px}
 }
 
 @media (max-width:520px){
