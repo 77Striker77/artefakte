@@ -1707,9 +1707,11 @@
       // Innenstadt-Burger kamen ueber eine Umkreisabfrage dazu, nicht aus der
       // Presse. Ein leerer Absatz saehe aus wie ein Ladefehler, ein erfundener
       // Satz waere schlimmer.
-      z.push(o.notiz ? "<p>" + o.notiz + "</p>"
-        : '<p class="popup-unbekannt">Über eine Umkreisabfrage gefunden — zu Karte und Küche '
+      if (o.notiz) z.push("<p>" + o.notiz + "</p>");
+      else if (o.auswahl === "abfrage") {
+        z.push('<p class="popup-unbekannt">Über eine Umkreisabfrage gefunden — zu Karte und Küche '
           + "liegt keine eigene Recherche vor.</p>");
+      }
       if (o.gefluegel) z.push(zeile("popup-fein", "<strong>" + GEFLUEGEL[o.gefluegel.stufe].text
         + "</strong>" + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
         + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "")));
