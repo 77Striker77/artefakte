@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>München — Reise-Cockpit</title>
-<meta name="description" content="Karte von München mit dem Ankunftspunkt am Hauptbahnhof und den Orientierungspunkten der Stadt.">
+<meta name="description" content="Karte von München mit Ankunftspunkt, Orientierungspunkten, Filmstudios und allen Bahnhaltestellen im Stadtgebiet.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,27 +14,37 @@
 </head>
 <body>
 
+<!-- Die Menueleiste wird aus `menue` in bau/reise.json gebaut, nicht hier
+     eingetragen: die Seite waechst, und ein Menue, das in der HTML-Datei steht,
+     muss bei jedem neuen Punkt in JEDER Datei nachgezogen werden. -->
 <header class="kopf">
   <div class="kopf-inner">
-    <span class="marke" id="marke">München</span>
+    <a class="marke" href="index.html" id="marke">München</a>
     <span class="eyebrow" id="eyebrow">Reiseziel · Deutschland</span>
+    <nav class="menue" id="menue" aria-label="Hauptmenü"></nav>
   </div>
 </header>
 
 <main>
   <h1 class="titel" id="titel">München<em>erst die Stadt, dann die Tage</em></h1>
-  <p class="unterzeile" id="unterzeile"></p>
-  <p><span class="stand">Im Aufbau · Stand 09.09.2026</span></p>
 
-  <div id="karte" role="region" aria-label="Karte von München mit Ankunftspunkt und Orientierungspunkten"></div>
+  <!-- Die Infobox steht ueber allen Ansichten, nicht in einer: sie ist das, was
+       man beim Aufschlagen wissen will, und soll nicht verschwinden, wenn man
+       einen anderen Menuepunkt oeffnet. Unbekanntes traegt "xx". -->
+  <section class="infobox" aria-labelledby="infobox-titel">
+    <h2 id="infobox-titel">Reisedaten</h2>
+    <dl id="reisedaten"></dl>
+    <p class="infobox-fuss" id="infobox-fuss"></p>
+  </section>
 
-  <ul class="legende" id="legende"></ul>
+  <section class="ansicht" id="feld-karte" aria-labelledby="menue-karte" tabindex="-1">
+    <div id="karte" role="region" aria-label="Karte von München"></div>
+    <ul class="legende" id="legende"></ul>
+  </section>
 
-  <section class="quellen">
-    <h2>Quellen</h2>
-    <p id="quelle-orte"></p>
-    <p>Kartenkacheln: <a href="https://www.openstreetmap.org/copyright">OpenStreetMap-Mitwirkende</a>, Luftbild: Esri World Imagery. Kartenbibliothek: Leaflet, lokal abgelegt unter <code>vendor/</code>.</p>
-    <p>Diese Seite trägt bewusst <strong>keine</strong> Reisedaten, keine Unterkunft und keine Buchungsangaben. Was hier steht, gilt für München und nicht für einen bestimmten Aufenthalt.</p>
+  <section class="ansicht" id="feld-quellen" aria-labelledby="menue-quellen" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Quellen</h2>
+    <div id="quellen-liste"></div>
   </section>
 </main>
 

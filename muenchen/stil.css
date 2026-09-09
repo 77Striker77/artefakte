@@ -52,10 +52,23 @@
          Der Umriss traegt die Abgrenzung zum Grund; diese Werte muessen sich
          darum voneinander unterscheiden, nicht vom Untergrund. Kleinster
          gemessener Hue-Abstand zum Nachbarn: 27 Grad. --- */
-  --p-ankunft:#F0C34A;      /* H 44 · Tinte darauf 11,92:1 */
   --p-zentrum:#FF4A3D;      /* H  4 · Tinte darauf  5,95:1 */
+  --p-ankunft:#F0C34A;      /* H 44 · Tinte darauf 11,92:1 */
+  --p-sbahn:#2FA85F;        /* H144 · Tinte darauf  6,51:1 */
+  --p-park:#4FC3B0;         /* H170 · Tinte darauf  9,23:1 */
+  --p-ubahn:#4A9BFF;        /* H213 · Tinte darauf  7,02:1 */
+  --p-film:#B98CFF;         /* H263 · Tinte darauf  7,80:1 */
   --p-wahrzeichen:#FF7FB0;  /* H337 · Tinte darauf  8,42:1 */
-  --p-park:#5FD08A;         /* H143 · Tinte darauf 10,28:1 */
+  /* Der Park lag vorher auf H143 und damit praktisch auf der S-Bahn. Die
+     S-Bahn hat das Gruen bekommen, weil 46 Halte mehr Information tragen als
+     zwei Parks - und weil Gruen fuer die S-Bahn die Farbe ist, die auf jedem
+     Netzplan der Stadt steht. Der Park ist nach H170 ausgewichen. */
+
+  /* --- Rang-Marken der Quellen. Jeder Wert gegen SEINEN Chipgrund gemessen,
+         nicht gegen die Tafel darunter. --- */
+  --rang-primary:#12652F;    --rang-primary-bg:#D3EEDC;     /* 5,82:1 */
+  --rang-secondary:#7A4A00;  --rang-secondary-bg:#FBE7C4;   /* 6,17:1 */
+  --rang-unverified:#9C1030; --rang-unverified-bg:#FBD9E1;  /* 6,37:1 */
 
   /* --- Fokus: zwei Lagen, weil kein einzelner Ring 3:1 gegen BEIDE Gruende
          schafft — der helle Ring faellt auf der Kalktafel durch, der dunkle
@@ -68,6 +81,9 @@
 
   --sans:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
   --pixel:"Pixelify Sans", "Courier New", monospace;
+  /* Silkscreen ist eine Pixelschrift ohne Unterlaengen. Unter 10 px zerfaellt
+     sie auf einem echten Display; pruef-breite.mjs meldet alles darunter.
+     Kleinste hier verwendete Groesse: 10,5 px. */
   --zahl:"Silkscreen", "Courier New", monospace;
 }
 
@@ -86,11 +102,32 @@ body{
   padding:18px 20px;
 }
 .kopf-inner{max-width:var(--mass); margin:0 auto;
-            display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+            display:flex; align-items:center; gap:10px 14px; flex-wrap:wrap}
 .marke{font-family:var(--pixel); font-size:26px; font-weight:700;
-       color:var(--akzent-hell); letter-spacing:.5px}
+       color:var(--akzent-hell); letter-spacing:.5px; text-decoration:none}
 .eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:1px;
          color:var(--auf-grund-leise); text-transform:uppercase}
+
+/* ---------- Menueleiste ----------
+   Sie sitzt im Kopf und waechst nach rechts; auf schmalen Geraeten umbricht sie
+   in eine zweite Zeile, statt zu scrollen oder zu ueberlaufen. margin-left:auto
+   schiebt sie von der Marke weg, solange Platz ist. Der aktive Punkt ist eine
+   helle Tafel - dieselbe Sprache wie die Inhaltsflaechen darunter. */
+.menue{display:flex; flex-wrap:wrap; gap:6px; margin-left:auto}
+.menue-punkt{
+  font-family:var(--pixel); font-size:16px; line-height:1;
+  padding:10px 15px; cursor:pointer; text-decoration:none;
+  background:transparent; color:var(--auf-grund-leise);   /* 9,45:1 auf --grund-tief */
+  border:2px solid transparent}
+.menue-punkt:hover{color:var(--auf-grund); border-color:var(--akzent)}
+.menue-punkt[aria-current="page"]{
+  background:var(--flaeche); color:var(--tinte);          /* 16,87:1 */
+  border-color:var(--umriss)}
+
+@media (max-width:640px){
+  .menue{margin-left:0; width:100%}
+  .menue-punkt{flex:1 1 auto; text-align:center}
+}
 
 main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 
@@ -99,15 +136,60 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
        margin:0 0 12px; color:var(--auf-grund); font-weight:700}
 .titel em{font-style:normal; color:var(--akzent-hell); display:block;
           font-size:.55em; margin-top:6px}
-.unterzeile{max-width:62ch; margin:0 0 22px; color:var(--auf-grund-leise);
-            font-size:17px}
+/* ---------- Infobox: die Reisedaten ----------
+   Sie steht UEBER den Reitern, nicht in einem: das ist, was man beim
+   Aufschlagen wissen will, und es soll nicht verschwinden, wenn man die
+   Quellen aufmacht. */
+.infobox{margin:0 0 24px; padding:16px 18px;
+         background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.infobox h2{margin:0 0 12px; font-family:var(--pixel); font-size:18px;
+            color:var(--tinte)}
+.infobox dl{display:grid; grid-template-columns:auto 1fr; gap:6px 16px;
+            margin:0; align-items:baseline}
+.infobox dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+            color:var(--tinte-leise); text-transform:uppercase}  /* 7,81:1 */
+.infobox dd{margin:0; font-size:16px; font-weight:600}
+/* "xx" ist kein Platzhalter, sondern eine Aussage: der Wert ist unbekannt.
+   Er wird darum sichtbar als offen ausgezeichnet und nicht wie ein Ergebnis
+   gesetzt - ein gefuellt aussehendes Feld wird nie wieder nachgeprueft. */
+.infobox dd.offen{color:var(--akzent-text); font-family:var(--zahl);   /* 6,12:1 */
+                  font-size:13px; letter-spacing:1px}
+.infobox-fuss{margin:14px 0 0; padding-top:12px;
+              border-top:2px solid var(--linie);
+              font-size:13px; color:var(--tinte-leise)}
 
-/* Der Baustellenhinweis. Eine Seite, die offensichtlich noch waechst, muss das
-   sagen — sonst liest sich ein duenner Stand wie ein fertiger. */
-.stand{display:inline-block; margin:0 0 22px; padding:7px 12px;
-       background:var(--akzent); color:var(--tinte);
-       font-family:var(--zahl); font-size:11px; letter-spacing:.5px;
-       box-shadow:var(--schatten-klein)}
+.ansicht{outline:none}
+.ansicht-titel{margin:0 0 16px; font-family:var(--pixel); font-size:24px;
+               color:var(--auf-grund)}
+
+/* ---------- Quellenansicht ---------- */
+#quellen-liste{display:grid; gap:14px;
+         grid-template-columns:repeat(auto-fit, minmax(280px, 1fr))}
+.quelle{padding:16px 18px; background:var(--flaeche-2); color:var(--tinte-leise);
+        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.quelle-kopf{display:flex; align-items:center; justify-content:space-between;
+             gap:10px; margin-bottom:4px}
+.quelle h3{margin:0; font-family:var(--pixel); font-size:17px; color:var(--tinte)}
+.rang{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+      padding:4px 7px; white-space:nowrap}
+.rang-primary{background:var(--rang-primary-bg); color:var(--rang-primary)}
+.rang-secondary{background:var(--rang-secondary-bg); color:var(--rang-secondary)}
+.rang-unverified{background:var(--rang-unverified-bg); color:var(--rang-unverified)}
+.quelle-menge{margin:0 0 12px; font-family:var(--zahl); font-size:11px;
+              color:var(--tinte)}
+.quelle-fakten{display:grid; grid-template-columns:auto 1fr; gap:4px 12px;
+               margin:0 0 12px; padding:12px 0; font-size:13px;
+               border-top:2px solid var(--linie); border-bottom:2px solid var(--linie)}
+.quelle-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+                  text-transform:uppercase; padding-top:2px}
+.quelle-fakten dd{margin:0; color:var(--tinte)}
+.quelle-was{margin:0; font-size:13.5px; line-height:1.55}
+.quelle-hinweis{grid-column:1/-1; margin:0; padding:16px 18px;
+                background:var(--flaeche); color:var(--tinte-leise);
+                border:var(--rand) solid var(--umriss);
+                box-shadow:var(--schatten-klein); font-size:13.5px}
+.quelle-hinweis strong{color:var(--tinte)}
 
 /* ---------- Die Karte ist der Inhalt dieser Seite ----------
    Muenchen ist rund 20 km breit und 21 km hoch, also nahezu quadratisch — anders
@@ -132,25 +214,41 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 
 /* ---------- Marken ----------
    Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben
-   Stylesheet wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
+   Stylesheet wie der Rest der Seite. display:block ist Pflicht: <i> ist inline
    und wuerde width/height sonst ignorieren.
    Der Umriss liegt als box-shadow AUSSEN, nicht als border innen — bei dieser
-   Kantenlaenge frisst ein 3-px-Rahmen sonst einen Grossteil der Farbflaeche. */
-.marke-pin{
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--zahl); font-style:normal; font-size:10px;
-  color:var(--tinte); image-rendering:pixelated;
-  /* 26 px hoch, nicht 22: WCAG 2.5.8 (AA) verlangt 24x24 CSS-Pixel fuer ein
-     Tastziel, und eine Marke auf einer Karte IST eines - sie oeffnet die
-     Sprechblase. 44x44 (AAA) waere auf dieser Karte nicht zu haben, ohne dass
-     die Marken einander verdecken; das steht so im Pruefbericht. */
-  height:26px; padding:0 8px; white-space:nowrap;
-  box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34);
-}
-.marke-pin.ankunft{background:var(--p-ankunft); height:30px; font-size:11px}
+   Kantenlaenge frisst ein 3-px-Rahmen sonst einen Grossteil der Farbflaeche.
+   22 px, nicht kleiner: WCAG 2.5.8 (AA) verlangt 24x24 CSS-Pixel fuer ein
+   Tastziel, und mit dem 3-px-Umriss aussen misst die Marke 28x28. */
+.marke-pin{display:block; width:22px; height:22px;
+           box-shadow:0 0 0 3px var(--umriss), 4px 4px 0 rgba(0,0,0,.34)}
+.marke-pin.gross{width:26px; height:26px}
+.marke-pin.ankunft{background:var(--p-ankunft)}
 .marke-pin.zentrum{background:var(--p-zentrum)}
 .marke-pin.wahrzeichen{background:var(--p-wahrzeichen)}
+.marke-pin.film{background:var(--p-film)}
 .marke-pin.park{background:var(--p-park)}
+
+/* Der Name haengt als Tooltip neben der Marke, nicht in ihr — und erst ab
+   Stadtteil-Zoom. Bei Stadtzoom lagen Hauptbahnhof, Marienplatz und
+   Frauenkirche uebereinander und keiner der drei war lesbar. */
+.leaflet-tooltip.marke-name{
+  background:var(--flaeche); color:var(--tinte);          /* 16,87:1 */
+  font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+  padding:4px 7px; border:2px solid var(--umriss); border-radius:0;
+  box-shadow:3px 3px 0 rgba(0,0,0,.34); white-space:nowrap}
+.leaflet-tooltip.marke-name::before{display:none}   /* das Pfeilchen entfaellt */
+
+/* Haltestellen: kleine Kreise ohne Beschriftung. 143 beschriftete Kaesten
+   wuerden die Karte zudecken und die sechs Orientierungspunkte unauffindbar
+   machen - die FORM trennt hier die beiden Markenfamilien, nicht die Farbe.
+   14 px ist bewusst unter der 24-px-Tastschwelle: ein Halt ist Beiwerk, kein
+   Bedienziel der Seite, und groesser wuerden die Punkte an den Knoten
+   ineinanderlaufen. Steht so im Pruefbericht. */
+.halt-pin{display:block; width:14px; height:14px; border-radius:50%;
+          box-shadow:0 0 0 2px var(--umriss)}
+.halt-pin.sbahn{background:var(--p-sbahn)}
+.halt-pin.ubahn{background:var(--p-ubahn)}
 
 /* Leaflets eigene Sprechblase traegt die Palette der Seite, sonst steht ein
    weisser Systemkasten mitten in einer durchgestalteten Karte. */
@@ -163,6 +261,8 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .leaflet-popup-content h3{margin:0 0 4px; font-family:var(--pixel);
                           font-size:17px; color:var(--tinte)}
 .leaflet-popup-content p{margin:0; color:var(--tinte-leise)}
+.leaflet-popup-content .popup-fein{margin-top:6px; font-size:12px}
+.leaflet-popup-content a{color:var(--akzent-text)}
 .leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
 
 /* ---------- Legende ---------- */
@@ -173,6 +273,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .legende li{display:flex; align-items:center; gap:8px; font-size:14px}
 .legende .swatch{width:16px; height:16px; flex:none;
                  box-shadow:0 0 0 2px var(--umriss)}
+.legende .swatch.rund{width:14px; height:14px; border-radius:50%}
 
 /* ---------- Quellenfuss ---------- */
 .quellen{margin:28px 0 0; padding:16px 18px;
