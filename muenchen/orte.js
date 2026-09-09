@@ -442,9 +442,16 @@ const DATEN = {
    "osm": "way/28261161"
   },
   "umkreis": {
-   "meter": 1000,
-   "entspricht": "rund 15 Minuten zu Fuß (1000 m Luftlinie, echter Weg 20–30 % länger)",
-   "art": "Luftlinie"
+   "such_meter": 1100,
+   "max_gehzeit_s": 900,
+   "gehzeit_geprueft": true,
+   "entspricht": "höchstens 15 Minuten zu Fuß, je Punkt einzeln gemessen",
+   "art": "Fußweg",
+   "ueber_der_grenze": {
+    "lokale": 28,
+    "halte": 11
+   },
+   "ohne_route": 0
   },
   "schwellen": {
    "bewertung": 4.2,
@@ -456,6 +463,11 @@ const DATEN = {
     "abgerufen": "2026-09-09",
     "rang": "secondary"
    },
+   "gehzeit": {
+    "name": "Google Routes API, computeRouteMatrix (travelMode WALK)",
+    "abgerufen": "2026-09-09",
+    "rang": "secondary"
+   },
    "halte": {
     "name": "OpenStreetMap über die Overpass-API",
     "abgerufen": "2026-09-09",
@@ -464,11 +476,11 @@ const DATEN = {
    }
   },
   "anzahl": {
-   "lokale": 48,
-   "essen": 19,
-   "cafe": 19,
-   "einkauf": 10,
-   "halte": 18
+   "lokale": 20,
+   "essen": 8,
+   "cafe": 9,
+   "einkauf": 3,
+   "halte": 15
   },
   "verworfen": {
    "zu_schwach": 12,
@@ -494,7 +506,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=1997384735751528427&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.129671,
     "lon": 11.588883,
-    "meter": 210
+    "meter": 210,
+    "gehzeit_s": 202,
+    "gehweg_m": 246
    },
    {
     "id": "ChIJ2YJ3mHzfnUcRZ8LfM7KI30k",
@@ -509,7 +523,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=5323123583531074151&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.128986,
     "lon": 11.586475,
-    "meter": 210
+    "meter": 210,
+    "gehzeit_s": 301,
+    "gehweg_m": 354
    },
    {
     "id": "ChIJmxcdvXzfnUcRbwzkybwjFGo",
@@ -524,7 +540,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=7643773761302563951&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.129278,
     "lon": 11.586328,
-    "meter": 240
+    "meter": 240,
+    "gehzeit_s": 332,
+    "gehweg_m": 393
    },
    {
     "id": "ChIJwf-TL3zfnUcRSIxEm8gVcto",
@@ -539,7 +557,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=15740667598955908168&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.12987,
     "lon": 11.59141,
-    "meter": 309
+    "meter": 309,
+    "gehzeit_s": 485,
+    "gehweg_m": 602
    },
    {
     "id": "ChIJzYFvh-QBCUERocXJpinxI5I",
@@ -554,7 +574,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=10530525514916545953&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.129322,
     "lon": 11.59242,
-    "meter": 327
+    "meter": 327,
+    "gehzeit_s": 388,
+    "gehweg_m": 479
    },
    {
     "id": "ChIJYVmQzX7fnUcRQw_xJfg-EqE",
@@ -569,7 +591,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=11606408425196556099&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.128204,
     "lon": 11.593272,
-    "meter": 346
+    "meter": 346,
+    "gehzeit_s": 396,
+    "gehweg_m": 491
    },
    {
     "id": "ChIJZf8feo_fnUcR2NbHbf2XQx0",
@@ -584,7 +608,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=2108696165263857368&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.124272,
     "lon": 11.589819,
-    "meter": 401
+    "meter": 401,
+    "gehzeit_s": 877,
+    "gehweg_m": 1066
    },
    {
     "id": "ChIJpQrSBH3fnUcRKK9lMc7nOGo",
@@ -599,7 +625,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=7654122439494184744&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.131391,
     "lon": 11.588065,
-    "meter": 403
+    "meter": 403,
+    "gehzeit_s": 382,
+    "gehweg_m": 482
    },
    {
     "id": "ChIJpQrSBH3fnUcRKK9lMc7nOGo",
@@ -614,22 +642,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=7654122439494184744&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.131391,
     "lon": 11.588065,
-    "meter": 403
-   },
-   {
-    "id": "ChIJ3xTjBX3fnUcRKic8QArdNFo",
-    "name": "Chopan - am Gasteig, afghanisches Restaurant",
-    "gruppe": "essen",
-    "art": "Afghanisches Restaurant",
-    "bewertung": 4.8,
-    "stimmen": 2356,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Rosenheimer Str. 8, 81669 München-Au-Haidhausen, Deutschland",
-    "web": "http://chopan-am-gasteig.de/",
-    "maps": "https://maps.google.com/?cid=6500063198299563818&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.131434,
-    "lon": 11.588787,
-    "meter": 406
+    "meter": 403,
+    "gehzeit_s": 382,
+    "gehweg_m": 482
    },
    {
     "id": "ChIJfQv8uIjfnUcRH0y8fHMZ3jk",
@@ -644,22 +659,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=4169798288796306463&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.128476,
     "lon": 11.59452,
-    "meter": 442
-   },
-   {
-    "id": "ChIJhVBQIMDfnUcRWeOqEpFDWxk",
-    "name": "Live Evil",
-    "gruppe": "cafe",
-    "art": "Bar",
-    "bewertung": 4.6,
-    "stimmen": 107,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Rosenheimer Str. 5, 81667 München, Deutschland",
-    "web": "http://www.live-evil.de/",
-    "maps": "https://maps.google.com/?cid=1827128364191376217&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.131451,
-    "lon": 11.591256,
-    "meter": 451
+    "meter": 442,
+    "gehzeit_s": 529,
+    "gehweg_m": 619
    },
    {
     "id": "ChIJAQAQZl7fnUcR0H8_0-dd4jk",
@@ -674,7 +676,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=4170999455161483216&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.132001,
     "lon": 11.588237,
-    "meter": 470
+    "meter": 470,
+    "gehzeit_s": 481,
+    "gehweg_m": 565
    },
    {
     "id": "ChIJPxVvNH3fnUcRKbOUU90hyJw",
@@ -689,7 +693,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=11297316899732632361&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.132179,
     "lon": 11.586578,
-    "meter": 513
+    "meter": 513,
+    "gehzeit_s": 545,
+    "gehweg_m": 660
    },
    {
     "id": "ChIJvfM440rfnUcR04T0Ig-HxNU",
@@ -704,7 +710,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=15403585124594648275&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.129276,
     "lon": 11.58176,
-    "meter": 539
+    "meter": 539,
+    "gehzeit_s": 839,
+    "gehweg_m": 1042
    },
    {
     "id": "ChIJvfM440rfnUcR04T0Ig-HxNU",
@@ -719,52 +727,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=15403585124594648275&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.129276,
     "lon": 11.58176,
-    "meter": 539
-   },
-   {
-    "id": "ChIJJS8NjX3fnUcRv68R3KDrHvQ",
-    "name": "L'Osteria München am Gasteig",
-    "gruppe": "essen",
-    "art": "Italienisches Restaurant",
-    "bewertung": 4.3,
-    "stimmen": 4696,
-    "preis": null,
-    "adresse": "Innere Wiener Straße 2, 81667 München, Deutschland",
-    "web": "https://losteria.net/de/restaurants/restaurant/muenchen-am-gasteig/",
-    "maps": "https://maps.google.com/?cid=17590756270675177407&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.132429,
-    "lon": 11.590977,
-    "meter": 544
-   },
-   {
-    "id": "ChIJk8rilkXfnUcRum86BDfXK3k",
-    "name": "Monti Monaco",
-    "gruppe": "einkauf",
-    "art": "Italienisches Restaurant",
-    "bewertung": 4.5,
-    "stimmen": 491,
-    "preis": "PRICE_LEVEL_EXPENSIVE",
-    "adresse": "Steinsdorfstraße 22, 80538 München, Deutschland",
-    "web": "http://www.montimonaco.de/",
-    "maps": "https://maps.google.com/?cid=8731308933881950138&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.13256,
-    "lon": 11.584881,
-    "meter": 601
-   },
-   {
-    "id": "ChIJ-SMGaADfnUcRRVreYtpsY0M",
-    "name": "XiangJu Restaurant",
-    "gruppe": "essen",
-    "art": "Chinesisches Restaurant",
-    "bewertung": 4.2,
-    "stimmen": 305,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Metzstraße 8, 81667 München, Deutschland",
-    "web": null,
-    "maps": "https://maps.google.com/?cid=4855844508452936261&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128947,
-    "lon": 11.596941,
-    "meter": 628
+    "meter": 539,
+    "gehzeit_s": 839,
+    "gehweg_m": 1042
    },
    {
     "id": "ChIJMQGjR7PfnUcRdunuB9mlQ6Q",
@@ -779,37 +744,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=11836486597219379574&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.132124,
     "lon": 11.594125,
-    "meter": 631
-   },
-   {
-    "id": "ChIJ8SgSY3ffnUcRRVD032PnE2A",
-    "name": "EDEKA Uyar",
-    "gruppe": "einkauf",
-    "art": "Supermarkt",
-    "bewertung": 4.6,
-    "stimmen": 272,
-    "preis": null,
-    "adresse": "Welfenstraße 24, 81541 München-Au-Haidhausen, Deutschland",
-    "web": null,
-    "maps": "https://maps.google.com/?cid=6923131468343693381&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.122004,
-    "lon": 11.589234,
-    "meter": 645
-   },
-   {
-    "id": "ChIJoQpy04bfnUcRg4R4eDFRM6A",
-    "name": "Café Faber",
-    "gruppe": "essen",
-    "art": "Café",
-    "bewertung": 4.5,
-    "stimmen": 459,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Zeppelinstraße 5, 81541 München, Deutschland",
-    "web": "https://www.instagram.com/cafefaber_",
-    "maps": "https://maps.google.com/?cid=11543659542797124739&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.125217,
-    "lon": 11.580569,
-    "meter": 666
+    "meter": 631,
+    "gehzeit_s": 735,
+    "gehweg_m": 890
    },
    {
     "id": "ChIJoQpy04bfnUcRg4R4eDFRM6A",
@@ -824,37 +761,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=11543659542797124739&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.125217,
     "lon": 11.580569,
-    "meter": 666
-   },
-   {
-    "id": "ChIJY-lhX3_fnUcREPTxtR_30i0",
-    "name": "Alnatura Super Natur Markt",
-    "gruppe": "einkauf",
-    "art": "Lebensmittelhändler",
-    "bewertung": 4.3,
-    "stimmen": 252,
-    "preis": null,
-    "adresse": "Weißenburger Str. 20, 81667 München-Au-Haidhausen, Deutschland",
-    "web": "https://www.alnatura.de/de-de/maerkte/marktseiten/muenchen/muenchen-alnatura-super-natur-markt-m066/?utm_campaign=gmb&utm_medium=link&utm_source=google-maps",
-    "maps": "https://maps.google.com/?cid=3301973192384574480&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128384,
-    "lon": 11.597781,
-    "meter": 681
-   },
-   {
-    "id": "ChIJzygyE3_fnUcR7nhwDHnaWvM",
-    "name": "EuroShop",
-    "gruppe": "einkauf",
-    "art": "Discounter",
-    "bewertung": 4.2,
-    "stimmen": 214,
-    "preis": null,
-    "adresse": "Weißenburger Str. 17, 81667 München-Au-Haidhausen, Deutschland",
-    "web": "https://euroshop-online.de/filiale",
-    "maps": "https://maps.google.com/?cid=17535568312555043054&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128607,
-    "lon": 11.597796,
-    "meter": 685
+    "meter": 666,
+    "gehzeit_s": 735,
+    "gehweg_m": 877
    },
    {
     "id": "ChIJCWHoxLrfnUcRzfxmex9_9Q4",
@@ -869,37 +778,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=1077907459016162509&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.133366,
     "lon": 11.583486,
-    "meter": 730
-   },
-   {
-    "id": "ChIJJV4U1YHfnUcRmOBZZ1syzm4",
-    "name": "fortuna cafébar",
-    "gruppe": "cafe",
-    "art": "Café",
-    "bewertung": 4.5,
-    "stimmen": 282,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Sedanstraße 18, 81667 München, Deutschland",
-    "web": "http://www.fortuna-cafebar.de/",
-    "maps": "https://maps.google.com/?cid=7984374557531824280&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.12976,
-    "lon": 11.598063,
-    "meter": 732
-   },
-   {
-    "id": "ChIJdZPA6IHfnUcRCKeJ4MbxHw8",
-    "name": "Viani Haidhausen",
-    "gruppe": "einkauf",
-    "art": "Feinkostgeschäft",
-    "bewertung": 4.3,
-    "stimmen": 338,
-    "preis": null,
-    "adresse": "Weißenburger Str. 26, 81667 München-Au-Haidhausen, Deutschland",
-    "web": "https://www.viani.de/de/laeden/viani-haidhausen",
-    "maps": "https://maps.google.com/?cid=1089855471319885576&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128316,
-    "lon": 11.598489,
-    "meter": 733
+    "meter": 730,
+    "gehzeit_s": 727,
+    "gehweg_m": 874
    },
    {
     "id": "ChIJOTiRQuN1nkcRufMjO6ujDVQ",
@@ -914,22 +795,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=6056677029710132153&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.121522,
     "lon": 11.583204,
-    "meter": 807
-   },
-   {
-    "id": "ChIJhSo-LVrfnUcR9bGPEc82LeQ",
-    "name": "terra - Bar & Food",
-    "gruppe": "cafe",
-    "art": "Bar",
-    "bewertung": 4.7,
-    "stimmen": 272,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Baaderstraße 1, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "https://terra-bar.de/",
-    "maps": "https://maps.google.com/?cid=16441858077580308981&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.133417,
-    "lon": 11.581746,
-    "meter": 810
+    "meter": 807,
+    "gehzeit_s": 775,
+    "gehweg_m": 955
    },
    {
     "id": "ChIJXRtZltHfnUcRDusCHrYwBic",
@@ -944,22 +812,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=2811988576085142286&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.132052,
     "lon": 11.597553,
-    "meter": 813
-   },
-   {
-    "id": "ChIJB58RWl_fnUcRnH_r-uKyRQ8",
-    "name": "Japanische Feinkost MIKADO",
-    "gruppe": "einkauf",
-    "art": "Asia-Shop",
-    "bewertung": 4.6,
-    "stimmen": 777,
-    "preis": null,
-    "adresse": "Baaderstraße 12, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "https://www.mikadofeinkost.com/",
-    "maps": "https://maps.google.com/?cid=1100482371904044956&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.132686,
-    "lon": 11.580497,
-    "meter": 816
+    "meter": 813,
+    "gehzeit_s": 882,
+    "gehweg_m": 1059
    },
    {
     "id": "ChIJ29wi64B1nkcRR5UyRpxvUm4",
@@ -974,232 +829,9 @@ const DATEN = {
     "maps": "https://maps.google.com/?cid=7949539009245648199&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
     "lat": 48.134177,
     "lon": 11.595207,
-    "meter": 861
-   },
-   {
-    "id": "ChIJ6c5wHYDfnUcRcpLrKdK3KbI",
-    "name": "Lollo Rosso Caffè Bar",
-    "gruppe": "cafe",
-    "art": "Coffeeshop",
-    "bewertung": 4.7,
-    "stimmen": 652,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Wörthstraße 11, 81667 München-Au-Haidhausen, Deutschland",
-    "web": "http://cafe.lollo-rosso.com/",
-    "maps": "https://maps.google.com/?cid=12837994326070628978&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.131478,
-    "lon": 11.599064,
-    "meter": 875
-   },
-   {
-    "id": "ChIJm2mgD2LfnUcRuJv0seDFBLg",
-    "name": "SUZUKI",
-    "gruppe": "einkauf",
-    "art": "Japanisches Restaurant",
-    "bewertung": 4.4,
-    "stimmen": 340,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Rumfordstraße 40, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "https://www.feinkost-ysuzuki.com/",
-    "maps": "https://maps.google.com/?cid=13259940771734526904&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.133686,
-    "lon": 11.580851,
-    "meter": 876
-   },
-   {
-    "id": "ChIJbXPyiWXfnUcR0STRWgRF3CM",
-    "name": "Les Deux Messieurs München",
-    "gruppe": "cafe",
-    "art": "Café",
-    "bewertung": 4.3,
-    "stimmen": 1141,
-    "preis": null,
-    "adresse": "Weißenburger Str. 36, 81667 München, Deutschland",
-    "web": "http://www.les-deux-messieurs.com/",
-    "maps": "https://maps.google.com/?cid=2584016171209663697&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128232,
-    "lon": 11.60065,
-    "meter": 892
-   },
-   {
-    "id": "ChIJI_qfkGHfnUcRKAhONnOkwUE",
-    "name": "Emmi's Kitchen",
-    "gruppe": "essen",
-    "art": "Veganes Restaurant",
-    "bewertung": 4.5,
-    "stimmen": 1778,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Buttermelcherstraße 11-15, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "https://www.emmis.kitchen/",
-    "maps": "https://maps.google.com/?cid=4738249097709750312&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.132618,
-    "lon": 11.578909,
-    "meter": 902
-   },
-   {
-    "id": "ChIJCzq86mbfnUcR-d1jFgwwDfc",
-    "name": "Wagners Juicery",
-    "gruppe": "essen",
-    "art": "Café",
-    "bewertung": 4.6,
-    "stimmen": 1400,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Fraunhoferstraße 43, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "http://www.wagnersjuicery.com/",
-    "maps": "https://maps.google.com/?cid=17801937730538823161&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128093,
-    "lon": 11.576326,
-    "meter": 917
-   },
-   {
-    "id": "ChIJCzq86mbfnUcR-d1jFgwwDfc",
-    "name": "Wagners Juicery",
-    "gruppe": "cafe",
-    "art": "Café",
-    "bewertung": 4.6,
-    "stimmen": 1400,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Fraunhoferstraße 43, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "http://www.wagnersjuicery.com/",
-    "maps": "https://maps.google.com/?cid=17801937730538823161&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128093,
-    "lon": 11.576326,
-    "meter": 917
-   },
-   {
-    "id": "ChIJ5QUQAWLfnUcRMvOkrDJRsjM",
-    "name": "Ooh Baby I like it raw / München",
-    "gruppe": "cafe",
-    "art": "Café",
-    "bewertung": 4.6,
-    "stimmen": 839,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Rumfordstraße 39, 80469 München-Altstadt-Lehel, Deutschland",
-    "web": "https://www.cafe-oohbaby.de/",
-    "maps": "https://maps.google.com/?cid=3725129119875527474&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.133979,
-    "lon": 11.580407,
-    "meter": 922
-   },
-   {
-    "id": "ChIJAURPc5nfnUcR5OiQpqHi5ws",
-    "name": "GIGI TRATTORIA",
-    "gruppe": "essen",
-    "art": "Italienisches Restaurant",
-    "bewertung": 4.3,
-    "stimmen": 3826,
-    "preis": "PRICE_LEVEL_EXPENSIVE",
-    "adresse": "Rumfordstraße 34, 80469 München, Deutschland",
-    "web": "https://www.gigi.restaurant/",
-    "maps": "https://maps.google.com/?cid=857903437949495524&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.133845,
-    "lon": 11.580063,
-    "meter": 929
-   },
-   {
-    "id": "ChIJAQBw_mHfnUcRbNLX9Gpug4A",
-    "name": "Xaver's",
-    "gruppe": "essen",
-    "art": "Bayerisches Restaurant",
-    "bewertung": 4.4,
-    "stimmen": 2006,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Rumfordstraße 35, 80469 München, Deutschland",
-    "web": "http://www.xaver-s.de/",
-    "maps": "https://maps.google.com/?cid=9260366664457245292&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.13412,
-    "lon": 11.579909,
-    "meter": 959
-   },
-   {
-    "id": "ChIJ7WU3zmbfnUcRqvCXlmk8l8U",
-    "name": "Trachtenvogl",
-    "gruppe": "essen",
-    "art": "Café",
-    "bewertung": 4.4,
-    "stimmen": 1949,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Reichenbachstraße 47, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "http://www.trachtenvogl.de/",
-    "maps": "https://maps.google.com/?cid=14237915171150885034&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.129162,
-    "lon": 11.57578,
-    "meter": 969
-   },
-   {
-    "id": "ChIJ7WU3zmbfnUcRqvCXlmk8l8U",
-    "name": "Trachtenvogl",
-    "gruppe": "cafe",
-    "art": "Café",
-    "bewertung": 4.4,
-    "stimmen": 1949,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Reichenbachstraße 47, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
-    "web": "http://www.trachtenvogl.de/",
-    "maps": "https://maps.google.com/?cid=14237915171150885034&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.129162,
-    "lon": 11.57578,
-    "meter": 969
-   },
-   {
-    "id": "ChIJs2y93AV1nkcRGNy1f7__qzE",
-    "name": "LYFE Viktualienmarkt",
-    "gruppe": "cafe",
-    "art": "Café",
-    "bewertung": 4.5,
-    "stimmen": 498,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Frauenstraße 34, 80469 München-Altstadt-Lehel, Deutschland",
-    "web": "http://www.lyfe-superfood.de/",
-    "maps": "https://maps.google.com/?cid=3579235526822452248&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.134428,
-    "lon": 11.580164,
-    "meter": 972
-   },
-   {
-    "id": "ChIJ5yB36WbfnUcR6Q8TEb5Pw1M",
-    "name": "Hungriges Herz",
-    "gruppe": "essen",
-    "art": "Restaurant",
-    "bewertung": 4.6,
-    "stimmen": 2496,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Fraunhoferstraße 42, 80469 München, Deutschland",
-    "web": "http://www.hungrigesherz.com/",
-    "maps": "https://maps.google.com/?cid=6035755603355439081&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128126,
-    "lon": 11.575542,
-    "meter": 976
-   },
-   {
-    "id": "ChIJ5yB36WbfnUcR6Q8TEb5Pw1M",
-    "name": "Hungriges Herz",
-    "gruppe": "cafe",
-    "art": "Restaurant",
-    "bewertung": 4.6,
-    "stimmen": 2496,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Fraunhoferstraße 42, 80469 München, Deutschland",
-    "web": "http://www.hungrigesherz.com/",
-    "maps": "https://maps.google.com/?cid=6035755603355439081&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128126,
-    "lon": 11.575542,
-    "meter": 976
-   },
-   {
-    "id": "ChIJ0bkMqyLfnUcRmQi4ifgnHLg",
-    "name": "QYU Restaurant Gärtnerplatz - Japanese & Vietnamese - Asia, Sushi & Cocktail Bar",
-    "gruppe": "essen",
-    "art": "Asiatisches Restaurant",
-    "bewertung": 4.7,
-    "stimmen": 864,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Klenzestraße 8, 80469 München, Deutschland",
-    "web": "https://qyu-restaurant.de/gaertnerplatz",
-    "maps": "https://maps.google.com/?cid=13266522550742550681&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.133195,
-    "lon": 11.578188,
-    "meter": 984
+    "meter": 861,
+    "gehzeit_s": 848,
+    "gehweg_m": 1021
    }
   ],
   "halte": [
@@ -1209,7 +841,9 @@ const DATEN = {
     "lat": 48.129184,
     "lon": 11.593075,
     "osm": "node/2473550316",
-    "meter": 363
+    "meter": 363,
+    "gehzeit_s": 448,
+    "gehweg_m": 553
    },
    {
     "name": "Rosenheimer Platz",
@@ -1217,7 +851,9 @@ const DATEN = {
     "lat": 48.128849,
     "lon": 11.593343,
     "osm": "node/11148616544",
-    "meter": 367
+    "meter": 367,
+    "gehzeit_s": 444,
+    "gehweg_m": 549
    },
    {
     "name": "Regerplatz",
@@ -1225,7 +861,9 @@ const DATEN = {
     "lat": 48.124352,
     "lon": 11.588025,
     "osm": "node/3195931969",
-    "meter": 386
+    "meter": 386,
+    "gehzeit_s": 465,
+    "gehweg_m": 569
    },
    {
     "name": "Rosenheimer Platz",
@@ -1233,7 +871,9 @@ const DATEN = {
     "lat": 48.128888,
     "lon": 11.594089,
     "osm": "node/3195933365",
-    "meter": 421
+    "meter": 421,
+    "gehzeit_s": 531,
+    "gehweg_m": 620
    },
    {
     "name": "Deutsches Museum",
@@ -1241,7 +881,9 @@ const DATEN = {
     "lat": 48.131803,
     "lon": 11.586237,
     "osm": "node/1072765095",
-    "meter": 482
+    "meter": 482,
+    "gehzeit_s": 472,
+    "gehweg_m": 588
    },
    {
     "name": "Ludwigsbrücke",
@@ -1249,7 +891,9 @@ const DATEN = {
     "lat": 48.13263,
     "lon": 11.585243,
     "osm": "node/2794931543",
-    "meter": 596
+    "meter": 596,
+    "gehzeit_s": 635,
+    "gehweg_m": 756
    },
    {
     "name": "Am Gasteig",
@@ -1257,7 +901,9 @@ const DATEN = {
     "lat": 48.132847,
     "lon": 11.591619,
     "osm": "node/3195897262",
-    "meter": 604
+    "meter": 604,
+    "gehzeit_s": 598,
+    "gehweg_m": 718
    },
    {
     "name": "Mariahilfplatz",
@@ -1265,7 +911,9 @@ const DATEN = {
     "lat": 48.124039,
     "lon": 11.581344,
     "osm": "node/3195960962",
-    "meter": 686
+    "meter": 686,
+    "gehzeit_s": 739,
+    "gehweg_m": 873
    },
    {
     "name": "Mariahilfplatz",
@@ -1273,7 +921,9 @@ const DATEN = {
     "lat": 48.123738,
     "lon": 11.58143,
     "osm": "node/10718659630",
-    "meter": 702
+    "meter": 702,
+    "gehzeit_s": 796,
+    "gehweg_m": 918
    },
    {
     "name": "Isartor",
@@ -1281,7 +931,9 @@ const DATEN = {
     "lat": 48.133326,
     "lon": 11.583249,
     "osm": "node/203210007",
-    "meter": 736
+    "meter": 736,
+    "gehzeit_s": 710,
+    "gehweg_m": 876
    },
    {
     "name": "Carl-Amery-Platz",
@@ -1289,7 +941,9 @@ const DATEN = {
     "lat": 48.121445,
     "lon": 11.585677,
     "osm": "node/6875392408",
-    "meter": 740
+    "meter": 740,
+    "gehzeit_s": 894,
+    "gehweg_m": 1101
    },
    {
     "name": "Eduard-Schmid-Straße",
@@ -1297,7 +951,9 @@ const DATEN = {
     "lat": 48.126211,
     "lon": 11.578437,
     "osm": "node/1475056046",
-    "meter": 780
+    "meter": 780,
+    "gehzeit_s": 886,
+    "gehweg_m": 1056
    },
    {
     "name": "Wörthstraße",
@@ -1305,7 +961,9 @@ const DATEN = {
     "lat": 48.131844,
     "lon": 11.597514,
     "osm": "node/3195825666",
-    "meter": 798
+    "meter": 798,
+    "gehzeit_s": 866,
+    "gehweg_m": 1041
    },
    {
     "name": "Isartor",
@@ -1313,15 +971,9 @@ const DATEN = {
     "lat": 48.134213,
     "lon": 11.583136,
     "osm": "node/2473615158",
-    "meter": 824
-   },
-   {
-    "name": "Mariannenplatz",
-    "art": "tram",
-    "lat": 48.135224,
-    "lon": 11.586752,
-    "osm": "node/3195900761",
-    "meter": 840
+    "meter": 824,
+    "gehzeit_s": 819,
+    "gehweg_m": 986
    },
    {
     "name": "Wiener Platz",
@@ -1329,23 +981,9 @@ const DATEN = {
     "lat": 48.13408,
     "lon": 11.595785,
     "osm": "node/3195897285",
-    "meter": 878
-   },
-   {
-    "name": "Fraunhoferstraße",
-    "art": "tram",
-    "lat": 48.128394,
-    "lon": 11.575511,
-    "osm": "node/3195960961",
-    "meter": 980
-   },
-   {
-    "name": "Ostfriedhof",
-    "art": "tram",
-    "lat": 48.119404,
-    "lon": 11.583965,
-    "osm": "node/1670275570",
-    "meter": 997
+    "meter": 878,
+    "gehzeit_s": 867,
+    "gehweg_m": 1057
    }
   ]
  },

@@ -282,6 +282,11 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .tafel-titel{margin:28px 0 12px; font-family:var(--pixel); font-size:19px;
              color:var(--auf-grund)}
 .leaflet-popup-content .bewertung{margin-top:6px; color:var(--tinte)}
+/* Der Maps-Link ist der wahrscheinlichste naechste Schritt aus einer
+   Sprechblase heraus - er steht darum als eigene Zeile da und nicht im
+   Kleingedruckten. */
+.leaflet-popup-content .maps-link{margin-top:10px; font-size:13.5px}
+.leaflet-popup-content .maps-link a{color:var(--akzent-text); font-weight:700}  /* 6,12:1 */
 
 #karte{height:clamp(420px,62vh,660px);
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);

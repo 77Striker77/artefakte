@@ -90,6 +90,26 @@
       + (stil ? ' style="' + stil + '"' : "") + ">" + l + "</span>";
   };
 
+  // Jeder Punkt bekommt seinen Google-Maps-Link. Zwei Formen, und die
+  // Reihenfolge ist kein Zufall:
+  //
+  //   1. Die amtliche URL der Places-API, wo es eine gibt (nur bei den Lokalen
+  //      der Umgebungskarte). Sie zeigt auf DEN Eintrag - mit Bewertungen,
+  //      Oeffnungszeiten und Fotos.
+  //   2. Sonst die Koordinate. Nicht der NAME: "Marienplatz" gibt es in
+  //      Deutschland dutzendfach, die Koordinate genau einmal. Ein Link, der
+  //      irgendwo landet, ist schlimmer als keiner.
+  //
+  // target=_blank mit rel=noopener: die Karte soll offen bleiben, und das
+  // fremde Fenster bekommt keinen Zugriff auf dieses.
+  var mapsLink = function (o, text) {
+    var url = o.maps
+      || "https://www.google.com/maps/search/?api=1&query="
+         + encodeURIComponent(o.lat + "," + o.lon);
+    return '<p class="maps-link"><a href="' + url + '" target="_blank" rel="noopener noreferrer">'
+      + (text || "In Google Maps öffnen") + " ↗</a></p>";
+  };
+
   var linienBlock = function (h) {
     if (h.linien === null || h.linien === undefined) {
       return '<p class="popup-fein popup-unbekannt">Linien: unbekannt — nicht abgerufen</p>';
@@ -218,7 +238,9 @@
       .bindPopup(
         "<h3>" + o.name + "</h3><p>" + o.notiz + "</p>" +
         (haltNachOsm[o.osm] ? linienBlock(haltNachOsm[o.osm]) : "") +
-        (o.web ? '<p class="popup-fein"><a href="' + o.web + '">' + o.web.replace(/^https?:\/\//, "") + "</a></p>" : "") +
+        (o.web ? '<p class="popup-fein"><a href="' + o.web + '" target="_blank" rel="noopener noreferrer">'
+          + o.web.replace(/^https?:\/\//, "") + "</a></p>" : "") +
+        mapsLink(o) +
         '<p class="popup-fein">OSM ' + o.osm + "</p>"
       );
     punkte.push([o.lat, o.lon]);
@@ -299,6 +321,7 @@
         .bindPopup("<h3>" + h.name + "</h3>" +
           "<p>" + (h.art === "ubahn" ? "U-Bahn-Station" : "S-Bahn / DB-Halt") + "</p>" +
           linienBlock(h) +
+          mapsLink(h) +
           '<p class="popup-fein">OSM ' + h.osm + "</p>");
 
       var sch = schild(h);
@@ -383,6 +406,7 @@
           .bindPopup("<h3>" + h.name + "</h3><p>Tram " + linie.ref + " · " +
             linie.von + " → " + linie.nach + "</p>" +
             linienBlock(h) +
+            mapsLink(h) +
             '<p class="popup-fein">OSM ' + h.osm + "</p>");
         var sch = schild(h);
         if (sch) {
@@ -622,18 +646,27 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(karteHotel);
 
-    // Der Umkreis wird GEZEICHNET, nicht nur behauptet: so sieht man, was knapp
-    // drin und was knapp draussen liegt - und dass es eine Luftlinie ist.
-    L.circle([u.bezug.lat, u.bezug.lon], {
-      radius: u.umkreis.meter, color: token("--m-unterkunft"),
-      weight: 2, opacity: 0.7, fillOpacity: 0.05, interactive: false
-    }).addTo(karteHotel);
+    // KEIN Umkreis-Kreis mehr. Er stand hier, solange der Filter eine Luftlinie
+    // war - und war dann ehrlich. Jetzt filtert die gemessene GEHZEIT, und ein
+    // Kreis wuerde behaupten, alles darin sei in 15 Minuten erreichbar. Das ist
+    // falsch: hinter der Isar liegt ein Punkt bei 700 m Luftlinie ueber der
+    // Grenze, an derselben Strasse einer bei 1100 m darunter. Eine Form, die
+    // etwas anderes zeigt als das, wonach gefiltert wurde, ist irrefuehrend.
 
     L.marker([u.bezug.lat, u.bezug.lon], {
       icon: L.divIcon({ className: "", html: ortSymbol("unterkunft", true),
                         iconSize: [40, 40], iconAnchor: [20, 20] }),
       title: u.bezug.name, riseOnHover: true
-    }).addTo(karteHotel).bindPopup("<h3>" + u.bezug.name + "</h3><p>Der Bezugspunkt dieser Karte.</p>");
+    }).addTo(karteHotel).bindPopup("<h3>" + u.bezug.name + "</h3>"
+      + "<p>Der Bezugspunkt dieser Karte.</p>" + mapsLink(u.bezug));
+
+    // Gehzeit statt Luftlinie: sie ist gemessen, sie ist die Vorgabe, und sie
+    // ist das, was jemand wissen will. Die Luftlinie steht nur noch daneben,
+    // wo sie den Unterschied zeigt - 210 m Luft sind hier 354 m Weg.
+    var gehText = function (o) {
+      if (o.gehzeit_s == null) return o.meter + " m Luftlinie · Gehzeit unbekannt";
+      return Math.round(o.gehzeit_s / 60) + " min zu Fuß · " + o.gehweg_m + " m Weg";
+    };
 
     var gruppen = {};
     Object.keys(UMG_ARTEN).forEach(function (a) { gruppen[a] = L.layerGroup().addTo(karteHotel); });
@@ -643,16 +676,17 @@
       L.marker([l.lat, l.lon], {
         icon: L.divIcon({ className: "", html: ortSymbol(l.gruppe, false),
                           iconSize: [30, 30], iconAnchor: [15, 15] }),
-        title: l.name + " — " + l.bewertung + "★, " + l.meter + " m",
+        title: l.name + " — " + l.bewertung + "★, " + gehText(l),
         keyboard: false
       })
         .addTo(gruppen[l.gruppe])
         .bindPopup("<h3>" + l.name + "</h3>"
-          + "<p>" + l.art + " · " + l.meter + " m Luftlinie</p>"
+          + "<p>" + l.art + " · " + gehText(l) + "</p>"
           + '<p class="bewertung"><strong>' + l.bewertung + " ★</strong> aus "
           + l.stimmen.toLocaleString("de-DE") + " Bewertungen</p>"
           + (l.adresse ? '<p class="popup-fein">' + l.adresse + "</p>" : "")
-          + (l.web ? '<p class="popup-fein"><a href="' + l.web + '">Website</a></p>' : ""));
+          + (l.web ? '<p class="popup-fein"><a href="' + l.web + '" target="_blank" rel="noopener noreferrer">Website</a></p>' : "")
+          + mapsLink(l));
     });
 
     u.halte.forEach(function (h) {
@@ -661,12 +695,13 @@
           html: '<i class="halt-pin ' + (h.art === "tram" ? "tram" : h.art) + '">'
               + (HALT_KUERZEL[h.art] || "?") + "</i>",
           iconSize: [26, 26], iconAnchor: [13, 13] }),
-        title: h.name + " — " + h.meter + " m", keyboard: false
+        title: h.name + " — " + gehText(h), keyboard: false
       })
         .addTo(halteEbene)
         .bindPopup("<h3>" + h.name + "</h3><p>"
           + ({ sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" }[h.art] || h.art)
-          + " · " + h.meter + " m Luftlinie</p>"
+          + " · " + gehText(h) + "</p>"
+          + mapsLink(h)
           + '<p class="popup-fein">OSM ' + h.osm + "</p>");
     });
 
@@ -699,16 +734,20 @@
     var v = u.verworfen || {};
     var raus = (v.zu_schwach || 0) + (v.zu_wenige_stimmen || 0) + (v.ohne_bewertung || 0);
     document.getElementById("umgebung-fuss").innerHTML =
-      "Umkreis: " + u.umkreis.entspricht + ". Gezeigt werden Lokale ab <strong>"
+      "<strong>" + u.umkreis.entspricht + ".</strong> Die Gehzeit ist je Punkt einzeln gerechnet, "
+      + "nicht aus der Luftlinie geschätzt — " + (u.umkreis.ueber_der_grenze.lokale
+        + u.umkreis.ueber_der_grenze.halte) + " Treffer lagen darüber und sind nicht auf der Karte. "
+      + "Gezeigt werden Lokale ab <strong>"
       + String(u.schwellen.bewertung).replace(".", ",") + " ★</strong> bei mindestens "
-      + u.schwellen.stimmen + " Bewertungen — " + raus + " Treffer fielen darunter durch. "
+      + u.schwellen.stimmen + " Bewertungen; " + raus + " fielen darunter durch. "
       + (u.gekappt && u.gekappt.length
-          ? "Bei " + u.gekappt.join(", ") + " liefert die Abfrage höchstens 20 Treffer: "
+          ? "Bei " + u.gekappt.join(", ") + " liefert die Abfrage höchstens 20 Treffer je Kategorie: "
             + "gezeigt sind die bekanntesten, nicht alle. "
           : "")
-      + "Bewertungen: " + u.quellen.lokale.name + ", abgerufen "
-      + deutsch(u.quellen.lokale.abgerufen) + " (Rang " + u.quellen.lokale.rang + "). "
-      + "Haltestellen: " + u.quellen.halte.name + ".";
+      + "Quellen: " + u.quellen.lokale.name + " (Lokale und Bewertungen), "
+      + (u.quellen.gehzeit ? u.quellen.gehzeit.name + " (Gehzeit), " : "")
+      + u.quellen.halte.name + " (Haltestellen) — abgerufen "
+      + deutsch(u.quellen.lokale.abgerufen) + ".";
   })();
 
   // --- Menueleiste ---------------------------------------------------------
