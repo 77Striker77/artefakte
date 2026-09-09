@@ -334,6 +334,167 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .leaflet-popup-content a{color:var(--akzent-text)}
 .leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
 
+/* ---------- Filterleiste (zugleich Legende) ----------
+   Jeder Eintrag zeigt die Marke, die er bedeutet, und schaltet sie. Sie steht
+   sichtbar unter der Karte, nicht in Leaflets Ebenenmenue: das klappt zu einem
+   kleinen Symbol zusammen, und was man nicht sieht, benutzt man nicht. */
+.legende{display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 0;
+         padding:10px 12px; list-style:none;
+         background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.legende li{display:flex}
+
+.filter{
+  display:flex; align-items:center; gap:7px;
+  padding:5px 10px 5px 5px; cursor:pointer;
+  font-family:var(--sans); font-size:14px; line-height:1;
+  color:var(--tinte); background:transparent;
+  border:2px solid transparent}
+.filter:hover{border-color:var(--linie)}
+
+.legende-marke{flex:none; display:flex; align-items:center; justify-content:center;
+               width:34px; height:32px}
+/* In der Leiste liegen die Marken auf der hellen Tafel, nicht auf Kacheln -
+   der Saum waere dort unsichtbar und kostet nur Rechenzeit. */
+.legende .ort-pin, .legende .halt-pin{filter:none}
+.legende .ort-pin{width:30px; height:30px}
+.legende .ort-pin svg{width:26px; height:26px}
+.legende .halt-pin{width:24px; height:24px; font-size:19px}
+
+.filter-zahl{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-leise)}  /* 7,81:1 */
+
+/* AUS: nicht allein ueber die Farbe erkennbar (WCAG 1.4.1) - der Text ist
+   durchgestrichen, das Zeichen blass, und aria-pressed sagt es der Vorlesehilfe. */
+.filter[aria-pressed="false"]{color:var(--tinte-leise)}
+.filter[aria-pressed="false"] .filter-text{text-decoration:line-through}
+.filter[aria-pressed="false"] .legende-marke{opacity:.32}
+.filter[aria-pressed="false"] .filter-zahl{text-decoration:none}
+
+/* ---------- Quellenansicht ---------- */
+#quellen-liste{display:grid; gap:14px;
+         grid-template-columns:repeat(auto-fit, minmax(280px, 1fr))}
+.quelle{padding:16px 18px; background:var(--flaeche-2); color:var(--tinte-leise);
+        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.quelle-kopf{display:flex; align-items:center; justify-content:space-between;
+             gap:10px; margin-bottom:4px}
+.quelle h3{margin:0; font-family:var(--pixel); font-size:17px; color:var(--tinte)}
+.rang{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+      padding:4px 7px; white-space:nowrap}
+.rang-primary{background:var(--rang-primary-bg); color:var(--rang-primary)}
+.rang-secondary{background:var(--rang-secondary-bg); color:var(--rang-secondary)}
+.rang-unverified{background:var(--rang-unverified-bg); color:var(--rang-unverified)}
+.quelle-menge{margin:0 0 12px; font-family:var(--zahl); font-size:11px;
+              color:var(--tinte)}
+.quelle-fakten{display:grid; grid-template-columns:auto 1fr; gap:4px 12px;
+               margin:0 0 12px; padding:12px 0; font-size:13px;
+               border-top:2px solid var(--linie); border-bottom:2px solid var(--linie)}
+.quelle-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+                  text-transform:uppercase; padding-top:2px}
+.quelle-fakten dd{margin:0; color:var(--tinte)}
+.quelle-was{margin:0; font-size:13.5px; line-height:1.55}
+.quelle-hinweis{grid-column:1/-1; margin:0; padding:16px 18px;
+                background:var(--flaeche); color:var(--tinte-leise);
+                border:var(--rand) solid var(--umriss);
+                box-shadow:var(--schatten-klein); font-size:13.5px}
+.quelle-hinweis strong{color:var(--tinte)}
+
+/* ---------- Die Karte ist der Inhalt dieser Seite ----------
+   Muenchen ist rund 20 km breit und 21 km hoch, also nahezu quadratisch — anders
+   als bei einer langgestreckten Insel begrenzt hier weder Breite noch Hoehe
+   allein den Zoom. 62vh fuellt die Flaeche, ohne auf dem Handy die ganze Seite
+   zu uebernehmen. */
+#karte{height:clamp(420px,62vh,660px);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+.leaflet-container{font-family:var(--sans); background:var(--grund-tief)}
+/* Leaflets Attributionsleiste liegt von Haus aus halbtransparent auf den
+   Kacheln: gemessen 3,13:1 fuer den Link — sie faellt durch, und zwar je nach
+   Kachel unterschiedlich stark. Ein Wert, der vom Kartenausschnitt abhaengt,
+   ist nicht pruefbar; darum bekommt die Leiste einen eigenen, deckenden Grund.
+   Der Selektor muss .leaflet-container mitfuehren: Leaflet setzt den Grund
+   ueber .leaflet-container .leaflet-control-attribution, und ein einstufiger
+   Selektor verliert das Spezifitaetsduell stillschweigend - die Regel steht
+   dann in der Datei und wirkt nicht. */
+.leaflet-container .leaflet-control-attribution{font-size:10.5px;
+  background:var(--flaeche); color:var(--tinte-leise)}
+.leaflet-container .leaflet-control-attribution a{color:var(--akzent-text)}  /* 6,12:1 */
+
+/* ---------- Marken ----------
+   Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben
+   Stylesheet wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
+   und wuerde width/height sonst ignorieren.
+
+   Der Saum entsteht aus vier harten Schlagschatten ohne Weichzeichnung - ein
+   weichgezeichneter Schein wuerde die Kanten aufweichen, und die Seite lebt von
+   harten Kanten. */
+.ort-pin, .halt-pin{
+  display:flex; align-items:center; justify-content:center;
+  filter:
+    drop-shadow( 1.6px 0 0 var(--saum)) drop-shadow(-1.6px 0 0 var(--saum))
+    drop-shadow(0  1.6px 0 var(--saum)) drop-shadow(0 -1.6px 0 var(--saum))}
+
+/* ORTE: gezeichnetes Symbol. 34 px Kiste, 30 px Zeichen - gross genug, dass
+   Bahnhof, Rathaus, Kirche, Filmklappe und Baum auf einen Blick zu trennen
+   sind, und ueber der 24-px-Tastschwelle (WCAG 2.5.8). */
+.ort-pin{width:34px; height:34px}
+.ort-pin.gross{width:40px; height:40px}
+.ort-pin svg{width:30px; height:30px; stroke-width:2.3}
+.ort-pin.gross svg{width:36px; height:36px}
+.ort-pin.ankunft{color:var(--m-ankunft)}
+.ort-pin.zentrum{color:var(--m-zentrum)}
+.ort-pin.wahrzeichen{color:var(--m-wahrzeichen)}
+.ort-pin.film{color:var(--m-film)}
+.ort-pin.park{color:var(--m-park)}
+
+/* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
+   keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
+   gefuelltes Viereck neben einem gezeichneten Symbol sah aus wie zwei
+   verschiedene Kartenwerke. 800er Schnitt, weil ein normal starker Buchstabe
+   bei 20 px gegen die Kachelzeichnung untergeht. */
+.halt-pin{
+  width:26px; height:26px; font-family:var(--sans); font-style:normal;
+  font-weight:800; font-size:20px; line-height:1}
+.halt-pin.sbahn{color:var(--m-sbahn)}
+.halt-pin.ubahn{color:var(--m-ubahn)}
+.halt-pin.linie{width:24px; height:24px; font-size:18px; color:var(--m-tram)}
+.halt-pin.linie b{font-weight:inherit}
+
+/* Leaflets eigene Sprechblase traegt die Palette der Seite, sonst steht ein
+   weisser Systemkasten mitten in einer durchgestalteten Karte. */
+.leaflet-popup-content-wrapper{
+  background:var(--flaeche); color:var(--tinte); border-radius:0;
+  border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.leaflet-popup-tip{background:var(--flaeche);
+                   border:var(--rand) solid var(--umriss)}
+.leaflet-popup-content{margin:12px 14px; font-size:14px; line-height:1.5}
+.leaflet-popup-content h3{margin:0 0 4px; font-family:var(--pixel);
+                          font-size:17px; color:var(--tinte)}
+.leaflet-popup-content p{margin:0; color:var(--tinte-leise)}
+.leaflet-popup-content .popup-fein{margin-top:6px; font-size:12px}
+/* "unbekannt" ist ein offener Posten, kein Nebensatz - es sieht darum aus wie
+   die offenen Felder der Infobox und nicht wie Kleingedrucktes. */
+.leaflet-popup-content .popup-unbekannt{color:var(--akzent-text)}   /* 6,12:1 */
+
+/* ---------- Linienmarken in der Sprechblase ----------
+   Sie tragen dieselben Farben wie die Ebenen auf der Karte, damit "U-Bahn" in
+   der Legende und "U3" in der Sprechblase erkennbar dasselbe meinen. Jede Tinte
+   gegen IHRE Markenflaeche gemessen, nicht gegen die Tafel darunter. */
+.leaflet-popup-content .linien{margin-top:8px; display:flex; flex-wrap:wrap; gap:4px}
+.leaflet-popup-content .linie{
+  font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+  padding:4px 6px; color:var(--tinte); box-shadow:0 0 0 2px var(--umriss)}
+/* Dieselben drei Farben wie auf der Karte, damit "U-Bahn" in der Legende und
+   "U3" in der Sprechblase erkennbar dasselbe meinen. Alles uebrige - Regional,
+   Bus, reine Nummern - liegt auf der hellen Tafel: dort traegt der Text selbst
+   die Unterscheidung, und eine vierte Farbe waere eine Bedeutung, die es nicht
+   gibt. */
+.linie--u{background:var(--m-ubahn); color:var(--saum)}   /* 7,68:1 */
+.linie--s{background:var(--m-sbahn); color:var(--saum)}   /* 6,13:1 */
+.linie--t{background:var(--m-tram);  color:var(--saum)}   /* 6,97:1 */
+.linie--r, .linie--b{background:var(--flaeche-2); color:var(--tinte)}  /* 14,02:1 */
+.leaflet-popup-content a{color:var(--akzent-text)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
+
 /* ---------- Legende ---------- */
 .legende{display:flex; flex-wrap:wrap; gap:10px 18px; margin:16px 0 0;
          padding:14px 16px; list-style:none;

@@ -199,9 +199,16 @@
   // Orientierungspunkte unauffindbar machen. Der Name steht in der Sprechblase
   // und im title-Attribut, also auch fuer den Screenreader.
   var ebenen = { "Karte": strasse, "Luftbild": luftbild };
-  var schalter = {};
+
+  // Die Kategorien liegen in EINER Liste, aus der sowohl die Filterleiste als
+  // auch ihre Marken entstehen. Zwei getrennte Aufzaehlungen waeren zwei
+  // Fassungen derselben Sache, und eine davon ist irgendwann veraltet.
+  var kategorien = [];
   Object.keys(ARTEN).forEach(function (art) {
-    if (ortEbenen[art]) schalter[ARTEN[art].label] = ortEbenen[art];
+    if (ortEbenen[art]) {
+      kategorien.push({ id: art, label: ARTEN[art].label, marke: ortSymbol(art, false),
+                        ebene: ortEbenen[art] });
+    }
   });
 
   if (DATEN.bahn) {
@@ -232,8 +239,10 @@
     });
     gruppen.sbahn.addTo(karte);
     gruppen.ubahn.addTo(karte);
-    schalter["S-Bahn / DB (" + DATEN.bahn.anzahl.sbahn + ")"] = gruppen.sbahn;
-    schalter["U-Bahn (" + DATEN.bahn.anzahl.ubahn + ")"] = gruppen.ubahn;
+    kategorien.push({ id: "sbahn", label: VERKEHR.sbahn.label, zahl: DATEN.bahn.anzahl.sbahn,
+                      marke: '<i class="halt-pin sbahn">S</i>', ebene: gruppen.sbahn });
+    kategorien.push({ id: "ubahn", label: VERKEHR.ubahn.label, zahl: DATEN.bahn.anzahl.ubahn,
+                      marke: '<i class="halt-pin ubahn">U</i>', ebene: gruppen.ubahn });
   }
 
   // --- Linien: der Verlauf plus die eigenen Halte -------------------------
@@ -274,11 +283,17 @@
       });
 
       g.addTo(karte);
-      schalter["Tram " + linie.ref + " (" + linie.halte.length + ")"] = g;
+      kategorien.push({ id: "tram" + linie.ref, label: "Tram " + linie.ref + " → Filmstadt",
+                        zahl: linie.halte.length,
+                        marke: '<i class="halt-pin linie"><b>T</b></i>', ebene: g });
     });
   }
 
-  L.control.layers(ebenen, schalter, { position: "topright" }).addTo(karte);
+  // Nur noch die Grundkarte im Leaflet-Menue. Die Kategorien liegen in der
+  // Filterleiste unter der Karte: Leaflets Ebenenmenue klappt zu einem kleinen
+  // Symbol zusammen, und was man nicht sieht, benutzt man nicht - auf dem Handy
+  // erst recht.
+  L.control.layers(ebenen, null, { position: "topright" }).addTo(karte);
 
   // Der Ausschnitt kommt aus den Orientierungspunkten, nicht aus einem festen
   // Zoom: sobald einer dazukommt, der weiter aussen liegt, waere ein fester Zoom
@@ -288,33 +303,35 @@
   if (punkte.length) karte.fitBounds(L.latLngBounds(punkte).pad(0.12));
   namenSchalten();
 
-  // --- Legende -------------------------------------------------------------
-  // Sie zeigt die Marke selbst, nicht ein Farbquadrat daneben: seit die Orte ein
-  // Symbol tragen und nur die Bahnen eine Farbe, waere ein reines Farbfeld fuer
-  // einen Ort leer von Information.
+  // --- Filterleiste ---------------------------------------------------------
+  // Sie ist zugleich Legende: jeder Eintrag zeigt die Marke, die er auf der
+  // Karte bedeutet, und schaltet sie an oder aus. Alles ist beim Aufschlagen
+  // an - wer die Karte oeffnet, soll sehen, was es gibt.
+  //
+  // Der Aus-Zustand haengt nicht allein an der Farbe (WCAG 1.4.1): aria-pressed
+  // fuer die Vorlesehilfe, dazu ein durchgestrichener Text und ein blasses
+  // Zeichen.
   var ul = document.getElementById("legende");
-  var eintrag = function (markeHtml, text) {
-    var li = document.createElement("li");
-    var sp = document.createElement("span");
-    sp.className = "legende-marke";
-    sp.innerHTML = markeHtml;
-    li.appendChild(sp);
-    li.appendChild(document.createTextNode(text));
-    ul.appendChild(li);
-  };
 
-  var gezeigt = {};
-  DATEN.orte.forEach(function (o) { gezeigt[o.art] = true; });
-  Object.keys(ARTEN).forEach(function (art) {
-    if (gezeigt[art]) eintrag(ortSymbol(art, false), ARTEN[art].label);
-  });
-  if (DATEN.bahn) {
-    eintrag('<i class="halt-pin sbahn">S</i>', VERKEHR.sbahn.label);
-    eintrag('<i class="halt-pin ubahn">U</i>', VERKEHR.ubahn.label);
-    (DATEN.bahn.linien || []).forEach(function (l) {
-      eintrag('<i class="halt-pin linie"><b>T</b></i>', "Tram " + l.ref + " → Filmstadt");
+  kategorien.forEach(function (k) {
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "filter";
+    b.setAttribute("aria-pressed", "true");
+    // aria-hidden am Zeichen: es wiederholt nur, was der Text daneben sagt.
+    // Ohne das liest die Vorlesehilfe "S S-Bahn / DB" - gemessen, nicht vermutet.
+    b.innerHTML = '<span class="legende-marke" aria-hidden="true">' + k.marke + "</span>"
+      + '<span class="filter-text">' + k.label
+      + (k.zahl ? ' <span class="filter-zahl">' + k.zahl + "</span>" : "") + "</span>";
+    b.addEventListener("click", function () {
+      var an = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", an ? "false" : "true");
+      if (an) karte.removeLayer(k.ebene); else k.ebene.addTo(karte);
     });
-  }
+    li.appendChild(b);
+    ul.appendChild(li);
+  });
 
   // --- Quellenreiter -------------------------------------------------------
   // Jede Quelle als eigene Karte mit Rang-Marke, Abrufdatum und dem, was sie
