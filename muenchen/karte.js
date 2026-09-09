@@ -255,12 +255,18 @@
     DATEN.bahn.netze.forEach(function (netz) {
       var g = L.layerGroup();
       var farbe = token(netz.farbe);
+      // EINE Polylinie je Linie, nicht eine je Abschnitt. Leaflet nimmt ein
+      // Feld von Abschnitten und zeichnet daraus einen einzigen SVG-Pfad mit
+      // mehreren Teilstuecken.
+      //
+      // Gemessen am 09.09.2026: je Abschnitt eine Polylinie ergab 1503 Pfade in
+      // der Karte. Der Browser legt sie einzeln an und rechnet sie bei JEDEM
+      // Zoom und Schwenk neu - die Karte liess sich sekundenlang nicht
+      // bedienen. Zusammengefasst sind es 36.
       netz.linien.forEach(function (linie) {
-        linie.verlauf.forEach(function (abschnitt) {
-          L.polyline(abschnitt, {
-            color: farbe, weight: 2.5, opacity: 0.6, interactive: false
-          }).addTo(g);
-        });
+        L.polyline(linie.verlauf, {
+          color: farbe, weight: 2.5, opacity: 0.6, interactive: false
+        }).addTo(g);
       });
       g.addTo(karte);
       kategorien.push({ id: netz.id, label: netz.label, zahl: netz.linien.length,
@@ -279,16 +285,15 @@
     DATEN.bahn.linien.forEach(function (linie) {
       var g = L.layerGroup();
 
-      // Jeder Wegabschnitt eine eigene Polylinie. Zusammengenaeht wuerde ein
-      // falsch sortierter Abschnitt eine kerzengerade Linie quer durch die
-      // Stadt ziehen - und die saehe aus wie eine echte Strecke.
-      linie.verlauf.forEach(function (abschnitt) {
-        L.polyline(abschnitt, {
-          // Dicker als das Netz darunter: die Linie ist hier nicht Orientierung,
-          // sondern die eine Verbindung, um die es geht.
-          color: token("--m-tram"), weight: 4.5, opacity: 1, interactive: false
-        }).addTo(g);
-      });
+      // Die Abschnitte bleiben getrennte Teilstuecke EINER Polylinie. Zu einer
+      // durchgehenden Linie zusammengenaeht wuerde ein falsch sortierter
+      // Abschnitt eine kerzengerade Linie quer durch die Stadt ziehen - und die
+      // saehe aus wie eine echte Strecke.
+      L.polyline(linie.verlauf, {
+        // Dicker als das Netz darunter: die Linie ist hier nicht Orientierung,
+        // sondern die eine Verbindung, um die es geht.
+        color: token("--m-tram"), weight: 4.5, opacity: 1, interactive: false
+      }).addTo(g);
 
       linie.halte.forEach(function (h) {
         L.marker([h.lat, h.lon], {
