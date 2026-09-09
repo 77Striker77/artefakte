@@ -77,6 +77,14 @@
   --m-film:#6D28D9;         /* 7,10:1 · H263 */
   --m-wahrzeichen:#A21CAF;  /* 6,32:1 · H295 */
   --m-tram:#B21229;         /* 6,97:1 · H351 */
+  /* DIE LETZTE FREIE LUECKE, vergeben am 09.09.2026. Von den bis dahin zehn
+     Hues blieb bei 26 Grad Mindestabstand nur eine Spanne um 323 uebrig; 182
+     und 119 waren am selben Tag an unterkunft und museum gegangen. Gemessen
+     gegen den weissen Saum: 5,51:1, kleinster Hue-Abstand 28 Grad (zu
+     wahrzeichen H295 und tram H351).
+     WER DIE NAECHSTE MARKENFARBE BRAUCHT, findet keine mehr: dann muessen zwei
+     vorhandene zusammengelegt oder die Trennung ueber die Form geloest werden. */
+  --m-smash:#C51682;        /* 5,51:1 · H323 */
 
   /* --- Fokus: zwei Lagen, weil kein einzelner Ring 3:1 gegen BEIDE Gruende
          schafft — der helle Ring faellt auf der Kalktafel durch, der dunkle
@@ -379,6 +387,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Karten dieselbe Marke hat. */
 .ort-pin.wirtshaus{color:var(--m-zentrum)}  /* 5,18:1 · H 17 · Masskrug */
 .ort-pin.burger{color:var(--m-film)}        /* 7,10:1 · H263 · Burger */
+/* GLEICHES ZEICHEN, ANDERE FARBE - die eine Stelle, an der diese Seite von
+   "Orte tragen ein Symbol" abweicht, und zwar bewusst: ein Smash-Laden und ein
+   Burgerlokal sind dieselbe Sache in zwei Auspraegungen, kein zweites Ding. Ein
+   eigenes Zeichen wuerde behaupten, es waere etwas anderes.
+   Die 28 Grad Hue-Abstand tragen die Unterscheidung; wer sie nicht sieht, liest
+   sie in der Legende und in der Zeile. */
+.ort-pin.smash{color:var(--m-smash)}        /* 5,51:1 · H323 · Burger */
 
 /* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
    keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
@@ -686,6 +701,12 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
                text-transform:uppercase; color:var(--tinte-leise); padding-top:3px}
 .ort-fakten dd{margin:0; color:var(--tinte)}
+/* Der Beleg steht unter seiner Aussage, nicht dahinter: eine Quelle in
+   derselben Zeile wird ueberlesen, und dann steht die Aussage allein da. */
+.ort-beleg{display:block; margin-top:2px; font-size:12.5px;
+           color:var(--tinte-leise)}                      /* 6,50:1 */
+.ort-beleg a{color:var(--akzent-text); font-weight:700}   /* 6,12:1 */
+.ort-fakten .rang{margin-left:6px; font-size:9.5px; padding:2px 5px}
 /* Eine Einschraenkung wird nicht kleiner gesetzt als der Wert, den sie
    einschraenkt - sonst liest man den Wert und die Warnung nicht. */
 .ort-warnung{margin:10px 0 0; padding:8px 10px; font-size:13px;
@@ -1016,6 +1037,35 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   border:2px solid var(--umriss); background:var(--flaeche-2)}
 .hotel-tel:hover{background:var(--akzent); color:var(--tinte)}          /* 5,95:1 */
 .hotel-kenn{margin-top:18px}
+/* Ein unbekannter Wert wird als Aussage gesetzt, nicht als Kleingedrucktes -
+   dieselbe Auszeichnung wie in der Infobox. */
+.kenn-offen{color:var(--akzent-text); font-family:var(--wert); font-weight:800}
+.kenn-fein{color:var(--tinte-leise); font-size:12.5px}             /* 6,50:1 */
+
+/* Telefon, Website und Karte sind ZIELE, keine Zeilen: unterwegs tippt man sie
+   an, statt sie zu lesen. Nebeneinander im Kopf, jedes mit 44 px Tasthoehe. */
+.hotel-ziele{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0}
+.hotel-note{font-size:13px; color:var(--tinte-leise); text-align:right}
+.hotel-note b{display:block; font-family:var(--wert); font-weight:800;
+  font-size:20px; color:var(--tinte); font-variant-numeric:tabular-nums}
+
+/* --- Zu Fuss von hier -----------------------------------------------------
+   Ein Balken je Anker, alle an derselben Skala: "22 Minuten" allein sagt
+   nichts darueber, ob das nah oder weit ist - nebeneinander schon. */
+.lage-titel{margin:22px 0 10px; font-family:var(--zahl); font-size:10.5px;
+  letter-spacing:.5px; text-transform:uppercase; color:var(--tinte-leise)}
+.lage{list-style:none; margin:0; padding:0; display:grid; gap:9px}
+.lage-zeile{display:grid; grid-template-columns:minmax(0,1fr) minmax(60px,90px) auto;
+  align-items:center; gap:4px 12px}
+.lage-ort{font-size:15px; font-weight:700; min-width:0}
+.lage-was{display:block; font-size:12.5px; font-weight:400;
+  color:var(--tinte-leise)}                                        /* 6,50:1 */
+.lage-balken{height:10px; background:var(--flaeche-2);
+  border:2px solid var(--umriss)}
+.lage-balken i{display:block; height:100%; background:var(--tinte-leise)}
+.lage-zahl{font-size:13px; color:var(--tinte-leise); white-space:nowrap}
+.lage-zahl b{font-family:var(--wert); font-weight:800; font-size:15px;
+  color:var(--tinte); font-variant-numeric:tabular-nums}           /* 16,87:1 */
 /* Ein unbekannter Wert traegt "xx" und wird als Aussage gesetzt, nicht als
    Ergebnis - dieselbe Auszeichnung wie in der Infobox. */
 .platz-wert--offen{color:var(--akzent-text)}                            /* 6,12:1 */
@@ -1047,9 +1097,17 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .takt-betrieb{font-family:var(--wert); font-size:13px; color:var(--tinte-leise)}
 .takt-betrieb b{font-weight:800; font-size:15px; color:var(--tinte);
   font-variant-numeric:tabular-nums}                              /* 14,02:1 */
-.takt-streifen, .takt-achse{list-style:none; margin:0; padding:0;
-  display:grid; grid-template-columns:repeat(24,1fr); gap:2px}
-.takt-streifen{height:46px; align-items:end}
+/* Skala links: Einheit und Hoechstwert stehen AM Diagramm, nicht in einer
+   Bildunterschrift. Der erste Wurf hatte beides nicht - man konnte raten, was
+   die Hoehe bedeutet. */
+.takt-plot{display:grid; grid-template-columns:auto minmax(0,1fr); gap:0 8px}
+.takt-skala{display:flex; flex-direction:column; justify-content:space-between;
+  height:52px; font-family:var(--wert); font-weight:700; font-size:10.5px;
+  color:var(--tinte-leise); font-variant-numeric:tabular-nums;
+  text-align:right}                                               /* 6,50:1 */
+.takt-streifen{list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(24,1fr); gap:2px;
+  height:52px; align-items:end}
 .takt-stunde{height:100%; display:flex; align-items:flex-end;
   border-bottom:2px solid var(--tinte-leise)}
 .takt-stunde i{display:block; width:100%; min-height:2px;
@@ -1057,15 +1115,42 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 /* Eine Stunde ohne Fahrt traegt nichts ueber dem Grundstrich - das Loch IST
    die Auskunft. */
 .takt-stunde--leer i{background:none; min-height:0}
-.takt-achse{margin-top:5px; font-family:var(--wert); font-weight:700;
-  font-size:10.5px; color:var(--tinte-leise);
-  font-variant-numeric:tabular-nums}
-.takt-achse li{text-align:left; white-space:nowrap}
+
+/* Je Tagesabschnitt ein Feld, so breit wie seine Stunden im Streifen darueber:
+   die Beschriftung sitzt UNTER dem Stueck, das sie beschreibt. Eine Legende
+   daneben muesste man erst zuordnen. */
+.takt-baender{list-style:none; margin:6px 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(24,1fr); gap:2px}
+.takt-baender li{min-width:0; padding:5px 6px; background:var(--flaeche);
+  border-top:3px solid var(--tinte-leise); line-height:1.3}
+.takt-band--leer{opacity:.62}
+.takt-band-name{display:block; font-family:var(--zahl); font-size:10px;
+  letter-spacing:.5px; text-transform:uppercase; color:var(--tinte-leise)}
+.takt-band-zeit{display:block; font-family:var(--wert); font-weight:700;
+  font-size:11px; color:var(--tinte-leise);
+  font-variant-numeric:tabular-nums}                              /* 6,50:1 */
+.takt-band-takt{display:block; margin-top:2px; font-family:var(--wert);
+  font-weight:800; font-size:13px; color:var(--tinte);
+  font-variant-numeric:tabular-nums}                              /* 16,87:1 */
+.takt-einheit{margin:9px 0 0; font-size:12.5px; color:var(--tinte-leise)}
+.takt-einheit b{font-family:var(--wert); font-weight:800; color:var(--tinte)}
 .takt-luecke{margin:11px 0 0; font-size:13.5px; color:var(--tinte-leise)}
 .takt-luecke b{font-family:var(--wert); font-weight:800; color:var(--tinte);
   font-variant-numeric:tabular-nums}                              /* 14,02:1 */
 
 
+
+@media (max-width:560px){
+  /* Vier Felder nebeneinander sind hier 60 px breit - "alle 4-20 min" passt
+     dort nicht. Untereinander behaelt jedes seine Zahl. */
+  .takt-baender{grid-template-columns:1fr}
+  .takt-baender li{grid-column:1/-1 !important;
+    display:grid; grid-template-columns:auto auto 1fr; align-items:baseline;
+    gap:0 10px; border-top-width:2px}
+  .takt-band-takt{text-align:right}
+  .lage-zeile{grid-template-columns:minmax(0,1fr) auto}
+  .lage-balken{grid-column:1/-1; order:3}
+}
 
 @media (max-width:520px){
   .band-halt{grid-template-columns:52px 20px minmax(0,1fr); gap:0 8px}

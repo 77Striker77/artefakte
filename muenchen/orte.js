@@ -92,9 +92,29 @@ const DATEN = {
   "adresse": "Rablstraße 2, 81669 München",
   "stadtteil": "Au-Haidhausen",
   "telefon": "+49 89 44455580",
-  "zimmer": "Standard Doppelzimmer, ohne Verpflegung",
+  "zimmer": "Standard Doppelzimmer",
   "checkin": "ab 15:00",
   "checkout": "bis 12:00",
+  "sterne": 3,
+  "verpflegung": "ohne Verpflegung",
+  "vermittelt": "CHECK24, Anbieter booking.com",
+  "bestaetigt": "02.07.2026",
+  "ausstattung": [
+   {
+    "was": "WLAN",
+    "wert": "kostenlos"
+   },
+   {
+    "was": "Parken",
+    "wert": "Tiefgarage am Haus"
+   },
+   {
+    "was": "Frühstück",
+    "wert": "xx",
+    "hinweis": "Preis und Zeiten nicht veröffentlicht"
+   }
+  ],
+  "ausstattung_quelle": "motel-one.com, Hotelseite, gelesen 09.09.2026",
   "quelle": "Buchungsbestätigung, gelesen 09.09.2026 · Koordinate OSM way/28261161"
  },
  "bahn_reise": {
@@ -1457,6 +1477,44 @@ const DATEN = {
      12,
      9
     ],
+    "baender": [
+     {
+      "id": "frueh",
+      "label": "früh",
+      "von": 4,
+      "bis": 7,
+      "min": 4,
+      "max": 20,
+      "fahrten": 28
+     },
+     {
+      "id": "tag",
+      "label": "tagsüber",
+      "von": 7,
+      "bis": 19,
+      "min": 4,
+      "max": 6,
+      "fahrten": 144
+     },
+     {
+      "id": "abend",
+      "label": "abends",
+      "von": 19,
+      "bis": 23,
+      "min": 4,
+      "max": 6,
+      "fahrten": 48
+     },
+     {
+      "id": "nacht",
+      "label": "nachts",
+      "von": 23,
+      "bis": 4,
+      "min": 4,
+      "max": 60,
+      "fahrten": 25
+     }
+    ],
     "fuss_minuten": 15,
     "fuss_meter": 984,
     "echtzeit": false,
@@ -2465,6 +2523,44 @@ const DATEN = {
      6,
      4,
      3
+    ],
+    "baender": [
+     {
+      "id": "frueh",
+      "label": "früh",
+      "von": 4,
+      "bis": 7,
+      "min": 10,
+      "max": 21,
+      "fahrten": 8
+     },
+     {
+      "id": "tag",
+      "label": "tagsüber",
+      "von": 7,
+      "bis": 19,
+      "min": 10,
+      "max": 10,
+      "fahrten": 72
+     },
+     {
+      "id": "abend",
+      "label": "abends",
+      "von": 19,
+      "bis": 23,
+      "min": 10,
+      "max": 20,
+      "fahrten": 22
+     },
+     {
+      "id": "nacht",
+      "label": "nachts",
+      "von": 23,
+      "bis": 4,
+      "min": 20,
+      "max": 30,
+      "fahrten": 7
+     }
     ],
     "fuss_minuten": 17,
     "fuss_meter": 1180,
@@ -4140,6 +4236,7 @@ const DATEN = {
     "takt": null,
     "betrieb": null,
     "stunden": null,
+    "baender": null,
     "fuss_minuten": 47,
     "fuss_meter": 3307,
     "echtzeit": false,
@@ -5678,6 +5775,72 @@ const DATEN = {
       "meter": 3307
      }
     ]
+   }
+  ]
+ },
+ "hotel_eintrag": {
+  "quellen": {
+   "eintrag": {
+    "name": "Google Places API (New), searchText",
+    "abgerufen": "2026-09-09",
+    "rang": "secondary"
+   },
+   "gehzeit": {
+    "name": "Google Routes API, computeRouteMatrix (travelMode WALK)",
+    "abgerufen": "2026-09-09",
+    "rang": "secondary"
+   }
+  },
+  "eintrag": {
+   "name": "Hotel Motel One München-Deutsches Museum",
+   "adresse": "Rablstraße 2, 81669 München-Au-Haidhausen, Deutschland",
+   "bewertung": 4.4,
+   "stimmen": 3618,
+   "art": "Hotel",
+   "website": "https://www.motel-one.com/hotels/muenchen/hotel-muenchen-deutsches-museum/",
+   "maps": "https://maps.google.com/?cid=16263973978559739224&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+   "status": "OPERATIONAL"
+  },
+  "lage": [
+   {
+    "label": "Orient Shop",
+    "was": "der nächste Supermarkt",
+    "lat": 48.129322,
+    "lon": 11.59242,
+    "gehzeit_s": 388,
+    "gehweg_m": 479
+   },
+   {
+    "label": "Deutsches Museum",
+    "was": "der Namensgeber, gleich um die Ecke",
+    "lat": 48.130041,
+    "lon": 11.582909,
+    "gehzeit_s": 744,
+    "gehweg_m": 923
+   },
+   {
+    "label": "Viktualienmarkt",
+    "was": "Markt und Biergarten",
+    "lat": 48.135329,
+    "lon": 11.576222,
+    "gehzeit_s": 1309,
+    "gehweg_m": 1609
+   },
+   {
+    "label": "Ostbahnhof",
+    "was": "der zweite Fernbahnhof",
+    "lat": 48.128078,
+    "lon": 11.60363,
+    "gehzeit_s": 1327,
+    "gehweg_m": 1567
+   },
+   {
+    "label": "Marienplatz",
+    "was": "die Mitte der Altstadt",
+    "lat": 48.1371436,
+    "lon": 11.5753989,
+    "gehzeit_s": 1360,
+    "gehweg_m": 1649
    }
   ]
  },
@@ -7239,6 +7402,11 @@ const DATEN = {
     "lon": 11.607892,
     "notiz": "Der Laden, den die Münchner Food-Kanäle 2025/26 am häufigsten nennen. Zwei Burger auf der Karte, sonst nichts. Regionales Rindfleisch, Brioche-Buns täglich von der Boulangerie Dompierre. Überwiegend zum Mitnehmen, ein paar Stehtische.",
     "auswahl": "presse",
+    "smash": {
+     "art": "laden",
+     "rang": "secondary",
+     "quelle": "Als Smash-Burger-Laden ausgewählt; Beleg je Eintrag unter beleg"
+    },
     "adresse": "Einsteinstraße 121, 81675 München-Au-Haidhausen, Deutschland",
     "stadtteil": "Haidhausen-Nord",
     "gesucht": "Saint's Burgers, Einsteinstraße 121, München",
@@ -7282,6 +7450,11 @@ const DATEN = {
     "lon": 11.54173,
     "notiz": "Vom Burger House Westend. Der einzige der sechs mit Bar und richtigem Sitzplatz statt Fensterverkauf. Handgeschnittene Pommes, hausgemachte Saucen.",
     "auswahl": "presse",
+    "smash": {
+     "art": "laden",
+     "rang": "secondary",
+     "quelle": "Als Smash-Burger-Laden ausgewählt; Beleg je Eintrag unter beleg"
+    },
     "adresse": "Gollierstraße 30, 80339 München-Schwanthalerhöhe, Deutschland",
     "stadtteil": "Schwanthalerhöhe (Westend)",
     "gesucht": "SMASH OR PASS Burger & Bar, Gollierstraße 30, München",
@@ -7322,6 +7495,11 @@ const DATEN = {
     "lon": 11.589819,
     "notiz": "Halal. Fing als reiner Lieferdienst an und verkauft seit Juli 2024 auch am Fenster.",
     "auswahl": "presse",
+    "smash": {
+     "art": "laden",
+     "rang": "secondary",
+     "quelle": "Als Smash-Burger-Laden ausgewählt; Beleg je Eintrag unter beleg"
+    },
     "adresse": "Gebsattelstraße 15, 81541 München, Deutschland",
     "stadtteil": "Au",
     "stadtteil_hinweis": "Der Laden heißt Haidhausen, liegt aber in der Au — beides gehört zum Stadtbezirk Au-Haidhausen.",
@@ -7363,6 +7541,11 @@ const DATEN = {
     "lon": 11.574188,
     "notiz": "Klein und schnell, Patty wahlweise 100 g oder 200 g, dazu Smash Fries.",
     "auswahl": "presse",
+    "smash": {
+     "art": "laden",
+     "rang": "secondary",
+     "quelle": "Als Smash-Burger-Laden ausgewählt; Beleg je Eintrag unter beleg"
+    },
     "adresse": "Belgradstraße 37, 80796 München, Deutschland",
     "stadtteil": "Alt-Schwabing",
     "gesucht": "Uncle Smash, Belgradstraße 37, München",
@@ -7403,6 +7586,11 @@ const DATEN = {
     "lon": 11.540733,
     "notiz": "Hausgemachte Rind- und Veggie-Varianten auf Brioche-Buns.",
     "auswahl": "presse",
+    "smash": {
+     "art": "laden",
+     "rang": "secondary",
+     "quelle": "Als Smash-Burger-Laden ausgewählt; Beleg je Eintrag unter beleg"
+    },
     "adresse": "Plinganserstraße 37, 81369 München, Deutschland",
     "stadtteil": "Sendling",
     "adress_hinweis": "Die Quelle nennt die Kazmairstraße 37 im Westend. Dort sitzt heute ein Nudelrestaurant; King Loui liegt am Harras in der Plinganserstraße 37. Gefunden über die Namensprobe der Places-Abfrage.",
@@ -7444,6 +7632,11 @@ const DATEN = {
     "lon": 11.530352,
     "notiz": "Die breiteste Karte der sechs, mit Falafel- und Champignon-Burger neben dem Rind.",
     "auswahl": "presse",
+    "smash": {
+     "art": "laden",
+     "rang": "secondary",
+     "quelle": "Als Smash-Burger-Laden ausgewählt; Beleg je Eintrag unter beleg"
+    },
     "adresse": "Hanauer Str. 75, 80993 München, Deutschland",
     "stadtteil": "Alt-Moosach",
     "stadtteil_hinweis": "Die Quelle nennt Berg am Laim. Das ist falsch — die Postleitzahl 80993 liegt in Moosach, im Nordwesten.",
@@ -7484,6 +7677,12 @@ const DATEN = {
     "lat": 48.132027,
     "lon": 11.571422,
     "auswahl": "abfrage",
+    "smash": {
+     "art": "gericht",
+     "rang": "secondary",
+     "quelle": "„Smash Papi“ mit 2 × 75 g Smash-Patties, daneben andere Burger — die eigene Website nennt die Zubereitung nicht, der Eintrag stammt aus einem Speisekarten-Portal",
+     "beleg": "https://www.speisekarte.de/m%C3%BCnchen/restaurant/forty_four_burger_bar/speisekarte"
+    },
     "adresse": "Blumenstraße 25, 80331 München, Deutschland",
     "stadtteil": "Altstadt",
     "gesucht": "Forty Four Burger & Bar, Blumenstraße 25, München",
@@ -7522,6 +7721,12 @@ const DATEN = {
     "lat": 48.139222,
     "lon": 11.568646,
     "auswahl": "abfrage",
+    "smash": {
+     "art": "gericht",
+     "rang": "primary",
+     "quelle": "Eigene Speisekarte: „Smash Burger“ 10,50 €, 160 g Irish Beef — ein Gericht neben anderen",
+     "beleg": "https://downtownburgermunich.de/"
+    },
     "adresse": "Kapellenstraße 1, 80333 München, Deutschland",
     "stadtteil": "Altstadt",
     "gesucht": "Downtown Burger, Kapellenstraße 1, München",
@@ -7560,6 +7765,12 @@ const DATEN = {
     "lat": 48.135949,
     "lon": 11.574425,
     "auswahl": "abfrage",
+    "smash": {
+     "art": "gericht",
+     "rang": "primary",
+     "quelle": "Eigene Speisekarte: „Classic Smash“, „Oklahoma Smash“, „Giggly Smash“ neben Beef-, Chicken- und Veggie-Burgern",
+     "beleg": "https://www.ruffsburger.de/menue/"
+    },
     "adresse": "Rindermarkt 6, 80331 München, Deutschland",
     "stadtteil": "Altstadt",
     "gesucht": "Ruff's Burger Marienplatz, Rindermarkt 6, München",
@@ -7598,6 +7809,12 @@ const DATEN = {
     "lat": 48.136475,
     "lon": 11.568103,
     "auswahl": "abfrage",
+    "smash": {
+     "art": "keins",
+     "rang": "primary",
+     "quelle": "Eigene Website: Mini-Burger auf täglich frisch gebackenen Semmeln, keine Smash-Angabe",
+     "beleg": "http://www.derkleineflo.de/"
+    },
     "adresse": "Josephspitalstraße 4, 80331 München-Altstadt-Lehel, Deutschland",
     "stadtteil": "Altstadt",
     "gesucht": "Der kleine Flo, Josephspitalstraße 4, München",
@@ -7636,6 +7853,12 @@ const DATEN = {
     "lat": 48.131149,
     "lon": 11.571403,
     "auswahl": "abfrage",
+    "smash": {
+     "art": "gericht",
+     "rang": "secondary",
+     "quelle": "„SMASHING 15“ auf der Karte, daneben Chicken und Vegetarisches — die eigene Seite zeigt die Speisekarte nur als Bild, der Eintrag stammt aus einem Speisekarten-Portal",
+     "beleg": "https://www.speisekarte.de/m%C3%BCnchen/restaurant/mc_mueller/speisekarte"
+    },
     "adresse": "Fraunhoferstraße 2, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
     "stadtteil": "Isarvorstadt",
     "gesucht": "M.C. Müller Burger und Bar, Fraunhoferstraße 2, München",
@@ -7675,6 +7898,12 @@ const DATEN = {
     "lon": 11.571178,
     "auswahl": "abfrage",
     "auswahl_hinweis": "Unter der Schwelle von 4,5 — auf ausdrücklichen Wunsch aufgenommen, weil eine bekannte Kette am Stachus eine andere Frage beantwortet als der bestbewertete Laden.",
+    "smash": {
+     "art": "unklar",
+     "rang": "secondary",
+     "quelle": "Die Patties werden auf dem Grill mit einer Presse flachgedrückt — das ist die Smash-Technik. Five Guys selbst bezeichnet sie nicht so; die Beschreibung stammt aus der Food-Presse, nicht vom Haus",
+     "beleg": "https://www.foodrepublic.com/1872734/how-five-guys-shapes-burger-patties/"
+    },
     "adresse": "Neuhauser Str. 1, 80331 München, Deutschland",
     "stadtteil": "Altstadt",
     "gesucht": "Five Guys, Neuhauser Straße 1, München",
@@ -7747,6 +7976,10 @@ const DATEN = {
      "gesamt": 12,
      "aus_presse": 6,
      "aus_abfrage": 6,
+     "smash_laden": 6,
+     "smash_gericht": 4,
+     "smash_keins": 1,
+     "smash_unklar": 1,
      "namensprobe_gleich": 12,
      "namensprobe_abweichend": 0,
      "mit_oeffnungszeiten": 12,

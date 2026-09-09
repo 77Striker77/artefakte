@@ -50,6 +50,9 @@
     burger: '<path d="M3 11c0-3.3 4-6 9-6s9 2.7 9 6z"/>'
           + '<path d="M3.5 14.5h17"/>'
           + '<path d="M21 18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/>',
+    // Smash-Laeden tragen DASSELBE Zeichen wie die Burgerlokale, nur in einer
+    // anderen Farbe: es ist dieselbe Sache in zwei Auspraegungen, kein zweites
+    // Ding. Ein eigenes Zeichen wuerde behaupten, es waere eines.
     park: '<path d="M12 21v-5"/>'
         + '<path d="M12 16a5 5 0 0 0 5-5 4 4 0 0 0-1-2.6A4 4 0 0 0 12 3a4 4 0 0 0-4 5.4A4 4 0 0 0 7 11a5 5 0 0 0 5 5z"/>'
   };
@@ -89,11 +92,22 @@
   // eine Kategorie zu legen, waere die falsche Sparsamkeit: das sind
   // verschiedene Antworten auf verschiedene Fragen, und offen sind beide, wenn
   // man Hunger hat.
+  //
+  // VIER Gruppen, nicht drei: die Burger zerfallen seit dem 09.09.2026 in
+  // Smash-Laeden und Burgerlokale. Das ist keine vierte Kueche, sondern eine
+  // Unterscheidung INNERHALB der Burger - deshalb tragen beide dasselbe
+  // Zeichen und nur eine andere Farbe. Woher die Einordnung kommt und wie sie
+  // belegt ist, steht je Ort im Feld `smash`.
   var GASTRO = [
-    { id: "fruehstueck", label: "Frühstück",  symbol: "cafe" },
-    { id: "wirtshaus",   label: "Abendessen", symbol: "wirtshaus" },
-    { id: "burger",      label: "Burger",     symbol: "burger" }
+    { id: "fruehstueck", label: "Frühstück",     symbol: "cafe" },
+    { id: "wirtshaus",   label: "Abendessen",    symbol: "wirtshaus" },
+    { id: "smash",       label: "Smash-Läden",   symbol: "smash" },
+    { id: "burger",      label: "Burgerlokale",  symbol: "burger" }
   ];
+
+  // Das Smash-Zeichen IST das Burger-Zeichen. Eine Kopie waere eine zweite
+  // Fassung derselben Form, und die driftet beim naechsten Nachbessern.
+  SYMBOL.smash = SYMBOL.burger;
 
   var ortSymbol = function (art, gross) {
     return '<i class="ort-pin ' + art + (gross ? " gross" : "") + '">'
@@ -694,19 +708,24 @@
   // erzaehlten: die Infobox mit "Unterkunft: Motel One ..." und darunter die
   // Hoteltafel mit "Haus: Motel One ...". Schlimmer als die Doppelung war die
   // Trennung - das Anreisedatum stand einen Kasten entfernt von der
-  // Check-in-Zeit, zu der es gehoert, und wer wissen wollte, ab wann er ins
-  // Zimmer kommt, musste zwei Kaesten zusammenrechnen.
+  // Check-in-Zeit, zu der es gehoert.
   //
   // Jetzt eine Tafel, und sie ist nach der FRAGE gebaut, nicht nach der
-  // Datenherkunft: oben das Haus mit Anschrift und Telefon, in der Mitte die
-  // drei Zahlen des Aufenthalts (Anreise mit Check-in, Naechte, Abreise mit
-  // Check-out), unten was zum Zimmer gehoert. Die Infobox ist auf diesem
-  // Reiter abbestellt - der Schalter dafuer steht in reise.json.
+  // Datenherkunft: oben das Haus mit Anschrift, Bewertung und den drei Zielen,
+  // die man antippt (Telefon, Website, Karte), in der Mitte die drei Zahlen des
+  // Aufenthalts, darunter was zum Zimmer und zum Haus gehoert, zuletzt die Lage
+  // in gemessenen Gehminuten.
+  //
+  // Zwei Herkuenfte, bewusst getrennt gehalten und hier zusammengefuehrt:
+  //   DATEN.hotel          von Hand aus Buchung und Hotelseite (reise.json)
+  //   DATEN.hotel_eintrag  abgefragt (Places und Routes, hol-hotel.mjs)
+  // Wer beides in eine Datei schriebe, verlaere die Handarbeit beim naechsten
+  // Lauf - und wuesste hinterher nicht mehr, welcher Wert woher kam.
   //
   // Was NICHT hier steht, fehlt aus einem Grund: gesperrt ist, was nicht
   // oeffentlich einsehbar ist - Auftragsnummer, Preis, Stornofristen, Name.
-  // Adresse, Telefon und Zimmerart stehen auf jeder Hotelseite.
   var ho = DATEN.hotel || {};
+  var he = DATEN.hotel_eintrag || null;
 
   // Die Reisedaten kommen ueber ihre id, nicht ueber die Beschriftung: 'feld'
   // ist die Aufschrift der Infobox, und wer sie umbenennt, will Beschriftung
@@ -731,13 +750,88 @@
         + (fein ? '<span class="weg-feld-fein">' + fein + "</span>" : "") + "</div>";
     };
 
-    var zeileH = function (kopf, wert) {
-      return wert ? "<dt>" + kopf + "</dt><dd>" + wert + "</dd>" : "";
+    // Ein unbekannter Wert wird als solcher gesetzt, nicht weggelassen: eine
+    // Liste ohne die Zeile sieht vollstaendig aus, und niemand fragt je nach.
+    var zeileH = function (kopf, wert, hinweis) {
+      if (!wert) return "";
+      var offen = wert === "xx";
+      return "<dt>" + kopf + "</dt><dd"
+        + (offen ? ' class="kenn-offen" title="noch nicht bekannt"' : "") + ">"
+        + wert + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "")
+        + "</dd>";
     };
 
     var anschrift = [ho.adresse, ho.stadtteil].filter(Boolean).join(" · ");
+    if (ho.sterne) anschrift += " · " + ho.sterne + " Sterne";
+
+    // Die drei Ziele im Kopf sind ZIELE, keine Zeilen: unterwegs tippt man sie
+    // an, statt sie zu lesen. Website und Karte sind Pflicht - ohne sie ist die
+    // Tafel eine Abschrift, aus der man die Adresse selbst weitersuchen muss.
+    var ziel = function (url, text, extern) {
+      if (!url) return "";
+      return '<a class="hotel-tel" href="' + url + '"'
+        + (extern ? ' target="_blank" rel="noopener noreferrer"' : "") + ">"
+        + text + (extern ? " ↗" : "") + "</a>";
+    };
+    var ziele = ziel(ho.telefon ? "tel:" + ho.telefon.replace(/\s/g, "") : null, ho.telefon)
+      + ziel(he && he.eintrag.website, "Website", true)
+      + ziel(he && he.eintrag.maps
+               ? he.eintrag.maps
+               : "https://www.google.com/maps/search/?api=1&query="
+                 + encodeURIComponent((DATEN.umgebung ? DATEN.umgebung.bezug.lat + "," + DATEN.umgebung.bezug.lon : "")),
+             "Google Maps", true);
+
+    // Die Bewertung steht als Marke im Kopf, nicht als Zeile: sie ist das
+    // Einzige hier, das eine Einordnung ist und kein Fakt ueber die Buchung.
+    var note = he && he.eintrag.bewertung != null
+      ? '<span class="hotel-note"><b>' + String(he.eintrag.bewertung).replace(".", ",")
+        + " ★</b> " + (he.eintrag.stimmen != null
+            ? he.eintrag.stimmen.toLocaleString("de-DE") + " Bewertungen" : "") + "</span>"
+      : "";
+
+    var ausstattung = (ho.ausstattung || []).map(function (a) {
+      return zeileH(a.was, a.wert, a.hinweis);
+    }).join("");
+
     var kenn = zeileH("Zimmer", ho.zimmer)
-      + zeileH("Reisende", (reisewert("reisende") || {}).wert);
+      + zeileH("Verpflegung", ho.verpflegung)
+      + zeileH("Reisende", (reisewert("reisende") || {}).wert)
+      + ausstattung
+      + zeileH("Gebucht", [ho.vermittelt, ho.bestaetigt].filter(Boolean).join(" · "));
+
+    // --- Die Lage in gemessenen Gehminuten ----------------------------------
+    // Ein Balken je Anker, alle an derselben Skala: "22 Minuten" allein sagt
+    // nichts darueber, ob das nah oder weit ist - nebeneinander schon.
+    var lage = "";
+    if (he && he.lage && he.lage.length) {
+      var hoch = Math.max.apply(null, he.lage.map(function (l) { return l.gehzeit_s || 0; }));
+      lage = '<h4 class="lage-titel">Zu Fuß von hier</h4>'
+        + '<ul class="lage">' + he.lage.map(function (l) {
+          var min = l.gehzeit_s == null ? null : Math.round(l.gehzeit_s / 60);
+          var weg = l.gehweg_m == null ? ""
+            : (l.gehweg_m >= 1000
+                ? (l.gehweg_m / 1000).toFixed(1).replace(".", ",") + " km"
+                : l.gehweg_m + " m");
+          return '<li class="lage-zeile">'
+            + '<span class="lage-ort">' + l.label
+            + '<span class="lage-was">' + l.was + "</span></span>"
+            + '<span class="lage-balken" aria-hidden="true">'
+            + (min == null ? "" : '<i style="width:'
+                + Math.round((l.gehzeit_s / hoch) * 100) + '%"></i>') + "</span>"
+            + '<span class="lage-zahl">'
+            + (min == null
+                ? '<span class="kenn-offen">kein Fußweg gefunden</span>'
+                : "<b>" + min + " min</b>" + (weg ? " · " + weg : ""))
+            + "</span></li>";
+        }).join("") + "</ul>";
+    }
+
+    var quellen = [ho.quelle,
+                   ho.ausstattung_quelle,
+                   he ? he.quellen.eintrag.name + " (Bewertung), "
+                        + he.quellen.gehzeit.name + " (Gehzeit), abgerufen "
+                        + deutsch(he.quellen.eintrag.abgerufen) : null]
+      .filter(Boolean).join(" · ");
 
     el.innerHTML = '<div class="fahrt">'
       + '<div class="fahrt-kopf">'
@@ -745,18 +839,17 @@
       +     '<p class="fahrt-richtung">' + (ho.name || "Unterkunft unbekannt") + "</p>"
       +     (anschrift ? '<p class="fahrt-tag">' + anschrift + "</p>" : "")
       +   "</div>"
-      +   (ho.telefon
-            ? '<a class="hotel-tel" href="tel:' + ho.telefon.replace(/\s/g, "") + '">'
-              + ho.telefon + "</a>"
-            : "")
+      +   note
       + "</div>"
+      + (ziele ? '<div class="hotel-ziele">' + ziele + "</div>" : "")
       + '<div class="platz-felder platz-felder--um">'
       +   feldH("Anreise", reisewert("hinfahrt"), ho.checkin ? "Check-in " + ho.checkin : "")
       +   feldH("Nächte", reisewert("naechte"), "")
       +   feldH("Abreise", reisewert("rueckfahrt"), ho.checkout ? "Check-out " + ho.checkout : "")
       + "</div>"
       + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")
-      + '<p class="tafel-fuss">' + (ho.quelle || "")
+      + lage
+      + '<p class="tafel-fuss">' + quellen
       + " · Preis, Auftragsnummer und Stornofristen stehen nicht auf dieser Seite.</p>"
       + "</div>";
   }());
@@ -1270,22 +1363,31 @@
     // --- Takt ueber den Tag --------------------------------------------------
     // Die Kennzahl "alle 4-6 min" beantwortet, wie oft es tagsueber faehrt. Die
     // zweite Frage des Ankunftstags beantwortet sie nicht: faehrt das noch, wenn
-    // der Zug zwei Stunden spaeter kommt - und komme ich abends zurueck. Dafuer
-    // der Streifen: 24 Balken, einer je Stunde, ab 04 Uhr geordnet, damit die
-    // Nachtluecke in einem Stueck liegt und nicht an beiden Raendern klebt.
+    // der Zug zwei Stunden spaeter kommt - und komme ich abends zurueck.
     //
-    // Die Balken sind BEWUSST nicht in der Linienfarbe: die Farbe steht hier
-    // schon dreimal (Knopf, Spur, Karte) und meint dort die Linie. Ein viertes
-    // Mal an einem Balkendiagramm hiesse, sie meine hier die Menge.
+    // Der erste Wurf war ein Balkenstreifen mit einer Achse aus Uhrzeiten und
+    // sonst nichts. Man konnte RATEN, was die Hoehe bedeutet. Jetzt steht es
+    // dabei, dreifach abgesichert:
+    //   1. die Skala links nennt die Einheit und den Hoechstwert
+    //   2. unter dem Streifen liegt je Tagesabschnitt ein Feld mit dem
+    //      gemessenen Takt in Minuten - die Zahl, in der man denkt
+    //   3. der Satz darunter nennt die Nachtluecke
+    // Der Streifen zeigt damit die FORM des Tages, die Felder die Zahlen. Ein
+    // Diagramm, dessen Aussage man erraten muss, ist Zierde.
     var STUNDEN_ORDNUNG = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
                            20, 21, 22, 23, 0, 1, 2, 3];
-    var ACHSE = { 4: "04", 8: "08", 12: "12", 16: "16", 20: "20", 0: "00" };
     var zweiStellig = function (n) { return (n < 10 ? "0" : "") + n; };
+    var taktText = function (b) {
+      if (!b || !b.fahrten) return "keine Fahrt";
+      if (b.min == null) return b.fahrten + (b.fahrten === 1 ? " Fahrt" : " Fahrten");
+      return "alle " + (b.min === b.max ? b.min : b.min + "–" + b.max) + " min";
+    };
 
     var taktStreifen = function (v) {
       if (!v.stunden || !v.betrieb) return "";
       var hoch = Math.max.apply(null, v.stunden);
       if (!hoch) return "";
+
       var balken = STUNDEN_ORDNUNG.map(function (h) {
         var n = v.stunden[h];
         return '<li class="takt-stunde' + (n ? "" : " takt-stunde--leer") + '"'
@@ -1293,8 +1395,18 @@
           + (n ? n + (n === 1 ? " Fahrt" : " Fahrten") : "keine Fahrt") + '">'
           + '<i style="height:' + Math.round((n / hoch) * 100) + '%"></i></li>';
       }).join("");
-      var achse = STUNDEN_ORDNUNG.map(function (h) {
-        return "<li>" + (ACHSE[h] || "") + "</li>";
+
+      // Je Tagesabschnitt ein Feld, so breit wie seine Stunden im Streifen. Die
+      // Beschriftung sitzt damit UNTER dem Stueck, das sie beschreibt - eine
+      // Legende daneben muesste man erst zuordnen.
+      var felder = (v.baender || []).map(function (b) {
+        var spanne = (b.bis - b.von + 24) % 24;
+        return '<li style="grid-column:span ' + spanne + '"'
+          + (b.fahrten ? "" : ' class="takt-band--leer"') + ">"
+          + '<b class="takt-band-name">' + b.label + "</b>"
+          + '<span class="takt-band-zeit">' + zweiStellig(b.von) + "–"
+          + zweiStellig(b.bis) + " Uhr</span>"
+          + '<span class="takt-band-takt">' + taktText(b) + "</span></li>";
       }).join("");
 
       // Die Nachtluecke wird GERECHNET, nicht behauptet: aus der letzten und der
@@ -1305,18 +1417,25 @@
       };
       var pause = (min(v.betrieb.erste) + 1440 - min(v.betrieb.letzte)) % 1440;
       var satz = pause < 60
-        ? "Rund um die Uhr — zwischen der letzten und der ersten Fahrt liegen "
+        ? "Fährt rund um die Uhr — zwischen der letzten und der ersten Fahrt liegen "
           + pause + " Minuten."
         : "Zwischen <b>" + v.betrieb.letzte + "</b> und <b>" + v.betrieb.erste
           + "</b> fährt nichts — " + Math.floor(pause / 60) + " h "
-          + zweiStellig(pause % 60) + ".";
+          + zweiStellig(pause % 60) + " Pause.";
 
       return '<div class="takt">'
-        + '<div class="takt-kopf"><span class="platz-kopf">Takt über den Tag</span>'
-        + '<span class="takt-betrieb"><b>' + v.betrieb.erste + "</b> bis <b>"
-        + v.betrieb.letzte + "</b></span></div>"
-        + '<ol class="takt-streifen">' + balken + "</ol>"
-        + '<ol class="takt-achse" aria-hidden="true">' + achse + "</ol>"
+        + '<div class="takt-kopf">'
+        +   '<span class="platz-kopf">Takt über den Tag</span>'
+        +   '<span class="takt-betrieb">erste <b>' + v.betrieb.erste
+        +   "</b> · letzte <b>" + v.betrieb.letzte + "</b></span>"
+        + "</div>"
+        + '<div class="takt-plot">'
+        +   '<div class="takt-skala"><span>' + hoch + "</span><span>0</span></div>"
+        +   '<div><ol class="takt-streifen">' + balken + "</ol>"
+        +   '<ol class="takt-baender">' + felder + "</ol></div>"
+        + "</div>"
+        + '<p class="takt-einheit">Balkenhöhe: Fahrten je Stunde, '
+        + "Höchstwert <b>" + hoch + "</b>.</p>"
         + '<p class="takt-luecke">' + satz + "</p>"
         + "</div>";
     };
@@ -1661,7 +1780,15 @@
         && meter(bezug.lat, bezug.lon, o.lat, o.lon) <= 2600;
     });
 
-    var alle = g.orte.map(function (o) { return { o: o, gruppe: o.kueche }; })
+    // Die GRUPPE ist nicht die Kueche: bei den Burgern trennt sie zusaetzlich
+    // nach `smash.art`. Nur "laden" - ein Haus, das ein Smash-Laden IST - wird
+    // eigens gefaerbt. "gericht" (Smash ist ein Gericht unter vielen), "keins"
+    // und "unklar" bleiben Burgerlokale; sie zu Smash zu zaehlen waere genau
+    // die Rundung, die eine Luecke wie ein Ergebnis aussehen laesst.
+    var gruppeVon = function (o) {
+      return o.kueche === "burger" && o.smash && o.smash.art === "laden" ? "smash" : o.kueche;
+    };
+    var alle = g.orte.map(function (o) { return { o: o, gruppe: gruppeVon(o) }; })
       .concat(sehenswert.map(function (o) { return { o: o, gruppe: o.art }; }));
     alle.forEach(function (e) {
       e.m = meter(bezug.lat, bezug.lon, e.o.lat, e.o.lon);
@@ -1673,7 +1800,12 @@
       { id: "alle",        label: "Alles",       gruppen: GASTRO.map(function (k) { return k.id; }).concat(["wahrzeichen", "museum"]) },
       { id: "fruehstueck", label: "Frühstück",   gruppen: ["fruehstueck"] },
       { id: "wirtshaus",   label: "Abendessen",  gruppen: ["wirtshaus"] },
-      { id: "burger",      label: "Burger",      gruppen: ["burger"] },
+      // EIN Knopf fuer beide Burger-Gruppen. Das Untermenue waehlt, was in der
+      // Liste steht, und "Burger" ist die Frage, die jemand stellt - die
+      // Unterscheidung Smash-Laden/Burgerlokal beantwortet die Karte ueber die
+      // Farbe und die Liste ueber ihre Zeile. Ein sechster Knopf haette die
+      // Leiste auf schmalen Geraeten in eine vierte Zeile gedrueckt.
+      { id: "burger",      label: "Burger",      gruppen: ["smash", "burger"] },
       { id: "sehenswert",  label: "Sehenswertes", gruppen: ["wahrzeichen", "museum"] }
     ];
     var reiterAktiv = "alle";
@@ -1811,7 +1943,17 @@
               + '<b>' + String(e.note).replace(".", ",") + "</b></span>"
             : '<span class="ort-note ort-note--ohne">ohne Note</span>');
 
+      // Die Farbe auf der Karte sagt NUR "Smash-Laden oder nicht". Warum, mit
+      // welchem Beleg und in welchem Rang - das gehoert in die Zeile, sonst ist
+      // die Farbe eine Behauptung ohne Quelle.
+      var SMASH_TEXT = { laden: "Smash-Burger-Laden", gericht: "Burgerlokal, Smash als Gericht",
+                         keins: "kein Smash auf der Karte", unklar: "unklar" };
       var fakten = faktenZeile("Offen", e.w ? zeitenKurz(e.w) : "unbekannt — nicht erhoben")
+        + (o.smash ? faktenZeile("Smash", SMASH_TEXT[o.smash.art]
+            + (o.smash.rang ? ' <span class="rang rang-' + o.smash.rang + '">' + o.smash.rang + "</span>" : "")
+            + '<span class="ort-beleg">' + o.smash.quelle
+            + (o.smash.beleg ? ' <a href="' + o.smash.beleg + '" target="_blank" '
+                + 'rel="noopener noreferrer">Beleg ↗</a>' : "") + "</span>") : "")
         + faktenZeile("Adresse", o.adresse)
         + (o.fruehstueck_bis ? faktenZeile("Frühstück bis", o.fruehstueck_bis) : "")
         + (o.preise && o.preise !== "unknown" ? faktenZeile("Preise", o.preise) : "")
