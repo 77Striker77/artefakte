@@ -1959,3 +1959,114 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .last--2 .last-balken--an{background:var(--m-ankunft)}
 .last--3{color:var(--warn)}                    /* 5,86:1 */
 .last--3 .last-balken--an{background:var(--warn)}
+
+/* ===================== Der Bahn-Reiter am Telefon ======================
+   Unter 640 px traegt die gemeinsame Zeitachse nicht mehr. Gemessen bei
+   390 px: dreizehn Stundenmarken brauchen 13 x 36 = 468 px, vorhanden sind
+   rund 300 - im Bild steht ein Strich "12:0013:0014:00". Zugnummern brachen
+   zu "ICE 5" ab, und die Tafel lief rechts aus dem Bild.
+
+   Die Achse geht deshalb weg, statt sie zu quetschen. Am Telefon ist der
+   Vergleich ueber zwoelf Zeilen ohnehin nicht die Frage - die Frage ist
+   "welche nehme ich jetzt". Was bleibt, ist eine Liste: Zeiten gross, Dauer
+   und Umstieg darunter, und der Balken als schmaler Streifen, der nur noch
+   Lage und Laenge zeigt. */
+@media (max-width:640px){
+  /* 92ch sind bei 16 px rund 740 px. Der Wert galt fuer die Zeitachse; ohne
+     sie schnuert er die Tafel nur noch ueber den Bildschirmrand hinaus. */
+  .fahrt{max-width:100%; padding:14px 13px; overflow-wrap:anywhere}
+
+  .achse{display:none}
+  .spur{height:14px; margin:0 0 10px}
+  .spur-teil{height:14px; padding:0; gap:0}
+  .spur-teil--zug{padding-right:6px;
+    clip-path:polygon(0 0, calc(100% - 5px) 0, 100% 45%, 100% 100%, 0 100%)}
+  /* Beschriftung raus: bei 300 px Spur ist der laengste Abschnitt 90 px
+     breit, und ein Schild braucht 80. Was drinstuende, waere angeschnitten. */
+  .spur-teil > *{display:none}
+  .spur-teil--zug::before{top:3px; height:3px; left:3px; right:8px}
+  .spur-teil--zug::after{display:none}
+  .spur-teil--ums{top:2px; height:10px; border-width:1px}
+  .spur-marke{display:none}
+  .jetzt-linie b{display:none}
+
+  /* Die Kennzahlen untereinander statt in einer Zeile, die umbricht. */
+  .verb-zeile{padding:0 0 8px; gap:4px 10px}
+  .verb-zeit b{font-size:19px; padding:5px 9px}
+  .verb-weg{flex:0 0 100%; font-size:13px}
+  .alt-flagge{margin-left:0}
+  .verb-kopf{padding:11px 12px 2px}
+  .verb-tief{padding:12px}
+
+  /* Etappen: Zug, Weg und Gleis untereinander - nebeneinander bleiben von
+     "Bruchsal 12:51 Gl. 3" nur noch Fragmente. */
+  .etappe-weg{flex-direction:column; align-items:flex-start; gap:4px}
+  .etappe-halt{flex-wrap:wrap}
+  .band--tief{--sp1:66px; --sp2:12px; --spalt:6px}
+
+  /* Der Wagenriss skaliert mit, die Sitze stehen nebeneinander. */
+  .fahrt-kacheln{grid-template-columns:1fr}
+  .kenn{grid-template-columns:auto minmax(0,1fr)}
+  .kenn dd{overflow-wrap:anywhere}
+
+  /* Das Streckenband der gebuchten Fahrt: schmalere Zeitspalte. */
+  .band{--sp1:52px; --sp2:18px; --spalt:8px}
+  .band-ort{font-size:15px}
+  .band-mitte{gap:6px 8px}
+
+  /* Der Lichtrahmen laeuft am Telefon nicht: er kostet dauerhaft Rechenzeit
+     fuer eine Hervorhebung, die auf 390 px ohnehin die halbe Breite einnimmt.
+     Die markierte Zeile behaelt ihren dicken Rand. */
+  .bb-ring, .bb-glut{display:none}
+  .verb--tipp{border-color:var(--akzent-text)}          /* 6,12:1 */
+}
+
+/* Nachtrag zum Telefon-Block: was innerhalb der Tafel ueberlaeuft.
+   Der Statuschip stand bei 390 px als "FÄLLT" da - abgeschnitten, nicht
+   umgebrochen -, und die Ticketwerte reichten bis an die Kante. Die Tafel
+   selbst war dabei nicht zu breit; ihre KINDER waren es. */
+@media (max-width:640px){
+  /* Kopf untereinander statt nebeneinander: Richtung und Zustand teilen sich
+     sonst 360 px, und beide brauchen mehr. */
+  .fahrt-kopf{flex-direction:column; align-items:flex-start; gap:8px}
+  .kopf-rechts{flex-wrap:wrap}
+  .fahrt-richtung{font-size:17px}
+
+  /* Kein Kind ragt ueber die Tafel hinaus. OHNE min-width:0 und ohne
+     overflow:hidden auf .skala - beides stand hier einen Versuch lang und
+     liess den Reiter leer erscheinen: min-width:0 erlaubt Flex- und
+     Grid-Kindern, auf null zu schrumpfen, und overflow:hidden beschnitt die
+     Zeilen, solange ihre Einfahr-Animation sie noch links ausserhalb haelt. */
+  .fahrt > *, .etappe, .kachel, .platz{max-width:100%}
+  .spur{overflow:hidden}
+
+  /* Die Gleisspalte des Streckenbands faellt unter die Zeile statt eine
+     vierte Spalte zu verlangen. */
+  .band-halt{grid-template-columns:var(--sp1) var(--sp2) minmax(0,1fr)}
+  .band-gleis{grid-column:3; justify-self:start; margin-top:2px}
+
+  /* Lange Werte brechen, statt die Spalte aufzuspannen. */
+  .kenn dt{white-space:normal}
+  .verb-tab, .tab-rahmen{max-width:100%}
+  .alt-stand, .wie-inhalt, .alt-raus{max-width:100%}
+}
+
+/* Die Menueleiste bei sechs Eintraegen ---------------------------------------
+   Der Kommentar oben im Stylesheet sagt es vorher: "ab etwa fuenf Eintraegen
+   reicht der Umbruch nicht mehr". Mit Karte, Hotel, Innenstadt, Bavaria, Bahn
+   und Quellen sind es sechs, und bei 390 px schob die Leiste die GANZE Seite
+   ueber den Rand - jeder Reiter darunter war dadurch nach rechts verschoben,
+   nicht nur der Bahn-Reiter.
+
+   Kein Schieben und kein Ausklappmenue, sondern das Naheliegende: die Schrift
+   wird kleiner und das Innenmass knapper, bis drei Eintraege je Zeile passen.
+   Die Bildsprache bleibt unangetastet. */
+@media (max-width:640px){
+  .menue-liste{gap:4px}
+  .menue-eintrag{flex:1 1 31%}
+  .menue-seite{padding:9px 6px; font-size:14px; white-space:normal;
+               text-align:center}
+}
+@media (max-width:380px){
+  .menue-seite{font-size:13px; padding:8px 4px}
+}
