@@ -94,17 +94,328 @@ const DATEN = {
   "art": "Bahn",
   "von": "Bruchsal",
   "nach": "München Hbf",
-  "hinfahrt": {
-   "tag": "Do 10.09.2026",
-   "status": "offen",
-   "text": "Der gebuchte ICE 567 (ab 14:18) fällt aus, die Zugbindung ist aufgehoben — das Ticket gilt in jedem Zug des Tages. Ersatzverbindung noch nicht gewählt."
+  "fahrten": [
+   {
+    "id": "hin",
+    "label": "Hinfahrt",
+    "tag": "Do 10.09.2026",
+    "richtung": "Bruchsal → München Hbf",
+    "status": "ausgefallen",
+    "status_text": "fällt aus",
+    "meldung": "Der gebuchte ICE 567 ist nicht mehr fahrbar — DB meldet eine Fahrplanänderung. Die Zugbindung ist aufgehoben: das Ticket gilt in jedem Zug innerhalb der Gültigkeit, ohne Aufpreis. Die Ersatzfahrt ist damit freie Wahl und keine Umbuchung.",
+    "zug": "ICE 567",
+    "dauer": "2 h 31",
+    "halte": [
+     {
+      "ort": "Bruchsal",
+      "ab": "14:18",
+      "gleis": "3"
+     },
+     {
+      "ort": "4 Zwischenhalte",
+      "zwischen": true,
+      "unbekannt": true
+     },
+     {
+      "ort": "München Hbf",
+      "an": "16:49",
+      "gleis": "8"
+     }
+    ],
+    "ticket": {
+     "art": "Super Sparpreis, 2. Klasse",
+     "personen": "2 Personen (27–64 J.)",
+     "preis": "66,98 €",
+     "gueltig": "10.09.2026 00:00 – 11.09.2026 10:00",
+     "bindung": "aufgehoben"
+    },
+    "reservierung": {
+     "plaetze": "2 Plätze",
+     "wagen": "27",
+     "platz": "75, 77",
+     "bereich": "Handybereich",
+     "hinweis": "verfällt mit dem Zug — Erstattung läuft als eigener Vorgang"
+    }
+   },
+   {
+    "id": "rueck",
+    "label": "Rückfahrt",
+    "tag": "Sa 12.09.2026",
+    "richtung": "München Hbf → Bruchsal",
+    "status": "gebucht",
+    "status_text": "gebucht",
+    "meldung": "Keine Störung gemeldet, Stand 09.09.2026. Der Zug fährt weiter nach Karlsruhe — Bruchsal ist nicht die Endstation, also rechtzeitig zur Tür.",
+    "zug": "ICE 266",
+    "dauer": "2 h 41",
+    "halte": [
+     {
+      "ort": "München Hbf",
+      "ab": "16:58",
+      "gleis": "12"
+     },
+     {
+      "ort": "Augsburg Hbf",
+      "an": "17:29",
+      "ab": "17:31",
+      "gleis": "3",
+      "zwischen": true
+     },
+     {
+      "ort": "Günzburg",
+      "an": "18:02",
+      "ab": "18:04",
+      "gleis": "3",
+      "zwischen": true
+     },
+     {
+      "ort": "Ulm Hbf",
+      "an": "18:17",
+      "ab": "18:20",
+      "gleis": "1",
+      "zwischen": true
+     },
+     {
+      "ort": "Stuttgart Hbf",
+      "an": "19:04",
+      "ab": "19:12",
+      "gleis": "8",
+      "zwischen": true
+     },
+     {
+      "ort": "Bruchsal",
+      "an": "19:39",
+      "gleis": "4"
+     }
+    ],
+    "ticket": {
+     "art": "Super Sparpreis, 2. Klasse",
+     "personen": "2 Personen (27–64 J.)",
+     "preis": "68,98 €",
+     "gueltig": "12.09.2026 00:00 – 13.09.2026 10:00",
+     "bindung": "besteht"
+    },
+    "reservierung": {
+     "plaetze": "2 Plätze",
+     "wagen": "27",
+     "platz": "75, 77",
+     "bereich": "Handybereich",
+     "hinweis": "Stornierung der Reservierung ausgeschlossen"
+    }
+   }
+  ],
+  "alternativen": {
+   "lage": "Am 10.09. hält in Bruchsal kein einziger Fernzug — die Abfahrtstafel führt zwischen 07:50 und 17:05 nur RE, RB und S-Bahn. Der ICE 567 ist damit kein Einzelausfall, sondern Teil eines Ersatzfahrplans. Jede Fahrt an diesem Tag hat mindestens einen Umstieg.",
+   "regeln": [
+    "Umstieg nur in Mannheim, Karlsruhe oder Stuttgart",
+    "mindestens 20 Minuten Umsteigezeit",
+    "Abfahrt Bruchsal zwischen 08:00 und 16:00"
+   ],
+   "liste": [
+    {
+     "ab": "12:51",
+     "an": "16:27",
+     "erwartet": "16:44",
+     "dauer": "3 h 36",
+     "umstiege": 1,
+     "hinweis": "beste Reserve",
+     "abschnitte": [
+      {
+       "zug": "RE 1 (19011-Reihe)",
+       "von": "Bruchsal",
+       "ab": "12:51",
+       "nach": "Stuttgart Hbf",
+       "an": "13:30",
+       "gleis": "3 → 7"
+      },
+      {
+       "zug": "ICE 517",
+       "von": "Stuttgart Hbf",
+       "ab": "14:17",
+       "nach": "München Hbf",
+       "an": "16:27",
+       "gleis": "15 → 13"
+      }
+     ],
+     "umstieg": [
+      {
+       "ort": "Stuttgart Hbf",
+       "minuten": 47
+      }
+     ],
+     "robust": "Der Zubringer ist der zuverlässige Teil: RE 1 im Mittel +3 min (77 % pünktlich), der ICE 517 dagegen +17 min (29 %). Bei 15 min Verspätung des RE bleiben noch 32 min zum Anschluss — er hält klar. Fällt der ICE 517 aus, fährt um 15:17 der ICE 597 (an 17:13)."
+    },
+    {
+     "ab": "10:51",
+     "an": "14:29",
+     "erwartet": "14:52",
+     "dauer": "3 h 38",
+     "umstiege": 1,
+     "hinweis": "früh da",
+     "abschnitte": [
+      {
+       "zug": "RE 1 (19011)",
+       "von": "Bruchsal",
+       "ab": "10:51",
+       "nach": "Stuttgart Hbf",
+       "an": "11:30",
+       "gleis": "3 → 7"
+      },
+      {
+       "zug": "ICE 515",
+       "von": "Stuttgart Hbf",
+       "ab": "12:17",
+       "nach": "München Hbf",
+       "an": "14:29",
+       "gleis": "15 → 13"
+      }
+     ],
+     "umstieg": [
+      {
+       "ort": "Stuttgart Hbf",
+       "minuten": 47
+      }
+     ],
+     "robust": "RE 1 +3 min (77 %), ICE 515 +23 min (26 %). 44 min Reserve, bei 15 min Verzug noch 32 min. Ankunft vor dem Check-in um 15:00 — das Gepäck müsste bis dahin untergebracht werden. Rückfall: ICE 595 um 13:17 (an 15:13)."
+    },
+    {
+     "ab": "08:49",
+     "an": "12:29",
+     "erwartet": "12:37",
+     "dauer": "3 h 40",
+     "umstiege": 1,
+     "hinweis": "zuverlässigster ICE",
+     "abschnitte": [
+      {
+       "zug": "RE 1 (19007)",
+       "von": "Bruchsal",
+       "ab": "08:49",
+       "nach": "Stuttgart Hbf",
+       "an": "09:29",
+       "gleis": "3 → 7"
+      },
+      {
+       "zug": "ICE 513",
+       "von": "Stuttgart Hbf",
+       "ab": "10:17",
+       "nach": "München Hbf",
+       "an": "12:29",
+       "gleis": "15 → 13"
+      }
+     ],
+     "umstieg": [
+      {
+       "ort": "Stuttgart Hbf",
+       "minuten": 48
+      }
+     ],
+     "robust": "Der beste Hauptzug des Tages: ICE 513 nur +8 min im Mittel (55 % pünktlich), RE 1 +3 min (84 %). 45 min Reserve. Preis dafür ist der frühe Start und rund 2,5 h Wartezeit in München bis zum Check-in."
+    },
+    {
+     "ab": "11:42",
+     "an": "15:40",
+     "dauer": "3 h 58",
+     "umstiege": 1,
+     "hinweis": "Reserve knapp",
+     "hinweis_warn": true,
+     "abschnitte": [
+      {
+       "zug": "S 3",
+       "von": "Bruchsal",
+       "ab": "11:42",
+       "nach": "Mannheim Hbf",
+       "an": "12:29",
+       "gleis": "unbekannt → 1"
+      },
+      {
+       "zug": "ICE 225",
+       "von": "Mannheim Hbf",
+       "ab": "12:56",
+       "nach": "München Hbf",
+       "an": "15:40",
+       "gleis": "5 → unbekannt"
+      }
+     ],
+     "umstieg": [
+      {
+       "ort": "Mannheim Hbf",
+       "minuten": 27
+      }
+     ],
+     "robust": "Das ist der Anhalt aus den alten Unterlagen vom 28.08. — er fährt noch, aber München an 15:40, nicht 15:46. Die Pünktlichkeit der S 3 ist unbekannt (zugfinder führt die Linie nicht), der ICE 225 liegt bei +17 min (42 %). Bei 15 min Verzug bleiben nur 12 min Umstieg — unter der 20-Minuten-Vorgabe."
+    },
+    {
+     "ab": "11:51",
+     "an": "15:13",
+     "erwartet": "15:44",
+     "dauer": "3 h 22",
+     "umstiege": 1,
+     "hinweis": "schnell, aber wacklig",
+     "hinweis_warn": true,
+     "abschnitte": [
+      {
+       "zug": "RE 1 (19013)",
+       "von": "Bruchsal",
+       "ab": "11:51",
+       "nach": "Stuttgart Hbf",
+       "an": "12:27",
+       "gleis": "3 → 13"
+      },
+      {
+       "zug": "ICE 595",
+       "von": "Stuttgart Hbf",
+       "ab": "13:17",
+       "nach": "München Hbf",
+       "an": "15:13",
+       "gleis": "16 → 15"
+      }
+     ],
+     "umstieg": [
+      {
+       "ort": "Stuttgart Hbf",
+       "minuten": 50
+      }
+     ],
+     "robust": "Auf dem Papier 16 min schneller als die erste Wahl — der ICE 595 ist aber der zweitunzuverlässigste im Feld: +31 min im Mittel, nur 21 % pünktlich. Real landet man eher um 15:44 als um 15:13."
+    },
+    {
+     "ab": "13:52",
+     "an": "17:13",
+     "erwartet": "17:46",
+     "dauer": "3 h 21",
+     "umstiege": 1,
+     "hinweis": "spät, kein Rückfall",
+     "hinweis_warn": true,
+     "abschnitte": [
+      {
+       "zug": "RE 1 (19017)",
+       "von": "Bruchsal",
+       "ab": "13:52",
+       "nach": "Stuttgart Hbf",
+       "an": "14:27",
+       "gleis": "3 → 8"
+      },
+      {
+       "zug": "ICE 597",
+       "von": "Stuttgart Hbf",
+       "ab": "15:17",
+       "nach": "München Hbf",
+       "an": "17:13",
+       "gleis": "16 → 14"
+      }
+     ],
+     "umstieg": [
+      {
+       "ort": "Stuttgart Hbf",
+       "minuten": 50
+      }
+     ],
+     "robust": "Formal die schnellste, praktisch die schlechteste: ICE 597 mit +33 min und 15 % Pünktlichkeit. Was danach fährt, wurde nicht abgefragt — für diese Verbindung gibt es keinen geprüften Rückfall."
+    }
+   ],
+   "ausgeschieden": "Die schnellste Fahrt überhaupt wäre Vaihingen (Enz) 10:08 → ICE 563 gewesen (3 h 01) — Umstieg dort ist nicht erlaubt. Ebenso zwei Heidelberger Varianten. Eine Karlsruher Variante über ICE 372 bräuchte zwei Umstiege für dieselbe Ankunft wie die Mannheimer.",
+   "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 09.09.2026 17:14–17:21 · Pünktlichkeitswerte zugfinder.net, 30-Tage-Mittel · Alles Plandaten — für den 10.09. lag noch keine Echtzeit vor. Am Reisetag neu abfragen. Unbekannt geblieben: Gleis der S 3 ab Bruchsal, Ankunftsgleis des ICE 225, Pünktlichkeit der S 3, die Zwischenhalte Stuttgart→München. Hintergrund: Bauarbeiten im Knoten Stuttgart bis 12.09. und Karlsruhe–Bruchsal bis 11.09."
   },
-  "rueckfahrt": {
-   "tag": "Sa 12.09.2026",
-   "status": "gebucht",
-   "text": "ICE 266, München Hbf ab 16:58 Gleis 12, Bruchsal an 19:39 — 2 h 41 ohne Umstieg."
-  },
-  "quelle": "DB-Tickets und Reisedetails, gelesen 09.09.2026"
+  "quelle": "DB-Tickets und Reisedetails, gelesen 09.09.2026 · Zuglauf ICE 266 aus api.transitous.org (MOTIS 2), abgefragt 09.09.2026 17:18"
  },
  "quelle": {
   "name": "OpenStreetMap über die Overpass-API",

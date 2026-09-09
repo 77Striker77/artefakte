@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=82de3ed8">
+<link rel="stylesheet" href="stil.css?v=b78533e2">
 </head>
 <body>
 
@@ -61,10 +61,14 @@
        darueber und schob die Karte unter die Falzkante - was oben steht, wird
        gelesen, und gelesen werden soll hier die Karte.
 
-       Ein Untermenue statt einer Liste aus allem: es waehlt EINE Sache und
-       schaltet Karte UND Liste zugleich. Die Bahnhalte haengen NICHT daran -
-       sie sind Orientierung, kein Thema, und liegen darum auf einem eigenen
-       Schalter. -->
+       ZWEI Steuerungen, jede fuer genau eine Sache: die LEGENDE unter der Karte
+       schaltet Kartenebenen - alle sieben einzeln, keine davon nur Beschriftung.
+       Das UNTERMENUE ueber der Liste waehlt, was in der Tabelle steht.
+
+       Vorher schaltete das Untermenue beides, und die Legende war halb
+       Beschriftung, halb Schalter. Dann weiss niemand, was ein Klick tut. Was
+       nur die Tabelle betrifft - Wochenstreifen, Notenachse, Stufenskala -
+       steht seither auch BEI der Tabelle und nicht in der Kartenlegende. -->
   <section class="ansicht" id="feld-innenstadt" aria-labelledby="menue-innenstadt" tabindex="-1" hidden>
     <h2 class="ansicht-titel">Innenstadt</h2>
 
@@ -73,7 +77,17 @@
     <ul class="legende" id="legende-innenstadt"></ul>
     <p class="grund-fuss" id="karte-fuss"></p>
 
-    <nav class="untermenue" id="innenstadt-reiter" aria-label="Was die Karte und die Liste zeigen"></nav>
+    <!-- Zwei getrennte Steuerungen, und die Trennung ist der Punkt:
+         die LEGENDE unter der Karte schaltet Kartenebenen, das UNTERMENUE
+         waehlt, was in der Liste steht. Vorher schaltete das Untermenue beides
+         und die Legende war halb Beschriftung, halb Schalter - dann weiss
+         niemand, was ein Klick tut. -->
+    <h3 class="tafel-titel">Die Liste</h3>
+    <nav class="untermenue" id="innenstadt-reiter" aria-label="Was in der Liste steht"></nav>
+
+    <!-- Der Lesesch luessel gehoert zur TABELLE, nicht zur Karte: Wochenstreifen,
+         Notenachse und Stufenskala kommen auf der Karte gar nicht vor. -->
+    <ul class="legende" id="listen-schluessel"></ul>
 
     <p class="such-leer" id="gastro-leer" hidden></p>
 
@@ -102,7 +116,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=82de3ed8"></script>
-<script src="karte.js?v=82de3ed8"></script>
+<script src="orte.js?v=b78533e2"></script>
+<script src="karte.js?v=b78533e2"></script>
 </body>
 </html>

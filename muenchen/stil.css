@@ -677,28 +677,21 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-zeigen:hover{background:var(--akzent); color:var(--tinte)}  /* 5,95:1 */
 .ort-zeigen:active{box-shadow:none; transform:translate(2px,2px)}
 
-/* ---------- Die vollständige Legende ----------
-   Drei Gruppen mit Überschrift, jede auf eigener Zeile. Vorher stand hier nur
-   der Bahn-Schalter und eine Streifen-Erklaerung: sechs Zeichen auf der Karte,
-   zwei davon erklaert. Eine Karte, deren Legende einen Teil auslaesst, muss man
-   raten. */
-.legende{flex-direction:column; align-items:stretch; gap:0}
-.legende-gruppe{display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px;
-                padding:10px 0}
-.legende-gruppe + .legende-gruppe{border-top:2px solid var(--linie)}
-.legende-titel{flex:1 0 100%; font-family:var(--zahl); font-size:10.5px;
-               letter-spacing:.5px; text-transform:uppercase;
-               color:var(--tinte-leise)}                          /* 7,81:1 */
-/* Erklaerter Eintrag: kein Knopf. Wer hier einen Rahmen setzt, verspricht eine
-   Bedienung, die es nicht gibt - geschaltet wird ueber das Untermenue. */
-.legende-zeichen{display:flex; align-items:center; gap:8px;
-                 font-size:13px; color:var(--tinte)}
-.legende-zeichen .filter-text{max-width:62ch}
-.legende-zeichen b{font-weight:700}
-/* Die Beispielmarken der Lesehilfen sind breiter als eine 34-px-Ortsmarke -
-   ohne diese Zeile schneidet .legende-marke den Wochenstreifen ab, und das
-   Beispiel zeigt vier Tage statt sieben. */
-.legende-zeichen .legende-marke{width:auto; height:auto; flex:none}
+/* ---------- Der Schlüssel zur Tabelle ----------
+   Steht BEI der Tabelle, nicht in der Kartenlegende: Wochenstreifen, Notenachse
+   und Stufenskala kommen auf der Karte nicht vor. Reine Beschriftung — und
+   darum OHNE Rahmen: ein Rahmen verspricht eine Bedienung, die es hier nicht
+   gibt. Genau daran krankte die alte Legende, in der Beschriftung und Schalter
+   gleich aussahen. */
+#listen-schluessel{flex-direction:column; align-items:stretch; gap:8px;
+                   margin:0 0 14px}
+.schluessel-zeichen{display:flex; align-items:center; gap:10px;
+                    font-size:13px; color:var(--tinte)}           /* 16,87:1 */
+.schluessel-zeichen .filter-text{max-width:70ch}
+/* Die Beispielmarken sind breiter als eine 34-px-Ortsmarke - ohne diese Zeile
+   schneidet .legende-marke den Wochenstreifen ab, und das Beispiel zeigt vier
+   Tage statt sieben. */
+.schluessel-zeichen .legende-marke{width:auto; height:auto; flex:none}
 .legende-kante{display:block; width:22px; height:22px;
                border-left:5px solid var(--m-zentrum);
                background:var(--flaeche-2)}
@@ -751,7 +744,172 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 
 @media (max-width:520px){
   main{padding:22px 14px 36px}
-  .legende-gruppe{gap:8px 14px}
+  .legende{gap:8px 12px}
   .untermenue{gap:6px}
   .unterknopf{font-size:15px; padding:6px 10px 6px 6px}
+}
+
+/* ===================== Bahn-Reiter =====================================
+   Angehaengt statt eingeordnet: an dieser Datei arbeitet parallel eine zweite
+   Sitzung am Innenstadt-Reiter, und ein Block am Ende laesst sich ohne
+   Konflikt zusammenfuehren. Beim Zusammenlegen wandert er an seinen Platz.
+
+   Keine neue Farbe. Alle Werte stammen aus der gemessenen Palette oben; wo
+   zwei Zustaende sich sonst nur im Farbton unterschieden, trennt sie hier die
+   FORM (gefuellter gegen hohler Punkt, Rand gegen kein Rand). Das ist auch der
+   Grund, warum "faellt aus" denselben Chipgrund traegt wie "offen" - beide
+   sind Warnzustaende, unterschieden werden sie vom Wort darin. */
+
+#bahn-reiter .unterknopf{padding:6px 13px}
+.unterknopf--warn[aria-pressed="false"]{border-color:var(--akzent-hell);
+                                        color:var(--akzent-hell)}   /* 8,94:1 */
+
+.fahrt{padding:18px 20px; background:var(--flaeche); color:var(--tinte);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       max-width:70ch}
+.fahrt-kopf{display:flex; flex-wrap:wrap; gap:10px 16px;
+            align-items:flex-start; justify-content:space-between}
+.fahrt-richtung{margin:0; font-family:var(--pixel); font-size:19px}
+.fahrt-tag{margin:3px 0 0; font-family:var(--zahl); font-size:11px;
+           letter-spacing:.5px; color:var(--tinte-leise)}       /* 6,50:1 */
+.zustand--weg{background:var(--warn-bg); color:var(--warn);     /* 5,18:1 */
+              border:2px solid var(--warn)}
+.fahrt-meldung{margin:14px 0 0; padding:11px 13px; font-size:14px;
+               max-width:60ch; background:var(--flaeche-2)}
+.fahrt-meldung--ausgefallen{background:var(--warn-bg);
+                            border-left:5px solid var(--warn)}
+
+/* --- Streckenband ---
+   Vier Spalten, feste Zeitspalte: die Zeiten sollen untereinander fluchten,
+   sonst sucht das Auge sie in jeder Zeile neu. Die Linie haengt am Punkt und
+   nicht am Listenelement - so endet sie am letzten Halt, statt ins Leere
+   weiterzulaufen. */
+.band{list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0}
+.band-halt{display:grid; grid-template-columns:64px 22px minmax(0,1fr) auto;
+           align-items:start; gap:0 10px; min-height:38px}
+.band-zeit{font-family:var(--zahl); font-size:13px; text-align:right;
+           padding-top:1px; white-space:nowrap}
+.band-bis{opacity:.55; padding:0 1px}
+.band-punkt{position:relative; justify-self:center; width:13px; height:13px;
+            margin-top:3px; border:3px solid var(--umriss); border-radius:50%;
+            background:var(--umriss)}
+.band-halt:not(:last-child) .band-punkt::after{
+  content:""; position:absolute; left:50%; top:13px;
+  width:3px; height:calc(100% + 25px); margin-left:-1.5px;
+  background:var(--umriss)}
+.band-ort{font-size:16px; font-weight:700; padding-top:0}
+.band-gleis{font-family:var(--zahl); font-size:11px; letter-spacing:.5px;
+            color:var(--tinte-leise); padding-top:3px; white-space:nowrap}
+
+/* Der Zwischenhalt: hohler Punkt, duennere Schrift, kleinere Zeit. Er sagt
+   "hier haelt der Zug, aber du steigst nicht aus". */
+.band-halt--zwischen .band-punkt{background:var(--flaeche); border-width:2px;
+                                 width:9px; height:9px; margin-top:5px}
+.band-halt--zwischen .band-ort{font-size:14px; font-weight:400;
+                               color:var(--tinte-leise)}        /* 6,50:1 */
+.band-halt--zwischen .band-zeit{font-size:11.5px; color:var(--tinte-leise)}
+
+/* Die Luecke: was NICHT abgefragt wurde, bekommt keinen Punkt und keine Zeit,
+   sondern eine gestrichelte Linie. Ein gefuellter Halt an dieser Stelle waere
+   eine Behauptung ueber Halte, die niemand nachgesehen hat. */
+.band-halt--luecke{min-height:30px}
+.band-halt--luecke .band-punkt{background:none; border:none}
+.band-halt--luecke .band-punkt::after{background:none;
+  border-left:3px dashed var(--umriss); width:0; top:0; height:calc(100% + 28px)}
+.band-halt--luecke .band-ort{font-size:12.5px; font-style:italic;
+                             color:var(--tinte-leise); padding-top:2px}
+
+/* --- Kacheln: Ticket und Reservierung --- */
+.fahrt-kacheln{display:grid; gap:14px; margin-top:22px;
+               grid-template-columns:repeat(auto-fit, minmax(230px, 1fr))}
+.kachel{padding:13px 15px; background:var(--flaeche-2)}
+.kachel-titel{margin:0 0 10px; font-family:var(--zahl); font-size:10.5px;
+              letter-spacing:.5px; text-transform:uppercase;
+              color:var(--tinte-leise)}                          /* 6,50:1 */
+.kenn{display:grid; grid-template-columns:auto 1fr; gap:6px 14px;
+      margin:0; align-items:baseline}
+.kenn dt{font-family:var(--zahl); font-size:10px; letter-spacing:.5px;
+         text-transform:uppercase; color:var(--tinte-leise)}
+.kenn dd{margin:0; font-size:14.5px}
+
+/* Das Sitzplatzschild. Wagen und Platz sind das Einzige hier, das man im Zug
+   im Stehen mit einem Blick treffen muss - darum die grossen Ziffern. */
+.platz-felder{display:flex; gap:10px}
+.platz-feld{flex:1; padding:9px 11px; background:var(--flaeche);
+            border:2px solid var(--umriss)}
+.platz-kopf{display:block; font-family:var(--zahl); font-size:10px;
+            letter-spacing:.5px; text-transform:uppercase;
+            color:var(--tinte-leise)}
+.platz-wert{display:block; margin-top:2px; font-family:var(--pixel);
+            font-size:24px; line-height:1.1; color:var(--tinte)}  /* 16,87:1 */
+.platz-fuss{margin:9px 0 0; font-size:12.5px; color:var(--tinte-leise)}
+
+/* --- Alternativen --- */
+.regeln{margin:0 0 18px; padding:0 0 0 20px; font-size:13.5px;
+        color:var(--tinte-leise)}
+.regeln li{margin:3px 0}
+.alt{border:2px solid var(--umriss); margin-bottom:12px;
+     background:var(--flaeche-2)}
+.alt-kopf{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 16px;
+          padding:11px 13px; cursor:pointer; list-style:none}
+.alt-kopf::-webkit-details-marker{display:none}
+.alt[open] .alt-kopf{background:var(--flaeche);
+                     border-bottom:2px solid var(--linie)}
+.alt-zeit{font-family:var(--pixel); font-size:18px; display:flex;
+          align-items:baseline; gap:7px}
+.alt-zeit i{font-style:normal; font-size:14px; color:var(--tinte-leise)}
+.alt-dauer, .alt-ums{font-family:var(--zahl); font-size:11px;
+                     letter-spacing:.5px; color:var(--tinte-leise)}
+/* Die Flagge ist im Normalfall STILL. Traegt sie immer die Warnfarbe, dann
+   steht "beste Reserve" in Rot neben "Reserve knapp" - und die Farbe hat
+   aufgehoert, etwas zu unterscheiden. */
+.alt-flagge{font-family:var(--zahl); font-size:10px; letter-spacing:.5px;
+            padding:3px 6px; background:var(--flaeche);
+            color:var(--tinte-leise); border:2px solid var(--linie)}
+.alt-flagge--warn{background:var(--warn-bg); color:var(--warn);   /* 5,18:1 */
+                  border-color:var(--warn)}
+/* Die erwartete Ankunft steht neben der planmaessigen und muss auch so
+   aussehen: kleiner, leiser, kursiv - eine Rechnung, kein Fahrplanwert. */
+.alt-real{font-family:var(--zahl); font-size:11px; font-style:italic;
+          color:var(--tinte-leise)}                               /* 6,50:1 */
+.alt-inhalt{padding:13px}
+.alt-untertitel{margin:16px 0 8px; font-family:var(--zahl); font-size:10.5px;
+                letter-spacing:.5px; text-transform:uppercase;
+                color:var(--tinte-leise)}
+.abschnitte{list-style:none; margin:0; padding:0; display:grid; gap:7px}
+.abs{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:4px 12px;
+     align-items:baseline; font-size:14px}
+.abs-zug{font-family:var(--zahl); font-size:12px; letter-spacing:.5px}
+.abs-gleis{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-leise)}
+
+/* Umsteigezeit als Balken gegen eine feste 60-Minuten-Skala: eine Zahl allein
+   laesst sich nicht vergleichen, ohne sie zu lesen - untereinanderliegende
+   Balken schon. Die Fuellung liegt bei 6,50:1 bzw. 5,18:1 gegen die Tafel und
+   damit weit ueber der 3:1-Schwelle fuer grafische Elemente (WCAG 1.4.11). */
+.umse{list-style:none; margin:0; padding:0; display:grid; gap:7px}
+.ums{display:grid; grid-template-columns:minmax(90px,auto) minmax(60px,1fr) auto;
+     gap:10px; align-items:center; font-size:13.5px}
+.ums-balken{height:10px; background:var(--flaeche);
+            border:2px solid var(--umriss)}
+.ums-balken i{display:block; height:100%; background:var(--tinte-leise)}
+.ums--knapp .ums-balken i{background:var(--warn)}
+.ums-zahl{font-family:var(--zahl); font-size:11.5px; white-space:nowrap}
+.ums--knapp .ums-zahl{color:var(--warn); font-weight:700}
+.alt-robust{margin:14px 0 0; font-size:13.5px; color:var(--tinte-leise);
+            max-width:58ch}
+/* Verworfene Optionen bleiben sichtbar, mit ihrem Grund - sonst werden sie in
+   der naechsten Runde neu recherchiert, und die Arbeit sieht aus wie
+   Fortschritt (Projektregel: comparison-method.md). */
+.alt-raus{margin:20px 0 0; padding:12px 14px; font-size:13px;
+          background:var(--flaeche-2); color:var(--tinte-leise);
+          max-width:60ch}
+.alt-raus b{color:var(--tinte)}                                   /* 14,02:1 */
+.alt-stand, .alt-leer{margin:16px 0 0; font-size:13px; color:var(--tinte-leise)}
+.alt-leer{padding:14px; background:var(--flaeche-2); max-width:58ch}
+
+@media (max-width:520px){
+  .band-halt{grid-template-columns:52px 20px minmax(0,1fr); gap:0 8px}
+  .band-gleis{grid-column:3; padding-top:1px}
+  .platz-felder{flex-direction:column}
+  .fahrt{padding:15px 14px}
 }

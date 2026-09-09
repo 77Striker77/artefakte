@@ -814,10 +814,19 @@
     return '<details class="alt"' + (i === 0 ? " open" : "") + ">"
       + '<summary class="alt-kopf">'
       +   '<span class="alt-zeit"><b>' + v.ab + "</b><i>→</i><b>" + v.an + "</b></span>"
+      // Die erwartete Ankunft steht NEBEN der planmaessigen, nicht statt ihr.
+      // Sie ist eine Rechnung aus dem Puenktlichkeitsmittel des Hauptzugs und
+      // damit weicher als der Fahrplan - ersetzte sie ihn, saehe eine Schaetzung
+      // aus wie eine Abfahrtstafel.
+      +   (v.erwartet ? '<span class="alt-real">real ~' + v.erwartet + "</span>" : "")
       +   '<span class="alt-dauer">' + v.dauer + "</span>"
       +   '<span class="alt-ums">' + (v.umstiege === 0 ? "direkt"
           : v.umstiege + (v.umstiege === 1 ? " Umstieg" : " Umstiege")) + "</span>"
-      +   (v.hinweis ? '<span class="alt-flagge">' + v.hinweis + "</span>" : "")
+      // Die Flagge ist standardmaessig NEUTRAL. Traegt sie immer die Warnfarbe,
+      // sieht "beste Reserve" aus wie ein Problem - und die Farbe sagt dann
+      // nichts mehr, weil sie ueberall steht.
+      +   (v.hinweis ? '<span class="alt-flagge'
+          + (v.hinweis_warn ? " alt-flagge--warn" : "") + '">' + v.hinweis + "</span>" : "")
       + "</summary>"
       + '<div class="alt-inhalt">'
       +   (abschnitte ? '<ol class="abschnitte">' + abschnitte + "</ol>" : "")
@@ -836,9 +845,16 @@
         + "Fahrplanabfrage und stehen hier, sobald sie gelaufen ist.</p>";
     }
     return '<div class="fahrt">'
+      // Die Lage zuerst, vor den Regeln und der Liste. Wer nur die sechs
+      // Verbindungen sieht, haelt den Ausfall fuer ein Zugproblem - er ist ein
+      // Streckenproblem, und das aendert, worauf man am Reisetag achtet.
+      + (bahnAlt.lage ? '<p class="fahrt-meldung fahrt-meldung--ausgefallen">'
+          + bahnAlt.lage + "</p>" : "")
       + (bahnAlt.regeln ? '<ul class="regeln">' + bahnAlt.regeln.map(function (r) {
           return "<li>" + r + "</li>"; }).join("") + "</ul>" : "")
       + bahnAlt.liste.map(bahnAltHtml).join("")
+      + (bahnAlt.ausgeschieden ? '<p class="alt-raus"><b>Geprüft und ausgeschieden.</b> '
+          + bahnAlt.ausgeschieden + "</p>" : "")
       + (bahnAlt.stand ? '<p class="alt-stand">' + bahnAlt.stand + "</p>" : "")
       + "</div>";
   };
@@ -872,8 +888,12 @@
         b.setAttribute("aria-pressed", b.dataset.id === id ? "true" : "false");
       });
       var e = eintraege.filter(function (x) { return x.id === id; })[0];
+      // .grund-fuss, nicht .tafel-fuss: der Fuss steht HIER auf dem dunklen
+      // Grund und nicht auf der hellen Tafel. Mit .tafel-fuss mass
+      // pruef-farben.mjs 2,16:1 - dieselbe Verwechslung, die stil.css schon
+      // einmal dokumentiert hat.
       zielB.innerHTML = (e ? e.bau() : "")
-        + '<p class="tafel-fuss">' + (bahnDaten.quelle || "")
+        + '<p class="grund-fuss">' + (bahnDaten.quelle || "")
         + " · Auftragsnummer und Name stehen nicht auf dieser Seite.</p>";
     };
     eintraege.forEach(function (e) {
@@ -1539,6 +1559,24 @@
     var leerEl = document.getElementById("gastro-leer");
     var sortKnoepfe = [];
 
+    // Die KARTE haengt an der Legende, die LISTE am Untermenue - zwei Zustaende,
+    // zwei Steuerungen. Vorher schaltete das Untermenue beides, und die Legende
+    // war halb Beschriftung, halb Schalter: ein Klick auf "Frühstück" tat dort
+    // nichts, ein Klick auf "U-Bahn" schon. Das ist kein Bedienelement, das ist
+    // ein Ratespiel.
+    var kartenAn = {};
+    REITER[0].gruppen.forEach(function (g) { kartenAn[g] = true; });
+
+    function karteNeu() {
+      alle.forEach(function (e) {
+        if (kartenAn[e.gruppe]) {
+          if (!ebene.hasLayer(e.marke)) ebene.addLayer(e.marke);
+        } else if (ebene.hasLayer(e.marke)) {
+          ebene.removeLayer(e.marke);
+        }
+      });
+    }
+
     function neuZeichnen() {
       var reiter = REITER.filter(function (r) { return r.id === reiterAktiv; })[0];
       var s = SORTIER.filter(function (x) { return x.id === sortAktiv; })[0];
@@ -1547,12 +1585,7 @@
       flip(alle.map(function (e) { return e.el; }), function () {
         alle.forEach(function (e) {
           var passt = reiter.gruppen.indexOf(e.gruppe) >= 0;
-          if (passt) {
-            if (!ebene.hasLayer(e.marke)) ebene.addLayer(e.marke);
-            sichtbar.push(e);
-          } else if (ebene.hasLayer(e.marke)) {
-            ebene.removeLayer(e.marke);
-          }
+          if (passt) sichtbar.push(e);
           e.el.hidden = !passt;
         });
         // Sortiert wird der ganze Bestand, nicht nur das Sichtbare: sonst
@@ -1628,43 +1661,48 @@
       navEl.appendChild(b);
     });
 
-    // ===== Die Legende: JEDES Zeichen, das auf der Karte oder in der Liste
-    // ===== vorkommt, mit seiner Bedeutung ===================================
-    // Sie stand vorher nur fuer die beiden Bahn-Schalter da - die sieben
-    // Ortszeichen erklaerte niemand. Eine Karte mit sechs verschiedenen Symbolen
-    // und einer Legende fuer zwei davon ist eine Karte, die man raten muss.
+    // ===== Die Kartenlegende: sieben Zeichen, sieben Schalter ==============
+    // JEDER Eintrag schaltet seine Ebene. Vorher waren fuenf davon nur
+    // Beschriftung und zwei Schalter - ein Klick auf "Frühstück" tat nichts,
+    // einer auf "U-Bahn" schon. Gleiche Form, verschiedenes Verhalten: das ist
+    // kein Bedienelement, sondern ein Ratespiel.
     //
-    // Zwei Sorten Eintrag, und der Unterschied ist sichtbar:
-    //   ERKLAERT   was das Untermenue schaltet - hier nur Beschriftung, sonst
-    //              gaebe es zwei Bedienelemente fuer dieselbe Ebene
-    //   SCHALTBAR  die Bahnhalte, die an keinem anderen Schalter haengen
+    // Was NICHT hierher gehoert, steht jetzt bei der Tabelle: Wochenstreifen,
+    // Notenachse und Stufenskala kommen auf der Karte gar nicht vor, und
+    // schalten laesst sich nach ihnen erst recht nichts.
     var ulI = document.getElementById("legende-innenstadt");
 
-    var gruppeEl = function (titel) {
+    var schalter = function (markeHtml, text, zahl, um) {
       var li = document.createElement("li");
-      li.className = "legende-gruppe";
-      li.innerHTML = '<span class="legende-titel">' + titel + "</span>";
-      ulI.appendChild(li);
-      return li;
-    };
-    var zeichenEl = function (eltern, markeHtml, text, zahl) {
-      var s = document.createElement("span");
-      s.className = "legende-zeichen";
-      s.innerHTML = '<span class="legende-marke" aria-hidden="true">' + markeHtml + "</span>"
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "filter";
+      b.setAttribute("aria-pressed", "true");
+      b.innerHTML = '<span class="legende-marke" aria-hidden="true">' + markeHtml + "</span>"
         + '<span class="filter-text">' + text
         + (zahl ? ' <span class="filter-zahl">' + zahl + "</span>" : "") + "</span>";
-      eltern.appendChild(s);
+      b.addEventListener("click", function () {
+        var jetzt = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", jetzt ? "false" : "true");
+        um(!jetzt);
+      });
+      li.appendChild(b);
+      ulI.appendChild(li);
     };
 
-    var g1 = gruppeEl("Auf der Karte — über das Untermenü geschaltet");
-    GASTRO.forEach(function (k) {
-      zeichenEl(g1, ortSymbol(k.symbol, false), k.label,
-        alle.filter(function (e) { return e.gruppe === k.id; }).length);
-    });
-    ["wahrzeichen", "museum"].forEach(function (a) {
-      var n = alle.filter(function (e) { return e.gruppe === a; }).length;
-      if (n) zeichenEl(g1, ortSymbol(a, false), LABEL[a], n);
-    });
+    // Die Ortsebenen haengen jetzt HIER und nicht mehr am Untermenue: das waehlt
+    // aus, was in der LISTE steht. Zwei Zustaende, zwei Steuerungen, und jede
+    // sagt in ihrer Ueberschrift, was sie tut.
+    GASTRO.concat([{ id: "wahrzeichen", symbol: "wahrzeichen", label: LABEL.wahrzeichen },
+                   { id: "museum", symbol: "museum", label: LABEL.museum }])
+      .forEach(function (k) {
+        var n = alle.filter(function (e) { return e.gruppe === k.id; }).length;
+        if (!n) return;
+        schalter(ortSymbol(k.symbol, false), k.label, n, function (an) {
+          kartenAn[k.id] = an;
+          karteNeu();
+        });
+      });
 
     // BEIM AUFSCHLAGEN AN. Sie waren bis zum 09.09.2026 aus, mit der Begruendung
     // "37 Marken decken den Ausschnitt zu" - und das war genau der Fehler, den
@@ -1674,58 +1712,55 @@
     // "S-Bahn / DB" heisst der Knopf, nicht "einblenden": der Aus-Zustand
     // streicht den Text durch, und "einblenden" durchgestrichen liest sich wie
     // "geht nicht" statt wie "ist aus".
-    var g2 = gruppeEl("Zuschaltbar — ein Klick auf einen Halt zeigt seine Linien");
     ["sbahn", "ubahn"].forEach(function (art) {
       if (!halteZahl[art]) return;
       halteEbenen[art].addTo(karteInnen);
-      var li = document.createElement("span");
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "filter";
-      b.setAttribute("aria-pressed", "true");
-      b.innerHTML = '<span class="legende-marke" aria-hidden="true">'
-          + '<i class="halt-pin ' + art + '">' + VERKEHR[art].kuerzel + "</i></span>"
-        + '<span class="filter-text">' + VERKEHR[art].label
-        + ' <span class="filter-zahl">' + halteZahl[art] + "</span></span>";
-      b.addEventListener("click", function () {
-        var jetzt = b.getAttribute("aria-pressed") === "true";
-        b.setAttribute("aria-pressed", jetzt ? "false" : "true");
-        if (jetzt) karteInnen.removeLayer(halteEbenen[art]);
-        else halteEbenen[art].addTo(karteInnen);
-      });
-      li.appendChild(b);
-      g2.appendChild(li);
+      schalter('<i class="halt-pin ' + art + '">' + VERKEHR[art].kuerzel + "</i>",
+        VERKEHR[art].label, halteZahl[art], function (an) {
+          if (an) halteEbenen[art].addTo(karteInnen);
+          else karteInnen.removeLayer(halteEbenen[art]);
+        });
     });
 
-    // Die Lesehilfen fuer die Liste. Ohne sie sind Streifen, Achse und Kante
-    // Zierrat - Zustaende, die niemand zuordnen kann, sind schlimmer als kein
-    // Bild.
-    var g3 = gruppeEl("In der Liste");
-    zeichenEl(g3,
-      streifen([[[480, 1020]], [[480, 1020]], null, [], [[480, 1020]], [[540, 1020]], []], ""),
+    // ===== Der Schlüssel zur Tabelle =======================================
+    // Er steht BEI der Tabelle, nicht in der Kartenlegende: diese vier Zeichen
+    // kommen auf der Karte nicht vor. Reine Beschriftung, kein Schalter - und
+    // ohne Rahmen, damit das auch so aussieht. Ein Rahmen verspricht eine
+    // Bedienung, die es hier nicht gibt.
+    var ulS = document.getElementById("listen-schluessel");
+    var lesen = function (markeHtml, text) {
+      var li = document.createElement("li");
+      li.className = "schluessel-zeichen";
+      li.innerHTML = '<span class="legende-marke" aria-hidden="true">' + markeHtml + "</span>"
+        + '<span class="filter-text">' + text + "</span>";
+      ulS.appendChild(li);
+    };
+    lesen(streifen([[[480, 1020]], [[480, 1020]], null, [], [[480, 1020]], [[540, 1020]], []], ""),
       "<b>Wochenstreifen</b> Mo–So, oben und unten Mitternacht: Block = offen, "
         + "Strich = zu, Punkte = unbekannt");
-    zeichenEl(g3, noteSkala(4.6),
+    lesen(noteSkala(4.6),
       "<b>Note</b> auf einer Achse von 4,0 bis 5,0 — ein Ausschnitt, weil alle Noten darin liegen");
-    zeichenEl(g3, stufenSkala(2, 4),
+    lesen(stufenSkala(2, 4),
       "<b>Geflügel</b> in vier Stufen: Schnitzel · Hauptgericht · nur Salat · keins");
-    zeichenEl(g3, '<span class="legende-kante"></span>',
+    lesen('<span class="legende-kante"></span>',
       "<b>Farbige Kante</b> links an der Zeile: dieselbe Farbe wie das Zeichen der Kategorie");
 
+    karteNeu();
     neuZeichnen();
 
     // ===== Was unter der Karte und unter der Liste stehen MUSS ==============
     var weit = g.orte.filter(function (o) { return meter(bezug.lat, bezug.lon, o.lat, o.lon) > 3000; });
+    // Hier stand ein Vorspann: "Ausschnitt: Innenstadt um den Marienplatz."
+    // Er ist raus - dass man die Innenstadt sieht, sieht man. Was BLEIBT, sind
+    // die drei Dinge, die man NICHT sieht: was ausserhalb liegt, was im Bestand
+    // fehlt, und dass die Entfernung Luftlinie ist.
     document.getElementById("karte-fuss").innerHTML =
-      "<strong>Ausschnitt: Innenstadt um den " + bezug.name + ".</strong> "
-      + weit.length + " der " + g.anzahl.gesamt + " Lokale liegen weiter als 3 km entfernt und "
-      + "damit außerhalb des Bildes — nach <em>Entfernung</em> sortiert stehen sie am Ende der "
-      + "Liste, und ein Klick auf ihren Namen schwenkt die Karte hin. "
+      "<strong>" + weit.length + " der " + g.anzahl.gesamt + " Lokale liegen weiter als 3 km "
+      + "entfernt</strong> und damit außerhalb des Bildes — nach <em>Entfernung</em> sortiert "
+      + "stehen sie am Ende der Liste, ein Klick auf ihren Namen schwenkt die Karte hin. "
       + (halteZahl.sbahn + halteZahl.ubahn
-          ? "Dazu " + (halteZahl.sbahn + halteZahl.ubahn) + " Bahnhalte — ein Klick auf einen Halt "
-            + "zeigt, welche Linien dort fahren. <strong>Nur S- und U-Bahn:</strong> Tram- und "
-            + "Bushaltestellen stehen in diesem Bestand nicht, die Karte zeigt hier also weniger "
-            + "als die Stadt hat. Über die Legende abschaltbar. " : "")
+          ? "Ein Klick auf einen Bahnhalt zeigt, welche Linien dort fahren — <strong>nur S- und "
+            + "U-Bahn</strong>, Tram- und Bushaltestellen stehen in diesem Bestand nicht. " : "")
       + "Entfernungen sind Luftlinie, keine Gehzeit.";
 
     var gz = function (id, pruef) {
