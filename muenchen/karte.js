@@ -930,85 +930,68 @@
       + "</div>";
   }());
 
-  // --- Bavaria: dieselbe Tafel, ein anderes Ziel ----------------------------
-  // Der Reiter ist nach dem Hotel-Reiter gebaut und stellt dieselben Fragen an
-  // einem anderen Ort: was ist das hier, was kostet es, wann ist offen, wie
-  // komme ich hin. Was sich unterscheidet, ist der Bezugspunkt - fuer den Weg
-  // ist hier nicht der Hauptbahnhof der Start, sondern das Hotel.
+  // --- Bavaria: der Termin, nicht das Gelaende -----------------------------
+  // Der Reiter hiess beim ersten Wurf "Bavaria Filmstadt" und trug Eintritts-
+  // preise, Oeffnungszeiten und die Kulissen der Besucherfuehrung. Falsch, und
+  // zwar vollstaendig: gefahren wird nicht zur Fuehrung, sondern zur
+  // Fernsehaufzeichnung "Joko und Klaas gegen ProSieben" - das steht in der
+  // Bestaetigungsmail in _inbox/, die beim Bau niemand gelesen hatte. Ein
+  // Reiter, der aus dem ORTSNAMEN gebaut wird statt aus dem ANLASS, sieht
+  // vollstaendig aus und beantwortet die falsche Frage.
   //
-  // Zwei Herkuenfte, getrennt gehalten und hier zusammengefuehrt - wie beim
-  // Hotel:
-  //   DATEN.bavaria          von Hand aus der Anbieterseite (reise.json)
-  //   DATEN.bavaria_eintrag  abgefragt (Places, hol-eintrag.mjs)
+  // Jetzt nach dem Tagesablauf gebaut, nicht nach der Datenherkunft: oben was
+  // wann ist, darunter was mitmuss, dann die Regeln des Hauses, zuletzt die
+  // Anbindung. Alles aus EINER Quelle - der Mail -, und was dort nicht steht,
+  // steht auch hier nicht.
   //
-  // Die Eintrittspreise stehen von Hand da, weil die Places-API keine kennt.
-  // Sie tragen darum ihr Lesedatum im Quellen-Aufklapper: ein Preis ohne Datum
-  // altert unsichtbar und liest sich spaeter wie ein frischer.
+  // Was NICHT hier steht, fehlt aus einem Grund: eTicket-Kennung, Bestellnummer
+  // und der Name des Hauptbuchers sind personenbezogen. Das Datenschutz-Tor in
+  // deploy-pages.sh prueft darauf und bricht ab.
   (function () {
     var el = document.getElementById("bavaria-tafel");
-    var b = DATEN.bavaria;
-    if (!el || !b) return;
+    var e = DATEN.event;
+    if (!el || !e) return;
     var be = DATEN.bavaria_eintrag;
     var bw = DATEN.bavaria_weg;
 
-    var feldB = function (kopf, wert, fein) {
+    var feldE = function (f) {
+      return '<div class="platz-feld"><span class="platz-kopf">' + f.kopf + "</span>"
+        + '<b class="platz-wert">' + f.wert + "</b>"
+        + (f.fein ? '<span class="weg-feld-fein">' + f.fein + "</span>" : "") + "</div>";
+    };
+
+    var zeileE = function (kopf, wert, hinweis) {
       if (!wert) return "";
-      return '<div class="platz-feld"><span class="platz-kopf">' + kopf + "</span>"
-        + '<b class="platz-wert' + (wert === "xx" ? " platz-wert--offen" : "") + '">'
-        + wert + "</b>"
-        + (fein ? '<span class="weg-feld-fein">' + fein + "</span>" : "") + "</div>";
+      return "<dt>" + kopf + "</dt><dd>" + wert
+        + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "") + "</dd>";
     };
 
-    // Ein unbekannter Wert wird als solcher gesetzt, nicht weggelassen: eine
-    // Liste ohne die Zeile sieht vollstaendig aus, und niemand fragt je nach.
-    var zeileB = function (kopf, wert, hinweis) {
-      if (!wert) return "";
-      var offen = wert === "xx";
-      return "<dt>" + kopf + "</dt><dd"
-        + (offen ? ' class="kenn-offen" title="noch nicht bekannt"' : "") + ">"
-        + wert + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "")
-        + "</dd>";
-    };
+    // Nur der Maps-Eintrag, nicht Bewertung und Oeffnungszeiten: eine
+    // Sternebewertung des Freizeitparks sagt nichts ueber eine Aufzeichnung,
+    // und die Oeffnungszeiten der Filmstadt sind nicht die des Studios. Was
+    // man abends in Gruenwald braucht, ist der Punkt auf der Karte.
+    var maps = be && be.eintrag.maps;
+    var ziele = (e.telefon
+        ? '<a class="hotel-tel" href="tel:' + e.telefon.replace(/s/g, "") + '">' + e.telefon + "</a>"
+        : "")
+      + (maps ? '<a class="hotel-tel" href="' + maps + '" target="_blank" rel="noopener noreferrer">'
+                + "Google Maps ↗</a>" : "");
 
-    var anschrift = [b.adresse, b.stadtteil].filter(Boolean).join(" · ");
+    var anschrift = [e.ort, e.adresse].filter(Boolean).join(" · ");
 
-    // Dieselben drei Tastziele wie auf der Hoteltafel, plus den Ticketshop:
-    // ohne ihn waere die Preisliste eine Auskunft, aus der man den Kauf selbst
-    // weitersuchen muss.
-    var ziel = function (url, text, extern) {
-      if (!url) return "";
-      return '<a class="hotel-tel" href="' + url + '"'
-        + (extern ? ' target="_blank" rel="noopener noreferrer"' : "") + ">"
-        + text + (extern ? " ↗" : "") + "</a>";
-    };
-    var ziele = ziel(b.telefon ? "tel:" + b.telefon.replace(/s/g, "") : null, b.telefon)
-      + ziel(be && be.eintrag.website, "Website", true)
-      + ziel(b.tickets_url, "Tickets", true)
-      + ziel(be && be.eintrag.maps, "Google Maps", true);
-
-    var note = be && be.eintrag.bewertung != null
-      ? '<span class="hotel-note"><b>' + String(be.eintrag.bewertung).replace(".", ",")
-        + " ★</b> " + (be.eintrag.stimmen != null
-            ? be.eintrag.stimmen.toLocaleString("de-DE") + " Bewertungen" : "") + "</span>"
-      : "";
-
-    // Das dritte Feld ist GERECHNET, nicht getippt: die empfohlene Variante des
-    // gemessenen Wegs. Von Hand stuende dort noch eine alte Zahl, wenn sich der
-    // Fahrplan geaendert hat - und sie saehe aus wie eine gemessene.
-    var empf = (bw && bw.varianten || []).filter(function (v) { return v.empfohlen; })[0];
-    var wegFeld = empf
-      ? feldB("Ab dem Hotel", empf.minuten + " min",
-              empf.linien && empf.linien.length ? empf.linien.join(" · ") : empf.label)
-      : "";
-
-    var kenn = (b.kenn || []).map(function (k) {
-      return zeileB(k.was, k.wert, k.hinweis);
+    // Die Checkliste ist eine Liste und keine Kennzeile: sie wird ABGEHAKT,
+    // nicht gelesen. Der Satz darunter steht dabei und nicht im Aufklapper -
+    // "der Hauptbucher holt fuer alle ab" entscheidet, wer wann losfaehrt.
+    var mit = (e.mitbringen || []).map(function (m) {
+      return '<li class="mitbring">' + m + "</li>";
     }).join("");
 
-    var quellen = [b.quelle,
-                   be ? be.quellen.eintrag.name + " (Bewertung und Öffnungszeiten), abgerufen "
-                        + deutsch(be.quellen.eintrag.abgerufen) : null,
-                   bw ? bw.quelle.name + " (der Weg vom Hotel), abgerufen "
+    var kenn = (e.kenn || []).map(function (k) {
+      return zeileE(k.was, k.wert, k.hinweis);
+    }).join("");
+
+    var quellen = [e.quelle,
+                   bw ? bw.quelle.name + " (Hin- und Rückweg), abgerufen "
                         + deutsch(bw.quelle.abgerufen) : null,
                    DATEN.bavaria_umgebung && DATEN.bavaria_umgebung.quellen
                      ? DATEN.bavaria_umgebung.quellen.halte.name + " (Haltestellen und Linien)"
@@ -1017,26 +1000,26 @@
     el.innerHTML = '<div class="fahrt">'
       + '<div class="fahrt-kopf">'
       +   "<div>"
-      +     '<p class="fahrt-richtung">' + b.name + "</p>"
-      +     (anschrift ? '<p class="fahrt-tag">' + anschrift + "</p>" : "")
+      +     '<p class="fahrt-richtung">' + e.titel + "</p>"
+      +     '<p class="fahrt-tag">' + [e.art, anschrift].filter(Boolean).join(" · ") + "</p>"
       +   "</div>"
-      +   note
+      +   (e.tag ? '<span class="hotel-note"><b>' + e.tag + "</b></span>" : "")
       + "</div>"
       + (ziele ? '<div class="hotel-ziele">' + ziele + "</div>" : "")
       + '<div class="platz-felder platz-felder--um">'
-      +   feldB("Geöffnet", b.geoeffnet,
-                b.letzter_einlass ? "letzter Einlass " + b.letzter_einlass : "")
-      +   feldB("Besuch", b.besuch, b.besuch_fein || "")
-      +   wegFeld
+      +   (e.ablauf || []).map(feldE).join("")
       + "</div>"
+      + (mit ? '<h4 class="lage-titel">Das muss mit</h4><ul class="mitbringen">' + mit + "</ul>" : "")
+      + (e.mitbringen_hinweis ? '<p class="tafel-fein">' + e.mitbringen_hinweis + "</p>" : "")
       + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")
       + anbindungHtml(DATEN.bavaria_umgebung)
-      // Der Hinweis des Betreibers steht als Satz und nicht im Aufklapper: er
-      // schraenkt die Oeffnungszeit direkt darueber ein, und eine Einschraenkung
-      // hinter einem Klick liest niemand.
-      + (b.hinweis ? '<p class="tafel-fein">' + b.hinweis + "</p>" : "")
+      // Der Satz steht als Warnung und nicht im Aufklapper: er entscheidet,
+      // wann man diese Seite liest - naemlich vorher, weil das Handy waehrend
+      // der Show in der Garderobe liegt.
+      + (e.hinweis ? '<p class="tafel-warnung">' + e.hinweis + "</p>" : "")
       + '<details class="quell-klapp"><summary>Woher diese Angaben kommen</summary>'
-      + "<p>" + quellen + "</p>"
+      + "<p>" + quellen
+      + " · Ticketkennung, Bestellnummer und Name stehen nicht auf dieser Seite.</p>"
       + "</details>"
       + "</div>";
   }());
@@ -1434,6 +1417,17 @@
     var wegEbene = L.layerGroup().addTo(karteHotel);
     var wegBereich = null;
 
+    // Eine Variante kann eine RICHTUNG sein, nicht nur ein Verkehrsmittel: der
+    // Bavaria-Reiter fuehrt Hin- und Rueckweg, und beim Rueckweg ist der
+    // Bezugspunkt der Karte der START. Welcher der beiden Endpunkte die eigene
+    // Marke bekommt, wird darum ausgerechnet - es ist der, der nicht der
+    // Bezugspunkt ist. Ihn fest als "von" zu nehmen setzte beim Rueckweg die
+    // Ankunftsmarke auf die Unterkunft und die Unterkunftsmarke ans Studio.
+    var istBezug = function (p) {
+      return Math.abs(p.lat - u.bezug.lat) < 0.001 && Math.abs(p.lon - u.bezug.lon) < 0.001;
+    };
+    var gegenpunkt = function (v) { return istBezug(v.von) ? v.nach : v.von; };
+
     // Die Namen der Ein- und Ausstiege des Wegs stehen dauerhaft an ihrer Marke:
     // auf dieser Karte tragen nur sie diese Klasse, es ist also nichts zu
     // verdecken - und der Name IST hier die Auskunft. Eine Marke, die man erst
@@ -1461,7 +1455,8 @@
       var gezeichnet = [];
       if (!v) { wegBereich = null; karteHotelAnpassen(); return; }
 
-      var punkte = [[w.von.lat, w.von.lon], [u.bezug.lat, u.bezug.lon]];
+      var gegen = gegenpunkt(v);
+      var punkte = [[gegen.lat, gegen.lon], [u.bezug.lat, u.bezug.lon]];
       v.abschnitte.forEach(function (a) {
         if (!a.geo || !a.geo.length) return;
         punkte = punkte.concat(a.geo);
@@ -1485,8 +1480,8 @@
             + (a.zwischenhalte && a.zwischenhalte.length
                 ? " · " + (a.zwischenhalte.length + 1) + " Halte" : "")
             + "</p>"
-            + '<p class="popup-fein">' + (a.von || w.von.name) + " → "
-            + (a.nach || w.nach.name) + "</p>");
+            + '<p class="popup-fein">' + (a.von || v.von.name) + " → "
+            + (a.nach || v.nach.name) + "</p>");
 
         // Der Weg zeichnet sich in Fahrtrichtung. Nicht Zierde: er sagt, wo er
         // ANFAENGT und wohin er laeuft - eine fertig daliegende Linie sagt das
@@ -1545,12 +1540,12 @@
         });
       });
 
-      L.marker([w.von.lat, w.von.lon], {
+      L.marker([gegen.lat, gegen.lon], {
         icon: L.divIcon({ className: "", html: ortSymbol(cfg.start_art, false),
                           iconSize: [34, 34], iconAnchor: [17, 17] }),
-        title: w.von.name, riseOnHover: true
-      }).addTo(wegEbene).bindPopup("<h3>" + w.von.name + "</h3>"
-        + "<p>" + cfg.start_text + "</p>" + mapsLink(w.von));
+        title: gegen.name, riseOnHover: true
+      }).addTo(wegEbene).bindPopup("<h3>" + gegen.name + "</h3>"
+        + "<p>" + cfg.gegen_text + "</p>" + mapsLink(gegen));
 
       wegBereich = L.latLngBounds(punkte);
       karteHotelAnpassen();
@@ -1581,7 +1576,7 @@
     var bandHtml = function (v) {
       var farbe = wegFarbe(v, hauptmittel(v));
       var zeilen = v.abschnitte.map(function (a, i) {
-        var start = i === 0 ? w.von.name : (a.von || "—");
+        var start = i === 0 ? v.von.name : (a.von || "—");
         if (a.art === "fuss") {
           return zeile("weg-teil weg-teil--fuss", start,
             '<span class="weg-tat"><b>' + a.minuten + " min</b> zu Fuß"
@@ -1613,7 +1608,7 @@
           + (halte.length ? '<span class="weg-fein">über ' + halte.join(" · ") + "</span>" : ""),
           farbe, i);
       });
-      zeilen.push(zeile("weg-ziel", u.bezug.name, "", null, v.abschnitte.length));
+      zeilen.push(zeile("weg-ziel", v.nach.name, "", null, v.abschnitte.length));
       return '<ol class="weg">' + zeilen.join("") + "</ol>";
     };
 
@@ -1859,7 +1854,7 @@
     fuss: "umgebung-fuss",
     ziel_art: "unterkunft",
     start_art: "ankunft",
-    start_text: "Hier kommt der Zug an — der Start dieses Wegs."
+    gegen_text: "Hier kommt der Zug an — der Start dieses Wegs."
   });
 
   wegKarte({
@@ -1873,7 +1868,7 @@
     fuss: "bavaria-fuss",
     ziel_art: "film",
     start_art: "unterkunft",
-    start_text: "Die Unterkunft — der Start dieses Wegs."
+    gegen_text: "Die Unterkunft — Start des Hinwegs und Ziel des Rückwegs."
   });
 
 
