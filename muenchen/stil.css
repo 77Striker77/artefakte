@@ -383,6 +383,19 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
   background:var(--flaeche); color:var(--tinte-leise)}
 .leaflet-container .leaflet-control-attribution a{color:var(--akzent-text)}  /* 6,12:1 */
 
+/* ---------- Der Pixel-Sternenhimmel ----------
+   Fest hinter allem. z-index:-1 legt die Leinwand hinter jeden Inhalt, aber vor
+   den Hintergrund des <body> - genau die Lage, die gemeint ist.
+
+   DAMIT DAS TRAEGT, darf ueber der Leinwand kein Vorfahre einen eigenen
+   Stapelkontext aufmachen (transform, filter, opacity < 1, isolation). Der
+   Himmel verschwindet sonst spurlos hinter dem Grund, und zwar ohne Fehler.
+
+   Die Tafeln, Karten und die Kopfleiste haben eigene DECKENDE Gruende - der
+   Himmel scheint nur dort durch, wo sonst nichts liegt. */
+#himmel{position:fixed; inset:0; width:100%; height:100%;
+        z-index:-1; pointer-events:none}
+
 /* ---------- Mein Standort ----------
    Der Knopf sitzt UNTEN LINKS: oben links stehen Leaflets Zoomknoepfe, unten
    rechts die Attributionsleiste. Unten links ist auf dem Handy ausserdem die

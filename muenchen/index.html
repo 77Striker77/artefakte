@@ -10,9 +10,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700;800&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=250f1c0c">
+<link rel="stylesheet" href="stil.css?v=0d7071ae">
 </head>
 <body>
+
+<!-- Der Pixel-Sternenhimmel liegt FEST hinter allem (position:fixed, z-index:-1)
+     und scrollt darum nicht mit: ein mitscrollender Himmel wuerde beim Lesen
+     wandern und genau die Unruhe erzeugen, die hier nicht hingehoert.
+
+     aria-hidden und ohne Tabstopp: er traegt keine Auskunft. Faellt das Skript
+     aus, bleibt der Grund einfarbig - es fehlt nichts als der Effekt. -->
+<canvas id="himmel" aria-hidden="true"></canvas>
 
 <!-- Die Menueleiste wird aus `menue` in bau/reise.json gebaut, nicht hier
      eingetragen: die Seite waechst, und ein Menue, das in der HTML-Datei steht,
@@ -148,7 +156,11 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=250f1c0c"></script>
-<script src="karte.js?v=250f1c0c"></script>
+<script src="orte.js?v=0d7071ae"></script>
+<script src="karte.js?v=0d7071ae"></script>
+<!-- Zuletzt und als eigene Datei: der Himmel ist reine Zier und hat mit den
+     Karten nichts zu tun. In karte.js waere er neunzig Zeilen, die beim Suchen
+     nach einem Kartenfehler im Weg stehen. -->
+<script src="himmel.js?v=0d7071ae"></script>
 </body>
 </html>

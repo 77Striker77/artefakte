@@ -1972,24 +1972,33 @@
     // Dauer, Umstiege und die GEMESSENE Umsteigezeit. Ohne diese drei Zahlen
     // waere "Schnellste" gegen "Ohne Umstieg" eine Geschmacksfrage; mit ihnen
     // ist es eine Entscheidung.
+    // EINE Zahl je Knopf - die, fuer die er steht. Ein Zwischenstand haengte
+    // alle vier aneinander ("50 min \u00b7 1\u00d7 um \u00b7 3 min Reserve \u00b7 29 min zu Fu\u00df").
+    // Das ist keine Wahl mehr, sondern eine Zeile, die man erst lesen muss. Wer
+    // die uebrigen Werte will, findet sie in der Tafel direkt darunter - dort
+    // stehen Dauer, Fussweg und Takt ohnehin gross und beschriftet.
+    var KENNZAHL = {
+      schnell: function (v) { return v.minuten + " min"; },
+      umstiegsarm: function (v) {
+        return v.umstiege ? v.umstiege + "\u00d7 umsteigen" : "ohne Umstieg";
+      },
+      fussarm: function (v) {
+        return v.fuss_minuten != null ? v.fuss_minuten + " min zu Fu\u00df" : "";
+      },
+      puffer: function (v) {
+        var p = (v.puffer || []).filter(function (x) { return x != null; });
+        // Nicht "ohne Umstieg" - das steht schon auf dem Nachbarknopf und
+        // saehe hier aus wie dieselbe Auskunft zweimal. Die Regel hat gesucht
+        // und nichts zu sichern gefunden, weil es nichts zu sichern gibt.
+        return p.length ? p.join("/") + " min Reserve" : "kein Umstieg nötig";
+      }
+    };
     var optionText = function (v) {
-      // Ein reiner Fussweg hat trivialerweise keinen Umstieg. "ohne Umstieg"
-      // daruntersetzen heisst, eine Selbstverstaendlichkeit als Vorzug
-      // auszugeben - der Knopf sagt dann weniger als ohne den Zusatz. Der
-      // Fussweg selbst steht dort aus demselben Grund nicht: er IST die
-      // Variante, und die Dauer daneben sagt ihn schon.
-      if (!v.linien || !v.linien.length) return "";
-      var p = (v.puffer || []).filter(function (x) { return x != null; });
-      // Der Fussweg steht seit dem 09.09.2026 auf JEDEM gefahrenen Knopf: er
-      // ist eine eigene Auswahlregel geworden, und ein Kriterium, nach dem man
-      // waehlen soll, gehoert an die Stelle, an der gewaehlt wird. Zwei Fahrten
-      // mit fast derselben Dauer koennen sich um zehn Minuten Fussweg
-      // unterscheiden - genau das ist hier der Fall.
-      return (v.umstiege
-                ? v.umstiege + "\u00d7 um"
-                  + (p.length ? " \u00b7 " + p.join("/") + " min Reserve" : "")
-                : "ohne Umstieg")
-        + (v.fuss_minuten != null ? " \u00b7 " + v.fuss_minuten + " min zu Fu\u00df" : "");
+      // Ohne Auswahlregel bleibt es bei der Dauer: der Hotel-Reiter
+      // unterscheidet seine Knoepfe im Verkehrsmittel, nicht im Massstab.
+      if (!v.auswahl) return v.minuten + " min";
+      var f = KENNZAHL[v.auswahl];
+      return f ? f(v) : v.minuten + " min";
     };
     var optionenHtml = function (liste, aktiv) {
       if (liste.length < 2) return "";
@@ -1998,8 +2007,7 @@
             return '<button type="button" class="unterknopf unterknopf--klein" data-vid="'
               + v.id + '" aria-pressed="' + (v.id === aktiv.id ? "true" : "false") + '">'
               + "<span>" + v.label + "</span>"
-              + '<span class="unter-zahl">' + v.minuten + " min"
-              + (optionText(v) ? " \u00b7 " + optionText(v) : "") + "</span></button>";
+              + '<span class="unter-zahl">' + optionText(v) + "</span></button>";
           }).join("")
         + "</nav>";
     };
