@@ -2385,7 +2385,7 @@ const DATEN = {
    {
     "id": "tram",
     "label": "Tram",
-    "zweck": "Oberirdisch statt Tunnel — dafuer der laengste Fussweg am Ende.",
+    "zweck": "Oberirdisch statt Tunnel — dafür der längste Fußweg am Ende.",
     "minuten": 30,
     "umstiege": 0,
     "linien": [
@@ -4066,7 +4066,7 @@ const DATEN = {
    {
     "id": "fuss",
     "label": "zu Fuß",
-    "zweck": "Ohne Ticket, mit Gepaeck aber eine Ansage.",
+    "zweck": "Ohne Ticket und ohne Fahrplan — mit Gepäck aber eine Ansage.",
     "minuten": 47,
     "umstiege": 0,
     "linien": [],

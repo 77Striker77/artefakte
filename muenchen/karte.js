@@ -1062,7 +1062,11 @@
               iconSize: [26, 26], iconAnchor: [13, 13] }),
             title: p[1], keyboard: false
           }).addTo(wegEbene)
-            .bindTooltip(p[1], { permanent: true, direction: "right", offset: [14, 0],
+            // direction "auto" statt "right": Leaflet legt das Schild auf die
+            // Seite, auf der Platz ist. Fest rechts ragte "Rosenheimer Platz"
+            // auf einem 390er Schirm ueber die Kartenkante - der Halt war zu
+            // sehen, sein Name nicht.
+            .bindTooltip(p[1], { permanent: true, direction: "auto", offset: [14, 0],
                                  className: "marke-name", interactive: false });
         });
       });
@@ -1090,7 +1094,7 @@
       // Ein Behaelter ohne Breite ist nicht vermessen, sondern verdeckt. Ein
       // Ausschnitt, der daraus gerechnet wird, ist erfunden.
       if (!wegBereich || behaelter.clientWidth < 40) return;
-      karteWeg.fitBounds(wegBereich, { padding: [34, 34] });
+      karteWeg.fitBounds(wegBereich, { padding: [32, 32] });
     };
 
     // --- Band ---------------------------------------------------------------
@@ -1144,8 +1148,11 @@
       return '<div class="fahrt">'
         + '<div class="platz-felder platz-felder--um">'
         + feld("Dauer", v.minuten + " min",
-               v.umstiege === 0 ? "ohne Umstieg" : v.umstiege + " Umstieg"
-                 + (v.umstiege > 1 ? "e" : ""))
+               // "ohne Umstieg" ueber einem reinen Fussweg beantwortet eine
+               // Frage, die dort niemand stellt.
+               hauptmittel(v) === "fuss" ? "durchgehend"
+                 : v.umstiege === 0 ? "ohne Umstieg"
+                 : v.umstiege + " Umstieg" + (v.umstiege > 1 ? "e" : ""))
         + feld("davon zu Fuß", v.fuss_minuten + " min", v.fuss_meter + " m")
         + takt
         + "</div>"
@@ -1694,6 +1701,13 @@
     var listeEl = document.getElementById("gastro-liste");
     var tafelEl = document.createElement("div");
     tafelEl.className = "katalog";
+    // Die Zeilen liegen in einem eigenen Behaelter INNERHALB der Tafel. Grund:
+    // beim Kategoriewechsel wird der Inhalt ueberblendet, und die Kopfzeile mit
+    // den Sortierknoepfen soll dabei stehen bleiben - eine Deckkraft auf der
+    // ganzen Tafel nimmt sie mit.
+    var zeilenEl = document.createElement("div");
+    zeilenEl.className = "katalog-zeilen";
+    tafelEl.appendChild(zeilenEl);
     listeEl.appendChild(tafelEl);
 
     var faktenZeile = function (n, v) {
@@ -1764,131 +1778,11 @@
         document.getElementById("karte-innenstadt").scrollIntoView({ block: "center" });
       });
 
-      tafelEl.appendChild(d);
+      zeilenEl.appendChild(d);
       e.el = d;
     });
 
-    // ===== Umschalten: DREI Bewegungen, nicht eine =========================
-    // Hier lief bis zum 09.09.2026 nur FLIP - und beim Wechsel von Frühstück auf
-    // Abendessen sah das schlecht aus. Der Grund steht in der Vorlage selbst
-    // (artefakt-bausteine/vorlagen/umordnen-flip.html): FLIP bewegt, was vorher
-    // UND nachher da ist. Ein Element, das neu erscheint, hat kein "vorher"; ein
-    // verschwindendes kein "nachher". Bei disjunkten Kategorien trifft das auf
-    // fast jede Zeile zu: 12 verschwanden schlagartig, 22 erschienen
-    // schlagartig, und die zwei uebrigen glitten sinnlos umher.
-    //
-    // Drei Faelle, drei Regeln - so, wie es wert-und-geste.html vormacht:
-    //   BLEIBT  FLIP: erst alle messen, dann aendern, dann zurueckfuehren.
-    //           Nur transform, also auf dem Compositor.
-    //   GEHT    zuerst AUS DEM FLUSS (position:absolute an der alten Stelle),
-    //           dann ausblenden. Wer zuerst schrumpft, haelt seinen Platz bis
-    //           zum letzten Bild und die Nachbarn springen am Ende schlagartig
-    //           nach - genau der Ruck, den die Animation vermeiden soll.
-    //   KOMMT   eingeblendet mit leichtem Versatz und Staffelung, danach.
-    var ruhig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var DAUER = { ab: 190, auf: 260, flip: 420 };
-    var offeneAbgaenge = [];
-
-    // soll: Map<Element, boolean> - was NACHHER sichtbar ist.
-    // ordnen: baut die Reihenfolge im DOM um.
-    var umschalten = function (soll, ordnen) {
-      // Ein zweiter Klick darf den ersten nicht verdoppeln: laufende Abgaenge
-      // werden sofort abgeschlossen, sonst liegen zwei Animationen auf
-      // demselben Element und die zweite raeumt einen Zustand auf, den die
-      // erste noch braucht.
-      offeneAbgaenge.forEach(function (f) { f(); });
-      offeneAbgaenge = [];
-
-      if (ruhig) {
-        alle.forEach(function (e) { e.el.hidden = !soll.get(e.el); });
-        return ordnen();
-      }
-
-      var platte = tafelEl.getBoundingClientRect();
-      var vorher = new Map();
-      alle.forEach(function (e) {
-        e.el.style.transform = "";
-        vorher.set(e.el, { sichtbar: !e.el.hidden, kasten: e.el.getBoundingClientRect() });
-      });
-
-      var geht = [], kommt = [], bleibt = [];
-      alle.forEach(function (e) {
-        var v = vorher.get(e.el);
-        if (soll.get(e.el)) (v.sichtbar ? bleibt : kommt).push(e.el);
-        else if (v.sichtbar) geht.push([e.el, v.kasten]);
-        else e.el.hidden = true;
-      });
-
-      // 1. Die Gehenden ZUERST aus dem Fluss nehmen - vor jeder weiteren
-      //    Messung, sonst halten sie ihren Platz und die FLIP-Deltas stimmen
-      //    nicht.
-      geht.forEach(function (g) {
-        var el = g[0], k = g[1];
-        el.style.position = "absolute";
-        el.style.left = (k.left - platte.left) + "px";
-        el.style.top = (k.top - platte.top) + "px";
-        el.style.width = k.width + "px";
-        el.style.pointerEvents = "none";
-      });
-
-      // 2. Die Kommenden einhaengen, dann die Reihenfolge bauen.
-      kommt.forEach(function (el) { el.hidden = false; el.style.opacity = "0"; });
-      ordnen();
-
-      // 3. FLIP fuer die Bleibenden.
-      var bewegte = [];
-      bleibt.forEach(function (el) {
-        var alt = vorher.get(el).kasten, neu = el.getBoundingClientRect();
-        var dx = alt.left - neu.left, dy = alt.top - neu.top;
-        if (!dx && !dy) return;
-        el.style.transform = "translate(" + dx + "px," + dy + "px)";
-        bewegte.push([el, dx, dy]);
-      });
-      void document.body.offsetWidth;                   // Startzustand erzwingen
-      bewegte.forEach(function (b) {
-        var el = b[0];
-        el.style.willChange = "transform";
-        var a = el.animate(
-          [{ transform: "translate(" + b[1] + "px," + b[2] + "px)" }, { transform: "translate(0,0)" }],
-          { duration: DAUER.flip, easing: "cubic-bezier(.22,1,.36,1)", fill: "none" });
-        el.style.transform = "";
-        a.finished.then(function () { el.style.willChange = ""; }).catch(function () {});
-      });
-
-      // 4. Abgang. Das Aufraeumen liegt in einer Funktion, die auch ein
-      //    vorzeitiger Wechsel aufrufen kann - fill:"forwards" ohne Aufraeumen
-      //    liesse eine unsichtbare Zeile im Fluss zurueck.
-      geht.forEach(function (g) {
-        var el = g[0];
-        var fertig = function () {
-          el.hidden = true;
-          el.style.position = el.style.left = el.style.top = el.style.width = "";
-          el.style.pointerEvents = el.style.opacity = el.style.willChange = "";
-        };
-        var a = el.animate([{ opacity: 1, transform: "scale(1)" },
-                            { opacity: 0, transform: "scale(.97)" }],
-          { duration: DAUER.ab, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
-        var raeumen = function () { a.cancel(); fertig(); };
-        offeneAbgaenge.push(raeumen);
-        a.finished.then(function () {
-          var i = offeneAbgaenge.indexOf(raeumen);
-          if (i >= 0) { offeneAbgaenge.splice(i, 1); fertig(); }
-        }).catch(function () {});
-      });
-
-      // 5. Auftritt, gestaffelt - aber gedeckelt. Bei 22 Zeilen waere
-      //    delay * i eine halbe Sekunde, in der die Liste noch entsteht; die
-      //    Staffelung soll die Bewegung lesbar machen, nicht verlaengern.
-      kommt.forEach(function (el, i) {
-        el.style.willChange = "transform, opacity";
-        var a = el.animate([{ opacity: 0, transform: "translateY(8px)" },
-                            { opacity: 1, transform: "translateY(0)" }],
-          { duration: DAUER.auf, delay: Math.min(i * 14, 190),
-            easing: "cubic-bezier(.22,1,.36,1)", fill: "backwards" });
-        el.style.opacity = "";
-        a.finished.then(function () { el.style.willChange = ""; }).catch(function () {});
-      });
-    };
+@@UMSCHALTEN@@
 
     // ===== Sortieren statt Suchen ==========================================
     // Hier stand bis zum 09.09.2026 ein Suchfeld. Es ist raus: bei 59 Zeilen,
@@ -1981,7 +1875,7 @@
         // springen die ausgeblendeten Zeilen beim naechsten Reiterwechsel an
         // eine andere Stelle als erwartet.
         alle.slice().sort(function (a, b) { return vergleiche(a, b, s); })
-          .forEach(function (e) { tafelEl.appendChild(e.el); });
+          .forEach(function (e) { zeilenEl.appendChild(e.el); });
       });
 
       sortKnoepfe.forEach(function (b) {
@@ -2019,7 +1913,7 @@
       sortKnoepfe.push(b);
       kopfEl.appendChild(b);
     });
-    tafelEl.insertBefore(kopfEl, tafelEl.firstChild);
+    tafelEl.insertBefore(kopfEl, tafelEl.firstChild);   // Kopfzeile vor die Zeilen
 
     // ===== Untermenü ========================================================
     // Ein Satz Knoepfe mit aria-pressed, nicht role="tablist": eine echte

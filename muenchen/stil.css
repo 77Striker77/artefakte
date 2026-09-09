@@ -574,7 +574,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .unterknopf[aria-pressed="true"]{
   background:var(--flaeche); color:var(--tinte);     /* 16,87:1 */
   border-color:var(--umriss); box-shadow:var(--schatten-klein)}
-.unter-marke{flex:none; display:flex; width:26px; height:26px}
+.unter-marke{flex:none; display:flex; align-items:center; width:26px; height:26px}
 .unter-marke .ort-pin{width:26px; height:26px; filter:none}
 .unter-marke .ort-pin svg{width:22px; height:22px}
 .unter-zahl{font-family:var(--zahl); font-size:10.5px}
