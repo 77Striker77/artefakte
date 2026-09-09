@@ -884,7 +884,15 @@
       return zeileH(a.was, a.wert, a.hinweis);
     }).join("");
 
+    // Check-in und Check-out stehen ZWEIMAL auf der Tafel, und das ist Absicht:
+    // klein unter dem jeweiligen Datum, weil sie dort hingehoeren - Anreisetag
+    // und Einlasszeit sind eine Angabe -, und hier als eigene Zeile, weil man
+    // sie am Reisetag sucht und nicht liest. Die Kleinschrift unter dem Datum
+    // wurde uebersehen; eine Angabe, die man nur findet, wenn man schon weiss,
+    // wo sie steht, ist keine.
     var kenn = zeileH("Zimmer", ho.zimmer)
+      + zeileH("Check-in", ho.checkin)
+      + zeileH("Check-out", ho.checkout)
       + zeileH("Verpflegung", ho.verpflegung)
       + zeileH("Reisende", (reisewert("reisende") || {}).wert)
       + ausstattung
@@ -1379,6 +1387,43 @@
       }
     });
 
+    // --- Essen an der Strecke, als eigene Ebene ------------------------------
+    // Diese Marken messen ihre Gehzeit NICHT vom Bezugspunkt der Karte, sondern
+    // von IHREM Halt. Das ist der ganze Zweck: rund um die Studios ist nichts,
+    // aber die Tram faehrt an Wirtshaeusern vorbei, und dort steigt man aus.
+    // Eine gemeinsame Ebene mit den Umgebungslokalen wuerde zwei verschiedene
+    // Gehzeiten unter demselben Zeichen zeigen.
+    var essenEbene = null;
+    if (cfg.essen && cfg.essen.orte && cfg.essen.orte.length) {
+      essenEbene = L.layerGroup().addTo(karteHotel);
+      cfg.essen.orte.forEach(function (o) {
+        var weg = o.gehzeit_s == null
+          ? "Gehzeit unbekannt"
+          : Math.round(o.gehzeit_s / 60) + " min zu Fuß";
+        L.marker([o.lat, o.lon], {
+          icon: L.divIcon({ className: "", html: ortSymbol("wirtshaus", false),
+                            iconSize: [30, 30], iconAnchor: [15, 15] }),
+          title: o.kurz + " — ab " + o.halt.name + " " + weg,
+          keyboard: false
+        })
+          .addTo(essenEbene)
+          .bindPopup("<h3>" + o.kurz + "</h3>"
+            + "<p>Ab Halt <strong>" + o.halt.name + "</strong> · " + weg
+            + (o.gehweg_m != null ? " · " + o.gehweg_m + " m" : "") + "</p>"
+            + (o.bewertung != null
+                ? '<p class="bewertung"><strong>' + String(o.bewertung).replace(".", ",")
+                  + " ★</strong>" + (o.stimmen != null
+                      ? " aus " + o.stimmen.toLocaleString("de-DE") + " Bewertungen" : "") + "</p>"
+                : "")
+            // Der FREITAG steht da, nicht die ganze Woche: der Reiter handelt
+            // von einem Abend. Fehlt die Zeile, steht das auch so da - "keine
+            // Angabe" ist etwas anderes als "geschlossen".
+            + '<p class="popup-fein">' + (o.freitag || "Öffnungszeiten nicht hinterlegt") + "</p>"
+            + (o.notiz ? '<p class="popup-fein">' + o.notiz + "</p>" : "")
+            + mapsLink(o));
+      });
+    }
+
     // --- Der Weg vom Hauptbahnhof, als Ebene derselben Karte ----------------
     // Die Farben sind dieselben, die die Verkehrsmittel schon tragen.
     var MITTEL = {
@@ -1716,6 +1761,20 @@
         + takt
         + "</div>"
         + bandHtml(v)
+        // SCHIENENERSATZVERKEHR gehoert benannt, nicht nur als Liniennummer
+        // gezeigt. "SEV 25" sieht im Band aus wie jede andere Marke - wer das
+        // nicht kennt, sucht am Bahnsteig nach einer Tram, die an dem Tag nicht
+        // faehrt. Der Satz steht unter dem Band, weil er den Weg betrifft und
+        // nicht die Kennzahlen darueber.
+        + (v.abschnitte.filter(function (a) { return a.sev; }).length
+            ? '<p class="tafel-fein"><strong>Achtung Ersatzverkehr:</strong> '
+              + v.abschnitte.filter(function (a) { return a.sev; })
+                  .map(function (a) {
+                    return (a.linie || 'Ersatzverkehr') + ' ab ' + (a.von || '—');
+                  }).join(', ')
+              + ' ist ein <em>Bus</em>, keine Tram — die Linie ist auf diesem '
+              + 'Abschnitt ersetzt. Der Halt kann ein Stück neben dem Gleis liegen.</p>'
+            : "")
         + (v.richtungen && v.richtungen.length
             ? '<p class="tafel-fein"><strong>Am Bahnsteig:</strong> Richtung '
               + v.richtungen.join(", ") + ".</p>"
@@ -1731,22 +1790,86 @@
     // ein zweites Mal, und die zweite driftet.
     var navW = document.getElementById(cfg.reiter);
     var zielW = document.getElementById(cfg.tafel);
+    var varianten = (w && w.varianten) || [];
+    // ZWEI Ebenen, wo es Gruppen gibt. Der Hotel-Reiter kennt keine: dort ist
+    // jede Variante ein Verkehrsmittel, und drei Knoepfe reichen. Der
+    // Bavaria-Reiter hat zwei RICHTUNGEN mit je mehreren Optionen - flach
+    // waeren das fuenf Knoepfe, zwei davon gleich beschriftet ("Schnellste"),
+    // und man saehe nicht mehr, welcher wohin gehoert.
+    //
+    //   Reihe 1 (dieses Untermenue)  Umgebung · Hinweg · Rueckweg
+    //   Reihe 2 (in der Tafel)       die Optionen der offenen Richtung
+    // NICHT "gruppen" - so heissen weiter oben in dieser Funktion schon die
+    // Kartenebenen der Umgebungslokale. Ein zweites var mit demselben Namen
+    // ueberschreibt sie im selben Funktionsbereich, und die Filterleiste
+    // greift danach auf null zu.
+    var wegGruppen = (w && w.gruppen) || null;
     var eintraege = [{ id: "umgebung", label: "Umgebung", variante: null }];
-    if (w && w.varianten) {
-      w.varianten.forEach(function (v) {
+    if (wegGruppen) {
+      wegGruppen.forEach(function (g) {
+        var erste = varianten.filter(function (v) { return v.gruppe === g.id; })[0];
+        if (erste) eintraege.push({ id: g.id, label: g.label, variante: erste, gruppe: g.id });
+      });
+    } else {
+      varianten.forEach(function (v) {
         eintraege.push({ id: v.id, label: v.label, variante: v });
       });
     }
 
+    // Die zweite Reihe. Jeder Knopf nennt, was seine Regel gekostet hat -
+    // Dauer, Umstiege und die GEMESSENE Umsteigezeit. Ohne diese drei Zahlen
+    // waere "Schnellste" gegen "Ohne Umstieg" eine Geschmacksfrage; mit ihnen
+    // ist es eine Entscheidung.
+    var optionText = function (v) {
+      // Ein reiner Fussweg hat trivialerweise keinen Umstieg. "ohne Umstieg"
+      // daruntersetzen heisst, eine Selbstverstaendlichkeit als Vorzug
+      // auszugeben - der Knopf sagt dann weniger als ohne den Zusatz.
+      if (!v.linien || !v.linien.length) return "";
+      if (!v.umstiege) return "ohne Umstieg";
+      var p = (v.puffer || []).filter(function (x) { return x != null; });
+      return v.umstiege + "\u00d7 um"
+        + (p.length ? " \u00b7 " + p.join("/") + " min Reserve" : "");
+    };
+    var optionenHtml = function (liste, aktiv) {
+      if (liste.length < 2) return "";
+      return '<nav class="untermenue untermenue--optionen" aria-label="Welche Verbindung">'
+        + liste.map(function (v) {
+            return '<button type="button" class="unterknopf unterknopf--klein" data-vid="'
+              + v.id + '" aria-pressed="' + (v.id === aktiv.id ? "true" : "false") + '">'
+              + "<span>" + v.label + "</span>"
+              + '<span class="unter-zahl">' + v.minuten + " min"
+              + (optionText(v) ? " \u00b7 " + optionText(v) : "") + "</span></button>";
+          }).join("")
+        + "</nav>";
+    };
+
     var knoepfeW = [];
-    var zeigeW = function (id) {
+    var zeigeW = function (id, vid) {
       knoepfeW.forEach(function (b) {
         b.setAttribute("aria-pressed", b.dataset.id === id ? "true" : "false");
       });
       var e = eintraege.filter(function (x) { return x.id === id; })[0];
       if (!e) return;
-      zielW.innerHTML = e.variante ? tafelHtml(e.variante) : "";
-      zeichne(e.variante);
+      if (!e.variante) { zielW.innerHTML = ""; zeichne(null); return; }
+
+      var v = e.variante;
+      var inGruppe = e.gruppe
+        ? varianten.filter(function (x) { return x.gruppe === e.gruppe; })
+        : [];
+      if (inGruppe.length) {
+        var gewaehlt = inGruppe.filter(function (x) { return x.id === vid; })[0];
+        v = gewaehlt || inGruppe[0];
+        zielW.innerHTML = optionenHtml(inGruppe, v) + tafelHtml(v);
+        // Die Knoepfe der zweiten Reihe entstehen mit der Tafel neu und werden
+        // darum hier verdrahtet, nicht einmal beim Aufbau.
+        Array.prototype.forEach.call(
+          zielW.querySelectorAll(".untermenue--optionen .unterknopf"), function (b) {
+            b.addEventListener("click", function () { zeigeW(id, b.dataset.vid); });
+          });
+      } else {
+        zielW.innerHTML = tafelHtml(v);
+      }
+      zeichne(v);
     };
 
     if (navW && zielW) {
@@ -1795,6 +1918,10 @@
       var n = u.lokale.filter(function (l) { return l.gruppe === a; }).length;
       if (n) eintragU(ortSymbol(umgSymbol(a), false), UMG_ARTEN[a].label, n, gruppen[a]);
     });
+    if (essenEbene) {
+      eintragU(ortSymbol("wirtshaus", false), "Essen an der Strecke",
+               cfg.essen.orte.length, essenEbene);
+    }
     // Ein Eintrag je Verkehrsmittel, in der Reihenfolge, in der man sucht.
     ["sbahn", "ubahn", "tram", "bus"].forEach(function (a) {
       if (!halteEbenen[a]) return;
@@ -1827,6 +1954,16 @@
       ? "Kein Lokal in Gehweite: die Abfrage fand " + geprueft + " Betriebe im Umkreis von "
         + u.umkreis.such_meter + " m Luftlinie, keiner davon hielt Bewertung und "
         + "Gehzeit stand. "
+        // Der Nachsatz ist keine Beschoenigung, sondern die Antwort auf die
+        // Frage, die der leere Umkreis offen laesst: gegessen wird nicht hier,
+        // sondern eine Station frueher.
+        + (cfg.essen && cfg.essen.orte && cfg.essen.orte.length
+            ? "Gegessen wird auf dem Rückweg: " + cfg.essen.orte.length
+              + " Wirtshäuser liegen an Halten der Tram 25, je "
+              + cfg.essen.orte.map(function (o) {
+                  return Math.round(o.gehzeit_s / 60) + " min";
+                }).join(" und ") + " zu Fuß ab ihrem Halt. "
+            : "")
       : "";
 
     document.getElementById(cfg.fuss).textContent = leer
@@ -1866,6 +2003,7 @@
     tafel: "bavaria-weg-tafel",
     legende: "legende-bavaria",
     fuss: "bavaria-fuss",
+    essen: DATEN.bavaria_essen,
     ziel_art: "film",
     start_art: "unterkunft",
     gegen_text: "Die Unterkunft — Start des Hinwegs und Ziel des Rückwegs."

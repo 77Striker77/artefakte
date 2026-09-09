@@ -337,6 +337,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 /* Ein Satz, der eine Bedingung setzt statt etwas zu erklaeren - er traegt den
    Akzentbalken, damit er nicht als Kleingedrucktes gelesen wird. Auf heller
    Tafel, also --tinte, nicht --auf-grund. */
+/* Die zweite Knopfreihe: die Optionen INNERHALB einer Richtung. Sie sitzt in
+   der Tafel und nicht neben dem Untermenue, damit sichtbar bleibt, dass sie
+   eine Ebene tiefer liegt - kleiner, enger, ohne den Versatzschatten der
+   Hauptreihe. */
+.untermenue--optionen{margin:0 0 16px; gap:7px}
+.unterknopf--klein{padding:7px 11px; min-height:44px}
+.unterknopf--klein .unter-zahl{margin-left:8px; font-size:12px}
 .tafel-warnung{margin:16px 0 0; padding:10px 0 10px 13px;
        border-left:var(--rand) solid var(--akzent-text);
        color:var(--tinte); font-size:14.5px; line-height:1.5}
