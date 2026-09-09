@@ -515,6 +515,47 @@
     + "hier steht, gilt für München und nicht für einen bestimmten Aufenthalt.";
   kasten.appendChild(hinweis);
 
+  // --- Hotel und Anreise ----------------------------------------------------
+  // Beide bewusst duenn: sie werden separat ausgearbeitet. Was hier NICHT steht,
+  // steht auch nicht zufaellig nicht da - Zeitraum, Zuege, Zeiten und Gleise
+  // sperrt das Datenschutz-Tor, und eine Fahrplanzeile ist genau das, was eine
+  // Reise verraet. Die vollstaendigen Angaben liegen im Repo, nicht hier.
+  var tafel = function (id, zeilen, fuss) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var dl = zeilen.filter(function (z) { return z[1]; }).map(function (z) {
+      return "<dt>" + z[0] + "</dt><dd>" + z[1] + "</dd>";
+    }).join("");
+    el.innerHTML = '<div class="tafel"><dl>' + dl + "</dl>"
+      + '<p class="tafel-fuss">' + fuss + "</p></div>";
+  };
+
+  var ho = DATEN.hotel || {};
+  tafel("hotel-tafel", [
+    ["Haus", ho.name],
+    ["Adresse", ho.adresse],
+    ["Stadtteil", ho.stadtteil],
+    ["Telefon", ho.telefon ? '<a href="tel:' + ho.telefon.replace(/\s/g, "") + '">' + ho.telefon + "</a>" : ""],
+    ["Zimmer", ho.zimmer],
+    ["Check-in", ho.checkin],
+    ["Check-out", ho.checkout]
+  ], (ho.quelle || "") + " · Preis, Buchungsnummer und Stornofristen stehen bewusst nicht "
+     + "auf dieser Seite.");
+
+  var an = DATEN.anreise || {};
+  var stand = function (s) {
+    return s === "gebucht"
+      ? '<span class="zustand zustand--fest">gebucht</span>'
+      : '<span class="zustand zustand--offen">offen</span>';
+  };
+  tafel("anreise-tafel", [
+    ["Verkehrsmittel", an.art],
+    ["Strecke", an.von && an.nach ? an.von + " ↔ " + an.nach : ""],
+    ["Hinfahrt", an.hinfahrt_status ? stand(an.hinfahrt_status) : ""],
+    ["Rückfahrt", an.rueckfahrt_status ? stand(an.rueckfahrt_status) : ""]
+  ], "Züge, Zeiten und Gleise stehen hier nicht: eine Fahrplanzeile verrät den Reisezeitraum, "
+   + "und den sperrt das Datenschutz-Tor. Dieser Punkt wird noch ausgearbeitet.");
+
   // --- Menueleiste ---------------------------------------------------------
   // Aufgebaut aus DATEN.menue, nicht aus dem HTML. Ein Eintrag mit `seite` wird
   // ein Link auf eine eigene Datei, einer mit `ansicht` schaltet einen

@@ -33,6 +33,16 @@ const DATEN = {
    "ansicht": "feld-karte"
   },
   {
+   "id": "hotel",
+   "label": "Hotel",
+   "ansicht": "feld-hotel"
+  },
+  {
+   "id": "anreise",
+   "label": "Anreise",
+   "ansicht": "feld-anreise"
+  },
+  {
    "id": "quellen",
    "label": "Quellen",
    "ansicht": "feld-quellen"
@@ -53,7 +63,7 @@ const DATEN = {
   },
   {
    "feld": "Nächte",
-   "wert": "xx"
+   "wert": "2"
   },
   {
    "feld": "Unterkunft",
@@ -61,9 +71,26 @@ const DATEN = {
   },
   {
    "feld": "Reisende",
-   "wert": "xx"
+   "wert": "2 Erwachsene"
   }
  ],
+ "hotel": {
+  "name": "Motel One München-Deutsches Museum",
+  "adresse": "Rablstraße 2, 81669 München",
+  "stadtteil": "Au-Haidhausen",
+  "telefon": "+49 89 44455580",
+  "zimmer": "Standard Doppelzimmer, ohne Verpflegung",
+  "checkin": "ab 15:00",
+  "checkout": "bis 12:00",
+  "quelle": "Buchungsbestätigung, gelesen 09.09.2026 · Koordinate OSM way/28261161"
+ },
+ "anreise": {
+  "art": "Bahn",
+  "von": "Bruchsal",
+  "nach": "München Hbf",
+  "hinfahrt_status": "offen",
+  "rueckfahrt_status": "gebucht"
+ },
  "quelle": {
   "name": "OpenStreetMap über die Overpass-API",
   "abgerufen": "2026-09-09",

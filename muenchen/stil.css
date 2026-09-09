@@ -62,6 +62,11 @@
      Alle neun gegen den Saum gemessen (09.09.2026), Hue-Abstand zum Nachbarn
      mindestens 26 Grad. --- */
   --saum:#FFFFFF;
+
+  /* --- Zustand: fest oder offen. Jeder Wert gegen SEINEN Chipgrund gemessen,
+         nicht gegen die Tafel darunter. --- */
+  --gut:#136E35;  --gut-bg:#D6F0DE;    /* 5,25:1 */
+  --warn:#B03214; --warn-bg:#FFE2DA;   /* 5,18:1 */
   --m-zentrum:#C2410C;      /* 5,18:1 · H 17 */
   --m-unterkunft:#0B6E70;   /* 6,04:1 · H181 */
   --m-ankunft:#7C6100;      /* 5,89:1 · H 47 */
@@ -209,6 +214,30 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ansicht{outline:none}
 .ansicht-titel{margin:0 0 16px; font-family:var(--pixel); font-size:24px;
                color:var(--auf-grund)}
+
+/* ---------- Tafeln: Hotel und Anreise ----------
+   Dieselbe Bauform wie die Infobox - eine helle Tafel mit Feldpaaren. Sie
+   tragen absichtlich wenig: was fehlt, fehlt aus einem Grund, und der steht im
+   Fuss. */
+.tafel{padding:16px 18px; background:var(--flaeche); color:var(--tinte);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       max-width:70ch}
+.tafel dl{display:grid; grid-template-columns:auto 1fr; gap:8px 16px;
+          margin:0; align-items:baseline}
+.tafel dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+          color:var(--tinte-leise); text-transform:uppercase}   /* 7,81:1 */
+.tafel dd{margin:0; font-size:16px}
+.tafel a{color:var(--akzent-text)}                              /* 6,12:1 */
+.tafel-fuss{margin:14px 0 0; padding-top:12px;
+            border-top:2px solid var(--linie);
+            font-size:13px; color:var(--tinte-leise)}
+
+/* Zustand eines Reiseteils. Nicht allein ueber die Farbe erkennbar (WCAG
+   1.4.1): das Wort steht daneben, die Farbe unterstuetzt es nur. */
+.zustand{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+         padding:4px 7px}
+.zustand--fest{background:var(--gut-bg); color:var(--gut)}      /* 5,25:1 */
+.zustand--offen{background:var(--warn-bg); color:var(--warn)}   /* 5,18:1 */
 
 /* ---------- Quellenansicht ---------- */
 #quellen-liste{display:grid; gap:14px;
