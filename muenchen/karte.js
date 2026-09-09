@@ -169,6 +169,106 @@
       + (text || "In Google Maps öffnen") + " ↗</a></p>";
   };
 
+  // --- Mein Standort, auf jeder Karte dieselbe Bauart ------------------------
+  // EIN Knopf je Karte, und er tut genau zwei Dinge: die Ortung starten und zur
+  // eigenen Position springen. Was er ausdruecklich NICHT tut, ist der Karte
+  // hinterherzuziehen.
+  //
+  // locate({ watch: true, setView: false }) ist der ganze Unterschied. Mit
+  // setView:true zentriert Leaflet bei JEDER Positionsmeldung neu - beim Gehen
+  // alle paar Sekunden. Wer dann die Karte verschiebt, um zu sehen, was vor ihm
+  // liegt, wird nach zwei Sekunden zurueckgerissen. Verfolgt wird die Position
+  // trotzdem, damit die Marke stimmt und der naechste Knopfdruck den AKTUELLEN
+  // Ort trifft und nicht den von vorhin.
+  //
+  // Das Zeichen traegt KEINE Markenfarbe, sondern die Tinte. Der eigene
+  // Standort ist keine Ortskategorie neben Wirtshaus und Museum - er ist der
+  // Betrachter. Eine der elf Marken zu leihen hiesse, ihn als zwoelfte
+  // Kategorie zu behaupten; ausserdem ist der Farbkreis voll (siehe stil.css).
+  //
+  // Geolocation braucht HTTPS. Auf GitHub Pages gegeben, als lokale Datei per
+  // file:// meist nicht - darum kann kein Pruefskript hier etwas messen, und
+  // die Pruefstaende weisen den Knopf als ungeprueft aus.
+  var standortKnopf = function (karte) {
+    var marke = null, kreis = null, letzte = null, sucht = false;
+
+    var steuer = L.control({ position: "bottomleft" });
+    steuer.onAdd = function () {
+      var kasten = L.DomUtil.create("div", "standort-steuer");
+      kasten.innerHTML =
+          '<button type="button" class="standort-knopf">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+        +   'stroke-linecap="round" aria-hidden="true">'
+        + '<circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="8.5"/>'
+        + '<path d="M12 1.5v2M12 20.5v2M1.5 12h2M20.5 12h2"/></svg>'
+        + "<span>Mein Standort</span></button>"
+        + '<p class="standort-wort" hidden></p>';
+      // Ohne das frisst die Karte den Klick und schiebt sich stattdessen.
+      L.DomEvent.disableClickPropagation(kasten);
+      L.DomEvent.disableScrollPropagation(kasten);
+      return kasten;
+    };
+    steuer.addTo(karte);
+
+    var kasten = steuer.getContainer();
+    var knopf = kasten.querySelector(".standort-knopf");
+    var wort = kasten.querySelector(".standort-wort");
+    var sagen = function (text, schlecht) {
+      wort.hidden = !text;
+      wort.textContent = text || "";
+      wort.className = "standort-wort" + (schlecht ? " standort-wort--schlecht" : "");
+    };
+
+    // Beim Springen die Zoomstufe des Nutzers nicht ueberschreiben, wenn er
+    // schon naeher dran ist: hineinzoomen ja, hinauszoomen nein.
+    var hin = function () {
+      if (letzte) karte.setView(letzte, Math.max(karte.getZoom(), 16));
+    };
+
+    knopf.addEventListener("click", function () {
+      if (letzte) { hin(); return; }
+      if (!navigator.geolocation) {
+        sagen("Dieser Browser gibt keinen Standort heraus.", true);
+        return;
+      }
+      if (sucht) return;
+      sucht = true;
+      knopf.querySelector("span").textContent = "Sucht …";
+      sagen("Die Position wird nur im Browser verarbeitet.");
+      karte.locate({ watch: true, setView: false, enableHighAccuracy: true, timeout: 20000 });
+    });
+
+    karte.on("locationfound", function (e) {
+      var erste = !letzte;
+      letzte = e.latlng;
+      sucht = false;
+      knopf.querySelector("span").textContent = "Mein Standort";
+      if (marke) { karte.removeLayer(marke); karte.removeLayer(kreis); }
+      // Der Genauigkeitskreis ist kein Schmuck: bei ±800 m im Zug bedeutet die
+      // Marke etwas anderes als bei ±8 m auf der Strasse, und ohne den Kreis
+      // sieht beides gleich aus.
+      kreis = L.circle(e.latlng, { radius: e.accuracy, className: "standort-kreis",
+                                   interactive: false }).addTo(karte);
+      marke = L.marker(e.latlng, {
+        icon: L.divIcon({ className: "", html: '<i class="ort-pin ich"></i>',
+                          iconSize: [26, 26], iconAnchor: [13, 13] }),
+        zIndexOffset: 900, keyboard: false
+      }).addTo(karte).bindPopup("Hier bist du gerade — auf ±"
+        + Math.round(e.accuracy) + " m genau.");
+      sagen("Auf ±" + Math.round(e.accuracy) + " m genau. Die Karte folgt dir nicht — "
+        + "der Knopf springt zurück.");
+      // Genau EINMAL springen: beim ersten Fund. Danach entscheidet der Knopf.
+      if (erste) hin();
+    });
+
+    karte.on("locationerror", function (e) {
+      sucht = false;
+      knopf.querySelector("span").textContent = "Mein Standort";
+      sagen("Standort nicht verfügbar: " + e.message
+        + " — im Browser die Ortungsfreigabe prüfen.", true);
+    });
+  };
+
   var linienBlock = function (h) {
     if (h.linien === null || h.linien === undefined) {
       return '<p class="popup-fein popup-unbekannt">Linien: unbekannt — nicht abgerufen</p>';
@@ -252,6 +352,8 @@
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(karte);
+
+  standortKnopf(karte);
 
   var luftbild = L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
@@ -1279,6 +1381,36 @@
   };
   var ART_LABEL = { sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" };
 
+  // --- Betriebslagen: was der Fahrplan nicht erklaert -----------------------
+  // Der Feed sagt, DASS ein Abschnitt Ersatzverkehr ist (Agentur "SEV ..."),
+  // aber nicht bis wann, warum und wo der Ersatzhalt steht. Das steht von Hand
+  // in reise.json und wird hier ueber den Liniennamen angehaengt.
+  //
+  // Zweimal gezeigt, an beiden Stellen, an denen man darauf stoesst:
+  //   in der Sprechblase der Linie auf der Karte - dort klickt man hin, wenn
+  //   man wissen will, was das fuer eine Linie ist;
+  //   hinter einem Aufklapper unter dem Streckenband - dort liest man den Weg.
+  // Der WARNSATZ bleibt in beiden Faellen sichtbar; nur die Einzelheiten
+  // klappen weg. Eine Bedingung hinter einem Klick ist keine Bedingung mehr.
+  var STOERUNGEN = {};
+  (DATEN.stoerungen || []).forEach(function (st) { STOERUNGEN[st.linie] = st; });
+
+  var stoerungZu = function (a) {
+    return a && a.linie ? (STOERUNGEN[a.linie] || null) : null;
+  };
+
+  // Die Einzelheiten. Als Absatzfolge, damit sie in eine Leaflet-Sprechblase
+  // genauso passt wie unter das Band.
+  var stoerungFakten = function (st) {
+    return '<p class="stoer-zeile"><b>' + st.zeitraum + "</b> · " + st.grund + "</p>"
+      + "<p>" + st.was + "</p>"
+      + (st.halte ? '<p class="stoer-halte"><b>Der Ersatzbus hält:</b> ' + st.halte + "</p>" : "")
+      + (st.hinweise || []).map(function (h) { return '<p class="stoer-warn">' + h + "</p>"; }).join("")
+      + '<p class="popup-fein">' + st.quelle
+      + (st.url ? ' — <a href="' + st.url + '" target="_blank" rel="noopener noreferrer">'
+                  + "MVG ↗</a>" : "") + "</p>";
+  };
+
   // Jede so gebaute Karte meldet sich hier an, damit zeige() sie neu vermessen
   // kann. Ohne Registrierung braeuchte jeder neue Reiter eine eigene Zeile in
   // zeige() - und wer sie vergisst, bekommt eine graue Flaeche, die aussieht wie
@@ -1305,6 +1437,9 @@
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(karteHotel);
+    // Auf BEIDEN so gebauten Reitern - Hotel und Bavaria -, weil sie dieselbe
+    // Funktion sind. Wer hier einen Knopf anhaengt, haengt ihn zweimal an.
+    standortKnopf(karteHotel);
 
     // KEIN Umkreis-Kreis. Er stand hier, solange der Filter eine Luftlinie war -
     // und war dann ehrlich. Jetzt filtert die gemessene GEHZEIT, und ein Kreis
@@ -1526,7 +1661,13 @@
                 ? " · " + (a.zwischenhalte.length + 1) + " Halte" : "")
             + "</p>"
             + '<p class="popup-fein">' + (a.von || v.von.name) + " → "
-            + (a.nach || v.nach.name) + "</p>");
+            + (a.nach || v.nach.name) + "</p>"
+            // Wer auf eine Linie klickt, will wissen, was das fuer eine ist.
+            // Bei einem Ersatzbus ist das die wichtigste Auskunft ueberhaupt.
+            + (stoerungZu(a)
+                ? '<div class="stoer-blase"><h4>' + stoerungZu(a).titel + "</h4>"
+                  + stoerungFakten(stoerungZu(a)) + "</div>"
+                : ""));
 
         // Der Weg zeichnet sich in Fahrtrichtung. Nicht Zierde: er sagt, wo er
         // ANFAENGT und wohin er laeuft - eine fertig daliegende Linie sagt das
@@ -1766,15 +1907,26 @@
         // nicht kennt, sucht am Bahnsteig nach einer Tram, die an dem Tag nicht
         // faehrt. Der Satz steht unter dem Band, weil er den Weg betrifft und
         // nicht die Kennzahlen darueber.
-        + (v.abschnitte.filter(function (a) { return a.sev; }).length
-            ? '<p class="tafel-fein"><strong>Achtung Ersatzverkehr:</strong> '
-              + v.abschnitte.filter(function (a) { return a.sev; })
-                  .map(function (a) {
-                    return (a.linie || 'Ersatzverkehr') + ' ab ' + (a.von || '—');
-                  }).join(', ')
-              + ' ist ein <em>Bus</em>, keine Tram — die Linie ist auf diesem '
-              + 'Abschnitt ersetzt. Der Halt kann ein Stück neben dem Gleis liegen.</p>'
-            : "")
+        + (function () {
+            var ersatz = v.abschnitte.filter(function (a) { return a.sev; });
+            if (!ersatz.length) return "";
+            var st = stoerungZu(ersatz[0]);
+            return '<p class="tafel-warnung"><strong>Achtung Ersatzverkehr:</strong> '
+              + ersatz.map(function (a) {
+                  return (a.linie || "Ersatzverkehr") + " ab " + (a.von || "—");
+                }).join(", ")
+              + " ist ein <em>Bus</em>, keine Tram — die Linie ist auf diesem "
+              + "Abschnitt ersetzt.</p>"
+              // Zeitraum, Haltestellenfolge und der verlegte Halt sind das,
+              // was man NACHSCHLAEGT, nicht das, was man beim Aufschlagen
+              // liest. Sie liegen darum hinter derselben Aufklapp-Zeile wie die
+              // Quellen anderswo auf der Seite.
+              + (st
+                  ? '<details class="quell-klapp stoerung"><summary>'
+                    + st.titel + " — Zeitraum, Halte und Quelle</summary>"
+                    + stoerungFakten(st) + "</details>"
+                  : "");
+          }())
         + (v.richtungen && v.richtungen.length
             ? '<p class="tafel-fein"><strong>Am Bahnsteig:</strong> Richtung '
               + v.richtungen.join(", ") + ".</p>"
@@ -1823,12 +1975,21 @@
     var optionText = function (v) {
       // Ein reiner Fussweg hat trivialerweise keinen Umstieg. "ohne Umstieg"
       // daruntersetzen heisst, eine Selbstverstaendlichkeit als Vorzug
-      // auszugeben - der Knopf sagt dann weniger als ohne den Zusatz.
+      // auszugeben - der Knopf sagt dann weniger als ohne den Zusatz. Der
+      // Fussweg selbst steht dort aus demselben Grund nicht: er IST die
+      // Variante, und die Dauer daneben sagt ihn schon.
       if (!v.linien || !v.linien.length) return "";
-      if (!v.umstiege) return "ohne Umstieg";
       var p = (v.puffer || []).filter(function (x) { return x != null; });
-      return v.umstiege + "\u00d7 um"
-        + (p.length ? " \u00b7 " + p.join("/") + " min Reserve" : "");
+      // Der Fussweg steht seit dem 09.09.2026 auf JEDEM gefahrenen Knopf: er
+      // ist eine eigene Auswahlregel geworden, und ein Kriterium, nach dem man
+      // waehlen soll, gehoert an die Stelle, an der gewaehlt wird. Zwei Fahrten
+      // mit fast derselben Dauer koennen sich um zehn Minuten Fussweg
+      // unterscheiden - genau das ist hier der Fall.
+      return (v.umstiege
+                ? v.umstiege + "\u00d7 um"
+                  + (p.length ? " \u00b7 " + p.join("/") + " min Reserve" : "")
+                : "ohne Umstieg")
+        + (v.fuss_minuten != null ? " \u00b7 " + v.fuss_minuten + " min zu Fu\u00df" : "");
     };
     var optionenHtml = function (liste, aktiv) {
       if (liste.length < 2) return "";
@@ -2272,6 +2433,7 @@
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(karteInnen);
+    standortKnopf(karteInnen);
 
     var ebene = L.layerGroup().addTo(karteInnen);
 

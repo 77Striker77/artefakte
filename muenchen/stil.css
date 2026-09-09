@@ -341,6 +341,19 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    der Tafel und nicht neben dem Untermenue, damit sichtbar bleibt, dass sie
    eine Ebene tiefer liegt - kleiner, enger, ohne den Versatzschatten der
    Hauptreihe. */
+/* Die Betriebslage - zweimal derselbe Baustein, einmal in der Sprechblase auf
+   der Karte und einmal unter dem Streckenband. EIN Regelsatz fuer beide, damit
+   sie nicht auseinanderlaufen; der Grund liegt anders (Sprechblase hell,
+   Aufklapper auf heller Tafel), aber beide tragen --tinte. */
+.stoer-blase{margin-top:10px; padding-top:9px; border-top:2px solid var(--umriss)}
+.stoer-blase h4{margin:0 0 6px; font-family:var(--pixel); font-size:14px; color:var(--tinte)}
+.stoer-zeile,.stoer-halte,.stoer-warn{margin:6px 0 0; font-size:12.5px; line-height:1.5;
+       color:var(--tinte)}
+.stoer-halte{color:var(--tinte-leise)}
+/* Der verlegte Halt ist der Satz, an dem man abends scheitert - er bekommt den
+   Balken, den sonst nur der Warnsatz der Tafel traegt. */
+.stoer-warn{padding-left:11px; border-left:var(--rand) solid var(--akzent-text)}
+.quell-klapp.stoerung{margin-top:12px; padding-top:11px}
 .untermenue--optionen{margin:0 0 16px; gap:7px}
 .unterknopf--klein{padding:7px 11px; min-height:44px}
 .unterknopf--klein .unter-zahl{margin-left:8px; font-size:12px}
@@ -369,6 +382,50 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .leaflet-container .leaflet-control-attribution{font-size:10.5px;
   background:var(--flaeche); color:var(--tinte-leise)}
 .leaflet-container .leaflet-control-attribution a{color:var(--akzent-text)}  /* 6,12:1 */
+
+/* ---------- Mein Standort ----------
+   Der Knopf sitzt UNTEN LINKS: oben links stehen Leaflets Zoomknoepfe, unten
+   rechts die Attributionsleiste. Unten links ist auf dem Handy ausserdem die
+   Ecke, die der Daumen ohne Umgreifen erreicht.
+
+   Deckender Grund, kein halbtransparenter: er liegt auf Kartenkacheln, und die
+   wechseln unter ihm. Ein Kontrast, der vom Kartenausschnitt abhaengt, ist
+   nicht pruefbar - dieselbe Falle wie bei Leaflets Attributionsleiste. */
+.standort-steuer{max-width:min(15rem, 60vw)}
+.standort-knopf{
+  display:flex; align-items:center; gap:7px;
+  min-height:44px; padding:6px 12px 6px 9px; cursor:pointer;
+  font-family:var(--sans); font-size:14px; font-weight:700; line-height:1.15;
+  text-align:left;
+  color:var(--tinte); background:var(--flaeche);       /* 16,87:1 */
+  border:2px solid var(--umriss); box-shadow:var(--schatten-klein)}
+.standort-knopf:hover{background:var(--flaeche-2)}     /* 14,02:1 */
+.standort-knopf svg{flex:none; width:20px; height:20px}
+/* Die Meldung steht UNTER dem Knopf und nicht in ihm: sie wird laenger als er,
+   und ein Knopf, dessen Aufschrift sich mit dem Zustand aufblaeht, wandert
+   unter dem Finger weg. */
+.standort-wort{margin:6px 0 0; padding:6px 8px;
+  font-family:var(--sans); font-size:12px; line-height:1.4;
+  color:var(--tinte-leise);                            /* 7,81:1 auf --flaeche */
+  background:var(--flaeche); border:2px solid var(--linie)}
+.standort-wort--schlecht{color:var(--akzent-text);     /* 6,12:1 */
+  border-color:var(--akzent-text)}
+
+/* Der eigene Standort traegt KEINE der elf Markenfarben. Er ist keine
+   Ortskategorie neben Wirtshaus und Museum, sondern der Betrachter - und der
+   Farbkreis ist ohnehin voll. Die Tinte steht gegen den weissen Saum bei
+   18,26:1 (gemessen 09.09.2026) und ist damit die deutlichste Marke auf der Karte. Das ist richtig so:
+   sie ist die einzige, die man sucht, ohne zu wissen, wo sie liegt. */
+.ort-pin.ich{width:22px; height:22px; border-radius:50%;
+  background:var(--tinte); border:3px solid var(--saum)}
+/* Kein Saum ueber dem Saum: der Ring IST der Saum, und die vier Schlagschatten
+   der Sammelregel wuerden ihn nur verdicken. */
+.ort-pin.ich{filter:none; box-shadow:0 0 0 1.5px var(--umriss)}
+/* Der Genauigkeitskreis ist eine FLAECHE, keine Marke - warme Toene liegen auf
+   dieser Seite als Punkt und Kante vor, nie als Flaeche. Darum die Tinte, sehr
+   leise, mit sichtbarer Kante. */
+.standort-kreis{fill:var(--tinte); fill-opacity:.08;
+  stroke:var(--tinte); stroke-opacity:.45; stroke-width:1.5}
 
 /* ---------- Marken ----------
    Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben

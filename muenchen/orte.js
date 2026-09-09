@@ -10232,6 +10232,22 @@ const DATEN = {
   "hinweis": "Das Handy liegt während der Show in der Garderobe. Was für den Rückweg gebraucht wird, muss vorher gelesen sein.",
   "quelle": "Bestätigungsmail tvtickets.de an den Hauptbucher, 09.09.2026 14:17, abgelegt in _inbox/"
  },
+ "stoerungen": [
+  {
+   "linie": "SEV 25",
+   "titel": "Ersatzbus statt Tram 25",
+   "zeitraum": "Mo 03.08. – vsl. So 22.11.2026",
+   "grund": "Gleis- und Fernwärmebauarbeiten in der Reger- und Franziskanerstraße",
+   "was": "Die Tram 25 fährt nur bis Silberhornstraße / St.-Martins-Platz. Den Abschnitt Silberhornstraße – Rosenheimer Platz – Max-Weber-Platz bedient der Ersatzbus 25.",
+   "halte": "Max-Weber-Platz · Wiener Platz · Am Gasteig · Rosenheimer Platz · Orleansstraße · Auerfeldstraße · Regerplatz · Schwester-Eubulina-Platz · Aurbacherstraße · Carl-Amery-Platz · Ostfriedhof · St.-Martins-Platz · Silberhorn-/Ichostraße",
+   "hinweise": [
+    "Der Ersatzhalt <strong>Regerplatz</strong> liegt in der <strong>Gebsattelstraße</strong> — nicht an der gewohnten Tramhaltestelle.",
+    "Die Haltestelle Wörthstraße wird während der ganzen Bauzeit nicht bedient."
+   ],
+   "quelle": "MVG, „Ersatzverkehr mit Bussen wegen Gleis- und Fernwärmebauarbeiten“, gelesen 09.09.2026",
+   "url": "https://www.mvg.de/verbindungen/trambau/2026-08-03-gleis-fernwaerme-regerstr.html"
+  }
+ ],
  "bavaria_umgebung": {
   "bezug": {
    "name": "Bavaria Filmstadt",
@@ -10341,7 +10357,7 @@ const DATEN = {
  "bavaria_weg": {
   "quelle": {
    "name": "api.transitous.org (MOTIS 2, GTFS)",
-   "abfrage": "Schnellste: Motel One München-Deutsches Museum → Bavaria Filmstadt, Stichzeit 2026-09-11T12:45:00+02:00 · Ohne Umstieg · Mit Puffer: Motel One München-Deutsches Museum → Bavaria Filmstadt, Stichzeit 2026-09-11T12:45:00+02:00 · Schnellste: Bavaria Filmstadt → Motel One München-Deutsches Museum, Stichzeit 2026-09-11T20:45:00+02:00 · Ohne Umstieg · Mit Puffer: Bavaria Filmstadt → Motel One München-Deutsches Museum, Stichzeit 2026-09-11T20:45:00+02:00",
+   "abfrage": "Schnellste · Wenig Fußweg: Motel One München-Deutsches Museum → Bavaria Filmstadt, Stichzeit 2026-09-11T12:45:00+02:00 · Ohne Umstieg · Mit Puffer: Motel One München-Deutsches Museum → Bavaria Filmstadt, Stichzeit 2026-09-11T12:45:00+02:00 · Schnellste · Wenig Fußweg: Bavaria Filmstadt → Motel One München-Deutsches Museum, Stichzeit 2026-09-11T20:45:00+02:00 · Ohne Umstieg · Mit Puffer: Bavaria Filmstadt → Motel One München-Deutsches Museum, Stichzeit 2026-09-11T20:45:00+02:00",
    "abgerufen": "2026-09-09",
    "rang": "secondary"
   },
@@ -10359,8 +10375,8 @@ const DATEN = {
    {
     "id": "hin-schnell",
     "gruppe": "hin",
-    "auswahl": "schnell",
-    "label": "Schnellste",
+    "auswahl": "schnell+fussarm",
+    "label": "Schnellste · Wenig Fußweg",
     "zweck": "Kürzeste Fahrzeit — der Anschluss ist dafür knapp.",
     "stichzeit": "2026-09-11T12:45:00+02:00",
     "puffer": [
@@ -14816,8 +14832,8 @@ const DATEN = {
    {
     "id": "rueck-schnell",
     "gruppe": "rueck",
-    "auswahl": "schnell",
-    "label": "Schnellste",
+    "auswahl": "schnell+fussarm",
+    "label": "Schnellste · Wenig Fußweg",
     "zweck": "Kürzeste Fahrzeit — der Anschluss ist dafür knapp.",
     "stichzeit": "2026-09-11T20:45:00+02:00",
     "puffer": [
