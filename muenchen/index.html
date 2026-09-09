@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=b27379f4">
+<link rel="stylesheet" href="stil.css?v=0c9c9569">
 </head>
 <body>
 
@@ -45,6 +45,11 @@
   <section class="ansicht" id="feld-hotel" aria-labelledby="menue-hotel" tabindex="-1" hidden>
     <h2 class="ansicht-titel">Hotel</h2>
     <div id="hotel-tafel"></div>
+
+    <h3 class="tafel-titel">Was in Gehweite liegt</h3>
+    <div id="karte-hotel" role="region" aria-label="Karte der Umgebung um die Unterkunft"></div>
+    <ul class="legende" id="legende-hotel"></ul>
+    <p class="tafel-fuss" id="umgebung-fuss"></p>
   </section>
 
   <section class="ansicht" id="feld-bahn" aria-labelledby="menue-bahn" tabindex="-1" hidden>
@@ -59,7 +64,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=b27379f4"></script>
-<script src="karte.js?v=b27379f4"></script>
+<script src="orte.js?v=0c9c9569"></script>
+<script src="karte.js?v=0c9c9569"></script>
 </body>
 </html>

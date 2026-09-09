@@ -30,6 +30,14 @@
     // gleichermassen; ein Kirchturm haette bei Isartor und Bavaria nicht gepasst.
     museum: '<path d="M2 21h20"/><path d="M4 21V9M9 21V9M15 21V9M20 21V9"/>'
           + '<path d="m12 2 9 5H3z"/>',
+    // Umgebungskarte: Gabel+Messer, Tasse, Korb.
+    essen: '<path d="M7 2v9a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V2"/><path d="M9 2v20"/>'
+         + '<path d="M17 2c-1.5 1-2.5 3-2.5 5.5S15.5 12 17 13v9"/>',
+    cafe: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/>'
+        + '<path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M4 22h13"/>'
+        + '<path d="M7 2v2M11 2v2"/>',
+    einkauf: '<path d="M3 7h18l-1.5 12a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z"/>'
+           + '<path d="M8 7a4 4 0 0 1 8 0"/>',
     park: '<path d="M12 21v-5"/>'
         + '<path d="M12 16a5 5 0 0 0 5-5 4 4 0 0 0-1-2.6A4 4 0 0 0 12 3a4 4 0 0 0-4 5.4A4 4 0 0 0 7 11a5 5 0 0 0 5 5z"/>'
   };
@@ -363,7 +371,7 @@
         var m = L.marker([h.lat, h.lon], {
           icon: L.divIcon({
             className: "",
-            html: '<i class="halt-pin linie"><b>' + VERKEHR.linie.kuerzel + "</b></i>",
+            html: '<i class="halt-pin tram"><b>' + VERKEHR.linie.kuerzel + "</b></i>",
             iconSize: [24, 24],
             iconAnchor: [12, 12]
           }),
@@ -387,7 +395,7 @@
       g.addTo(karte);
       kategorien.push({ id: "tram" + linie.ref, label: "Tram " + linie.ref + " → Filmstadt",
                         zahl: linie.halte.length,
-                        marke: '<i class="halt-pin linie"><b>T</b></i>', ebene: g });
+                        marke: '<i class="halt-pin tram"><b>T</b></i>', ebene: g });
     });
   }
 
@@ -586,6 +594,123 @@
   ], (an.quelle || "") + " · Auftragsnummer, Sitzplatz und Name stehen nicht auf dieser Seite. "
    + "Dieser Punkt wird noch ausgearbeitet.");
 
+  // --- Umgebungskarte auf dem Hotel-Reiter ----------------------------------
+  // Eine ZWEITE Karte, bewusst mit eigener Legende und eigenem Massstab: die
+  // Stadtkarte beantwortet "wo liegt was in Muenchen", diese beantwortet "was
+  // erreiche ich vom Hotel zu Fuss". Dieselben Marken in beiden waeren
+  // sparsamer, aber die Fragen sind verschieden.
+  //
+  // Die Farben sind aus der vorhandenen Palette geliehen statt neu erfunden -
+  // eine eigene Legende macht die Wiederverwendung eindeutig, und neun neue
+  // Hues waeren im Farbkreis ohnehin nicht mehr unterzubringen.
+  var UMG_ARTEN = {
+    essen:   { label: "Essen",      farbe: "--m-zentrum" },
+    cafe:    { label: "Café",       farbe: "--m-ankunft" },
+    einkauf: { label: "Einkaufen",  farbe: "--m-museum" }
+  };
+  var HALT_KUERZEL = { sbahn: "S", ubahn: "U", tram: "T", bus: "B" };
+
+  var karteHotel = null;
+  (function () {
+    var u = DATEN.umgebung;
+    if (!u || !document.getElementById("karte-hotel")) return;
+
+    karteHotel = L.map("karte-hotel", { scrollWheelZoom: true })
+      .setView([u.bezug.lat, u.bezug.lon], 15);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(karteHotel);
+
+    // Der Umkreis wird GEZEICHNET, nicht nur behauptet: so sieht man, was knapp
+    // drin und was knapp draussen liegt - und dass es eine Luftlinie ist.
+    L.circle([u.bezug.lat, u.bezug.lon], {
+      radius: u.umkreis.meter, color: token("--m-unterkunft"),
+      weight: 2, opacity: 0.7, fillOpacity: 0.05, interactive: false
+    }).addTo(karteHotel);
+
+    L.marker([u.bezug.lat, u.bezug.lon], {
+      icon: L.divIcon({ className: "", html: ortSymbol("unterkunft", true),
+                        iconSize: [40, 40], iconAnchor: [20, 20] }),
+      title: u.bezug.name, riseOnHover: true
+    }).addTo(karteHotel).bindPopup("<h3>" + u.bezug.name + "</h3><p>Der Bezugspunkt dieser Karte.</p>");
+
+    var gruppen = {};
+    Object.keys(UMG_ARTEN).forEach(function (a) { gruppen[a] = L.layerGroup().addTo(karteHotel); });
+    var halteEbene = L.layerGroup().addTo(karteHotel);
+
+    u.lokale.forEach(function (l) {
+      L.marker([l.lat, l.lon], {
+        icon: L.divIcon({ className: "", html: ortSymbol(l.gruppe, false),
+                          iconSize: [30, 30], iconAnchor: [15, 15] }),
+        title: l.name + " — " + l.bewertung + "★, " + l.meter + " m",
+        keyboard: false
+      })
+        .addTo(gruppen[l.gruppe])
+        .bindPopup("<h3>" + l.name + "</h3>"
+          + "<p>" + l.art + " · " + l.meter + " m Luftlinie</p>"
+          + '<p class="bewertung"><strong>' + l.bewertung + " ★</strong> aus "
+          + l.stimmen.toLocaleString("de-DE") + " Bewertungen</p>"
+          + (l.adresse ? '<p class="popup-fein">' + l.adresse + "</p>" : "")
+          + (l.web ? '<p class="popup-fein"><a href="' + l.web + '">Website</a></p>' : ""));
+    });
+
+    u.halte.forEach(function (h) {
+      L.marker([h.lat, h.lon], {
+        icon: L.divIcon({ className: "",
+          html: '<i class="halt-pin ' + (h.art === "tram" ? "tram" : h.art) + '">'
+              + (HALT_KUERZEL[h.art] || "?") + "</i>",
+          iconSize: [26, 26], iconAnchor: [13, 13] }),
+        title: h.name + " — " + h.meter + " m", keyboard: false
+      })
+        .addTo(halteEbene)
+        .bindPopup("<h3>" + h.name + "</h3><p>"
+          + ({ sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" }[h.art] || h.art)
+          + " · " + h.meter + " m Luftlinie</p>"
+          + '<p class="popup-fein">OSM ' + h.osm + "</p>");
+    });
+
+    // Eigene Filterleiste, gleiche Bauform wie die der Stadtkarte.
+    var ulU = document.getElementById("legende-hotel");
+    var eintragU = function (markeHtml, text, zahl, ebene) {
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "filter"; b.setAttribute("aria-pressed", "true");
+      b.innerHTML = '<span class="legende-marke" aria-hidden="true">' + markeHtml + "</span>"
+        + '<span class="filter-text">' + text
+        + (zahl ? ' <span class="filter-zahl">' + zahl + "</span>" : "") + "</span>";
+      b.addEventListener("click", function () {
+        var an = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", an ? "false" : "true");
+        if (an) karteHotel.removeLayer(ebene); else ebene.addTo(karteHotel);
+      });
+      li.appendChild(b); ulU.appendChild(li);
+    };
+    Object.keys(UMG_ARTEN).forEach(function (a) {
+      var n = u.lokale.filter(function (l) { return l.gruppe === a; }).length;
+      if (n) eintragU(ortSymbol(a, false), UMG_ARTEN[a].label, n, gruppen[a]);
+    });
+    if (u.halte.length) {
+      eintragU('<i class="halt-pin sbahn">S</i>', "Haltestellen", u.halte.length, halteEbene);
+    }
+
+    // Was der Filter WEGGELASSEN hat, gehoert unter die Karte - eine gefilterte
+    // Liste ohne diese Zahl sieht aus wie eine vollstaendige.
+    var v = u.verworfen || {};
+    var raus = (v.zu_schwach || 0) + (v.zu_wenige_stimmen || 0) + (v.ohne_bewertung || 0);
+    document.getElementById("umgebung-fuss").innerHTML =
+      "Umkreis: " + u.umkreis.entspricht + ". Gezeigt werden Lokale ab <strong>"
+      + String(u.schwellen.bewertung).replace(".", ",") + " ★</strong> bei mindestens "
+      + u.schwellen.stimmen + " Bewertungen — " + raus + " Treffer fielen darunter durch. "
+      + (u.gekappt && u.gekappt.length
+          ? "Bei " + u.gekappt.join(", ") + " liefert die Abfrage höchstens 20 Treffer: "
+            + "gezeigt sind die bekanntesten, nicht alle. "
+          : "")
+      + "Bewertungen: " + u.quellen.lokale.name + ", abgerufen "
+      + deutsch(u.quellen.lokale.abgerufen) + " (Rang " + u.quellen.lokale.rang + "). "
+      + "Haltestellen: " + u.quellen.halte.name + ".";
+  })();
+
   // --- Menueleiste ---------------------------------------------------------
   // Aufgebaut aus DATEN.menue, nicht aus dem HTML. Ein Eintrag mit `seite` wird
   // ein Link auf eine eigene Datei, einer mit `ansicht` schaltet einen
@@ -613,7 +738,11 @@
       // auskommt.
       b.parentNode.dataset.aktiv = an ? "true" : "false";
     });
+    // Leaflet vermisst seinen Behaelter beim Anlegen. Eine Karte, die in einem
+    // ausgeblendeten Abschnitt entstand, bleibt grau, bis invalidateSize() sie
+    // neu vermisst - das gilt fuer BEIDE Karten.
     if (id === "karte") karte.invalidateSize();
+    if (id === "hotel" && karteHotel) karteHotel.invalidateSize();
     // Der Hash macht einen Menuepunkt verlinkbar und ueberlebt ein Neuladen.
     // Das Praefix ist Pflicht, nicht Zierde: ein blankes "#karte" traf die id
     // des Kartenbehaelters, worauf der Browser dorthin sprang und die Seite mit

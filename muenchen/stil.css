@@ -274,6 +274,15 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    als bei einer langgestreckten Insel begrenzt hier weder Breite noch Hoehe
    allein den Zoom. 62vh fuellt die Flaeche, ohne auf dem Handy die ganze Seite
    zu uebernehmen. */
+/* Die Umgebungskarte ist flacher als die Stadtkarte: sie zeigt einen Kilometer
+   Umkreis, nicht zwanzig - mehr Hoehe waere leerer Stadtplan. */
+#karte-hotel{height:clamp(340px,46vh,520px);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+.tafel-titel{margin:28px 0 12px; font-family:var(--pixel); font-size:19px;
+             color:var(--auf-grund)}
+.leaflet-popup-content .bewertung{margin-top:6px; color:var(--tinte)}
+
 #karte{height:clamp(420px,62vh,660px);
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
        background:var(--grund-tief); z-index:0}
@@ -317,6 +326,12 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-pin.wahrzeichen{color:var(--m-wahrzeichen)}
 .ort-pin.film{color:var(--m-film)}
 .ort-pin.museum{color:var(--m-museum)}
+/* Umgebungskarte: die Farben sind aus der vorhandenen Palette geliehen. Eine
+   eigene Legende macht die Wiederverwendung eindeutig - neun weitere Hues
+   waeren im Farbkreis ohnehin nicht mehr unterzubringen. */
+.ort-pin.essen{color:var(--m-zentrum)}      /* 5,18:1 */
+.ort-pin.cafe{color:var(--m-ankunft)}       /* 5,89:1 */
+.ort-pin.einkauf{color:var(--m-museum)}     /* 5,13:1 */
 .ort-pin.park{color:var(--m-park)}
 
 /* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
@@ -329,8 +344,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
   font-weight:800; font-size:20px; line-height:1}
 .halt-pin.sbahn{color:var(--m-sbahn)}
 .halt-pin.ubahn{color:var(--m-ubahn)}
-.halt-pin.linie{width:24px; height:24px; font-size:18px; color:var(--m-tram)}
-.halt-pin.linie b{font-weight:inherit}
+/* .tram, NICHT .linie: '.linie' ist die Linienmarke in der Sprechblase, und
+   beide Regeln trafen dieselbe Marke - die Tram-Marke bekam dadurch Kasten,
+   Innenabstand und Umriss und sah aus wie ein Schild statt wie ein Zeichen.
+   Eine Klassenkollision, die kein Pruefskript findet: die Seite war gueltig,
+   nur falsch. */
+.halt-pin.tram{width:24px; height:24px; font-size:18px; color:var(--m-tram)}
+.halt-pin.tram b{font-weight:inherit}
 
 /* Der Ortsname haengt als Tooltip neben der Marke, nicht in ihr - und erst ab
    Stadtteil-Zoom. Bei Stadtzoom lagen Hauptbahnhof, Marienplatz und
