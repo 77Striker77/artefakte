@@ -798,7 +798,7 @@ const DATEN = {
    "entspricht": "höchstens 15 Minuten zu Fuß, je Punkt einzeln gemessen",
    "art": "Fußweg",
    "ueber_der_grenze": {
-    "lokale": 28,
+    "lokale": 29,
     "halte": 11
    },
    "ohne_route": 0
@@ -826,11 +826,44 @@ const DATEN = {
    }
   },
   "anzahl": {
-   "lokale": 20,
-   "essen": 8,
-   "cafe": 9,
-   "einkauf": 3,
+   "lokale": 24,
+   "je_gruppe": {
+    "umkreis": 11,
+    "einkauf": 3,
+    "wirtshaus": 4,
+    "fruehstueck": 3,
+    "smash": 1,
+    "burger": 1,
+    "fastfood": 1
+   },
    "halte": 15
+  },
+  "kuratiert": {
+   "dateien": [
+    "muenchen-wirtshaeuser.json",
+    "muenchen-fruehstueck.json",
+    "muenchen-essen.json",
+    "muenchen-fastfood.json"
+   ],
+   "geprueft": [
+    "das-rosi",
+    "xavers",
+    "ayinger-in-der-au",
+    "hofbraeukeller",
+    "wirtshaus-in-der-au",
+    "spezlwirtschaft",
+    "das-rosi",
+    "cafe-bla",
+    "cafe-faber",
+    "cafe-fraeulein",
+    "smash-it-haidhausen",
+    "last-call-nyc",
+    "ff-r9ipc7_yu1aq",
+    "ff-rdko7cpzxojm"
+   ],
+   "drin": 10,
+   "ersetzte_abfragetreffer": 9,
+   "hinweis": "Schwellen und Kappung dieser Abfrage gelten fuer sie NICHT — die kuratierten Listen haben ihre eigene Auswahlregel."
   },
   "verworfen": {
    "zu_schwach": 12,
@@ -846,7 +879,7 @@ const DATEN = {
    {
     "id": "ChIJnegdf3zfnUcR699BptUiuBs",
     "name": "Novotel Muenchen City",
-    "gruppe": "essen",
+    "gruppe": "umkreis",
     "art": "Hotel",
     "bewertung": 4.4,
     "stimmen": 4213,
@@ -863,34 +896,46 @@ const DATEN = {
    {
     "id": "ChIJ2YJ3mHzfnUcRZ8LfM7KI30k",
     "name": "Wirtshaus in der Au",
-    "gruppe": "essen",
-    "art": "Bayerisches Restaurant",
+    "gruppe": "wirtshaus",
+    "art": "",
     "bewertung": 4.5,
     "stimmen": 6015,
     "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Lilienstraße 51, 81669 München, Deutschland",
+    "adresse": "Lilienstraße 51, 81669 München",
     "web": "https://wirtshausinderau.de/",
-    "maps": "https://maps.google.com/?cid=5323123583531074151&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.128986,
-    "lon": 11.586475,
+    "maps": "https://maps.google.com/?cid=5323123583531074151",
+    "lat": 48.1289862,
+    "lon": 11.5864746,
     "meter": 210,
+    "kuratiert": {
+     "id": "wirtshaus-in-der-au",
+     "datei": "muenchen-wirtshaeuser.json",
+     "kueche": "wirtshaus",
+     "notiz": "Knödel-Spezialist seit 1901, mit eigener Knödelseite und Knödelkochkurs. Bio-zertifiziert."
+    },
     "gehzeit_s": 301,
     "gehweg_m": 354
    },
    {
     "id": "ChIJmxcdvXzfnUcRbwzkybwjFGo",
     "name": "Café Blá",
-    "gruppe": "cafe",
+    "gruppe": "fruehstueck",
     "art": "Coffeeshop",
     "bewertung": 4.6,
     "stimmen": 1564,
     "preis": "PRICE_LEVEL_INEXPENSIVE",
     "adresse": "Lilienstraße 34, 81669 München-Au-Haidhausen, Deutschland",
     "web": "https://cafebla.de/?utm_source=google_business&utm_medium=organic",
-    "maps": "https://maps.google.com/?cid=7643773761302563951&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "maps": "https://maps.google.com/?cid=7643773761302563951&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
     "lat": 48.129278,
     "lon": 11.586328,
     "meter": 240,
+    "kuratiert": {
+     "id": "cafe-bla",
+     "datei": "muenchen-fruehstueck.json",
+     "kueche": "fruehstueck",
+     "notiz": "Isländisch: 'Blá' ist Blau, und Blau trägt den ganzen Raum. Specialty Coffee mit Bohnenverkauf, Waffeln süß 5,20 Euro und herzhaft 5,80 Euro, Kuchen und Bowls alles selbst gemacht. Keine Tischreservierung."
+    },
     "gehzeit_s": 332,
     "gehweg_m": 393
    },
@@ -912,6 +957,29 @@ const DATEN = {
     "gehweg_m": 602
    },
    {
+    "id": "ChIJe7duxVXfnUcR6N_h5Q_FmR4",
+    "name": "Ayinger in der Au",
+    "gruppe": "wirtshaus",
+    "art": "",
+    "bewertung": 4.5,
+    "stimmen": 1046,
+    "preis": "PRICE_LEVEL_MODERATE",
+    "adresse": "Mariahilfpl. 4, 81541 München-Au-Haidhausen",
+    "web": "https://www.ayinger-in-der-au.de/",
+    "maps": "https://maps.google.com/?cid=2205010164646535144",
+    "lat": 48.1262828,
+    "lon": 11.5849848,
+    "meter": 321,
+    "kuratiert": {
+     "id": "ayinger-in-der-au",
+     "datei": "muenchen-wirtshaeuser.json",
+     "kueche": "wirtshaus",
+     "notiz": "Bier aus gekühlten Holzfässern. Das einzige Haus mit echter Pute — als Salattopping."
+    },
+    "gehzeit_s": 348,
+    "gehweg_m": 425
+   },
+   {
     "id": "ChIJzYFvh-QBCUERocXJpinxI5I",
     "name": "Orient Shop",
     "gruppe": "einkauf",
@@ -931,7 +999,7 @@ const DATEN = {
    {
     "id": "ChIJYVmQzX7fnUcRQw_xJfg-EqE",
     "name": "Café Haidhausen",
-    "gruppe": "cafe",
+    "gruppe": "umkreis",
     "art": "Restaurant",
     "bewertung": 4.5,
     "stimmen": 1016,
@@ -948,27 +1016,33 @@ const DATEN = {
    {
     "id": "ChIJZf8feo_fnUcR2NbHbf2XQx0",
     "name": "SMASH IT! HAIDHAUSEN",
-    "gruppe": "essen",
+    "gruppe": "smash",
     "art": "Burgerrestaurant",
     "bewertung": 4.4,
     "stimmen": 668,
     "preis": "PRICE_LEVEL_MODERATE",
     "adresse": "Gebsattelstraße 15, 81541 München, Deutschland",
     "web": "https://www.instagram.com/smash.it.muc?igsh=bWlxdDczMmt0dmxu&utm_source=qr",
-    "maps": "https://maps.google.com/?cid=2108696165263857368&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "maps": "https://maps.google.com/?cid=2108696165263857368&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
     "lat": 48.124272,
     "lon": 11.589819,
     "meter": 401,
+    "kuratiert": {
+     "id": "smash-it-haidhausen",
+     "datei": "muenchen-essen.json",
+     "kueche": "burger",
+     "notiz": "Halal. Fing als reiner Lieferdienst an und verkauft seit Juli 2024 auch am Fenster."
+    },
     "gehzeit_s": 877,
     "gehweg_m": 1066
    },
    {
     "id": "ChIJpQrSBH3fnUcRKK9lMc7nOGo",
     "name": "Das Rosi",
-    "gruppe": "essen",
+    "gruppe": "umkreis",
     "art": "Restaurant",
     "bewertung": 4.6,
-    "stimmen": 2815,
+    "stimmen": 2816,
     "preis": "PRICE_LEVEL_MODERATE",
     "adresse": "Rosenheimer Str. 2, 81669 München-Au-Haidhausen, Deutschland",
     "web": "https://www.rosi-muenchen.de/",
@@ -982,24 +1056,76 @@ const DATEN = {
    {
     "id": "ChIJpQrSBH3fnUcRKK9lMc7nOGo",
     "name": "Das Rosi",
-    "gruppe": "cafe",
+    "gruppe": "wirtshaus",
+    "art": "",
+    "bewertung": 4.6,
+    "stimmen": 2815,
+    "preis": "PRICE_LEVEL_MODERATE",
+    "adresse": "Rosenheimer Str. 2, 81669 München-Au-Haidhausen",
+    "web": "https://www.rosi-muenchen.de/",
+    "maps": "https://maps.google.com/?cid=7654122439494184744",
+    "lat": 48.1313908,
+    "lon": 11.5880649,
+    "meter": 403,
+    "kuratiert": {
+     "id": "das-rosi",
+     "datei": "muenchen-wirtshaeuser.json",
+     "kueche": "wirtshaus",
+     "notiz": "Frühstück bis Mitternacht, Schnitzel als Spezialität. Am Gasteig, entsprechend gemischtes junges Publikum."
+    },
+    "gehzeit_s": 382,
+    "gehweg_m": 482
+   },
+   {
+    "id": "ChIJpQrSBH3fnUcRKK9lMc7nOGo",
+    "name": "Das Rosi",
+    "gruppe": "fruehstueck",
     "art": "Restaurant",
     "bewertung": 4.6,
     "stimmen": 2815,
     "preis": "PRICE_LEVEL_MODERATE",
     "adresse": "Rosenheimer Str. 2, 81669 München-Au-Haidhausen, Deutschland",
     "web": "https://www.rosi-muenchen.de/",
-    "maps": "https://maps.google.com/?cid=7654122439494184744&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "maps": "https://maps.google.com/?cid=7654122439494184744&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
     "lat": 48.131391,
     "lon": 11.588065,
     "meter": 403,
+    "kuratiert": {
+     "id": "das-rosi",
+     "datei": "muenchen-fruehstueck.json",
+     "kueche": "fruehstueck",
+     "notiz": "Kaffeehaus und Bar am Gasteig, durchgehend von morgens bis nachts. Die Karte spannt vom Bircher-Müsli bis zur Weißwurst, vegetarisch, vegan und glutenfrei sind ausgewiesen. Lebhaft und laut, zentral, rund 20–30 Euro pro Kopf beim Frühstück."
+    },
     "gehzeit_s": 382,
     "gehweg_m": 482
    },
    {
+    "id": "ChIJjYa5IgffnUcR6-0gVT11GnY",
+    "name": "Last Call NYC❤️",
+    "gruppe": "burger",
+    "art": "Burgerrestaurant",
+    "bewertung": 4.9,
+    "stimmen": 276,
+    "preis": "PRICE_LEVEL_MODERATE",
+    "adresse": "Rosenheimer Str. 2, 81669 München, Deutschland",
+    "web": "http://www.lastcallnyc.de/",
+    "maps": "https://maps.google.com/?cid=8510243352151649771&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 48.131427,
+    "lon": 11.58817,
+    "meter": 407,
+    "kuratiert": {
+     "id": "last-call-nyc",
+     "datei": "muenchen-essen.json",
+     "kueche": "burger",
+     "notiz": null
+    },
+    "gehzeit_s": 390,
+    "gehweg_m": 492
+   },
+   {
     "id": "ChIJfQv8uIjfnUcRH0y8fHMZ3jk",
     "name": "Giorgia Trattoria",
-    "gruppe": "essen",
+    "gruppe": "umkreis",
     "art": "Italienisches Restaurant",
     "bewertung": 4.7,
     "stimmen": 15912,
@@ -1016,7 +1142,7 @@ const DATEN = {
    {
     "id": "ChIJAQAQZl7fnUcR0H8_0-dd4jk",
     "name": "Restaurant Rustikeria",
-    "gruppe": "cafe",
+    "gruppe": "umkreis",
     "art": "Italienisches Restaurant",
     "bewertung": 4.6,
     "stimmen": 935,
@@ -1033,7 +1159,7 @@ const DATEN = {
    {
     "id": "ChIJPxVvNH3fnUcRKbOUU90hyJw",
     "name": "M-net Kulturstrand der urbanauten",
-    "gruppe": "cafe",
+    "gruppe": "umkreis",
     "art": "Bar",
     "bewertung": 4.4,
     "stimmen": 1057,
@@ -1050,10 +1176,10 @@ const DATEN = {
    {
     "id": "ChIJvfM440rfnUcR04T0Ig-HxNU",
     "name": "Frau im Mond - Dachterrasse",
-    "gruppe": "essen",
+    "gruppe": "umkreis",
     "art": "Bar",
     "bewertung": 4.5,
-    "stimmen": 840,
+    "stimmen": 839,
     "preis": "PRICE_LEVEL_MODERATE",
     "adresse": "Rooftop Deutsches Museum, Museumsinsel 1, 80538 München, Deutschland",
     "web": "http://www.frauimmond.bar/",
@@ -1067,10 +1193,10 @@ const DATEN = {
    {
     "id": "ChIJvfM440rfnUcR04T0Ig-HxNU",
     "name": "Frau im Mond - Dachterrasse",
-    "gruppe": "cafe",
+    "gruppe": "umkreis",
     "art": "Bar",
     "bewertung": 4.5,
-    "stimmen": 840,
+    "stimmen": 839,
     "preis": "PRICE_LEVEL_MODERATE",
     "adresse": "Rooftop Deutsches Museum, Museumsinsel 1, 80538 München, Deutschland",
     "web": "http://www.frauimmond.bar/",
@@ -1084,7 +1210,7 @@ const DATEN = {
    {
     "id": "ChIJMQGjR7PfnUcRdunuB9mlQ6Q",
     "name": "Helma - Café & Tagesbar",
-    "gruppe": "cafe",
+    "gruppe": "umkreis",
     "art": "Café",
     "bewertung": 4.7,
     "stimmen": 242,
@@ -1101,19 +1227,48 @@ const DATEN = {
    {
     "id": "ChIJoQpy04bfnUcRg4R4eDFRM6A",
     "name": "Café Faber",
-    "gruppe": "cafe",
+    "gruppe": "fruehstueck",
     "art": "Café",
     "bewertung": 4.5,
     "stimmen": 459,
     "preis": "PRICE_LEVEL_MODERATE",
     "adresse": "Zeppelinstraße 5, 81541 München, Deutschland",
     "web": "https://www.instagram.com/cafefaber_",
-    "maps": "https://maps.google.com/?cid=11543659542797124739&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "maps": "https://maps.google.com/?cid=11543659542797124739&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
     "lat": 48.125217,
     "lon": 11.580569,
     "meter": 666,
+    "kuratiert": {
+     "id": "cafe-faber",
+     "datei": "muenchen-fruehstueck.json",
+     "kueche": "fruehstueck",
+     "notiz": "Von Hannah und Leon geführt, Specialty Coffee wechselnder Röstereien (u. a. Stray Coffee aus München). Die kurze Karte wechselt alle paar Wochen: Eggs Benedict auf Sauerteig mit Chili-Pilzen, veganes Porridge, Grilled Cheese. Hausgebackener Kuchen und Zimtschnecken."
+    },
     "gehzeit_s": 735,
     "gehweg_m": 877
+   },
+   {
+    "id": "ChIJGddMimLfnUcRDKo7CPZxOjM",
+    "name": "Subway",
+    "gruppe": "fastfood",
+    "art": "Sandwichladen",
+    "bewertung": 4.5,
+    "stimmen": 1410,
+    "preis": "PRICE_LEVEL_INEXPENSIVE",
+    "adresse": "Morassistraße 2, 80469 München, Deutschland",
+    "web": "https://restaurants.subway.com/de/deutschland/by/munchen/morassistra%C3%9Fe-2?utm_source=yxt-goog&utm_medium=local&utm_term=acq&utm_content=61465&utm_campaign=evergreen-2020&y_source=1_MTQ5MjQ3OTYtNzE1LWxvY2F0aW9uLndlYnNpdGU%3D",
+    "maps": "https://maps.google.com/?cid=3691388146097564172&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "lat": 48.133023,
+    "lon": 11.583161,
+    "meter": 712,
+    "kuratiert": {
+     "id": "ff-rdko7cpzxojm",
+     "datei": "muenchen-fastfood.json",
+     "kueche": "fastfood",
+     "notiz": null
+    },
+    "gehzeit_s": 689,
+    "gehweg_m": 851
    },
    {
     "id": "ChIJCWHoxLrfnUcRzfxmex9_9Q4",
@@ -1135,7 +1290,7 @@ const DATEN = {
    {
     "id": "ChIJOTiRQuN1nkcRufMjO6ujDVQ",
     "name": "Paulaner am Nockherberg",
-    "gruppe": "essen",
+    "gruppe": "umkreis",
     "art": "Bayerisches Restaurant",
     "bewertung": 4.3,
     "stimmen": 6613,
@@ -1152,7 +1307,7 @@ const DATEN = {
    {
     "id": "ChIJXRtZltHfnUcRDusCHrYwBic",
     "name": "Sorry Johnny Kaffeebar",
-    "gruppe": "cafe",
+    "gruppe": "umkreis",
     "art": "Café",
     "bewertung": 4.8,
     "stimmen": 729,
@@ -1169,17 +1324,23 @@ const DATEN = {
    {
     "id": "ChIJ29wi64B1nkcRR5UyRpxvUm4",
     "name": "Hofbräukeller am Wiener Platz",
-    "gruppe": "essen",
-    "art": "Bayerisches Restaurant",
+    "gruppe": "wirtshaus",
+    "art": "",
     "bewertung": 4.4,
     "stimmen": 9202,
     "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Innere Wiener Straße 19, 81667 München-Au-Haidhausen, Deutschland",
+    "adresse": "Innere Wiener Straße 19, 81667 München-Au-Haidhausen",
     "web": "http://www.hofbraeukeller.de/",
-    "maps": "https://maps.google.com/?cid=7949539009245648199&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 48.134177,
-    "lon": 11.595207,
+    "maps": "https://maps.google.com/?cid=7949539009245648199",
+    "lat": 48.1341766,
+    "lon": 11.5952068,
     "meter": 861,
+    "kuratiert": {
+     "id": "hofbraeukeller",
+     "datei": "muenchen-wirtshaeuser.json",
+     "kueche": "wirtshaus",
+     "notiz": "Am Wiener Platz, großer Biergarten, bei Münchnern beliebter als das Hofbräuhaus."
+    },
     "gehzeit_s": 848,
     "gehweg_m": 1021
    }

@@ -1268,10 +1268,23 @@
   // Die Farben sind aus der vorhandenen Palette geliehen statt neu erfunden -
   // eine eigene Legende macht die Wiederverwendung eindeutig, und neun neue
   // Hues waeren im Farbkreis ohnehin nicht mehr unterzubringen.
-  var UMG_ARTEN = {
-    essen:   { label: "Essen",      farbe: "--m-zentrum" },
-    cafe:    { label: "Café",       farbe: "--m-ankunft" },
-    einkauf: { label: "Einkaufen",  farbe: "--m-museum" }
+  // Die Ebenen der Umgebungskarte. Die ersten fuenf sind GENAU die Kuechen des
+  // Innenstadt-Reiters - aus derselben Tabelle gebaut und nicht neben ihr
+  // abgeschrieben, damit Beschriftung und Zeichen der beiden Karten nicht
+  // auseinanderlaufen koennen. Bis zum 09.09.2026 hiess SMASH IT! Haidhausen
+  // hier "Essen" und dort "Smash-Laden"; dieselbe Seite gab demselben Ort zwei
+  // Namen.
+  //
+  // 'umkreis' ist der Rest: was nur die Umkreisabfrage kennt. Es traegt Gabel
+  // und Messer - EIN Zeichen fuer beide Abfragen (Restaurant und Café), weil die
+  // Tasse hier schon das kuratierte Fruehstueck bedeutet. Welche Kategorie
+  // Google gemeldet hat, steht in der Sprechblase.
+  var UMG_ARTEN = {};
+  GASTRO.forEach(function (k) { UMG_ARTEN[k.id] = { label: k.label, symbol: k.symbol }; });
+  UMG_ARTEN.umkreis = { label: "Lokale im Umkreis", symbol: "essen" };
+  UMG_ARTEN.einkauf = { label: "Einkaufen",         symbol: "einkauf" };
+  var umgSymbol = function (gruppe) {
+    return (UMG_ARTEN[gruppe] || {}).symbol || gruppe;
   };
   var ART_LABEL = { sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" };
 
@@ -1329,17 +1342,25 @@
     var halteEbenen = {};
 
     u.lokale.forEach(function (l) {
+      if (!gruppen[l.gruppe]) return;
+      var note = l.bewertung == null ? null
+        : '<p class="bewertung"><strong>' + l.bewertung + " ★</strong> aus "
+          + (l.stimmen || 0).toLocaleString("de-DE") + " Bewertungen</p>";
       L.marker([l.lat, l.lon], {
-        icon: L.divIcon({ className: "", html: ortSymbol(l.gruppe, false),
+        icon: L.divIcon({ className: "", html: ortSymbol(umgSymbol(l.gruppe), false),
                           iconSize: [30, 30], iconAnchor: [15, 15] }),
-        title: l.name + " — " + l.bewertung + "★, " + gehText(l),
+        title: l.name + (l.bewertung == null ? "" : " — " + l.bewertung + "★") + ", " + gehText(l),
         keyboard: false
       })
         .addTo(gruppen[l.gruppe])
         .bindPopup("<h3>" + l.name + "</h3>"
           + "<p>" + l.art + " · " + gehText(l) + "</p>"
-          + '<p class="bewertung"><strong>' + l.bewertung + " ★</strong> aus "
-          + l.stimmen.toLocaleString("de-DE") + " Bewertungen</p>"
+          + (note || "")
+          // Die Prosa des kuratierten Eintrags. Sie ist der Grund, warum dieser
+          // Ort auf der Liste steht - und der Unterschied zu einem Treffer, den
+          // nur die Beliebtheitssortierung nach oben gespuelt hat.
+          + (l.kuratiert && l.kuratiert.notiz
+              ? "<p>" + l.kuratiert.notiz + "</p>" : "")
           + (l.adresse ? '<p class="popup-fein">' + l.adresse + "</p>" : "")
           + (l.web ? '<p class="popup-fein"><a href="' + l.web + '" target="_blank" rel="noopener noreferrer">Website</a></p>' : "")
           + mapsLink(l));
@@ -1777,7 +1798,7 @@
     };
     Object.keys(UMG_ARTEN).forEach(function (a) {
       var n = u.lokale.filter(function (l) { return l.gruppe === a; }).length;
-      if (n) eintragU(ortSymbol(a, false), UMG_ARTEN[a].label, n, gruppen[a]);
+      if (n) eintragU(ortSymbol(umgSymbol(a), false), UMG_ARTEN[a].label, n, gruppen[a]);
     });
     // Ein Eintrag je Verkehrsmittel, in der Reihenfolge, in der man sucht.
     ["sbahn", "ubahn", "tram", "bus"].forEach(function (a) {
