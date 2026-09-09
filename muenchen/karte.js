@@ -1691,11 +1691,6 @@
       var o = e.o;
       var d = document.createElement("details");
       d.className = "ort";
-      // Die Kategoriefarbe lag bisher NUR im Pin. Als Kante an der Zeile
-      // gruppiert sie den nach Kueche sortierten Katalog sichtbar, ohne eine
-      // Zwischenueberschrift zu kosten - und sie bleibt dabei das, was die
-      // Bildsprache erlaubt: eine Kante, keine Flaeche.
-      d.dataset.gruppe = e.gruppe;
 
       var streifenTitel = e.w ? "Öffnungszeiten: " + zeitenKurz(e.w) : "Öffnungszeiten unbekannt";
       var kopf = '<span class="ort-marke" aria-hidden="true">' + ortSymbol(ZEICHEN[e.gruppe], false) + "</span>"
@@ -2150,10 +2145,18 @@
         + "Strich = zu, Punkte = unbekannt");
     lesen(noteSkala(4.6),
       "<b>Note</b> auf einer Achse von 4,0 bis 5,0 — ein Ausschnitt, weil alle Noten darin liegen");
-    lesen(stufenSkala(2, 4),
-      "<b>Geflügel</b> in vier Stufen: Schnitzel · Hauptgericht · nur Salat · keins");
-    lesen('<span class="legende-kante"></span>',
-      "<b>Farbige Kante</b> links an der Zeile: dieselbe Farbe wie das Zeichen der Kategorie");
+    // HIER STANDEN ZWEI EINTRAEGE ZU VIEL, entfernt am 09.09.2026:
+    //
+    //   Gefluegel-Stufenskala. Sie kommt in der zugeklappten Zeile gar nicht
+    //   vor, sondern erst im aufgeklappten Teil - und dort steht das Wort
+    //   ("Geflügel nur als Salat — kein Hendl") direkt daneben. Ein Schluessel
+    //   ueber der Tabelle erklaerte damit ein Zeichen, das man an dieser Stelle
+    //   noch gar nicht gesehen hat, und liess es neben dem Untermenue wie ein
+    //   Filterkriterium aussehen. Es ist keins.
+    //
+    //   Farbige Kante. Sie trug dieselbe Auskunft wie das Zeichen zwei
+    //   Zentimeter daneben. Doppelt gesagt ist nicht deutlicher, sondern eine
+    //   zweite Sache, die man deuten muss - die Kante ist darum ganz weg.
 
     karteNeu();
     neuZeichnen();

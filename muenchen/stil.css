@@ -591,18 +591,12 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    ueberblendet, die Kopfzeile mit den Sortierknoepfen bleibt stehen. Eine
    Deckkraft auf der ganzen Tafel naehme sie mit. */
 .katalog-zeilen{display:block}
-.ort{border-top:2px solid var(--linie); border-left:5px solid transparent}
+/* KEINE farbige Kante mehr. Sie trug am 09.09.2026 die Kategoriefarbe links an
+   jeder Zeile - und damit dieselbe Auskunft wie das Zeichen zwei Zentimeter
+   daneben. Doppelt gesagt ist nicht deutlicher, sondern eine zweite Sache, die
+   man deuten muss. */
+.ort{border-top:2px solid var(--linie)}
 .ort:first-child{border-top:0}
-/* Die Kategoriefarbe als KANTE, nicht als Flaeche - so will es die Bildsprache
-   ("warme Toene sind Punkte und Kanten, nie Flaechen"). Sie gruppiert den nach
-   Kueche sortierten Katalog sichtbar und spart die Zwischenueberschrift. Alle
-   fuenf Werte liegen ueber 3:1 gegen die Tafel, also ueber der Schwelle fuer
-   grafische Elemente (WCAG 1.4.11). */
-.ort[data-gruppe="fruehstueck"]{border-left-color:var(--m-ankunft)}    /* 5,44:1 */
-.ort[data-gruppe="wirtshaus"]  {border-left-color:var(--m-zentrum)}    /* 4,78:1 */
-.ort[data-gruppe="burger"]     {border-left-color:var(--m-film)}       /* 6,56:1 */
-.ort[data-gruppe="wahrzeichen"]{border-left-color:var(--m-wahrzeichen)}
-.ort[data-gruppe="museum"]     {border-left-color:var(--m-museum)}
 
 /* Benannte Felder statt Spaltenzaehlen: die Zeile hat sechs Teile, und einer
    davon (der Wochenstreifen) fehlt bei Sehenswuertem. Mit reinen Spalten
@@ -709,9 +703,6 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    schneidet .legende-marke den Wochenstreifen ab, und das Beispiel zeigt vier
    Tage statt sieben. */
 .schluessel-zeichen .legende-marke{width:auto; height:auto; flex:none}
-.legende-kante{display:block; width:22px; height:22px;
-               border-left:5px solid var(--m-zentrum);
-               background:var(--flaeche-2)}
 
 /* ---------- Der Fuss: Zahlen als Zeile, Volltext auf Abruf ----------
    Die Luecken MUESSEN genannt werden. Ein Absatz von zwoelf Zeilen unter der
