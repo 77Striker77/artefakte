@@ -183,6 +183,16 @@
     return '<p class="linien">' + marken + "</p>" + fern;
   };
 
+  // Der eine Bewegungsschalter der Seite. --bewegung steht auf 0, sobald das
+  // Betriebssystem reduzierte Bewegung meldet - dieselbe Variable, die schon
+  // die Menueleiste steuert. Skriptgetriebene Bewegung fragt sie ab, statt
+  // matchMedia ein zweites Mal zu befragen: zwei Quellen fuer dieselbe
+  // Entscheidung driften auseinander.
+  var bewegt = function () {
+    return parseFloat(getComputedStyle(document.documentElement)
+      .getPropertyValue("--bewegung")) > 0;
+  };
+
   var token = function (name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   };
@@ -743,6 +753,47 @@
   // gehoben wird die Deklaration, nicht die Zuweisung.
   var HALT_KUERZEL = { sbahn: "S", ubahn: "U", tram: "T", bus: "B" };
 
+  // "Womit kommt man hier weg" - je Verkehrsmittel die naechstgelegene
+  // Haltestelle mit ihren Linien. Steht als Funktion und nicht zweimal als
+  // Block: der Hotel- und der Bavaria-Reiter stellen dieselbe Frage an zwei
+  // Orten, und zwei Fassungen davon driften.
+  //
+  // Erst stand auf dem Hotel-Reiter die Gehzeit zu fuenf Ankern der Stadt -
+  // Marienplatz, Ostbahnhof, Viktualienmarkt. Auf Ansage des Nutzers raus:
+  // gefragt ist nicht, wie lange man zum Marienplatz LAEUFT, sondern womit man
+  // wegkommt. Die Antwort steht schon in den Umgebungsdaten und braucht keinen
+  // zweiten Abruf.
+  //
+  // Eine Haltestelle OHNE eingetragene Linien faellt weg. Sie stuende sonst als
+  // leere Zeile da und saehe aus wie eine Haltestelle, an der nichts faehrt -
+  // der Bushalt am Rosenheimer Platz ist genau dieser Fall: in OSM ist dort
+  // keine Linie erfasst, gefahren wird trotzdem. An der Filmstadt sind es zwei
+  // Bushalte, aus demselben Grund.
+  function anbindungHtml (umg) {
+    if (!umg || !umg.halte) return "";
+    var naechste = {};
+    umg.halte.forEach(function (h) {
+      if (!h.linien || !h.linien.length || h.gehzeit_s == null) return;
+      if (!naechste[h.art] || h.gehzeit_s < naechste[h.art].gehzeit_s) naechste[h.art] = h;
+    });
+    var zeilen = ["sbahn", "ubahn", "tram", "bus"].filter(function (a) {
+      return naechste[a];
+    }).map(function (a, i) {
+      var h = naechste[a];
+      return '<li class="anb-zeile" style="--i:' + i + '">'
+        + '<span class="anb-marke" aria-hidden="true"><i class="halt-pin ' + a + '">'
+        + (HALT_KUERZEL[a] || "?") + "</i></span>"
+        + '<span class="anb-ort">' + h.name
+        + '<span class="anb-weg">' + Math.round(h.gehzeit_s / 60) + " min zu Fuß</span></span>"
+        + '<span class="anb-linien">'
+        + h.linien.map(function (l) { return linienMarke(l, true); }).join("")
+        + "</span></li>";
+    });
+    if (!zeilen.length) return "";
+    return '<h4 class="lage-titel">Anbindung</h4>'
+      + '<ul class="anbindung">' + zeilen.join("") + "</ul>";
+  }
+
   // --- Hotel: eine Tafel statt zweier Kaesten -------------------------------
   // Bis zum 09.09.2026 standen hier zwei Boxen uebereinander, die dasselbe
   // erzaehlten: die Infobox mit "Unterkunft: Motel One ..." und darunter die
@@ -758,7 +809,7 @@
   //
   // Zwei Herkuenfte, bewusst getrennt gehalten und hier zusammengefuehrt:
   //   DATEN.hotel          von Hand aus Buchung und Hotelseite (reise.json)
-  //   DATEN.hotel_eintrag  abgefragt (Places und Routes, hol-hotel.mjs)
+  //   DATEN.hotel_eintrag  abgefragt (Places, hol-eintrag.mjs)
   // Wer beides in eine Datei schriebe, verlaere die Handarbeit beim naechsten
   // Lauf - und wuesste hinterher nicht mehr, welcher Wert woher kam.
   //
@@ -839,45 +890,8 @@
       + ausstattung
       + zeileH("Gebucht", [ho.vermittelt, ho.bestaetigt].filter(Boolean).join(" · "));
 
-    // --- Anbindung: womit kommt man vom Haus weg -----------------------------
-    // Erst stand hier die Gehzeit zu fuenf Ankern der Stadt - Marienplatz,
-    // Ostbahnhof, Viktualienmarkt. Auf Ansage des Nutzers raus: gefragt ist
-    // nicht, wie lange man zum Marienplatz LAEUFT, sondern womit man wegkommt.
-    //
-    // Die Antwort steht schon in den Daten und braucht keinen zweiten Abruf: je
-    // Verkehrsmittel die naechstgelegene Haltestelle mit ihren Linien. Zwei,
-    // drei Zeilen - die Karte darunter zeigt dasselbe raeumlich, hier steht es
-    // zum Ablesen.
-    //
-    // Eine Haltestelle OHNE eingetragene Linien faellt weg. Sie stuende sonst
-    // als leere Zeile da und saehe aus wie eine Haltestelle, an der nichts
-    // faehrt - der Bushalt am Rosenheimer Platz ist genau dieser Fall: in OSM
-    // ist dort keine Linie erfasst, gefahren wird trotzdem.
-    var anbindung = "";
-    if (DATEN.umgebung && DATEN.umgebung.halte) {
-      var naechste = {};
-      DATEN.umgebung.halte.forEach(function (h) {
-        if (!h.linien || !h.linien.length || h.gehzeit_s == null) return;
-        if (!naechste[h.art] || h.gehzeit_s < naechste[h.art].gehzeit_s) naechste[h.art] = h;
-      });
-      var zeilen = ["sbahn", "ubahn", "tram", "bus"].filter(function (a) {
-        return naechste[a];
-      }).map(function (a) {
-        var h = naechste[a];
-        return '<li class="anb-zeile">'
-          + '<span class="anb-marke" aria-hidden="true"><i class="halt-pin ' + a + '">'
-          + (HALT_KUERZEL[a] || "?") + "</i></span>"
-          + '<span class="anb-ort">' + h.name
-          + '<span class="anb-weg">' + Math.round(h.gehzeit_s / 60) + " min zu Fuß</span></span>"
-          + '<span class="anb-linien">'
-          + h.linien.map(function (l) { return linienMarke(l, true); }).join("")
-          + "</span></li>";
-      });
-      if (zeilen.length) {
-        anbindung = '<h4 class="lage-titel">Anbindung</h4>'
-          + '<ul class="anbindung">' + zeilen.join("") + "</ul>";
-      }
-    }
+    // Womit man vom Haus wegkommt - die Begruendung steht bei anbindungHtml.
+    var anbindung = anbindungHtml(DATEN.umgebung);
 
     var quellen = [ho.quelle,
                    ho.ausstattung_quelle,
@@ -915,6 +929,118 @@
       + "</details>"
       + "</div>";
   }());
+
+  // --- Bavaria: dieselbe Tafel, ein anderes Ziel ----------------------------
+  // Der Reiter ist nach dem Hotel-Reiter gebaut und stellt dieselben Fragen an
+  // einem anderen Ort: was ist das hier, was kostet es, wann ist offen, wie
+  // komme ich hin. Was sich unterscheidet, ist der Bezugspunkt - fuer den Weg
+  // ist hier nicht der Hauptbahnhof der Start, sondern das Hotel.
+  //
+  // Zwei Herkuenfte, getrennt gehalten und hier zusammengefuehrt - wie beim
+  // Hotel:
+  //   DATEN.bavaria          von Hand aus der Anbieterseite (reise.json)
+  //   DATEN.bavaria_eintrag  abgefragt (Places, hol-eintrag.mjs)
+  //
+  // Die Eintrittspreise stehen von Hand da, weil die Places-API keine kennt.
+  // Sie tragen darum ihr Lesedatum im Quellen-Aufklapper: ein Preis ohne Datum
+  // altert unsichtbar und liest sich spaeter wie ein frischer.
+  (function () {
+    var el = document.getElementById("bavaria-tafel");
+    var b = DATEN.bavaria;
+    if (!el || !b) return;
+    var be = DATEN.bavaria_eintrag;
+    var bw = DATEN.bavaria_weg;
+
+    var feldB = function (kopf, wert, fein) {
+      if (!wert) return "";
+      return '<div class="platz-feld"><span class="platz-kopf">' + kopf + "</span>"
+        + '<b class="platz-wert' + (wert === "xx" ? " platz-wert--offen" : "") + '">'
+        + wert + "</b>"
+        + (fein ? '<span class="weg-feld-fein">' + fein + "</span>" : "") + "</div>";
+    };
+
+    // Ein unbekannter Wert wird als solcher gesetzt, nicht weggelassen: eine
+    // Liste ohne die Zeile sieht vollstaendig aus, und niemand fragt je nach.
+    var zeileB = function (kopf, wert, hinweis) {
+      if (!wert) return "";
+      var offen = wert === "xx";
+      return "<dt>" + kopf + "</dt><dd"
+        + (offen ? ' class="kenn-offen" title="noch nicht bekannt"' : "") + ">"
+        + wert + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "")
+        + "</dd>";
+    };
+
+    var anschrift = [b.adresse, b.stadtteil].filter(Boolean).join(" · ");
+
+    // Dieselben drei Tastziele wie auf der Hoteltafel, plus den Ticketshop:
+    // ohne ihn waere die Preisliste eine Auskunft, aus der man den Kauf selbst
+    // weitersuchen muss.
+    var ziel = function (url, text, extern) {
+      if (!url) return "";
+      return '<a class="hotel-tel" href="' + url + '"'
+        + (extern ? ' target="_blank" rel="noopener noreferrer"' : "") + ">"
+        + text + (extern ? " ↗" : "") + "</a>";
+    };
+    var ziele = ziel(b.telefon ? "tel:" + b.telefon.replace(/s/g, "") : null, b.telefon)
+      + ziel(be && be.eintrag.website, "Website", true)
+      + ziel(b.tickets_url, "Tickets", true)
+      + ziel(be && be.eintrag.maps, "Google Maps", true);
+
+    var note = be && be.eintrag.bewertung != null
+      ? '<span class="hotel-note"><b>' + String(be.eintrag.bewertung).replace(".", ",")
+        + " ★</b> " + (be.eintrag.stimmen != null
+            ? be.eintrag.stimmen.toLocaleString("de-DE") + " Bewertungen" : "") + "</span>"
+      : "";
+
+    // Das dritte Feld ist GERECHNET, nicht getippt: die empfohlene Variante des
+    // gemessenen Wegs. Von Hand stuende dort noch eine alte Zahl, wenn sich der
+    // Fahrplan geaendert hat - und sie saehe aus wie eine gemessene.
+    var empf = (bw && bw.varianten || []).filter(function (v) { return v.empfohlen; })[0];
+    var wegFeld = empf
+      ? feldB("Ab dem Hotel", empf.minuten + " min",
+              empf.linien && empf.linien.length ? empf.linien.join(" · ") : empf.label)
+      : "";
+
+    var kenn = (b.kenn || []).map(function (k) {
+      return zeileB(k.was, k.wert, k.hinweis);
+    }).join("");
+
+    var quellen = [b.quelle,
+                   be ? be.quellen.eintrag.name + " (Bewertung und Öffnungszeiten), abgerufen "
+                        + deutsch(be.quellen.eintrag.abgerufen) : null,
+                   bw ? bw.quelle.name + " (der Weg vom Hotel), abgerufen "
+                        + deutsch(bw.quelle.abgerufen) : null,
+                   DATEN.bavaria_umgebung && DATEN.bavaria_umgebung.quellen
+                     ? DATEN.bavaria_umgebung.quellen.halte.name + " (Haltestellen und Linien)"
+                     : null].filter(Boolean).join(" · ");
+
+    el.innerHTML = '<div class="fahrt">'
+      + '<div class="fahrt-kopf">'
+      +   "<div>"
+      +     '<p class="fahrt-richtung">' + b.name + "</p>"
+      +     (anschrift ? '<p class="fahrt-tag">' + anschrift + "</p>" : "")
+      +   "</div>"
+      +   note
+      + "</div>"
+      + (ziele ? '<div class="hotel-ziele">' + ziele + "</div>" : "")
+      + '<div class="platz-felder platz-felder--um">'
+      +   feldB("Geöffnet", b.geoeffnet,
+                b.letzter_einlass ? "letzter Einlass " + b.letzter_einlass : "")
+      +   feldB("Besuch", b.besuch, b.besuch_fein || "")
+      +   wegFeld
+      + "</div>"
+      + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")
+      + anbindungHtml(DATEN.bavaria_umgebung)
+      // Der Hinweis des Betreibers steht als Satz und nicht im Aufklapper: er
+      // schraenkt die Oeffnungszeit direkt darueber ein, und eine Einschraenkung
+      // hinter einem Klick liest niemand.
+      + (b.hinweis ? '<p class="tafel-fein">' + b.hinweis + "</p>" : "")
+      + '<details class="quell-klapp"><summary>Woher diese Angaben kommen</summary>'
+      + "<p>" + quellen + "</p>"
+      + "</details>"
+      + "</div>";
+  }());
+
 
   // --- Bahn-Reiter ----------------------------------------------------------
   // Ein Unterknopf je Fahrt statt einer durchlaufenden Tafel: Hin- und
@@ -1149,21 +1275,27 @@
   };
   var ART_LABEL = { sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" };
 
-  var karteHotel = null;
-  // Der Ausschnitt wird NICHT beim Zeichnen gesetzt, sondern erst, wenn der
-  // Reiter offen ist. Leaflet vermisst seinen Behaelter beim Anlegen; in einem
-  // [hidden]-Abschnitt ist der 0 px breit, und fitBounds rechnet daraus die
-  // groesstmoegliche Zoomstufe. Die Karte stand danach auf Zoom 19 mitten im
-  // Nichts - und pruef-farben.mjs meldete den ausgegrauten Plusknopf mit 1,75:1,
-  // eine Meldung, die auf die Farbe zeigt und die Ursache verschweigt.
-  var karteHotelAnpassen = null;
-  (function () {
-    var u = DATEN.umgebung;
-    var behaelter = document.getElementById("karte-hotel");
-    if (!u || !behaelter) return;
-    var w = DATEN.hotelweg;
+  // Jede so gebaute Karte meldet sich hier an, damit zeige() sie neu vermessen
+  // kann. Ohne Registrierung braeuchte jeder neue Reiter eine eigene Zeile in
+  // zeige() - und wer sie vergisst, bekommt eine graue Flaeche, die aussieht wie
+  // eine Karte, die noch laedt.
+  var WEG_KARTEN = {};
 
-    karteHotel = L.map("karte-hotel", { scrollWheelZoom: true })
+  function wegKarte (cfg) {
+    var u = cfg.umgebung;
+    var behaelter = document.getElementById(cfg.karte);
+    if (!u || !behaelter) return;
+    var w = cfg.weg;
+
+    // Der Ausschnitt wird NICHT beim Zeichnen gesetzt, sondern erst, wenn der
+    // Reiter offen ist. Leaflet vermisst seinen Behaelter beim Anlegen; in einem
+    // [hidden]-Abschnitt ist der 0 px breit, und fitBounds rechnet daraus die
+    // groesstmoegliche Zoomstufe. Die Karte stand danach auf Zoom 19 mitten im
+    // Nichts - und pruef-farben.mjs meldete den ausgegrauten Plusknopf mit 1,75:1,
+    // eine Meldung, die auf die Farbe zeigt und die Ursache verschweigt.
+    var karteHotelAnpassen = null;
+
+    var karteHotel = L.map(cfg.karte, { scrollWheelZoom: true })
       .setView([u.bezug.lat, u.bezug.lon], 15);
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -1177,7 +1309,7 @@
     // Grenze, an derselben Strasse einer bei 1100 m darunter.
 
     L.marker([u.bezug.lat, u.bezug.lon], {
-      icon: L.divIcon({ className: "", html: ortSymbol("unterkunft", true),
+      icon: L.divIcon({ className: "", html: ortSymbol(cfg.ziel_art, true),
                         iconSize: [40, 40], iconAnchor: [20, 20] }),
       title: u.bezug.name, riseOnHover: true
     }).addTo(karteHotel).bindPopup("<h3>" + u.bezug.name + "</h3>"
@@ -1305,6 +1437,7 @@
 
     var zeichne = function (v) {
       wegEbene.clearLayers();
+      var gezeichnet = [];
       if (!v) { wegBereich = null; karteHotelAnpassen(); return; }
 
       var punkte = [[w.von.lat, w.von.lon], [u.bezug.lat, u.bezug.lon]];
@@ -1320,7 +1453,7 @@
         L.polyline(a.geo, { color: token("--umriss"), weight: fuss ? 9 : 12,
                             opacity: 0.9, lineCap: "round", lineJoin: "round",
                             interactive: false }).addTo(wegEbene);
-        L.polyline(a.geo, { color: fuss ? token("--saum") : wegFarbe(v, a.art),
+        var kern = L.polyline(a.geo, { color: fuss ? token("--saum") : wegFarbe(v, a.art),
                             weight: fuss ? 5 : 7,
                             dashArray: fuss ? "1 10" : null,
                             lineCap: "round", lineJoin: "round" })
@@ -1333,7 +1466,41 @@
             + "</p>"
             + '<p class="popup-fein">' + (a.von || w.von.name) + " → "
             + (a.nach || w.nach.name) + "</p>");
+
+        // Der Weg zeichnet sich in Fahrtrichtung. Nicht Zierde: er sagt, wo er
+        // ANFAENGT und wohin er laeuft - eine fertig daliegende Linie sagt das
+        // nicht, dafuer muss man die Marken lesen.
+        //
+        // Zwei Verfahren, weil die Abschnitte verschieden gebaut sind: die
+        // gefahrenen Stuecke ueber strokeDashoffset (der Strich, der waechst),
+        // die Fusswege ueber die Deckkraft - deren dashArray IST schon die
+        // Punktreihe, ein zweites Strichmuster darueber loeschte sie.
+        gezeichnet.push({ kern: kern, fuss: fuss });
       });
+
+      if (bewegt()) {
+        var beginn = 0;
+        gezeichnet.forEach(function (g) {
+          var pfad = g.kern._path;
+          if (!pfad) return;
+          // 700 ms je gefahrenem Abschnitt, 380 je Fussweg: der Fussweg ist der
+          // kuerzere Teil und darf nicht laenger brauchen als die Fahrt.
+          var dauer = g.fuss ? 380 : 700;
+          if (g.fuss) {
+            pfad.animate([{ opacity: 0 }, { opacity: 1 }],
+              { duration: dauer, delay: beginn, easing: "cubic-bezier(.4,0,.2,1)",
+                fill: "backwards" });
+          } else {
+            var lang = pfad.getTotalLength();
+            pfad.animate(
+              [{ strokeDasharray: lang + " " + lang, strokeDashoffset: lang },
+               { strokeDasharray: lang + " " + lang, strokeDashoffset: 0 }],
+              { duration: dauer, delay: beginn, easing: "cubic-bezier(.4,0,.2,1)",
+                fill: "backwards" });
+          }
+          beginn += dauer - 120;   // leichte Ueberlappung, sonst stockt es
+        });
+      }
 
       // Ein- und Ausstieg als Halt-Marke. Die Zwischenhalte bekommen KEINE:
       // ihre Koordinaten stehen nicht in den Daten, und eine auf die Linie
@@ -1358,11 +1525,11 @@
       });
 
       L.marker([w.von.lat, w.von.lon], {
-        icon: L.divIcon({ className: "", html: ortSymbol("ankunft", false),
+        icon: L.divIcon({ className: "", html: ortSymbol(cfg.start_art, false),
                           iconSize: [34, 34], iconAnchor: [17, 17] }),
         title: w.von.name, riseOnHover: true
       }).addTo(wegEbene).bindPopup("<h3>" + w.von.name + "</h3>"
-        + "<p>Hier kommt der Zug an — der Start dieses Wegs.</p>" + mapsLink(w.von));
+        + "<p>" + cfg.start_text + "</p>" + mapsLink(w.von));
 
       wegBereich = L.latLngBounds(punkte);
       karteHotelAnpassen();
@@ -1377,9 +1544,14 @@
     // KEINE Uhrzeiten, anders als beim Bahn-Reiter: dort steht eine gebuchte
     // Fahrt, hier ein Rezept fuer jeden Tag. Eine Uhrzeit daneben liest sich
     // als Termin. Wie oft etwas faehrt, steht als gemessener Takt daneben.
-    var zeile = function (klasse, kopf, inhalt, farbe) {
-      return '<li class="' + klasse + '"'
-        + (farbe ? ' style="--spur:' + farbe + '"' : "") + ">"
+    // --i ist der Platz in der Folge: das Stylesheet rechnet daraus die
+    // Verzoegerung der Staffelung. Als blosse Zahl im Markup und nicht als
+    // fertige Millisekunde - so steht die Dauer an EINER Stelle, und
+    // --bewegung nimmt sie bei reduzierter Bewegung auf null herunter.
+    var zeile = function (klasse, kopf, inhalt, farbe, i) {
+      return '<li class="' + klasse + '" style="--i:' + (i || 0)
+        + (farbe ? ";--spur:" + farbe : "") + '">'
+        + ""
         + '<span class="weg-spur" aria-hidden="true"></span>'
         + '<span class="weg-haupt"><b class="weg-ort">' + kopf + "</b>"
         + (inhalt || "") + "</span></li>";
@@ -1392,12 +1564,21 @@
         if (a.art === "fuss") {
           return zeile("weg-teil weg-teil--fuss", start,
             '<span class="weg-tat"><b>' + a.minuten + " min</b> zu Fuß"
-            + (a.meter ? " · " + a.meter + " m" : "") + "</span>");
+            + (a.meter ? " · " + a.meter + " m" : "") + "</span>", null, i);
         }
-        // Alle gemessenen Linien, nicht nur die der Beispielfahrt: an diesem
-        // Bahnsteig faehrt jede von ihnen dorthin, und wer auf "S5" wartet,
-        // laesst drei Zuege durch, die genauso passen.
-        var marken = (v.linien && v.linien.length ? v.linien : [a.linie])
+        // Alle gemessenen Linien DIESES Abschnitts, nicht nur die der
+        // Beispielfahrt: an diesem Bahnsteig faehrt jede von ihnen dorthin, und
+        // wer auf "S5" wartet, laesst drei Zuege durch, die genauso passen.
+        //
+        // Je Abschnitt und nicht je Variante - bei einem Umstieg faehrt am
+        // ersten Bahnsteig etwas anderes als am zweiten. hol-weg.mjs schreibt
+        // die Liste seit dem 09.09.2026 an den Abschnitt; die zweite Zeile ist
+        // der Rueckfall fuer Daten von davor, und sie greift NUR ohne Umstieg,
+        // wo Variante und Abschnitt dasselbe bedeuten. Ein Rueckfall auf die
+        // Variantenliste mit Umstieg waere genau die falsche Behauptung.
+        var eigene = a.linien && a.linien.length ? a.linien
+          : (v.umstiege === 0 && v.linien && v.linien.length ? v.linien : [a.linie]);
+        var marken = eigene
           .filter(Boolean).map(function (l) { return linienMarke(l, false); }).join("");
         var halte = a.zwischenhalte || [];
         // Die Spur traegt die Farbe als Inline-Wert, weil sie aus den Daten
@@ -1409,9 +1590,9 @@
           + '<span class="weg-tat"><b>' + a.minuten + " min</b> · "
           + (halte.length + 1) + " Halte</span>"
           + (halte.length ? '<span class="weg-fein">über ' + halte.join(" · ") + "</span>" : ""),
-          farbe);
+          farbe, i);
       });
-      zeilen.push(zeile("weg-ziel", u.bezug.name, ""));
+      zeilen.push(zeile("weg-ziel", u.bezug.name, "", null, v.abschnitte.length));
       return '<ol class="weg">' + zeilen.join("") + "</ol>";
     };
 
@@ -1452,6 +1633,7 @@
       var balken = STUNDEN_ORDNUNG.map(function (h) {
         var n = v.stunden[h];
         return '<li class="takt-stunde' + (n ? "" : " takt-stunde--leer") + '"'
+          + ' style="--i:' + STUNDEN_ORDNUNG.indexOf(h) + '"'
           + ' title="' + zweiStellig(h) + " Uhr — "
           + (n ? n + (n === 1 ? " Fahrt" : " Fahrten") : "keine Fahrt") + '">'
           + '<i style="height:' + Math.round((n / hoch) * 100) + '%"></i></li>';
@@ -1531,8 +1713,8 @@
     // derselben Strichart wie auf der Karte. Damit ist der Knopf zugleich die
     // Legende des Wegs - eine zweite Legende darunter waere dieselbe Auskunft
     // ein zweites Mal, und die zweite driftet.
-    var navW = document.getElementById("weg-reiter");
-    var zielW = document.getElementById("weg-tafel");
+    var navW = document.getElementById(cfg.reiter);
+    var zielW = document.getElementById(cfg.tafel);
     var eintraege = [{ id: "umgebung", label: "Umgebung", variante: null }];
     if (w && w.varianten) {
       w.varianten.forEach(function (v) {
@@ -1567,7 +1749,7 @@
               + (art === "fuss" ? "fuss" : "voll") + '" style="--spur:'
               + wegFarbe(e.variante, art) + '"></span></span>'
             : '<span class="unter-marke" aria-hidden="true">'
-              + ortSymbol("unterkunft", false) + "</span>")
+              + ortSymbol(cfg.ziel_art, false) + "</span>")
           + "<span>" + e.label + "</span>"
           + (e.variante ? '<span class="unter-zahl">' + e.variante.minuten + " min</span>" : "");
         b.addEventListener("click", function () { zeigeW(e.id); });
@@ -1578,7 +1760,7 @@
     }
 
     // --- Filterleiste, gleiche Bauform wie die der Stadtkarte -----------------
-    var ulU = document.getElementById("legende-hotel");
+    var ulU = document.getElementById(cfg.legende);
     var eintragU = function (markeHtml, text, zahl, ebene) {
       var li = document.createElement("li");
       var b = document.createElement("button");
@@ -1614,10 +1796,65 @@
                    w ? w.quelle : null].filter(Boolean);
     var namen = [];
     quellen.forEach(function (q) { if (namen.indexOf(q.name) < 0) namen.push(q.name); });
-    document.getElementById("umgebung-fuss").textContent =
-      "Quellen: " + namen.join(" · ") + " — abgerufen "
+
+    // Eine Karte ohne Lokale ist eine AUSSAGE - aber nur, wenn dabeisteht, dass
+    // gesucht wurde. Ohne diesen Satz sieht "hier ist nichts" genauso aus wie
+    // "hier wurde nicht nachgesehen", und die Filterleiste zeigt dann einfach
+    // drei Schalter weniger. An der Filmstadt ist das der Normalfall: die
+    // Abfrage fand drei Betriebe, keiner hielt Bewertung und Gehzeit stand.
+    var verw = u.verworfen || {};
+    var grenze = (u.umkreis && u.umkreis.ueber_der_grenze
+                    ? u.umkreis.ueber_der_grenze.lokale : 0) || 0;
+    var geprueft = (u.lokale ? u.lokale.length : 0) + grenze
+      + (verw.zu_schwach || 0) + (verw.zu_wenige_stimmen || 0) + (verw.ohne_bewertung || 0);
+    var leer = (!u.lokale || !u.lokale.length)
+      ? "Kein Lokal in Gehweite: die Abfrage fand " + geprueft + " Betriebe im Umkreis von "
+        + u.umkreis.such_meter + " m Luftlinie, keiner davon hielt Bewertung und "
+        + "Gehzeit stand. "
+      : "";
+
+    document.getElementById(cfg.fuss).textContent = leer
+      + "Quellen: " + namen.join(" · ") + " — abgerufen "
       + deutsch(u.quellen.lokale.abgerufen) + ".";
-  })();
+
+    WEG_KARTEN[cfg.id] = { karte: karteHotel, anpassen: karteHotelAnpassen };
+  }
+
+  // Zweimal dieselbe Bauart, zwei Orte. Der Hotel-Reiter beantwortet "wo liegt
+  // die Unterkunft und wie komme ich vom Bahnhof hin", der Bavaria-Reiter "wo
+  // liegt die Filmstadt und wie komme ich vom Hotel hin". Dieselbe Frage, ein
+  // anderer Bezugspunkt - und darum dieselbe Funktion und keine zweite Fassung.
+  //
+  // Der Startpunkt des Wegs ist das, was auf dem jeweiligen Reiter schon
+  // feststeht: fuer das Hotel der Bahnhof, fuer die Filmstadt das Hotel.
+  wegKarte({
+    id: "hotel",
+    umgebung: DATEN.umgebung,
+    weg: DATEN.hotelweg,
+    karte: "karte-hotel",
+    reiter: "weg-reiter",
+    tafel: "weg-tafel",
+    legende: "legende-hotel",
+    fuss: "umgebung-fuss",
+    ziel_art: "unterkunft",
+    start_art: "ankunft",
+    start_text: "Hier kommt der Zug an — der Start dieses Wegs."
+  });
+
+  wegKarte({
+    id: "bavaria",
+    umgebung: DATEN.bavaria_umgebung,
+    weg: DATEN.bavaria_weg,
+    karte: "karte-bavaria",
+    reiter: "bavaria-reiter",
+    tafel: "bavaria-weg-tafel",
+    legende: "legende-bavaria",
+    fuss: "bavaria-fuss",
+    ziel_art: "film",
+    start_art: "unterkunft",
+    start_text: "Die Unterkunft — der Start dieses Wegs."
+  });
+
 
   // --- Innenstadt -----------------------------------------------------------
   // Die Karte ist hier der Inhalt, nicht die Illustration: sie steht ganz oben,
@@ -1948,6 +2185,33 @@
     // Je Verkehrsmittel eine EIGENE Ebene, nicht eine Sammelebene "Halte" -
     // dieselbe Regel wie auf der Umgebungskarte: wer die S-Bahn sucht, soll die
     // U-Bahn nicht mit einschalten muessen.
+    // ===== Die Unterkunft ===================================================
+    // Sie steht auf dieser Karte, seit man von ihr aus loslaeuft: die Entfernung
+    // in der Liste ist zum Marienplatz gerechnet, aber gelaufen wird vom Haus.
+    // Ohne die Marke muss man raten, wo das ist.
+    //
+    // KEINE Zeile in der Liste - die Liste beantwortet "wo esse ich was", und
+    // das Hotel ist keine Antwort darauf. Es ist Orientierung, so wie die
+    // Bahnhalte, und liegt darum auf einer eigenen Ebene mit eigenem Schalter.
+    // Die groessere Kiste (40 px) trennt es vom Beiwerk, so wie auf der
+    // Umgebungskarte.
+    var hausEbene = L.layerGroup();
+    var haus = DATEN.orte.filter(function (o) { return o.art === "unterkunft"; })[0];
+    if (haus) {
+      L.marker([haus.lat, haus.lon], {
+        icon: L.divIcon({ className: "", html: ortSymbol("unterkunft", true),
+                          iconSize: [40, 40], iconAnchor: [20, 20] }),
+        title: haus.name + " — die Unterkunft",
+        keyboard: false, riseOnHover: true
+      }).addTo(hausEbene).bindPopup("<h3>" + haus.name + "</h3>"
+        + "<p>Die Unterkunft. Die Entfernungen in der Liste sind zum "
+        + bezug.name + " gerechnet, nicht hierher.</p>"
+        + (haus.notiz ? "<p>" + haus.notiz + "</p>" : "")
+        + mapsLink(haus)
+        + (haus.osm ? '<p class="popup-fein">OSM ' + haus.osm + "</p>" : ""));
+      hausEbene.addTo(karteInnen);
+    }
+
     var halteEbenen = { sbahn: L.layerGroup(), ubahn: L.layerGroup() };
     var halteZahl = { sbahn: 0, ubahn: 0 };
     if (DATEN.bahn && DATEN.bahn.halte) {
@@ -2444,6 +2708,13 @@
     // "S-Bahn / DB" heisst der Knopf, nicht "einblenden": der Aus-Zustand
     // streicht den Text durch, und "einblenden" durchgestrichen liest sich wie
     // "geht nicht" statt wie "ist aus".
+    // Die Unterkunft steht VOR den Bahnhalten in der Legende: sie ist der eine
+    // Punkt, den man zuerst sucht, und es gibt sie genau einmal.
+    if (haus) {
+      schalter(ortSymbol("unterkunft", false), "Unterkunft", 0, function (an) {
+        if (an) hausEbene.addTo(karteInnen); else karteInnen.removeLayer(hausEbene);
+      });
+    }
     ["sbahn", "ubahn"].forEach(function (art) {
       if (!halteZahl[art]) return;
       halteEbenen[art].addTo(karteInnen);
@@ -2613,11 +2884,32 @@
     // neu vermisst - das gilt fuer ALLE Karten. Wer eine vierte dazustellt
     // und diese Zeile vergisst, bekommt eine graue Flaeche, die aussieht wie eine
     // Karte, die noch laedt.
+    // Der Reiter tritt auf, statt zu erscheinen. Klasse ab, Umbruch erzwingen,
+    // Klasse dran: ohne den Zwischenschritt startet dieselbe Animation beim
+    // zweiten Oeffnen nicht neu - der Browser sieht keine Aenderung.
+    //
+    // Die Klasse steht am ABSCHNITT, die Bewegung im Stylesheet. Der
+    // Ruhezustand bleibt dabei der sichtbare: die Elemente bekommen ihre 0 nur
+    // aus einem @keyframes mit fill-mode backwards. Mit opacity:0 als Grundwert
+    // waere der halbe Reiter fuer pruef-farben.mjs unsichtbar - das Skript
+    // ueberspringt alles unter 0,1 Deckkraft und meldete trotzdem gruen.
+    var abschnitt = eintrag && eintrag.ansicht
+      ? document.getElementById(eintrag.ansicht) : null;
+    if (abschnitt) {
+      abschnitt.classList.remove("tritt-auf");
+      void abschnitt.offsetWidth;
+      abschnitt.classList.add("tritt-auf");
+    }
     if (id === "karte") karte.invalidateSize();
-    if (id === "hotel" && karteHotel) {
-      karteHotel.invalidateSize();
+    // Die Weg-Karten melden sich selbst an (WEG_KARTEN). Frueher stand hier je
+    // Reiter eine eigene Zeile; der zweite Reiter derselben Bauart haette sie
+    // ein zweites Mal gebraucht, und wer sie vergisst, bekommt eine graue
+    // Flaeche, die aussieht wie eine Karte, die noch laedt.
+    var wk = WEG_KARTEN[id];
+    if (wk) {
+      wk.karte.invalidateSize();
       // Erst jetzt hat der Behaelter eine Breite - siehe karteHotelAnpassen.
-      if (karteHotelAnpassen) karteHotelAnpassen();
+      if (wk.anpassen) wk.anpassen();
     }
     if (id === "innenstadt" && karteInnen) karteInnen.invalidateSize();
     // Der Hash macht einen Menuepunkt verlinkbar und ueberlebt ein Neuladen.

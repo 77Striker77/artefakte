@@ -308,7 +308,11 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    zu uebernehmen. */
 /* Die Umgebungskarte ist flacher als die Stadtkarte: sie zeigt einen Kilometer
    Umkreis, nicht zwanzig - mehr Hoehe waere leerer Stadtplan. */
-#karte-hotel{height:clamp(340px,46vh,520px); margin:18px 0 0;
+/* Die Bavaria-Karte ist dieselbe Bauart und derselbe Massstab — ein Selektor
+   fuer beide, keine zweite Regel: eine Kopie driftet beim naechsten
+   Nachbessern, und dann sehen die zwei Reiter verschieden aus, ohne dass es
+   jemand entschieden haette. */
+#karte-hotel,#karte-bavaria{height:clamp(340px,46vh,520px); margin:18px 0 0;
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
        background:var(--grund-tief); z-index:0}
 /* Die Innenstadtkarte zeigt rund drei Kilometer und traegt 40 Marken - zwischen
@@ -395,12 +399,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    sie in der Legende und in der Zeile. */
 .ort-pin.smash{color:var(--m-smash)}        /* 5,51:1 · H323 · Burger */
 /* FAST FOOD: eigenes Zeichen, GELIEHENE Farbe. Der Farbkreis hat seit dem
-   09.09.2026 keine freie Luecke mehr - --m-smash war die letzte. Geliehen wird
-   darum --m-unterkunft, das auf DIESER Karte nicht vorkommt (die Unterkunft
-   liegt auf der Stadt- und der Hotelkarte). Genau die Wiederverwendung, die
-   die Umgebungskarte schon praktiziert: eine eigene Legende macht sie
-   eindeutig. Getrennt wird hier ohnehin ueber das Zeichen. */
-.ort-pin.fastfood{color:var(--m-unterkunft)}  /* 6,04:1 · H181 · Pommestüte */
+   09.09.2026 keine freie Luecke mehr - --m-smash war die letzte.
+   GELIEHEN WIRD --m-park, NICHT --m-unterkunft. Letzteres war der erste Griff
+   und hielt genau einen Tag: seit die Unterkunft auf dieser Karte steht, waere
+   es zweimal dasselbe Petrol - einmal Bett, einmal Pommestuete. Zwei Zeichen
+   in einer Farbe sind auf einer Karte mit neun Ebenen eine Verwechslung, die
+   niemand aufloest. --m-park kommt hier nicht vor. */
+.ort-pin.fastfood{color:var(--m-park)}        /* 4,99:1 · H 86 · Pommestüte */
 
 /* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
    keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
@@ -1181,4 +1186,116 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   .band-gleis{grid-column:3; padding-top:1px}
   .platz-felder{flex-direction:column}
   .fahrt{padding:15px 14px}
+}
+
+/* ===================== Bewegung auf dem Hotel-Reiter =====================
+   DIE REGEL, die hier zweimal Arbeit gespart haette: der Ruhezustand ist der
+   SICHTBARE. Kein Element traegt opacity:0 im Stylesheet - die 0 kommt
+   ausschliesslich aus einem @keyframes mit `backwards`, also nur, solange eine
+   Animation laeuft oder auf ihre Verzoegerung wartet.
+
+   Warum das nicht Geschmack ist: pruef-farben.mjs deckt die Reiter zum Messen
+   auf, ruft aber zeige() nicht - die Klasse .tritt-auf kaeme also nie. Mit
+   opacity:0 als Grundwert waere der halbe Reiter unsichtbar, das Skript
+   ueberspringt alles unter 0,1 Deckkraft, und der Lauf meldete "0 Verstoesse"
+   ueber einer Seite, die es nie angesehen hat. Dieselbe Fehlerklasse wie die
+   vier Reiter, die der Pruefstand monatelang uebersprungen hat.
+
+   --bewegung ist der EINE Faktor (0 bei prefers-reduced-motion). Er steht in
+   jeder Dauer und in jeder Verzoegerung, nicht in einem zweiten Regelsatz.  */
+
+@keyframes tritt-auf{
+  from{ opacity:0; transform:translateY(10px) }
+  to  { opacity:1; transform:none }
+}
+/* Die Spur waechst von oben nach unten - in Fahrtrichtung, wie die Linie auf
+   der Karte. */
+@keyframes spur-waechst{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
+/* Balken wachsen aus der Grundlinie, nicht aus der Mitte. */
+@keyframes balken-waechst{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
+
+/* --- Der Auftritt des Reiters --------------------------------------------
+   Vier Bloecke, gestaffelt in Lesereihenfolge: Tafel, Untermenue, Karte,
+   Legende. 60 ms Abstand - eng genug, dass es eine Bewegung ist und keine
+   Aufzaehlung. */
+.tritt-auf > *{
+  animation:tritt-auf calc(var(--bewegung) * 380ms) cubic-bezier(.2,.7,.3,1) backwards}
+.tritt-auf > *:nth-child(2){ animation-delay:calc(var(--bewegung) *  60ms) }
+.tritt-auf > *:nth-child(3){ animation-delay:calc(var(--bewegung) * 120ms) }
+.tritt-auf > *:nth-child(4){ animation-delay:calc(var(--bewegung) * 180ms) }
+.tritt-auf > *:nth-child(n+5){ animation-delay:calc(var(--bewegung) * 240ms) }
+
+/* --- Die Unterknoepfe laufen von links ein ------------------------------- */
+.tritt-auf .untermenue .unterknopf{
+  animation:tritt-auf calc(var(--bewegung) * 300ms) cubic-bezier(.2,.7,.3,1) backwards}
+.tritt-auf .untermenue .unterknopf:nth-child(1){ animation-delay:calc(var(--bewegung) * 140ms) }
+.tritt-auf .untermenue .unterknopf:nth-child(2){ animation-delay:calc(var(--bewegung) * 190ms) }
+.tritt-auf .untermenue .unterknopf:nth-child(3){ animation-delay:calc(var(--bewegung) * 240ms) }
+.tritt-auf .untermenue .unterknopf:nth-child(n+4){ animation-delay:calc(var(--bewegung) * 290ms) }
+
+/* --- Das Streckenband ----------------------------------------------------
+   Laeuft IMMER, nicht nur beim Reiterwechsel: es wird bei jedem Klick auf
+   einen Unterknopf neu erzeugt, und eine Folge, die einfach dasteht, liest
+   sich nicht als Folge. --i kommt aus dem Skript. */
+.weg > li{
+  animation:tritt-auf calc(var(--bewegung) * 320ms) cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--bewegung) * var(--i) * 90ms)}
+.weg-teil .weg-spur::before{
+  transform-origin:top;
+  animation:spur-waechst calc(var(--bewegung) * 340ms) cubic-bezier(.4,0,.2,1) backwards;
+  animation-delay:calc(var(--bewegung) * (var(--i) * 90ms + 120ms))}
+
+/* --- Die Kennzahlen und die Anbindung ------------------------------------ */
+.fahrt .platz-felder .platz-feld{
+  animation:tritt-auf calc(var(--bewegung) * 320ms) cubic-bezier(.2,.7,.3,1) backwards}
+.fahrt .platz-felder .platz-feld:nth-child(2){ animation-delay:calc(var(--bewegung) * 70ms) }
+.fahrt .platz-felder .platz-feld:nth-child(3){ animation-delay:calc(var(--bewegung) * 140ms) }
+.anb-zeile{
+  animation:tritt-auf calc(var(--bewegung) * 320ms) cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--bewegung) * var(--i) * 80ms)}
+
+/* --- Der Taktstreifen: eine Welle von links nach rechts -------------------
+   24 Balken zu je 22 ms sind 506 ms - lang genug, dass die Welle sichtbar
+   ueber den Tag laeuft, kurz genug, dass niemand darauf wartet. */
+.takt-stunde i{
+  transform-origin:bottom;
+  animation:balken-waechst calc(var(--bewegung) * 300ms) cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--bewegung) * var(--i) * 22ms)}
+
+/* --- Die Unterknoepfe reagieren auf den Druck ---------------------------- */
+.unterknopf{
+  transition:transform calc(var(--bewegung) * 120ms) cubic-bezier(.2,.7,.3,1),
+             box-shadow calc(var(--bewegung) * 120ms) cubic-bezier(.2,.7,.3,1)}
+/* Der gedrueckte Knopf sinkt auf seinen Schatten - dieselbe Geste, die die
+   harten Schatten der Seite ohnehin behaupten. */
+.unterknopf:active{ transform:translate(3px,3px) }
+.unterknopf[aria-pressed="true"]:active{ box-shadow:none }
+.hotel-tel{
+  transition:transform calc(var(--bewegung) * 120ms) cubic-bezier(.2,.7,.3,1)}
+.hotel-tel:active{ transform:translate(2px,2px) }
+
+/* ===================== Handy: die Karte nach oben ========================
+   Am Schreibtisch steht das Band ueber der Karte und beide sind zugleich im
+   Bild. Am Handy nicht: Kennzahlen, Band und Taktstreifen sind zusammen rund
+   600 px, die Karte begann also erst nach zweimal Wischen - und der Knopf, den
+   man gerade gedrueckt hat, zeigt seine Wirkung dort unten.
+
+   Darum am Handy: Knoepfe, Karte, Legende - dann erst die Zahlen. Umgesetzt
+   ueber `order`, nicht durch Umbau des Markups: die Lesereihenfolge fuer
+   Vorlesehilfen bleibt damit die des Dokuments, und am Schreibtisch aendert
+   sich nichts. */
+@media (max-width:700px){
+  #feld-hotel{ display:flex; flex-direction:column }
+  #feld-hotel > .ansicht-titel{ order:0 }
+  #feld-hotel > #hotel-tafel{ order:1 }
+  #feld-hotel > .tafel-titel{ order:2 }
+  #feld-hotel > #weg-reiter{ order:3 }
+  #feld-hotel > #karte-hotel{ order:4 }
+  #feld-hotel > #legende-hotel{ order:5 }
+  #feld-hotel > #weg-tafel{ order:6 }
+  #feld-hotel > .grund-fuss{ order:7 }
+  /* Die Karte steht jetzt direkt unter den Knoepfen und braucht den Abstand
+     nach oben, den vorher das Band mitgebracht hat. */
+  #karte-hotel{ margin-top:4px }
+  #weg-tafel{ margin-top:22px }
 }

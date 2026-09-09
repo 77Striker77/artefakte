@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700;800&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=e9c8bb20">
+<link rel="stylesheet" href="stil.css?v=caef222a">
 </head>
 <body>
 
@@ -104,6 +104,28 @@
     <p class="grund-fuss" id="gastro-fuss"></p>
   </section>
 
+  <!-- Bavaria: dieselbe Bauform wie der Hotel-Reiter - eine Tafel, darunter EINE
+       Karte, deren Untermenue den Ausschnitt schaltet. Was sich unterscheidet,
+       ist der Bezugspunkt des Wegs: hier ist nicht der Hauptbahnhof der Start,
+       sondern das Hotel. Wer am Bahnhof steht, fuhr noch nicht ins Hotel; wer
+       zur Filmstadt will, kommt von dort.
+
+       KEINE Reisedaten-Infobox: der Reiter handelt vom Ziel, nicht von der
+       Buchung - derselbe Schalter wie bei 'Innenstadt' und 'Hotel'. -->
+  <section class="ansicht" id="feld-bavaria" aria-labelledby="menue-bavaria" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Bavaria Filmstadt</h2>
+    <div id="bavaria-tafel"></div>
+
+    <h3 class="tafel-titel">Wo es liegt und wie man hinkommt</h3>
+    <nav class="untermenue" id="bavaria-reiter" aria-label="Was die Karte zeigt"></nav>
+    <div id="bavaria-weg-tafel"></div>
+    <div id="karte-bavaria" role="region"
+         aria-label="Karte der Bavaria Filmstadt, ihrer Umgebung und des Wegs von der Unterkunft"></div>
+    <ul class="legende" id="legende-bavaria"></ul>
+    <!-- .grund-fuss, NICHT .tafel-fuss - siehe die Begruendung am Hotel-Reiter. -->
+    <p class="grund-fuss" id="bavaria-fuss"></p>
+  </section>
+
   <!-- Bahn: ein Untermenue je Fahrt, plus 'Alternativen' fuer die ausgefallene
        Hinfahrt. Die Knoepfe stehen NICHT hier, sondern kommen aus reise.json -
        eine dritte Fahrt soll ein Datensatz sein und keine HTML-Aenderung.
@@ -125,7 +147,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=e9c8bb20"></script>
-<script src="karte.js?v=e9c8bb20"></script>
+<script src="orte.js?v=caef222a"></script>
+<script src="karte.js?v=caef222a"></script>
 </body>
 </html>
