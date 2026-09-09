@@ -351,7 +351,7 @@
       }).addTo(g);
 
       linie.halte.forEach(function (h) {
-        L.marker([h.lat, h.lon], {
+        var m = L.marker([h.lat, h.lon], {
           icon: L.divIcon({
             className: "",
             html: '<i class="halt-pin linie"><b>' + VERKEHR.linie.kuerzel + "</b></i>",
