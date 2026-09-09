@@ -1782,7 +1782,161 @@
       e.el = d;
     });
 
-@@UMSCHALTEN@@
+    // ===== Zwei Vorgänge, zwei Bewegungen ==================================
+    // UMSORTIEREN und KATEGORIEWECHSEL sehen gleich aus - ein Klick, die Liste
+    // ist anders -, sind aber grundverschieden, und deshalb bewegen sie sich
+    // verschieden:
+    //
+    //   UMSORTIEREN    dieselben Zeilen in anderer Reihenfolge. Sie WANDERN,
+    //                  und genau dafuer ist FLIP da: messen, aendern, optisch
+    //                  zurueckschieben, zurueckfuehren. Nur transform, also auf
+    //                  dem Compositor.
+    //
+    //   KATEGORIEWECHSEL  andere Zeilen. Da wandert nichts, da wird
+    //                  ausgetauscht - also wird UEBERBLENDET, und die Tafel
+    //                  waechst oder schrumpft dabei mit.
+    //
+    // Zwei Anlaeufe waren vorher falsch, beide gemessen:
+    //   1. Nur FLIP. Bei disjunkten Kategorien hat fast keine Zeile ein
+    //      "vorher" und ein "nachher" - 12 verschwanden schlagartig, 22
+    //      erschienen schlagartig, zwei glitten sinnlos umher.
+    //   2. Zeilen beim Abgang auf position:absolute legen (so macht es
+    //      wert-und-geste.html fuer EINZELNE Posten). Bei 53 gehenden Zeilen
+    //      fiel die Tafel schlagartig von 3000 auf 330 px zusammen, waehrend
+    //      die Gehenden noch an ihrer alten Stelle standen - sie ragten weit
+    //      ueber die Tafel hinaus, und alles darunter sprang nach oben.
+    //      Das Muster taugt fuer ein paar Posten, nicht fuer einen Austausch.
+    //
+    // Die Hoehe wird mitanimiert. Das ist eine Layout-Eigenschaft und damit
+    // teuer - aber es ist EIN Kasten, nicht 59, und es ist der Unterschied
+    // zwischen "die Liste wechselt" und "die Seite springt".
+    var ruhig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var DAUER = { aus: 130, ein: 190, hoehe: 260, flip: 420 };
+    var wechselLauf = 0;
+    var offeneAbgaenge = [];
+
+    // soll: Map<Element, boolean> - was NACHHER sichtbar ist.
+    // ordnen: baut die Reihenfolge im DOM um.
+    var umschalten = function (soll, ordnen) {
+      // Ein zweiter Klick darf den ersten nicht verdoppeln: was laeuft, wird
+      // sofort abgeschlossen. Sonst liegen zwei Animationen auf demselben
+      // Kasten und die zweite raeumt einen Zustand auf, den die erste braucht.
+      offeneAbgaenge.forEach(function (f) { f(); });
+      offeneAbgaenge = [];
+      wechselLauf++;
+
+      var wechsel = alle.some(function (e) { return e.el.hidden === !!soll.get(e.el); });
+
+      if (ruhig || !document.getElementById("feld-innenstadt").offsetParent) {
+        // Kein Bewegungsbedarf: entweder abbestellt, oder der Reiter ist gar
+        // nicht sichtbar - dann waere jede Messung null und die Animation
+        // liefe gegen eine Wand.
+        alle.forEach(function (e) { e.el.hidden = !soll.get(e.el); });
+        return ordnen();
+      }
+
+      // --- Fall 1: nur umsortiert -------------------------------------------
+      if (!wechsel) {
+        var vorher = new Map();
+        alle.forEach(function (e) {
+          e.el.style.transform = "";
+          vorher.set(e.el, e.el.getBoundingClientRect());
+        });
+        ordnen();
+        var bewegte = [];
+        alle.forEach(function (e) {
+          if (e.el.hidden) return;
+          var alt = vorher.get(e.el), neu = e.el.getBoundingClientRect();
+          var dx = alt.left - neu.left, dy = alt.top - neu.top;
+          if (!dx && !dy) return;
+          e.el.style.transform = "translate(" + dx + "px," + dy + "px)";
+          bewegte.push([e.el, dx, dy]);
+        });
+        void document.body.offsetWidth;                 // Startzustand erzwingen
+        bewegte.forEach(function (b) {
+          var el = b[0];
+          el.style.willChange = "transform";
+          var a = el.animate(
+            [{ transform: "translate(" + b[1] + "px," + b[2] + "px)" }, { transform: "translate(0,0)" }],
+            { duration: DAUER.flip, easing: "cubic-bezier(.22,1,.36,1)", fill: "none" });
+          el.style.transform = "";
+          a.finished.then(function () { el.style.willChange = ""; }).catch(function () {});
+        });
+        return;
+      }
+
+      // --- Fall 2: anderer Inhalt -------------------------------------------
+      var lauf = wechselLauf;
+      var h0 = tafelEl.getBoundingClientRect().height;
+      // overflow nur WAEHREND der Bewegung: dauerhaft wuerde es den Fokusring
+      // der obersten und untersten Zeile abschneiden.
+      tafelEl.style.overflow = "hidden";
+      tafelEl.style.height = h0 + "px";
+
+      var aufraeumen = function () {
+        tafelEl.style.overflow = tafelEl.style.height = "";
+        zeilenEl.style.opacity = zeilenEl.style.willChange = "";
+      };
+      var laufende = [];
+      var abbrechen = function () {
+        laufende.forEach(function (a) { try { a.cancel(); } catch (x) {} });
+        alle.forEach(function (e) { e.el.hidden = !soll.get(e.el); });
+        ordnen();
+        aufraeumen();
+      };
+      offeneAbgaenge.push(abbrechen);
+
+      zeilenEl.style.willChange = "opacity";
+      var aus = zeilenEl.animate([{ opacity: 1 }, { opacity: 0 }],
+        { duration: DAUER.aus, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+      laufende.push(aus);
+
+      aus.finished.then(function () {
+        if (lauf !== wechselLauf) return;
+        // Der Austausch passiert UNSICHTBAR. Die Hoehe springt dabei nicht:
+        // sie steht noch auf h0 und wird gleich gefuehrt.
+        alle.forEach(function (e) { e.el.hidden = !soll.get(e.el); });
+        ordnen();
+        tafelEl.style.height = "";
+        var h1 = tafelEl.getBoundingClientRect().height;
+
+        // DIE HOEHE WIRD NUR GEFUEHRT, WENN MAN IHR FOLGEN KANN. Gemessen am
+        // 09.09.2026: von "Alles" auf "Burger" schrumpft die Tafel um 2648 px.
+        // Ueber 260 ms sind das 717 px je Bild - das ist kein Uebergang mehr,
+        // sondern ein Ruck, und alles unter der Liste rutscht mit.
+        //
+        // Die Grenze ist eine Bildschirmhoehe: was weiter springt, als man
+        // sieht, kann man ohnehin nicht verfolgen. Darueber wird die Hoehe
+        // hart gesetzt - waehrend die Zeilen auf Deckkraft 0 stehen, also
+        // unsichtbar. Ein sauberer Schnitt schlaegt eine Bewegung, die zu
+        // schnell ist, um eine zu sein.
+        var fuehrbar = Math.abs(h1 - h0) <= window.innerHeight;
+        var ein = zeilenEl.animate([{ opacity: 0 }, { opacity: 1 }],
+          { duration: DAUER.ein, delay: fuehrbar ? 40 : 0,
+            easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+        laufende.push(ein);
+        var enden = [ein.finished];
+
+        if (fuehrbar) {
+          tafelEl.style.height = h0 + "px";
+          void tafelEl.offsetWidth;
+          var hoch = tafelEl.animate([{ height: h0 + "px" }, { height: h1 + "px" }],
+            { duration: DAUER.hoehe, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+          laufende.push(hoch);
+          enden.push(hoch.finished);
+        } else {
+          tafelEl.style.height = tafelEl.style.overflow = "";
+        }
+
+        Promise.all(enden).then(function () {
+          if (lauf !== wechselLauf) return;
+          var i = offeneAbgaenge.indexOf(abbrechen);
+          if (i >= 0) offeneAbgaenge.splice(i, 1);
+          laufende.forEach(function (a) { try { a.cancel(); } catch (x) {} });
+          aufraeumen();
+        }).catch(function () {});
+      }).catch(function () {});
+    };
 
     // ===== Sortieren statt Suchen ==========================================
     // Hier stand bis zum 09.09.2026 ein Suchfeld. Es ist raus: bei 59 Zeilen,

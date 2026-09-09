@@ -585,13 +585,12 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Zeile traegt Name, Ort, Wochenstreifen und Note; die Prosa liegt in <details>
    und kommt auf Abruf. Das ist der Unterschied zwischen 19 000 px Scrollhoehe
    und 2 600 px bei gleichem Inhalt. */
-/* position:relative ist Pflicht, nicht Kosmetik: eine Zeile, die gerade
-   verschwindet, wird kurz auf position:absolute gelegt, damit sie ihren Platz
-   SOFORT freigibt und die Nachbarn waehrend der Blende nachruecken statt am
-   Ende zu springen. Ohne einen positionierten Vorfahren bezoege sie ihre
-   Koordinaten auf die Seite und flaege quer durchs Bild. */
-.katalog{position:relative; background:var(--flaeche); color:var(--tinte);
+.katalog{background:var(--flaeche); color:var(--tinte);
          border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+/* Die Zeilen in einem eigenen Behaelter: beim Kategoriewechsel wird nur DIESER
+   ueberblendet, die Kopfzeile mit den Sortierknoepfen bleibt stehen. Eine
+   Deckkraft auf der ganzen Tafel naehme sie mit. */
+.katalog-zeilen{display:block}
 .ort{border-top:2px solid var(--linie); border-left:5px solid transparent}
 .ort:first-child{border-top:0}
 /* Die Kategoriefarbe als KANTE, nicht als Flaeche - so will es die Bildsprache
