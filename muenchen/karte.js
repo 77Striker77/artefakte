@@ -271,31 +271,61 @@
       var an = b.dataset.id === id;
       if (an) b.setAttribute("aria-current", "page");
       else b.removeAttribute("aria-current");
+      // Der Dauerzustand haengt NICHT allein an der Farbe (WCAG 1.4.1): die
+      // aktive Tafel wechselt den Grund UND traegt einen Balken an der
+      // Unterkante. data-aktiv steht am <li>, damit der Balken ohne :has()
+      // auskommt.
+      b.parentNode.dataset.aktiv = an ? "true" : "false";
     });
     if (id === "karte") karte.invalidateSize();
-    // Der Hash macht einen Menuepunkt verlinkbar und ueberlebt einen Neuladen.
-    if (history.replaceState) history.replaceState(null, "", "#" + id);
+    // Der Hash macht einen Menuepunkt verlinkbar und ueberlebt ein Neuladen.
+    // Das Praefix ist Pflicht, nicht Zierde: ein blankes "#karte" traf die id
+    // des Kartenbehaelters, worauf der Browser dorthin sprang und die Seite mit
+    // dem Kopf ausserhalb des Bildes aufging. Dasselbe war vorher bei "#quellen"
+    // passiert. Ein Praefix schliesst die ganze Fehlerklasse aus, statt sie
+    // Ansicht fuer Ansicht nachzuraeumen.
+    if (history.replaceState) history.replaceState(null, "", "#ansicht-" + id);
   }
 
+  // Markup nach dem Muster glow-menu aus der Bausteinbibliothek: jeder Eintrag
+  // hat eine Vorder- und eine Rueckseite, die beim Ueberfahren um die Unterkante
+  // kippen. Die Rueckseite traegt aria-hidden, sonst liest die Vorlesehilfe
+  // jeden Punkt doppelt. Kein role="menubar" - diese Rolle verpflichtet zu
+  // Pfeiltasten-Navigation mit EINEM Tabstopp, und eine Seitennavigation ist
+  // keine Menueleiste im ARIA-Sinn. <nav> plus Liste ist richtig.
+  var liste = document.createElement("ul");
+  liste.className = "menue-liste";
+
   DATEN.menue.forEach(function (m) {
-    var el;
+    var li = document.createElement("li");
+    li.className = "menue-eintrag";
+
+    var el = document.createElement(m.seite ? "a" : "button");
     if (m.seite) {
-      el = document.createElement("a");
       el.href = m.seite;
     } else {
-      el = document.createElement("button");
       el.type = "button";
       el.dataset.id = m.id;
       el.addEventListener("click", function () { zeige(m.id); });
       knoepfe.push(el);
     }
     el.id = "menue-" + m.id;
-    el.className = "menue-punkt";
-    el.textContent = m.label;
-    nav.appendChild(el);
-  });
+    el.className = "menue-knopf";
+    el.innerHTML =
+      '<span class="menue-flaeche">' +
+        '<span class="menue-seite menue-seite--vorn"></span>' +
+        '<span class="menue-seite menue-seite--hinten" aria-hidden="true"></span>' +
+      "</span>" +
+      '<span class="menue-marke" aria-hidden="true"></span>';
+    el.querySelector(".menue-seite--vorn").textContent = m.label;
+    el.querySelector(".menue-seite--hinten").textContent = m.label;
 
-  var start = location.hash.slice(1);
+    li.appendChild(el);
+    liste.appendChild(li);
+  });
+  nav.appendChild(liste);
+
+  var start = location.hash.replace(/^#ansicht-/, "");
   zeige(DATEN.menue.some(function (m) { return m.id === start && m.ansicht; })
     ? start : DATEN.menue[0].id);
 })();

@@ -109,24 +109,69 @@ body{
          color:var(--auf-grund-leise); text-transform:uppercase}
 
 /* ---------- Menueleiste ----------
+   Verhalten uebernommen aus glow-menu (Design_AI/artefakt-bausteine): ein --t je
+   Eintrag treibt den Umschlag um die Unterkante, --bewegung ist der eine
+   Schalter fuer alles Bewegte. Die OPTIK der Vorlage ist bewusst NICHT
+   uebernommen - runde Ecken, backdrop-filter und Lichtschein widersprechen der
+   Bildsprache dieses Projekts ("dicker Umriss, harter Versatz, keine runden
+   Ecken", knowledge/design/principles.md). Uebernommen wird das Muster, nicht
+   die Haut.
+
    Sie sitzt im Kopf und waechst nach rechts; auf schmalen Geraeten umbricht sie
-   in eine zweite Zeile, statt zu scrollen oder zu ueberlaufen. margin-left:auto
-   schiebt sie von der Marke weg, solange Platz ist. Der aktive Punkt ist eine
-   helle Tafel - dieselbe Sprache wie die Inhaltsflaechen darunter. */
-.menue{display:flex; flex-wrap:wrap; gap:6px; margin-left:auto}
-.menue-punkt{
-  font-family:var(--pixel); font-size:16px; line-height:1;
-  padding:10px 15px; cursor:pointer; text-decoration:none;
-  background:transparent; color:var(--auf-grund-leise);   /* 9,45:1 auf --grund-tief */
+   in eine zweite Zeile. ACHTUNG beim Wachsen: ab etwa fuenf Eintraegen reicht
+   der Umbruch nicht mehr, dann gehoert auf schmale Geraete etwas anderes hin -
+   Schieben ist ein Notausgang, keine Navigation. */
+@property --t { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+:root{ --bewegung:1 }
+@media (prefers-reduced-motion: reduce){ :root{ --bewegung:0 } }
+
+.menue{margin-left:auto}
+.menue-liste{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0;
+             list-style:none}
+
+.menue-eintrag{--t:0; position:relative;
+  transition:--t calc(var(--bewegung) * 320ms + 1ms) cubic-bezier(.4,0,.2,1)}
+.menue-eintrag:hover, .menue-eintrag:focus-within{--t:1}
+
+.menue-knopf{
+  display:block; margin:0; padding:0; cursor:pointer; text-decoration:none;
+  background:transparent; color:inherit; font:inherit;
   border:2px solid transparent}
-.menue-punkt:hover{color:var(--auf-grund); border-color:var(--akzent)}
-.menue-punkt[aria-current="page"]{
-  background:var(--flaeche); color:var(--tinte);          /* 16,87:1 */
-  border-color:var(--umriss)}
+.menue-knopf[aria-current="page"]{
+  background:var(--flaeche); border-color:var(--umriss)}
+
+/* perspective am Rahmen, nicht an den Seiten: sonst kippt jede Seite um ihre
+   eigene Achse und die beiden laufen auseinander. */
+.menue-flaeche{position:relative; display:block; perspective:600px}
+.menue-seite{
+  display:block; padding:10px 15px;
+  font-family:var(--pixel); font-size:16px; line-height:1; white-space:nowrap;
+  color:var(--auf-grund-leise)}                    /* 9,45:1 auf --grund-tief */
+.menue-seite--vorn{
+  transform:rotateX(calc(var(--t) * var(--bewegung) * -90deg));
+  transform-origin:center bottom;
+  opacity:calc(1 - var(--t) * var(--bewegung))}
+.menue-seite--hinten{
+  position:absolute; inset:0;
+  transform:rotateX(calc((1 - var(--t)) * var(--bewegung) * 90deg));
+  transform-origin:center top;
+  opacity:calc(var(--t) * var(--bewegung));
+  color:var(--auf-grund)}                          /* 16,00:1 auf --grund-tief */
+.menue-knopf[aria-current="page"] .menue-seite{color:var(--tinte)}  /* 16,87:1 */
+
+/* Der Dauerzustand haengt nicht allein an der Farbe (WCAG 1.4.1): die aktive
+   Tafel wechselt den Grund UND traegt diesen Balken. */
+.menue-marke{
+  position:absolute; left:8px; right:8px; bottom:-2px; height:3px;
+  background:var(--akzent); opacity:0; pointer-events:none}
+.menue-eintrag[data-aktiv="true"] .menue-marke{opacity:1}
 
 @media (max-width:640px){
   .menue{margin-left:0; width:100%}
-  .menue-punkt{flex:1 1 auto; text-align:center}
+  .menue-liste{width:100%}
+  .menue-eintrag{flex:1 1 auto}
+  .menue-seite{text-align:center}
 }
 
 main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
