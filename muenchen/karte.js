@@ -581,15 +581,26 @@
           + (gz("fruehstueck", keineZeit) === 1 ? " liegt" : "en liegen")
           + " gar nicht vor und steht als <em>unbekannt</em>.";
       },
-      burger: function (n) {
-        return "Smash-Burger-Läden aus der Münchner Food-Presse, je Eintrag mit Beleg. "
-          + "Die Namensprobe beim Umstellen auf die Places API hat hier zwei Fehler gefunden, "
-          + "die vorher unbemerkt in den Daten standen: „SMASH – Burger &amp; Bar“ heißt "
-          + "„SMASH OR PASS – BURGER &amp; BAR“, und King Loui war mit einer Adresse verzeichnet, "
-          + "unter der heute ein Nudelrestaurant sitzt — das Lokal liegt am Harras. "
-          + "Die Bewertungen sind neu: vorher hatte keiner der " + wort(n) + " eine. "
-          + "Bei einem Haus widersprechen sich zwei Preisquellen aus derselben Zeit; keine gilt "
-          + "als gesichert.";
+      burger: function (n, qq) {
+        var presse = gz("burger", function (o) { return o.auswahl !== "abfrage"; });
+        var abfrage = n - presse;
+        return "<strong>Zwei Herkünfte, und das steht bei jedem Ort dran.</strong> "
+          + wort(presse).replace(/^./, function (c) { return c.toUpperCase(); })
+          + " Smash-Burger-Läden stammen aus der Münchner Food-Presse — kuratiert, je Eintrag mit "
+          + "Beleg und einer Beschreibung, die jemand gelesen hat. Die anderen " + wort(abfrage)
+          + " kamen am 09.09.2026 über eine <em>Umkreisabfrage</em> dazu (1,5 km um den "
+          + "Marienplatz, Schwelle 4,5 ★ bei mindestens 500 Stimmen). Sie tragen <strong>keine "
+          + "Beschreibung und keinen Beleg</strong>: bekannt ist nur, was die Places-API liefert. "
+          + "Der Anlass war eine Lücke — von den ersten " + wort(presse) + " lag keiner näher als "
+          + "2,4 km am Marienplatz, und eine Karte, die „Burger“ verspricht und in der Innenstadt "
+          + "nichts zeigt, behauptet, dass es dort keine gibt. "
+          + "<strong>Eine Ausnahme:</strong> Five Guys liegt mit 4,0 unter der Schwelle und ist "
+          + "trotzdem dabei, auf ausdrückliche Ansage — eine bekannte Kette am Stachus beantwortet "
+          + "eine andere Frage als der bestbewertete Laden. "
+          + "Die Namensprobe hat beim Umstellen auf die Places-API zwei Fehler gefunden, die vorher "
+          + "unbemerkt in den Daten standen: „SMASH – Burger &amp; Bar“ heißt „SMASH OR PASS – "
+          + "BURGER &amp; BAR“, und King Loui war mit einer Adresse verzeichnet, unter der heute "
+          + "ein Nudelrestaurant sitzt — das Lokal liegt am Harras.";
       }
     };
     GASTRO.forEach(function (k) {
@@ -1088,6 +1099,24 @@
       bus:   { label: "Bus",    farbe: "--m-ankunft",  kuerzel: "B" }
     };
     var mittel = function (art) { return MITTEL[art] || MITTEL.fuss; };
+
+    // Die Farbe des Wegs: die AMTLICHE Linienfarbe, wenn genau eine Linie diese
+    // Strecke bedient - sonst die Farbe des Verkehrsmittels.
+    //
+    // Die Unterscheidung ist keine Kosmetik. Auf der Stammstrecke fahren S2, S3,
+    // S5 und S8 dieselben vier Halte; eine davon herauszugreifen und ihr Gruen,
+    // Lila, Blau oder Gelb ueber den ganzen Weg zu legen, hiesse: nimm DIESE.
+    // Falsch - man nimmt die naechste. Dort steht darum das S-Bahn-Gruen, das
+    // fuer alle vier gilt. Die Tram 17 faehrt allein, und ihr Braun ist genau
+    // die Farbe, die im Netzplan und am Fahrzeug steht.
+    var wegFarbe = function (v, art) {
+      var l = (v.linien || []).filter(Boolean);
+      if (l.length === 1) {
+        var f = FARBEN[l[0].replace(/^(Tram|Bus) /, "")];
+        if (f) return f.farbe;
+      }
+      return token(mittel(art).farbe);
+    };
     // Das Verkehrsmittel, nach dem die Variante heisst: der erste Abschnitt,
     // der kein Fussweg ist. Beim reinen Fussweg bleibt es dabei.
     var hauptmittel = function (v) {
@@ -1129,13 +1158,16 @@
         if (!a.geo || !a.geo.length) return;
         punkte = punkte.concat(a.geo);
         var fuss = a.art === "fuss";
-        // Weisse Fassung unter der Linie. Ohne sie haengt der Kontrast am
-        // Kartenausschnitt: dieselbe Farbe traegt ueber einem Park und geht
-        // ueber einer Hauptstrasse unter.
-        L.polyline(a.geo, { color: token("--saum"), weight: fuss ? 9 : 12,
-                            opacity: 0.95, lineCap: "round", lineJoin: "round",
+        // DUNKLE Fassung unter der Linie, nicht mehr die weisse: seit die Linie
+        // ihre amtliche Farbe traegt, ist die Farbe nicht mehr gewaehlt, sondern
+        // vorgegeben - und eine helle amtliche Farbe (S8 ist Gelb) verschwaende
+        // auf hellen Kacheln in einem weissen Saum. Ein dunkler Saum traegt
+        // jede Linienfarbe, hell wie dunkel, auf jedem Untergrund.
+        L.polyline(a.geo, { color: token("--umriss"), weight: fuss ? 9 : 12,
+                            opacity: 0.9, lineCap: "round", lineJoin: "round",
                             interactive: false }).addTo(wegEbene);
-        L.polyline(a.geo, { color: token(mittel(a.art).farbe), weight: fuss ? 5 : 7,
+        L.polyline(a.geo, { color: fuss ? token("--saum") : wegFarbe(v, a.art),
+                            weight: fuss ? 5 : 7,
                             dashArray: fuss ? "1 10" : null,
                             lineCap: "round", lineJoin: "round" })
           .addTo(wegEbene)
@@ -1191,14 +1223,16 @@
     // KEINE Uhrzeiten, anders als beim Bahn-Reiter: dort steht eine gebuchte
     // Fahrt, hier ein Rezept fuer jeden Tag. Eine Uhrzeit daneben liest sich
     // als Termin. Wie oft etwas faehrt, steht als gemessener Takt daneben.
-    var zeile = function (klasse, kopf, inhalt) {
-      return '<li class="' + klasse + '">'
+    var zeile = function (klasse, kopf, inhalt, farbe) {
+      return '<li class="' + klasse + '"'
+        + (farbe ? ' style="--spur:' + farbe + '"' : "") + ">"
         + '<span class="weg-spur" aria-hidden="true"></span>'
         + '<span class="weg-haupt"><b class="weg-ort">' + kopf + "</b>"
         + (inhalt || "") + "</span></li>";
     };
 
     var bandHtml = function (v) {
+      var farbe = wegFarbe(v, hauptmittel(v));
       var zeilen = v.abschnitte.map(function (a, i) {
         var start = i === 0 ? w.von.name : (a.von || "—");
         if (a.art === "fuss") {
@@ -1212,11 +1246,16 @@
         var marken = (v.linien && v.linien.length ? v.linien : [a.linie])
           .filter(Boolean).map(function (l) { return linienMarke(l, false); }).join("");
         var halte = a.zwischenhalte || [];
+        // Die Spur traegt die Farbe als Inline-Wert, weil sie aus den Daten
+        // kommt und nicht aus einer Klasse kommen kann: eine Klasse je
+        // Liniennummer waere ein Stylesheet, das bei jeder Fahrplanaenderung
+        // nachgezogen werden muss.
         return zeile("weg-teil weg-teil--" + a.art, start,
           '<span class="weg-marken">' + marken + "</span>"
           + '<span class="weg-tat"><b>' + a.minuten + " min</b> · "
           + (halte.length + 1) + " Halte</span>"
-          + (halte.length ? '<span class="weg-fein">über ' + halte.join(" · ") + "</span>" : ""));
+          + (halte.length ? '<span class="weg-fein">über ' + halte.join(" · ") + "</span>" : ""),
+          farbe);
       });
       zeilen.push(zeile("weg-ziel", u.bezug.name, ""));
       return '<ol class="weg">' + zeilen.join("") + "</ol>";
@@ -1228,10 +1267,64 @@
         + (fein ? '<span class="weg-feld-fein">' + fein + "</span>" : "") + "</div>";
     };
 
+    // --- Takt ueber den Tag --------------------------------------------------
+    // Die Kennzahl "alle 4-6 min" beantwortet, wie oft es tagsueber faehrt. Die
+    // zweite Frage des Ankunftstags beantwortet sie nicht: faehrt das noch, wenn
+    // der Zug zwei Stunden spaeter kommt - und komme ich abends zurueck. Dafuer
+    // der Streifen: 24 Balken, einer je Stunde, ab 04 Uhr geordnet, damit die
+    // Nachtluecke in einem Stueck liegt und nicht an beiden Raendern klebt.
+    //
+    // Die Balken sind BEWUSST nicht in der Linienfarbe: die Farbe steht hier
+    // schon dreimal (Knopf, Spur, Karte) und meint dort die Linie. Ein viertes
+    // Mal an einem Balkendiagramm hiesse, sie meine hier die Menge.
+    var STUNDEN_ORDNUNG = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                           20, 21, 22, 23, 0, 1, 2, 3];
+    var ACHSE = { 4: "04", 8: "08", 12: "12", 16: "16", 20: "20", 0: "00" };
+    var zweiStellig = function (n) { return (n < 10 ? "0" : "") + n; };
+
+    var taktStreifen = function (v) {
+      if (!v.stunden || !v.betrieb) return "";
+      var hoch = Math.max.apply(null, v.stunden);
+      if (!hoch) return "";
+      var balken = STUNDEN_ORDNUNG.map(function (h) {
+        var n = v.stunden[h];
+        return '<li class="takt-stunde' + (n ? "" : " takt-stunde--leer") + '"'
+          + ' title="' + zweiStellig(h) + " Uhr — "
+          + (n ? n + (n === 1 ? " Fahrt" : " Fahrten") : "keine Fahrt") + '">'
+          + '<i style="height:' + Math.round((n / hoch) * 100) + '%"></i></li>';
+      }).join("");
+      var achse = STUNDEN_ORDNUNG.map(function (h) {
+        return "<li>" + (ACHSE[h] || "") + "</li>";
+      }).join("");
+
+      // Die Nachtluecke wird GERECHNET, nicht behauptet: aus der letzten und der
+      // ersten Fahrt. Unter einer Stunde ist sie keine Luecke, sondern der
+      // Wechsel des Betriebstags - dann steht das auch so da.
+      var min = function (hhmm) {
+        return Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+      };
+      var pause = (min(v.betrieb.erste) + 1440 - min(v.betrieb.letzte)) % 1440;
+      var satz = pause < 60
+        ? "Rund um die Uhr — zwischen der letzten und der ersten Fahrt liegen "
+          + pause + " Minuten."
+        : "Zwischen <b>" + v.betrieb.letzte + "</b> und <b>" + v.betrieb.erste
+          + "</b> fährt nichts — " + Math.floor(pause / 60) + " h "
+          + zweiStellig(pause % 60) + ".";
+
+      return '<div class="takt">'
+        + '<div class="takt-kopf"><span class="platz-kopf">Takt über den Tag</span>'
+        + '<span class="takt-betrieb"><b>' + v.betrieb.erste + "</b> bis <b>"
+        + v.betrieb.letzte + "</b></span></div>"
+        + '<ol class="takt-streifen">' + balken + "</ol>"
+        + '<ol class="takt-achse" aria-hidden="true">' + achse + "</ol>"
+        + '<p class="takt-luecke">' + satz + "</p>"
+        + "</div>";
+    };
+
     var tafelHtml = function (v) {
       var takt = v.takt
         ? feld("Takt", "alle " + (v.takt.min === v.takt.max
-            ? v.takt.min : v.takt.min + "–" + v.takt.max) + " min", "")
+            ? v.takt.min : v.takt.min + "–" + v.takt.max) + " min", v.takt.fenster)
         : feld("Takt", "jederzeit", "kein Fahrplan nötig");
       return '<div class="fahrt">'
         + '<div class="platz-felder platz-felder--um">'
@@ -1249,6 +1342,7 @@
             ? '<p class="tafel-fein"><strong>Am Bahnsteig:</strong> Richtung '
               + v.richtungen.join(", ") + ".</p>"
             : "")
+        + taktStreifen(v)
         + "</div>";
     };
 
@@ -1285,9 +1379,13 @@
         b.className = "unterknopf";
         b.dataset.id = e.id;
         b.setAttribute("aria-pressed", "false");
+        // Der Strich im Knopf traegt dieselbe Farbe wie die Linie auf der Karte
+        // und die Spur im Band. Damit ist der Knopf die Legende der Karte.
         b.innerHTML = (art
             ? '<span class="unter-marke" aria-hidden="true">'
-              + '<span class="netz-strich weg-strich weg-strich--' + art + '"></span></span>'
+              + '<span class="netz-strich weg-strich weg-strich--'
+              + (art === "fuss" ? "fuss" : "voll") + '" style="--spur:'
+              + wegFarbe(e.variante, art) + '"></span></span>'
             : '<span class="unter-marke" aria-hidden="true">'
               + ortSymbol("unterkunft", false) + "</span>")
           + "<span>" + e.label + "</span>"
@@ -1605,7 +1703,13 @@
           + o.google.stimmen.toLocaleString("de-DE") + " Bewertungen"
           + (o.google.rang === "secondary" ? " — weitergegeben, nicht aus der Places-API" : "") + "</p>");
       }
-      z.push("<p>" + o.notiz + "</p>");
+      // Ohne Recherche keine Beschreibung, aber auch kein Schweigen: die sechs
+      // Innenstadt-Burger kamen ueber eine Umkreisabfrage dazu, nicht aus der
+      // Presse. Ein leerer Absatz saehe aus wie ein Ladefehler, ein erfundener
+      // Satz waere schlimmer.
+      z.push(o.notiz ? "<p>" + o.notiz + "</p>"
+        : '<p class="popup-unbekannt">Über eine Umkreisabfrage gefunden — zu Karte und Küche '
+          + "liegt keine eigene Recherche vor.</p>");
       if (o.gefluegel) z.push(zeile("popup-fein", "<strong>" + GEFLUEGEL[o.gefluegel.stufe].text
         + "</strong>" + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
         + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "")));
@@ -1727,7 +1831,17 @@
       var ziel = o.web || o.beleg;
       d.innerHTML = "<summary>" + kopf + "</summary>"
         + '<div class="ort-tief">'
-          + '<p class="ort-notiz">' + o.notiz + "</p>"
+          // Eine fehlende Beschreibung wird nur DORT erklaert, wo es einen Grund
+          // gibt - bei den ueber die Umkreisabfrage dazugekommenen Burgern.
+          // Wahrzeichen und Museen tragen von Haus aus keine; ihnen denselben
+          // Satz anzuhaengen waere schlicht falsch, und genau das ist hier
+          // einmal passiert.
+          + (o.notiz ? '<p class="ort-notiz">' + o.notiz + "</p>"
+              : o.auswahl === "abfrage"
+                ? '<p class="ort-notiz ort-notiz--ohne">Über eine Umkreisabfrage gefunden — '
+                  + "zu Karte und Küche liegt keine eigene Recherche vor."
+                  + (o.auswahl_hinweis ? " " + o.auswahl_hinweis : "") + "</p>"
+                : "")
           + (fakten ? '<dl class="ort-fakten">' + fakten + "</dl>" : "")
           + warnungen.map(function (wn) { return '<p class="ort-warnung">' + wn + "</p>"; }).join("")
           + '<p class="ort-wege">'

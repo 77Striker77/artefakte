@@ -1421,9 +1421,42 @@ const DATEN = {
     "takt": {
      "min": 4,
      "max": 6,
-     "abfahrten": 13,
-     "fenster": "16:53–17:53"
+     "fenster": "07–19 Uhr",
+     "abfahrten": 144
     },
+    "betrieb": {
+     "erste": "04:13",
+     "erste_tag": "2026-09-10",
+     "letzte": "03:53",
+     "letzte_tag": "2026-09-11",
+     "fahrten": 245
+    },
+    "stunden": [
+     8,
+     4,
+     1,
+     3,
+     4,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     12,
+     9
+    ],
     "fuss_minuten": 15,
     "fuss_meter": 984,
     "echtzeit": false,
@@ -2397,9 +2430,42 @@ const DATEN = {
     "takt": {
      "min": 10,
      "max": 10,
-     "abfahrten": 7,
-     "fenster": "16:51–17:51"
+     "fenster": "07–19 Uhr",
+     "abfahrten": 72
     },
+    "betrieb": {
+     "erste": "05:03",
+     "erste_tag": "2026-09-10",
+     "letzte": "01:13",
+     "letzte_tag": "2026-09-11",
+     "fahrten": 109
+    },
+    "stunden": [
+     3,
+     1,
+     0,
+     0,
+     0,
+     3,
+     5,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     4,
+     3
+    ],
     "fuss_minuten": 17,
     "fuss_meter": 1180,
     "echtzeit": false,
@@ -4072,6 +4138,8 @@ const DATEN = {
     "linien": [],
     "richtungen": [],
     "takt": null,
+    "betrieb": null,
+    "stunden": null,
     "fuss_minuten": 47,
     "fuss_meter": 3307,
     "echtzeit": false,
@@ -7170,6 +7238,7 @@ const DATEN = {
     "lat": 48.13621,
     "lon": 11.607892,
     "notiz": "Der Laden, den die Münchner Food-Kanäle 2025/26 am häufigsten nennen. Zwei Burger auf der Karte, sonst nichts. Regionales Rindfleisch, Brioche-Buns täglich von der Boulangerie Dompierre. Überwiegend zum Mitnehmen, ein paar Stehtische.",
+    "auswahl": "presse",
     "adresse": "Einsteinstraße 121, 81675 München-Au-Haidhausen, Deutschland",
     "stadtteil": "Haidhausen-Nord",
     "gesucht": "Saint's Burgers, Einsteinstraße 121, München",
@@ -7212,6 +7281,7 @@ const DATEN = {
     "lat": 48.135772,
     "lon": 11.54173,
     "notiz": "Vom Burger House Westend. Der einzige der sechs mit Bar und richtigem Sitzplatz statt Fensterverkauf. Handgeschnittene Pommes, hausgemachte Saucen.",
+    "auswahl": "presse",
     "adresse": "Gollierstraße 30, 80339 München-Schwanthalerhöhe, Deutschland",
     "stadtteil": "Schwanthalerhöhe (Westend)",
     "gesucht": "SMASH OR PASS Burger & Bar, Gollierstraße 30, München",
@@ -7251,6 +7321,7 @@ const DATEN = {
     "lat": 48.124272,
     "lon": 11.589819,
     "notiz": "Halal. Fing als reiner Lieferdienst an und verkauft seit Juli 2024 auch am Fenster.",
+    "auswahl": "presse",
     "adresse": "Gebsattelstraße 15, 81541 München, Deutschland",
     "stadtteil": "Au",
     "stadtteil_hinweis": "Der Laden heißt Haidhausen, liegt aber in der Au — beides gehört zum Stadtbezirk Au-Haidhausen.",
@@ -7291,6 +7362,7 @@ const DATEN = {
     "lat": 48.164307,
     "lon": 11.574188,
     "notiz": "Klein und schnell, Patty wahlweise 100 g oder 200 g, dazu Smash Fries.",
+    "auswahl": "presse",
     "adresse": "Belgradstraße 37, 80796 München, Deutschland",
     "stadtteil": "Alt-Schwabing",
     "gesucht": "Uncle Smash, Belgradstraße 37, München",
@@ -7330,6 +7402,7 @@ const DATEN = {
     "lat": 48.117717,
     "lon": 11.540733,
     "notiz": "Hausgemachte Rind- und Veggie-Varianten auf Brioche-Buns.",
+    "auswahl": "presse",
     "adresse": "Plinganserstraße 37, 81369 München, Deutschland",
     "stadtteil": "Sendling",
     "adress_hinweis": "Die Quelle nennt die Kazmairstraße 37 im Westend. Dort sitzt heute ein Nudelrestaurant; King Loui liegt am Harras in der Plinganserstraße 37. Gefunden über die Namensprobe der Places-Abfrage.",
@@ -7370,6 +7443,7 @@ const DATEN = {
     "lat": 48.183221,
     "lon": 11.530352,
     "notiz": "Die breiteste Karte der sechs, mit Falafel- und Champignon-Burger neben dem Rind.",
+    "auswahl": "presse",
     "adresse": "Hanauer Str. 75, 80993 München, Deutschland",
     "stadtteil": "Alt-Moosach",
     "stadtteil_hinweis": "Die Quelle nennt Berg am Laim. Das ist falsch — die Postleitzahl 80993 liegt in Moosach, im Nordwesten.",
@@ -7400,6 +7474,235 @@ const DATEN = {
     "oeffnungszeiten_stand": "2026-09-09",
     "web": null,
     "beleg": "https://www.muenchen-sehen.de/essen-trinken/smash-burger/"
+   },
+   {
+    "id": "forty-four",
+    "name": "Forty Four Burger & Bar",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Forty Four",
+    "lat": 48.132027,
+    "lon": 11.571422,
+    "auswahl": "abfrage",
+    "adresse": "Blumenstraße 25, 80331 München, Deutschland",
+    "stadtteil": "Altstadt",
+    "gesucht": "Forty Four Burger & Bar, Blumenstraße 25, München",
+    "gefunden_als": "Forty Four Burger & Bar",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.8,
+     "stimmen": 1146,
+     "place_id": "ChIJqW3G_tzfnUcRpEoP48HeaKs",
+     "maps": "https://maps.google.com/?cid=12351366902383069860&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: Geschlossen",
+     "Dienstag: 11:30–14:00 Uhr, 17:00–23:00 Uhr",
+     "Mittwoch: 11:30–14:00 Uhr, 17:00–23:00 Uhr",
+     "Donnerstag: 11:30–14:00 Uhr, 17:00–23:00 Uhr",
+     "Freitag: 11:30–14:00 Uhr, 17:00–01:00 Uhr",
+     "Samstag: 17:00–01:00 Uhr",
+     "Sonntag: 17:00–23:00 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "https://www.fortyfourburger.de/"
+   },
+   {
+    "id": "downtown-burger",
+    "name": "Downtown Burger",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Downtown",
+    "lat": 48.139222,
+    "lon": 11.568646,
+    "auswahl": "abfrage",
+    "adresse": "Kapellenstraße 1, 80333 München, Deutschland",
+    "stadtteil": "Altstadt",
+    "gesucht": "Downtown Burger, Kapellenstraße 1, München",
+    "gefunden_als": "Downtown Burger",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.7,
+     "stimmen": 781,
+     "place_id": "ChIJvUJu4Kx1nkcR-4g4pIQS3dA",
+     "maps": "https://maps.google.com/?cid=15050205890642217211&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–21:00 Uhr",
+     "Dienstag: 11:00–21:00 Uhr",
+     "Mittwoch: 11:00–21:00 Uhr",
+     "Donnerstag: 11:00–21:00 Uhr",
+     "Freitag: 11:00–21:00 Uhr",
+     "Samstag: 12:00–21:00 Uhr",
+     "Sonntag: Geschlossen"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "https://downtownburgermunich.de/"
+   },
+   {
+    "id": "ruffs-marienplatz",
+    "name": "Ruff's Burger Marienplatz München",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Ruff's",
+    "lat": 48.135949,
+    "lon": 11.574425,
+    "auswahl": "abfrage",
+    "adresse": "Rindermarkt 6, 80331 München, Deutschland",
+    "stadtteil": "Altstadt",
+    "gesucht": "Ruff's Burger Marienplatz, Rindermarkt 6, München",
+    "gefunden_als": "Ruff's Burger Marienplatz München",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.5,
+     "stimmen": 3020,
+     "place_id": "ChIJyyutSvV1nkcRvfYMURk_ryQ",
+     "maps": "https://maps.google.com/?cid=2643400884256306877&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–21:00 Uhr",
+     "Dienstag: 11:00–21:00 Uhr",
+     "Mittwoch: 11:00–21:00 Uhr",
+     "Donnerstag: 11:00–21:00 Uhr",
+     "Freitag: 11:00–21:00 Uhr",
+     "Samstag: 11:00–21:00 Uhr",
+     "Sonntag: 12:00–21:00 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "https://www.ruffsburger.de/standort/imbiss-muenchen-marienplatz-rindermarkt/?utm_source=Google&utm_medium=Uberall"
+   },
+   {
+    "id": "der-kleine-flo",
+    "name": "Der kleine Flo",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Kleiner Flo",
+    "lat": 48.136475,
+    "lon": 11.568103,
+    "auswahl": "abfrage",
+    "adresse": "Josephspitalstraße 4, 80331 München-Altstadt-Lehel, Deutschland",
+    "stadtteil": "Altstadt",
+    "gesucht": "Der kleine Flo, Josephspitalstraße 4, München",
+    "gefunden_als": "Der kleine Flo",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.5,
+     "stimmen": 3449,
+     "place_id": "ChIJe-rD4fV1nkcRNk5AlWoeV5k",
+     "maps": "https://maps.google.com/?cid=11049333653896187446&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 12:00–22:00 Uhr",
+     "Dienstag: 12:00–22:00 Uhr",
+     "Mittwoch: 12:00–22:00 Uhr",
+     "Donnerstag: 12:00–22:00 Uhr",
+     "Freitag: 12:00–23:00 Uhr",
+     "Samstag: 12:00–23:00 Uhr",
+     "Sonntag: 12:00–22:00 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "http://www.derkleineflo.de/"
+   },
+   {
+    "id": "mc-mueller",
+    "name": "M.C. Müller Burger und Bar",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "M.C. Müller",
+    "lat": 48.131149,
+    "lon": 11.571403,
+    "auswahl": "abfrage",
+    "adresse": "Fraunhoferstraße 2, 80469 München-Ludwigsvorstadt-Isarvorstadt, Deutschland",
+    "stadtteil": "Isarvorstadt",
+    "gesucht": "M.C. Müller Burger und Bar, Fraunhoferstraße 2, München",
+    "gefunden_als": "M.C. Müller Burger und Bar",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4.5,
+     "stimmen": 1098,
+     "place_id": "ChIJL9jNGV7fnUcRBL2NZCRgJ34",
+     "maps": "https://maps.google.com/?cid=9090340082292735236&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 18:00–00:00 Uhr",
+     "Dienstag: 18:00–01:00 Uhr",
+     "Mittwoch: 18:00–01:00 Uhr",
+     "Donnerstag: 18:00–02:30 Uhr",
+     "Freitag: 18:00–04:00 Uhr",
+     "Samstag: 18:00–04:00 Uhr",
+     "Sonntag: Geschlossen"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "http://www.mcmueller.org/"
+   },
+   {
+    "id": "five-guys-marienplatz",
+    "name": "Five Guys Burgers and Fries München Marienplatz",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Five Guys",
+    "lat": 48.137859,
+    "lon": 11.571178,
+    "auswahl": "abfrage",
+    "auswahl_hinweis": "Unter der Schwelle von 4,5 — auf ausdrücklichen Wunsch aufgenommen, weil eine bekannte Kette am Stachus eine andere Frage beantwortet als der bestbewertete Laden.",
+    "adresse": "Neuhauser Str. 1, 80331 München, Deutschland",
+    "stadtteil": "Altstadt",
+    "gesucht": "Five Guys, Neuhauser Straße 1, München",
+    "gefunden_als": "Five Guys Burgers and Fries München Marienplatz",
+    "namensprobe": "gleich",
+    "google": {
+     "note": 4,
+     "stimmen": 4123,
+     "place_id": "ChIJgfa3-wJ1nkcRy8OxkMKO8D0",
+     "maps": "https://maps.google.com/?cid=4463224197026530251&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+     "art": "Burgerrestaurant",
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "quelle": "Google Places API (New), searchText",
+     "rang": "primary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": [
+     "Montag: 10:30–23:30 Uhr",
+     "Dienstag: 10:30–23:30 Uhr",
+     "Mittwoch: 10:30–23:30 Uhr",
+     "Donnerstag: 10:30–23:30 Uhr",
+     "Freitag: 10:30–00:00 Uhr",
+     "Samstag: 10:30–00:00 Uhr",
+     "Sonntag: 10:30–23:30 Uhr"
+    ],
+    "oeffnungszeiten_stand": "2026-09-09",
+    "web": "https://restaurants.fiveguys.de/bayern/neuhauser-stra%C3%9Fe-1"
    }
   ],
   "quellen": {
@@ -7441,10 +7744,12 @@ const DATEN = {
     "auswahl": "kuratiert im Skript, nicht abgefragt",
     "datei": "muenchen-essen.json",
     "anzahl": {
-     "gesamt": 6,
-     "namensprobe_gleich": 6,
+     "gesamt": 12,
+     "aus_presse": 6,
+     "aus_abfrage": 6,
+     "namensprobe_gleich": 12,
      "namensprobe_abweichend": 0,
-     "mit_oeffnungszeiten": 6,
+     "mit_oeffnungszeiten": 12,
      "nicht_gefunden": 0
     }
    }
@@ -7452,8 +7757,8 @@ const DATEN = {
   "anzahl": {
    "wirtshaus": 22,
    "fruehstueck": 12,
-   "burger": 6,
-   "gesamt": 40
+   "burger": 12,
+   "gesamt": 46
   }
  },
  "bahn": {
@@ -66012,6 +66317,467 @@ const DATEN = {
      }
     ]
    }
-  ]
+  ],
+  "linienfarben": {
+   "12": {
+    "farbe": "#903F98",
+    "schrift": "#FFFFFF",
+    "kontrast": 6.27
+   },
+   "14": {
+    "farbe": "#E80071",
+    "schrift": "#FFFFFF",
+    "kontrast": 4.5
+   },
+   "16": {
+    "farbe": "#006CB2",
+    "schrift": "#FFFFFF",
+    "kontrast": 5.54
+   },
+   "17": {
+    "farbe": "#865A46",
+    "schrift": "#FFFFFF",
+    "kontrast": 5.89
+   },
+   "18": {
+    "farbe": "#00A03C",
+    "schrift": "#17040A",
+    "kontrast": 5.76
+   },
+   "19": {
+    "farbe": "#DC281E",
+    "schrift": "#FFFFFF",
+    "kontrast": 4.81
+   },
+   "20": {
+    "farbe": "#00AADC",
+    "schrift": "#17040A",
+    "kontrast": 7.36
+   },
+   "21": {
+    "farbe": "#B66E1C",
+    "schrift": "#17040A",
+    "kontrast": 4.95
+   },
+   "23": {
+    "farbe": "#96C81E",
+    "schrift": "#17040A",
+    "kontrast": 10
+   },
+   "25": {
+    "farbe": "#E6828C",
+    "schrift": "#17040A",
+    "kontrast": 7.5
+   },
+   "27": {
+    "farbe": "#F0A014",
+    "schrift": "#17040A",
+    "kontrast": 9.21
+   },
+   "28": {
+    "farbe": "#00A082",
+    "schrift": "#17040A",
+    "kontrast": 6
+   },
+   "54": {
+    "farbe": "#E66432",
+    "schrift": "#17040A",
+    "kontrast": 5.89
+   },
+   "58": {
+    "farbe": "#E66432",
+    "schrift": "#17040A",
+    "kontrast": 5.89
+   },
+   "62": {
+    "farbe": "#E66432",
+    "schrift": "#17040A",
+    "kontrast": 5.89
+   },
+   "68": {
+    "farbe": "#E66432",
+    "schrift": "#17040A",
+    "kontrast": 5.89
+   },
+   "132": {
+    "farbe": "#00465A",
+    "schrift": "#FFFFFF",
+    "kontrast": 10.38
+   },
+   "139": {
+    "farbe": "#00465A",
+    "schrift": "#FFFFFF",
+    "kontrast": 10.38
+   },
+   "150": {
+    "farbe": "#00465A",
+    "schrift": "#FFFFFF",
+    "kontrast": 10.38
+   },
+   "153": {
+    "farbe": "#00465A",
+    "schrift": "#FFFFFF",
+    "kontrast": 10.38
+   },
+   "E7": {
+    "farbe": "#EE0000",
+    "schrift": "#FFFFFF",
+    "kontrast": 4.53
+   },
+   "E20": {
+    "farbe": "#00AADC",
+    "schrift": "#17040A",
+    "kontrast": 7.36
+   },
+   "EC 62": {
+    "farbe": "#9D9D9D",
+    "schrift": "#17040A",
+    "kontrast": 7.32
+   },
+   "EC 80": {
+    "farbe": "#FFA700",
+    "schrift": "#17040A",
+    "kontrast": 10.19
+   },
+   "EC 83": {
+    "farbe": "#FFA700",
+    "schrift": "#17040A",
+    "kontrast": 10.19
+   },
+   "EC 112": {
+    "farbe": "#9D9D9D",
+    "schrift": "#17040A",
+    "kontrast": 7.32
+   },
+   "EC 113": {
+    "farbe": "#9D9D9D",
+    "schrift": "#17040A",
+    "kontrast": 7.32
+   },
+   "IC 62": {
+    "farbe": "#9D9D9D",
+    "schrift": "#17040A",
+    "kontrast": 7.32
+   },
+   "ICE 2": {
+    "farbe": "#640034",
+    "schrift": "#FFFFFF",
+    "kontrast": 13.2
+   },
+   "ICE 11": {
+    "farbe": "#6EFF99",
+    "schrift": "#17040A",
+    "kontrast": 15.52
+   },
+   "ICE 18": {
+    "farbe": "#FCFF1E",
+    "schrift": "#17040A",
+    "kontrast": 18.39
+   },
+   "ICE 25": {
+    "farbe": "#76953D",
+    "schrift": "#17040A",
+    "kontrast": 5.8
+   },
+   "ICE 28": {
+    "farbe": "#DF6D1D",
+    "schrift": "#17040A",
+    "kontrast": 5.99
+   },
+   "ICE 29": {
+    "farbe": "#9C59FE",
+    "schrift": "#17040A",
+    "kontrast": 4.98
+   },
+   "ICE 41": {
+    "farbe": "#BC0012",
+    "schrift": "#FFFFFF",
+    "kontrast": 6.67
+   },
+   "ICE 42": {
+    "farbe": "#92D352",
+    "schrift": "#17040A",
+    "kontrast": 11.02
+   },
+   "ICE 47": {
+    "farbe": "#0C1B5F",
+    "schrift": "#FFFFFF",
+    "kontrast": 15.7
+   },
+   "ICE 60": {
+    "farbe": "#00B050",
+    "schrift": "#17040A",
+    "kontrast": 6.92
+   },
+   "ICE 83": {
+    "farbe": "#5BC109",
+    "schrift": "#17040A",
+    "kontrast": 8.58
+   },
+   "ICE 90": {
+    "farbe": "#0050FF",
+    "schrift": "#FFFFFF",
+    "kontrast": 5.85
+   },
+   "LHX": {
+    "farbe": "#00336F",
+    "schrift": "#FFFFFF",
+    "kontrast": 12.33
+   },
+   "N17": {
+    "farbe": "#865A46",
+    "schrift": "#FFFFFF",
+    "kontrast": 5.89
+   },
+   "N19": {
+    "farbe": "#DC281E",
+    "schrift": "#FFFFFF",
+    "kontrast": 4.81
+   },
+   "N20": {
+    "farbe": "#00AADC",
+    "schrift": "#17040A",
+    "kontrast": 7.36
+   },
+   "N27": {
+    "farbe": "#F0A014",
+    "schrift": "#17040A",
+    "kontrast": 9.21
+   },
+   "N43": {
+    "farbe": "#000000",
+    "schrift": "#FFFFFF",
+    "kontrast": 21
+   },
+   "N44": {
+    "farbe": "#000000",
+    "schrift": "#FFFFFF",
+    "kontrast": 21
+   },
+   "N45": {
+    "farbe": "#000000",
+    "schrift": "#FFFFFF",
+    "kontrast": 21
+   },
+   "N272": {
+    "farbe": "#005262",
+    "schrift": "#FFFFFF",
+    "kontrast": 8.81
+   },
+   "RB 6": {
+    "farbe": "#EC0016",
+    "schrift": "#FFFFFF",
+    "kontrast": 4.59
+   },
+   "RB 16": {
+    "farbe": "#FF9999",
+    "schrift": "#17040A",
+    "kontrast": 9.7
+   },
+   "RB 33": {
+    "farbe": "#BF73BF",
+    "schrift": "#17040A",
+    "kontrast": 6.07
+   },
+   "RB 48": {
+    "farbe": "#CB8DAA",
+    "schrift": "#17040A",
+    "kontrast": 7.49
+   },
+   "RB 54": {
+    "farbe": "#2AACE5",
+    "schrift": "#17040A",
+    "kontrast": 7.68
+   },
+   "RB 55": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 56": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 57": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 58": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 60": {
+    "farbe": "#AD0505",
+    "schrift": "#FFFFFF",
+    "kontrast": 7.5
+   },
+   "RB 66": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 68": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 74": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RB 86": {
+    "farbe": "#77AED2",
+    "schrift": "#17040A",
+    "kontrast": 8.29
+   },
+   "RB 87": {
+    "farbe": "#77AED2",
+    "schrift": "#17040A",
+    "kontrast": 8.29
+   },
+   "RE 1": {
+    "farbe": "#DF091D",
+    "schrift": "#FFFFFF",
+    "kontrast": 5.01
+   },
+   "RE 5": {
+    "farbe": "#093F7F",
+    "schrift": "#FFFFFF",
+    "kontrast": 10.35
+   },
+   "RE 9": {
+    "farbe": "#008FBF",
+    "schrift": "#17040A",
+    "kontrast": 5.37
+   },
+   "RE 61": {
+    "farbe": "#FFFFFF",
+    "schrift": "#17040A",
+    "kontrast": 19.85
+   },
+   "RE 80": {
+    "farbe": "#008FBF",
+    "schrift": "#17040A",
+    "kontrast": 5.37
+   },
+   "RJ90": {
+    "farbe": "#0050FF",
+    "schrift": "#FFFFFF",
+    "kontrast": 5.85
+   },
+   "S1": {
+    "farbe": "#36CAEC",
+    "schrift": "#17040A",
+    "kontrast": 10.22
+   },
+   "S2": {
+    "farbe": "#6CC247",
+    "schrift": "#17040A",
+    "kontrast": 8.93
+   },
+   "S3": {
+    "farbe": "#862996",
+    "schrift": "#FFFFFF",
+    "kontrast": 7.58
+   },
+   "S4": {
+    "farbe": "#FF2D1D",
+    "schrift": "#17040A",
+    "kontrast": 5.33
+   },
+   "S5": {
+    "farbe": "#08298A",
+    "schrift": "#FFFFFF",
+    "kontrast": 12.39
+   },
+   "S6": {
+    "farbe": "#00AC6F",
+    "schrift": "#17040A",
+    "kontrast": 6.74
+   },
+   "S7": {
+    "farbe": "#983224",
+    "schrift": "#FFFFFF",
+    "kontrast": 7.46
+   },
+   "S8": {
+    "farbe": "#FFC734",
+    "schrift": "#17040A",
+    "kontrast": 12.73
+   },
+   "S20": {
+    "farbe": "#E7526B",
+    "schrift": "#17040A",
+    "kontrast": 5.5
+   },
+   "TGV 101": {
+    "farbe": "#5BC109",
+    "schrift": "#17040A",
+    "kontrast": 8.58
+   },
+   "U1": {
+    "farbe": "#46B450",
+    "schrift": "#17040A",
+    "kontrast": 7.47
+   },
+   "U2": {
+    "farbe": "#B4283C",
+    "schrift": "#FFFFFF",
+    "kontrast": 6.35
+   },
+   "U3": {
+    "farbe": "#E66432",
+    "schrift": "#17040A",
+    "kontrast": 5.89
+   },
+   "U4": {
+    "farbe": "#00A082",
+    "schrift": "#17040A",
+    "kontrast": 6
+   },
+   "U5": {
+    "farbe": "#A5711F",
+    "schrift": "#17040A",
+    "kontrast": 4.71,
+    "farbe_amtlich": "#A06E1E",
+    "korrektur": "von #A06E1E verschoben, damit die Schrift 4,5:1 erreicht"
+   },
+   "U6": {
+    "farbe": "#005A96",
+    "schrift": "#FFFFFF",
+    "kontrast": 7.23
+   },
+   "U7": {
+    "farbe": "#46B450",
+    "schrift": "#17040A",
+    "kontrast": 7.47
+   },
+   "U8": {
+    "farbe": "#B4283C",
+    "schrift": "#FFFFFF",
+    "kontrast": 6.35
+   },
+   "WESTbahn": {
+    "farbe": "#BECF07",
+    "schrift": "#17040A",
+    "kontrast": 11.45
+   },
+   "X30": {
+    "farbe": "#447E6B",
+    "schrift": "#FFFFFF",
+    "kontrast": 4.73,
+    "farbe_amtlich": "#46826E",
+    "korrektur": "von #46826E verschoben, damit die Schrift 4,5:1 erreicht"
+   },
+   "X204": {
+    "farbe": "#005262",
+    "schrift": "#FFFFFF",
+    "kontrast": 8.81
+   }
+  }
  }
 };

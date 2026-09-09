@@ -93,6 +93,16 @@
      sie auf einem echten Display; pruef-breite.mjs meldet alles darunter.
      Kleinste hier verwendete Groesse: 10,5 px. */
   --zahl:"Silkscreen", "Courier New", monospace;
+  /* WERTE stehen NICHT in einer Pixelschrift. In Pixelify Sans ist die 2 von
+     der 8 kaum zu unterscheiden - "20 min" las sich als "80 min", und ein
+     Datum als Ziffernraetsel. Dieselbe Begruendung, aus der .linie--klein
+     schon auf einen fetten Grotesk gewechselt ist: eine Pixelschrift traegt
+     eine Aufschrift, aber keine Zahl, die stimmen muss.
+     Die Aufteilung seither:
+       --pixel  Ueberschriften und Namen
+       --zahl   kurze Aufschriften in Versalien (ANREISE, DAUER, TAKT)
+       --wert   jede Zahl, jedes Datum, jede Uhrzeit, jede Liniennummer */
+  --wert:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 *{box-sizing:border-box}
@@ -206,7 +216,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 /* "xx" ist kein Platzhalter, sondern eine Aussage: der Wert ist unbekannt.
    Er wird darum sichtbar als offen ausgezeichnet und nicht wie ein Ergebnis
    gesetzt - ein gefuellt aussehendes Feld wird nie wieder nachgeprueft. */
-.infobox dd.offen{color:var(--akzent-text); font-family:var(--zahl);   /* 6,12:1 */
+.infobox dd.offen{color:var(--akzent-text); font-family:var(--wert); font-weight:800;   /* 6,12:1 */
                   font-size:13px; letter-spacing:1px}
 .infobox-fuss{margin:14px 0 0; padding-top:12px;
               border-top:2px solid var(--linie);
@@ -268,7 +278,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .rang-primary{background:var(--rang-primary-bg); color:var(--rang-primary)}
 .rang-secondary{background:var(--rang-secondary-bg); color:var(--rang-secondary)}
 .rang-unverified{background:var(--rang-unverified-bg); color:var(--rang-unverified)}
-.quelle-menge{margin:0 0 12px; font-family:var(--zahl); font-size:11px;
+.quelle-menge{margin:0 0 12px; font-family:var(--wert); font-weight:700; font-size:12.5px;
               color:var(--tinte)}
 .quelle-fakten{display:grid; grid-template-columns:auto 1fr; gap:4px 12px;
                margin:0 0 12px; padding:12px 0; font-size:13px;
@@ -406,7 +416,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Frauenkirche uebereinander und keiner der drei war lesbar. */
 .leaflet-tooltip.marke-name{
   background:var(--flaeche); color:var(--tinte);          /* 16,87:1 */
-  font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+  font-family:var(--wert); font-weight:800; font-size:12px;
   padding:4px 7px; border:2px solid var(--umriss); border-radius:0;
   box-shadow:3px 3px 0 rgba(0,0,0,.34); white-space:nowrap}
 .leaflet-tooltip.marke-name::before{display:none}   /* das Pfeilchen entfaellt */
@@ -460,7 +470,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    .linie--u/s/t/r/b sind der Rueckfall fuer Linien ohne eigene Farbe. */
 .linie{
   display:inline-block;
-  font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+  font-family:var(--wert); font-weight:800; font-size:11.5px;
   padding:4px 6px; color:var(--tinte); box-shadow:0 0 0 2px var(--umriss)}
 /* Auf der Karte kleiner als in der Sprechblase: dort ist Platz, hier stehen bis
    zu sieben nebeneinander an einem Knoten.
@@ -514,7 +524,8 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 /* Ein Netz ist eine Linie, keine Marke - die Legende zeigt darum einen Strich. */
 .netz-strich{display:block; width:26px; height:4px}
 
-.filter-zahl{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-leise)}  /* 7,81:1 */
+.filter-zahl{font-family:var(--wert); font-weight:700; font-size:12px;
+             font-variant-numeric:tabular-nums; color:var(--tinte-leise)}  /* 7,81:1 */
 
 /* AUS: nicht allein ueber die Farbe erkennbar (WCAG 1.4.1) - der Text ist
    durchgestrichen, das Zeichen blass, und aria-pressed sagt es der Vorlesehilfe. */
@@ -577,7 +588,8 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .unter-marke{flex:none; display:flex; align-items:center; width:26px; height:26px}
 .unter-marke .ort-pin{width:26px; height:26px; filter:none}
 .unter-marke .ort-pin svg{width:22px; height:22px}
-.unter-zahl{font-family:var(--zahl); font-size:10.5px}
+.unter-zahl{font-family:var(--wert); font-weight:700; font-size:12px;
+            font-variant-numeric:tabular-nums}
 
 /* ---------- Der Katalog ----------
    EINE Tafel mit Haarlinien dazwischen, nicht 40 eigene Rahmen: 40 Kaesten mit
@@ -633,7 +645,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-woche{display:flex}
 /* Tabellenziffern: die Noten stehen untereinander und sollen fluchten. */
 .ort-note{display:flex; align-items:center; gap:6px;
-          font-family:var(--zahl); font-size:12px;
+          font-family:var(--wert); font-weight:800; font-size:13.5px;
           font-variant-numeric:tabular-nums; white-space:nowrap}
 .ort-note--ohne{color:var(--tinte-leise); font-size:10.5px}  /* 6,50:1 */
 
@@ -664,6 +676,10 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-tief{padding:2px 14px 14px 56px; border-top:2px solid var(--linie)}
 .ort-notiz{margin:10px 0 0; font-size:14px; line-height:1.55;
            color:var(--tinte-leise); max-width:68ch}   /* Lesemass, ~68 Zeichen */
+/* Wo keine Recherche vorliegt, steht das da - und sieht anders aus als ein Satz,
+   den jemand geschrieben hat. Ein fehlender Befund als Fliesstext getarnt waere
+   genau die gefuellte Luecke aus data-integrity.md. */
+.ort-notiz--ohne{font-style:italic; color:var(--akzent-text)}   /* 6,12:1 */
 .ort-fakten{display:grid; grid-template-columns:auto minmax(0,1fr); gap:5px 12px;
             margin:12px 0 0; padding:12px 0 0; font-size:13.5px;
             border-top:2px solid var(--linie)}
@@ -709,10 +725,11 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Liste wird aber nicht gelesen und ist damit dieselbe Textwand in klein. */
 .fuss-zahlen{display:flex; flex-wrap:wrap; gap:6px 20px; margin:0 0 10px;
              font-size:12.5px; align-items:baseline}
-.fuss-zahlen b{font-family:var(--zahl); font-size:15px; color:var(--auf-grund);
+.fuss-zahlen b{font-family:var(--wert); font-weight:800; font-size:16px;
+               color:var(--auf-grund);
                margin-right:5px; font-variant-numeric:tabular-nums}
-.fuss-zahlen i{font-family:var(--zahl); font-size:10px; font-style:normal;
-               letter-spacing:.5px; margin-left:5px; opacity:.8}
+.fuss-zahlen i{font-family:var(--wert); font-weight:700; font-size:11.5px;
+               font-style:normal; margin-left:5px; opacity:.85}
 .fuss-mehr summary{cursor:pointer; font-family:var(--zahl); font-size:10.5px;
                    letter-spacing:.5px; text-transform:uppercase;
                    color:var(--akzent-hell)}          /* 8,94:1 auf --grund */
@@ -778,8 +795,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .fahrt-kopf{display:flex; flex-wrap:wrap; gap:10px 16px;
             align-items:flex-start; justify-content:space-between}
 .fahrt-richtung{margin:0; font-family:var(--pixel); font-size:19px}
-.fahrt-tag{margin:3px 0 0; font-family:var(--zahl); font-size:11px;
-           letter-spacing:.5px; color:var(--tinte-leise)}       /* 6,50:1 */
+.fahrt-tag{margin:3px 0 0; font-family:var(--wert); font-weight:700;
+           font-size:12.5px; color:var(--tinte-leise)}          /* 6,50:1 */
 .zustand--weg{background:var(--warn-bg); color:var(--warn);     /* 5,18:1 */
               border:2px solid var(--warn)}
 .fahrt-meldung{margin:14px 0 0; padding:11px 13px; font-size:14px;
@@ -795,7 +812,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .band{list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0}
 .band-halt{display:grid; grid-template-columns:64px 22px minmax(0,1fr) auto;
            align-items:start; gap:0 10px; min-height:38px}
-.band-zeit{font-family:var(--zahl); font-size:13px; text-align:right;
+.band-zeit{font-family:var(--wert); font-weight:700; font-size:14px;
+           font-variant-numeric:tabular-nums; text-align:right;
            padding-top:1px; white-space:nowrap}
 .band-bis{opacity:.55; padding:0 1px}
 .band-punkt{position:relative; justify-self:center; width:13px; height:13px;
@@ -806,7 +824,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   width:3px; height:calc(100% + 25px); margin-left:-1.5px;
   background:var(--umriss)}
 .band-ort{font-size:16px; font-weight:700; padding-top:0}
-.band-gleis{font-family:var(--zahl); font-size:11px; letter-spacing:.5px;
+.band-gleis{font-family:var(--wert); font-weight:700; font-size:12px;
             color:var(--tinte-leise); padding-top:3px; white-space:nowrap}
 
 /* Der Zwischenhalt: hohler Punkt, duennere Schrift, kleinere Zeit. Er sagt
@@ -848,8 +866,9 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .platz-kopf{display:block; font-family:var(--zahl); font-size:10px;
             letter-spacing:.5px; text-transform:uppercase;
             color:var(--tinte-leise)}
-.platz-wert{display:block; margin-top:2px; font-family:var(--pixel);
-            font-size:24px; line-height:1.1; color:var(--tinte)}  /* 16,87:1 */
+.platz-wert{display:block; margin-top:2px; font-family:var(--wert);
+            font-weight:800; font-size:25px; line-height:1.15;
+            font-variant-numeric:tabular-nums; color:var(--tinte)}  /* 16,87:1 */
 .platz-fuss{margin:9px 0 0; font-size:12.5px; color:var(--tinte-leise)}
 
 /* --- Alternativen --- */
@@ -863,11 +882,12 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .alt-kopf::-webkit-details-marker{display:none}
 .alt[open] .alt-kopf{background:var(--flaeche);
                      border-bottom:2px solid var(--linie)}
-.alt-zeit{font-family:var(--pixel); font-size:18px; display:flex;
+.alt-zeit{font-family:var(--wert); font-weight:800; font-size:19px;
+          font-variant-numeric:tabular-nums; display:flex;
           align-items:baseline; gap:7px}
 .alt-zeit i{font-style:normal; font-size:14px; color:var(--tinte-leise)}
-.alt-dauer, .alt-ums{font-family:var(--zahl); font-size:11px;
-                     letter-spacing:.5px; color:var(--tinte-leise)}
+.alt-dauer, .alt-ums{font-family:var(--wert); font-weight:700; font-size:12.5px;
+                     color:var(--tinte-leise)}
 /* Die Flagge ist im Normalfall STILL. Traegt sie immer die Warnfarbe, dann
    steht "beste Reserve" in Rot neben "Reserve knapp" - und die Farbe hat
    aufgehoert, etwas zu unterscheiden. */
@@ -878,7 +898,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
                   border-color:var(--warn)}
 /* Die erwartete Ankunft steht neben der planmaessigen und muss auch so
    aussehen: kleiner, leiser, kursiv - eine Rechnung, kein Fahrplanwert. */
-.alt-real{font-family:var(--zahl); font-size:11px; font-style:italic;
+.alt-real{font-family:var(--wert); font-weight:700; font-size:12.5px; font-style:italic;
           color:var(--tinte-leise)}                               /* 6,50:1 */
 .alt-inhalt{padding:13px}
 .alt-untertitel{margin:16px 0 8px; font-family:var(--zahl); font-size:10.5px;
@@ -887,8 +907,9 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .abschnitte{list-style:none; margin:0; padding:0; display:grid; gap:7px}
 .abs{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:4px 12px;
      align-items:baseline; font-size:14px}
-.abs-zug{font-family:var(--zahl); font-size:12px; letter-spacing:.5px}
-.abs-gleis{font-family:var(--zahl); font-size:10.5px; color:var(--tinte-leise)}
+.abs-zug{font-family:var(--wert); font-weight:800; font-size:13px}
+.abs-gleis{font-family:var(--wert); font-weight:700; font-size:12px;
+           color:var(--tinte-leise)}
 
 /* Umsteigezeit als Balken gegen eine feste 60-Minuten-Skala: eine Zahl allein
    laesst sich nicht vergleichen, ohne sie zu lesen - untereinanderliegende
@@ -901,7 +922,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
             border:2px solid var(--umriss)}
 .ums-balken i{display:block; height:100%; background:var(--tinte-leise)}
 .ums--knapp .ums-balken i{background:var(--warn)}
-.ums-zahl{font-family:var(--zahl); font-size:11.5px; white-space:nowrap}
+.ums-zahl{font-family:var(--wert); font-weight:700; font-size:13px;
+          font-variant-numeric:tabular-nums; white-space:nowrap}
 .ums--knapp .ums-zahl{color:var(--warn); font-weight:700}
 .alt-robust{margin:14px 0 0; font-size:13.5px; color:var(--tinte-leise);
             max-width:58ch}
@@ -948,6 +970,10 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
    Karte zwischen gefahren und gelaufen macht. */
 .weg-teil--fuss .weg-spur::before{width:5px; margin-left:-2.5px;
   background:repeating-linear-gradient(var(--spur) 0 6px, transparent 6px 12px)}
+/* --spur setzt das Skript inline auf die AMTLICHE Linienfarbe, wo genau eine
+   Linie die Strecke bedient. Die Klassen sind der Rueckfall: eine Klasse je
+   Liniennummer waere ein Stylesheet, das bei jeder Fahrplanaenderung
+   nachgezogen werden muesste. */
 .weg-teil--fuss{--spur:var(--tinte-leise)}
 .weg-teil--sbahn{--spur:var(--m-sbahn)}
 .weg-teil--ubahn{--spur:var(--m-ubahn)}
@@ -967,7 +993,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
   font-family:var(--pixel); font-size:17px}
 .weg-marken{display:flex; flex-wrap:wrap; gap:4px; margin:7px 0 0}
 .weg-tat{display:block; margin:6px 0 0; font-size:14px; color:var(--tinte-leise)}
-.weg-tat b{font-family:var(--zahl); font-size:13px; color:var(--tinte)}  /* 16,87:1 */
+.weg-tat b{font-family:var(--wert); font-weight:800; font-size:14.5px;
+           font-variant-numeric:tabular-nums; color:var(--tinte)}  /* 16,87:1 */
 .weg-fein{display:block; margin:3px 0 0; font-size:12.5px;
   color:var(--tinte-leise); line-height:1.5}                            /* 6,50:1 */
 
@@ -982,7 +1009,8 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
    Zeile in einer Liste: unterwegs ist sie das Einzige auf diesem Reiter, das
    man ANTIPPT statt liest. Als dd unter sechs anderen war sie ein 14-px-Link
    zwischen Fliesstext. */
-.hotel-tel{font-family:var(--zahl); font-size:13px; letter-spacing:.5px;
+.hotel-tel{font-family:var(--wert); font-weight:800; font-size:15px;
+  font-variant-numeric:tabular-nums;
   color:var(--akzent-text); text-decoration:none;                       /* 6,12:1 */
   padding:8px 12px; min-height:44px; display:inline-flex; align-items:center;
   border:2px solid var(--umriss); background:var(--flaeche-2)}
@@ -995,17 +1023,47 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 /* Der Strich im Unterknopf ist die Legende der Karte: dieselbe Farbe, dieselbe
    Strichart. Eine zweite Legende unter der Karte waere dieselbe Auskunft ein
    zweites Mal - und die zweite driftet. */
-.weg-strich{height:5px; border:1px solid var(--umriss)}
-.weg-strich--sbahn{background:var(--m-sbahn)}
-.weg-strich--ubahn{background:var(--m-ubahn)}
-.weg-strich--tram{background:var(--m-tram)}
-.weg-strich--bus{background:var(--m-ankunft)}
-.weg-strich--fuss{border:0; height:5px;
-  background:repeating-linear-gradient(90deg,
+.weg-strich{height:5px}
+.weg-strich--voll{background:var(--spur,var(--tinte-leise));
+  border:1px solid var(--umriss)}
+.weg-strich--fuss{background:repeating-linear-gradient(90deg,
     var(--auf-grund-leise) 0 4px, transparent 4px 9px)}
 .unterknopf[aria-pressed="true"] .weg-strich--fuss{
   background:repeating-linear-gradient(90deg,
     var(--tinte-leise) 0 4px, transparent 4px 9px)}
+
+/* --- Takt ueber den Tag ---------------------------------------------------
+   24 Balken, einer je Stunde, ab 04 Uhr geordnet: so liegt die Nachtluecke in
+   einem Stueck und klebt nicht an beiden Raendern. Eine leere Stunde behaelt
+   ihren Platz und bekommt einen Grundstrich - ein weggelassener Balken saehe
+   aus wie ein schmalerer Tag.
+
+   Die Balken sind BEWUSST nicht in der Linienfarbe: die steht hier schon
+   dreimal (Knopf, Spur, Karte) und meint dort die Linie. Am Balken wuerde sie
+   die Menge meinen. */
+.takt{margin:22px 0 0; padding:13px 15px; background:var(--flaeche-2)}
+.takt-kopf{display:flex; flex-wrap:wrap; align-items:baseline;
+  justify-content:space-between; gap:4px 12px; margin-bottom:9px}
+.takt-betrieb{font-family:var(--wert); font-size:13px; color:var(--tinte-leise)}
+.takt-betrieb b{font-weight:800; font-size:15px; color:var(--tinte);
+  font-variant-numeric:tabular-nums}                              /* 14,02:1 */
+.takt-streifen, .takt-achse{list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(24,1fr); gap:2px}
+.takt-streifen{height:46px; align-items:end}
+.takt-stunde{height:100%; display:flex; align-items:flex-end;
+  border-bottom:2px solid var(--tinte-leise)}
+.takt-stunde i{display:block; width:100%; min-height:2px;
+  background:var(--tinte-leise)}                                  /* 6,50:1 */
+/* Eine Stunde ohne Fahrt traegt nichts ueber dem Grundstrich - das Loch IST
+   die Auskunft. */
+.takt-stunde--leer i{background:none; min-height:0}
+.takt-achse{margin-top:5px; font-family:var(--wert); font-weight:700;
+  font-size:10.5px; color:var(--tinte-leise);
+  font-variant-numeric:tabular-nums}
+.takt-achse li{text-align:left; white-space:nowrap}
+.takt-luecke{margin:11px 0 0; font-size:13.5px; color:var(--tinte-leise)}
+.takt-luecke b{font-family:var(--wert); font-weight:800; color:var(--tinte);
+  font-variant-numeric:tabular-nums}                              /* 14,02:1 */
 
 
 
