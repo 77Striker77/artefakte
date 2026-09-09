@@ -111,7 +111,8 @@
     { id: "fruehstueck", label: "Frühstück",     symbol: "cafe" },
     { id: "wirtshaus",   label: "Abendessen",    symbol: "wirtshaus" },
     { id: "smash",       label: "Smash-Läden",   symbol: "smash" },
-    { id: "burger",      label: "Burgerlokale",  symbol: "burger" }
+    { id: "burger",      label: "Burgerlokale",  symbol: "burger" },
+    { id: "fastfood",    label: "Fast-Food-Ketten", symbol: "fastfood" }
   ];
 
   // Das Smash-Zeichen IST das Burger-Zeichen. Eine Kopie waere eine zweite
@@ -624,12 +625,36 @@
           + "unbemerkt in den Daten standen: „SMASH – Burger &amp; Bar“ heißt „SMASH OR PASS – "
           + "BURGER &amp; BAR“, und King Loui war mit einer Adresse verzeichnet, unter der heute "
           + "ein Nudelrestaurant sitzt — das Lokal liegt am Harras.";
+      },
+      fastfood: function (n, qq) {
+        var je = (qq.anzahl && qq.anzahl.je_kette) || {};
+        return "<strong>Umgekehrt gebaut als die anderen drei:</strong> dort steht eine Liste von "
+          + "<em>Häusern</em> im Abrufskript, hier eine Liste von <em>Ketten</em>. Welche Filiale wo "
+          + "steht, ist eine Abfrage — welche Kette als Fast Food gilt, ist eine Entscheidung, und "
+          + "die steht im Skript. Gefunden wurden " + n + " Filialen von "
+          + Object.keys(je).length + " Ketten im Umkreis von "
+          + ((qq.umkreis_m || 1500) / 1000).toFixed(1).replace(".", ",") + " km um den "
+          + (qq.bezug || "Marienplatz") + ": "
+          + Object.entries(je).map(function (e) { return e[0] + " " + e[1]; }).join(" · ") + ". "
+          + "<strong>Nicht aufgenommen</strong> sind Restaurantketten mit Bedienung — Hans im "
+          + "Glück, L’Osteria und Vapiano liegen im selben Ausschnitt und sind Ketten, aber kein "
+          + "Fast Food; sie würden die Kategorie zu „Kette“ verwässern. "
+          + "Diese Orte sind <strong>abgefragt, nicht recherchiert</strong>: keine Beschreibung, "
+          + "kein Beleg, bekannt ist nur, was die API liefert."
+          + ((qq.gekappt && qq.gekappt.length)
+              ? " Die Typ-Abfragen liefern höchstens 20 Treffer je Anfrage und waren bei "
+                + qq.gekappt.length + " von 3 ausgeschöpft — gezeigt sind die bekanntesten "
+                + "Filialen, nicht mit Sicherheit alle."
+              : "");
       }
     };
     GASTRO.forEach(function (k) {
       var qq = DATEN.gastro.quellen[k.id];
       var n = DATEN.gastro.anzahl[k.id] || 0;
-      if (!qq || !n) return;
+      // Ohne Text kein Kaertchen. Diese Zeile fehlte beim Nachtragen von Fast
+      // Food und hat die ganze Seite angehalten: eine Kategorie ohne
+      // Quellentext ist ein Aufruf auf undefined, und danach laeuft nichts mehr.
+      if (!qq || !n || !GASTRO_QUELLTEXT[k.id]) return;
       quellen.push({
         titel: k.label + (k.id === "wirtshaus" ? " (Wirtshäuser)" : ""),
         menge: n + " Orte",
@@ -1842,6 +1867,7 @@
       // Farbe und die Liste ueber ihre Zeile. Ein sechster Knopf haette die
       // Leiste auf schmalen Geraeten in eine vierte Zeile gedrueckt.
       { id: "burger",      label: "Burger",      gruppen: ["smash", "burger"] },
+      { id: "fastfood",    label: "Fast Food",   gruppen: ["fastfood"] },
       { id: "sehenswert",  label: "Sehenswertes", gruppen: ["wahrzeichen", "museum"] }
     ];
     var reiterAktiv = "alle";
@@ -1969,7 +1995,11 @@
       var streifenTitel = e.w ? "Öffnungszeiten: " + zeitenKurz(e.w) : "Öffnungszeiten unbekannt";
       var kopf = '<span class="ort-marke" aria-hidden="true">' + ortSymbol(ZEICHEN[e.gruppe], false) + "</span>"
         + '<span class="ort-name">' + o.name + "</span>"
-        + '<span class="ort-meta">' + (o.stadtteil ? o.stadtteil + " · " : "") + weite(e.m) + "</span>"
+        // Stadtteil, wo er bekannt ist - sonst die Strasse. Bei den Ketten gibt
+        // es keinen Stadtteil, und sechs Zeilen "dean&david" ohne Strasse sind
+        // sechsmal dasselbe.
+        + '<span class="ort-meta">' + ((o.stadtteil || o.strasse) ? (o.stadtteil || o.strasse) + " · " : "")
+          + weite(e.m) + "</span>"
         // Der Platzhalter bleibt, auch wo es keine Oeffnungszeit gibt: sonst
         // rutscht die ganze Zeile um ein Feld nach links und die Noten der
         // Nachbarzeilen fluchten nicht mehr.
@@ -2224,7 +2254,10 @@
         wert: function (e) { return e.m; },
         zweit: function (e) { return e.o.name; } },
       { id: "stadtteil", label: "Stadtteil", ab: false,
-        wert: function (e) { return e.o.stadtteil || null; },
+        // Derselbe Wert wie in der Zeile: Stadtteil, sonst Strasse. Sortierte
+        // die Spalte nach etwas anderem als sie zeigt, waere das Ergebnis
+        // richtig und trotzdem unverstaendlich.
+        wert: function (e) { return e.o.stadtteil || e.o.strasse || null; },
         zweit: function (e) { return e.o.name; } },
       { id: "offen", label: "Tage offen", ab: true,
         wert: function (e) {

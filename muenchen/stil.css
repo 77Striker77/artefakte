@@ -394,6 +394,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Die 28 Grad Hue-Abstand tragen die Unterscheidung; wer sie nicht sieht, liest
    sie in der Legende und in der Zeile. */
 .ort-pin.smash{color:var(--m-smash)}        /* 5,51:1 · H323 · Burger */
+/* FAST FOOD: eigenes Zeichen, GELIEHENE Farbe. Der Farbkreis hat seit dem
+   09.09.2026 keine freie Luecke mehr - --m-smash war die letzte. Geliehen wird
+   darum --m-unterkunft, das auf DIESER Karte nicht vorkommt (die Unterkunft
+   liegt auf der Stadt- und der Hotelkarte). Genau die Wiederverwendung, die
+   die Umgebungskarte schon praktiziert: eine eigene Legende macht sie
+   eindeutig. Getrennt wird hier ohnehin ueber das Zeichen. */
+.ort-pin.fastfood{color:var(--m-unterkunft)}  /* 6,04:1 · H181 · Pommestüte */
 
 /* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
    keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
