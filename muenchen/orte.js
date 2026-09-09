@@ -57,7 +57,7 @@ const DATEN = {
   },
   {
    "feld": "Unterkunft",
-   "wert": "xx"
+   "wert": "Motel One München-Deutsches Museum"
   },
   {
    "feld": "Reisende",
@@ -80,6 +80,22 @@ const DATEN = {
    "lon": 11.5569426,
    "notiz": "Der Ankunftspunkt. Fern-, Regional-, S- und U-Bahn unter einem Dach.",
    "osm": "node/2470201868"
+  },
+  {
+   "id": "unterkunft",
+   "name": "Motel One München-Deutsches Museum",
+   "art": "unterkunft",
+   "kurz": "Hotel",
+   "lat": 48.12779,
+   "lon": 11.588662,
+   "notiz": "Die Unterkunft dieser Reise. Rablstraße 2, 81669 München, Stadtteil Au-Haidhausen — südlich des Deutschen Museums an der Isar.",
+   "osm": "way/28261161",
+   "quelle_abweichend": {
+    "name": "OpenStreetMap über Nominatim (Namenssuche)",
+    "abgerufen": "2026-09-09",
+    "rang": "primary",
+    "hinweis": "Nominatim statt Overpass, weil Overpass an diesem Tag durchgehend überlastet war. Dieselbe Datenbasis, anderer Zugang."
+   }
   },
   {
    "id": "marienplatz",

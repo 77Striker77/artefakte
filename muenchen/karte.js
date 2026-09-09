@@ -13,6 +13,12 @@
   // Filmstudios und die Tram 25 hatten sogar dieselbe, weil das eine zum
   // anderen fuehrt, und genau das war nicht mehr auseinanderzuhalten.
   var SYMBOL = {
+    // Bett: die Unterkunft ist der Bezugspunkt der Reise, nicht eine
+    // Sehenswuerdigkeit - sie bekommt darum ein eigenes Zeichen und die
+    // groessere Kiste, so wie der Ankunftspunkt.
+    unterkunft: '<path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/>'
+              + '<path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/>'
+              + '<path d="M12 4v6"/><path d="M2 18h20"/>',
     ankunft: '<rect x="5" y="3" width="14" height="13" rx="3"/><path d="M5 10h14"/>'
            + '<path d="M8 19l-2 3M16 19l2 3"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/>',
     zentrum: '<path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-5h4v5"/>',
@@ -25,6 +31,7 @@
   };
 
   var ARTEN = {
+    unterkunft:  { label: "Unterkunft" },
     ankunft:     { label: "Ankunft" },
     zentrum:     { label: "Zentrum" },
     wahrzeichen: { label: "Wahrzeichen" },
@@ -55,6 +62,21 @@
   // zusammenfallen: null = nicht abgerufen (unbekannt), leer = in OSM keine
   // Route eingetragen, gefuellt = Befund. Ein "keine" ueber einem gescheiterten
   // Abruf ist eine Behauptung, die niemand mehr nachprueft.
+  // Amtliche Linienfarbe aus OSM, wenn es eine gibt - sonst die Farbe des
+  // Verkehrsmittels. schrift und kontrast kommen mit aus den Daten: sie sind
+  // dort gerechnet, nicht hier gewaehlt.
+  var FARBEN = (DATEN.bahn && DATEN.bahn.linienfarben) || {};
+  var linienMarke = function (l, klein) {
+    var f = FARBEN[l.replace(/^(Tram|Bus) /, "")];
+    var stil = f
+      ? "background:" + f.farbe + ";color:" + f.schrift
+      : "";
+    var art = /^U[0-9]/.test(l) ? "u" : /^S[0-9]/.test(l) ? "s"
+            : /^Tram/.test(l) ? "t" : /^Bus/.test(l) ? "b" : "r";
+    return '<span class="linie linie--' + art + (klein ? " linie--klein" : "") + '"'
+      + (stil ? ' style="' + stil + '"' : "") + ">" + l + "</span>";
+  };
+
   var linienBlock = function (h) {
     if (h.linien === null || h.linien === undefined) {
       return '<p class="popup-fein popup-unbekannt">Linien: unbekannt — nicht abgerufen</p>';
@@ -62,11 +84,7 @@
     if (!h.linien.length) {
       return '<p class="popup-fein">In OpenStreetMap ist an diesem Halt keine Linie eingetragen.</p>';
     }
-    var marken = h.linien.map(function (l) {
-      var art = /^U[0-9]/.test(l) ? "u" : /^S[0-9]/.test(l) ? "s"
-              : /^Tram/.test(l) ? "t" : /^Bus/.test(l) ? "b" : "r";
-      return '<span class="linie linie--' + art + '">' + l + "</span>";
-    }).join("");
+    var marken = h.linien.map(function (l) { return linienMarke(l, false); }).join("");
     var fern = h.fern
       ? '<p class="popup-fein">dazu ' + h.fern + " Fernverkehrslinie" + (h.fern === 1 ? "" : "n") + "</p>"
       : "";
@@ -165,7 +183,7 @@
 
   DATEN.orte.forEach(function (o) {
     if (!ortEbenen[o.art]) ortEbenen[o.art] = L.layerGroup().addTo(karte);
-    var gross = o.art === "ankunft";
+    var gross = o.art === "ankunft" || o.art === "unterkunft";
     var kante = gross ? 40 : 34;
     L.marker([o.lat, o.lon], {
       icon: L.divIcon({
@@ -191,15 +209,21 @@
 
   // Namen erst ab Stadtteil-Zoom. Darunter tragen Symbol und Legende die
   // Bedeutung - sechs ueberlappende Textkaesten waeren nur Rauschen.
+  // Geschaltet wird ueber eine Klasse am Kartenbehaelter, NICHT ueber
+  // openTooltip/closeTooltip. Leaflet oeffnet einen dauerhaften Tooltip bei
+  // jedem add- und move-Ereignis von sich aus wieder - gemessen: nach dem
+  // Schliessen standen alle 124 Schilder sofort wieder da, auf jeder Zoomstufe.
+  // Eine Klasse laesst sich nicht hinterruecks zuruecksetzen.
   function namenSchalten() {
-    var an = karte.getZoom() >= ZOOM_NAMEN;
-    Object.keys(ortEbenen).forEach(function (art) {
-      ortEbenen[art].eachLayer(function (m) {
-        if (an) m.openTooltip(); else m.closeTooltip();
-      });
-    });
+    karte.getContainer().classList.toggle("zeigt-namen", karte.getZoom() >= ZOOM_NAMEN);
   }
-  karte.on("zoomend", namenSchalten);
+  // Linienschilder eine Zoomstufe spaeter als die Ortsnamen: an einem Knoten
+  // haengen bis zu sieben davon, und bei Stadtzoom liegen sie uebereinander.
+  function schilderSchalten() {
+    karte.getContainer().classList.toggle("zeigt-schilder", karte.getZoom() >= ZOOM_LINIEN);
+  }
+
+  karte.on("zoomend", function () { namenSchalten(); schilderSchalten(); });
 
   // --- Haltestellen: kleine Punkte, keine Beschriftung ---------------------
   // 143 beschriftete Kaesten wuerden die Karte zudecken und die sechs
@@ -218,10 +242,25 @@
     }
   });
 
+  // Die Linienschilder haengen als Tooltip an der Marke - dieselbe Mechanik wie
+  // die Ortsnamen. Sie erscheinen erst ab Zoom 14, eine Stufe spaeter als die
+  // Ortsnamen: an einem Knoten haengen bis zu sieben Schilder, und bei
+  // Stadtzoom liegt das uebereinander statt nebeneinander.
+  var ZOOM_LINIEN = 14;
+  var haltMarken = [];
+
+  var schild = function (h) {
+    if (!h.linien || !h.linien.length) return null;
+    return '<span class="halt-linien">'
+      + h.linien.map(function (l) { return linienMarke(l, true); }).join("")
+      + (h.fern ? '<span class="linie linie--fern">+' + h.fern + "</span>" : "")
+      + "</span>";
+  };
+
   if (DATEN.bahn) {
     var gruppen = { sbahn: L.layerGroup(), ubahn: L.layerGroup() };
     DATEN.bahn.halte.forEach(function (h) {
-      L.marker([h.lat, h.lon], {
+      var marke = L.marker([h.lat, h.lon], {
         icon: L.divIcon({
           className: "",
           html: '<i class="halt-pin ' + h.art + '">' + VERKEHR[h.art].kuerzel + "</i>",
@@ -231,7 +270,7 @@
           iconSize: [26, 26],
           iconAnchor: [13, 13]
         }),
-        title: h.name,
+        title: h.linien && h.linien.length ? h.name + " — " + h.linien.join(", ") : h.name,
         // keyboard:false, sonst liegen 143 Haltepunkte in der Tabreihenfolge:
         // gemessen 164 Tab-Stopps statt 21, und wer mit der Tastatur an der
         // Karte vorbei will, drueckt 143-mal Tab. Die sechs
@@ -242,8 +281,17 @@
         .addTo(gruppen[h.art])
         .bindPopup("<h3>" + h.name + "</h3>" +
           "<p>" + (h.art === "ubahn" ? "U-Bahn-Station" : "S-Bahn / DB-Halt") + "</p>" +
+          linienBlock(h) +
           '<p class="popup-fein">OSM ' + h.osm + "</p>");
+
+      var sch = schild(h);
+      if (sch) {
+        marke.bindTooltip(sch, { permanent: true, direction: "right", offset: [14, 0],
+                                 className: "halt-schild", interactive: false });
+        haltMarken.push(marke);
+      }
     });
+
     gruppen.sbahn.addTo(karte);
     gruppen.ubahn.addTo(karte);
     kategorien.push({ id: "sbahn", label: VERKEHR.sbahn.label, zahl: DATEN.bahn.anzahl.sbahn,
@@ -310,14 +358,21 @@
             iconSize: [24, 24],
             iconAnchor: [12, 12]
           }),
-          title: h.name,
+          title: h.linien && h.linien.length ? h.name + " — " + h.linien.join(", ") : h.name,
           keyboard: false
-        })
+        });
+        m
           .addTo(g)
           .bindPopup("<h3>" + h.name + "</h3><p>Tram " + linie.ref + " · " +
             linie.von + " → " + linie.nach + "</p>" +
             linienBlock(h) +
             '<p class="popup-fein">OSM ' + h.osm + "</p>");
+        var sch = schild(h);
+        if (sch) {
+          m.bindTooltip(sch, { permanent: true, direction: "right", offset: [12, 0],
+                               className: "halt-schild", interactive: false });
+          haltMarken.push(m);
+        }
       });
 
       g.addTo(karte);
@@ -340,6 +395,7 @@
   // und wuerden den Ausschnitt nur aufblaehen.
   if (punkte.length) karte.fitBounds(L.latLngBounds(punkte).pad(0.12));
   namenSchalten();
+  schilderSchalten();
 
   // --- Filterleiste ---------------------------------------------------------
   // Sie ist zugleich Legende: jeder Eintrag zeigt die Marke, die er auf der
