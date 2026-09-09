@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=de4c5a48">
+<link rel="stylesheet" href="stil.css?v=3d648e84">
 </head>
 <body>
 
@@ -49,7 +49,39 @@
     <h3 class="tafel-titel">Was in Gehweite liegt</h3>
     <div id="karte-hotel" role="region" aria-label="Karte der Umgebung um die Unterkunft"></div>
     <ul class="legende" id="legende-hotel"></ul>
-    <p class="tafel-fuss" id="umgebung-fuss"></p>
+    <!-- .grund-fuss, NICHT .tafel-fuss: dieser Fuss liegt auf dem dunklen Grund,
+         nicht auf einer hellen Tafel, und braucht darum den anderen Rollensatz.
+         Mit .tafel-fuss stand er bei 2,16:1. -->
+    <p class="grund-fuss" id="umgebung-fuss"></p>
+  </section>
+
+  <!-- Innenstadt: die dritte Karte. Such- und Filterleiste stehen UEBER der
+       Karte, anders als auf den beiden anderen Reitern - dort ist die Legende
+       eine Beschriftung, hier ist sie ein Werkzeug, und ein Werkzeug, das man
+       erst nach dem Bild findet, benutzt man nicht. Die Trefferliste unter der
+       Karte zeigt dieselbe Auswahl: was die Suche wegnimmt, verschwindet aus
+       beidem. -->
+  <section class="ansicht" id="feld-innenstadt" aria-labelledby="menue-innenstadt" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Innenstadt</h2>
+    <div id="innenstadt-tafel"></div>
+
+    <h3 class="tafel-titel">Suchen und filtern</h3>
+    <div class="suchleiste">
+      <label class="such-label" for="gastro-suche">Name, Küche oder Stadtteil</label>
+      <input class="suchfeld" id="gastro-suche" type="search" autocomplete="off"
+             placeholder="z. B. Schnitzel, Haidhausen, Café"
+             aria-describedby="gastro-zahl">
+      <p class="such-zahl" id="gastro-zahl" role="status" aria-live="polite"></p>
+    </div>
+    <ul class="legende" id="legende-innenstadt"></ul>
+
+    <div id="karte-innenstadt" role="region"
+         aria-label="Karte der Münchner Innenstadt mit Frühstück, Wirtshäusern und Burgern"></div>
+    <p class="such-leer" id="gastro-leer" hidden></p>
+    <p class="grund-fuss" id="gastro-fuss"></p>
+
+    <h3 class="tafel-titel">Die Orte im Einzelnen</h3>
+    <div id="gastro-liste"></div>
   </section>
 
   <section class="ansicht" id="feld-bahn" aria-labelledby="menue-bahn" tabindex="-1" hidden>
@@ -64,7 +96,7 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=de4c5a48"></script>
-<script src="karte.js?v=de4c5a48"></script>
+<script src="orte.js?v=3d648e84"></script>
+<script src="karte.js?v=3d648e84"></script>
 </body>
 </html>

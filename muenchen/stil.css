@@ -234,6 +234,20 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
             border-top:2px solid var(--linie);
             font-size:13px; color:var(--tinte-leise)}
 
+/* Derselbe Fussnotenzettel, aber auf dem GRUND statt auf einer Tafel - und
+   darum mit dem anderen Rollensatz. .tafel-fuss trug hier bis zum 09.09.2026
+   --tinte-leise auf --grund und stand damit bei 2,16:1: dunkel auf dunkel, genau
+   die Verwechslung, vor der README.md warnt. Aufgefallen ist es erst, als
+   pruef-farben.mjs anfing, auch die verdeckten Reiter aufzudecken - vorher lag
+   der Fuss der Umgebungskarte in einer Ansicht, die der Pruefstand nie ansah.
+   EIGENE Klasse, kein Zusatz an .tafel-fuss: eine Klasse, die zwei Gruende
+   bedient, ist dieselbe Falle wie .linie an der Tram-Marke. */
+.grund-fuss{margin:14px 0 0; padding-top:12px;
+            border-top:2px solid var(--linie);
+            font-size:13px; color:var(--auf-grund-leise)}   /* 9,45:1 auf --grund */
+.grund-fuss strong{color:var(--auf-grund)}                  /* 16,00:1 */
+.grund-fuss a{color:var(--akzent-hell)}                     /*  8,94:1 */
+
 /* Zustand eines Reiseteils. Nicht allein ueber die Farbe erkennbar (WCAG
    1.4.1): das Wort steht daneben, die Farbe unterstuetzt es nur. */
 .zustand{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
@@ -277,6 +291,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 /* Die Umgebungskarte ist flacher als die Stadtkarte: sie zeigt einen Kilometer
    Umkreis, nicht zwanzig - mehr Hoehe waere leerer Stadtplan. */
 #karte-hotel{height:clamp(340px,46vh,520px);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+/* Die Innenstadtkarte zeigt rund drei Kilometer und traegt 40 Marken - zwischen
+   Stadtkarte (zwanzig Kilometer) und Umgebungskarte (einer). Sie ist darum hoeher
+   als die Umgebungskarte: bei 40 Punkten auf engem Raum entscheidet die Hoehe,
+   ob man Nachbarn noch auseinanderhaelt. */
+#karte-innenstadt{height:clamp(380px,54vh,600px);
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
        background:var(--grund-tief); z-index:0}
 .tafel-titel{margin:28px 0 12px; font-family:var(--pixel); font-size:19px;
@@ -338,6 +359,16 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .ort-pin.cafe{color:var(--m-ankunft)}       /* 5,89:1 */
 .ort-pin.einkauf{color:var(--m-museum)}     /* 5,13:1 */
 .ort-pin.park{color:var(--m-park)}
+/* Innenstadtkarte: drei Kuechen, KEINE neue Markenfarbe. Der Farbkreis liess bei
+   26 Grad Mindestabstand nur noch eine Luecke (323) frei - die fuer sechs
+   Burgerlaeden auszugeben, waere sie verschwendet. Geliehen wird darum wie auf
+   der Umgebungskarte, und eine eigene Legende macht die Wiederverwendung
+   eindeutig. Getrennt werden die drei ohnehin ueber das ZEICHEN, nicht ueber die
+   Farbe - so wie es fuer Orte auf dieser Seite gilt.
+   Fruehstueck traegt .cafe (Tasse, --m-ankunft), damit dieselbe Sache auf beiden
+   Karten dieselbe Marke hat. */
+.ort-pin.wirtshaus{color:var(--m-zentrum)}  /* 5,18:1 · H 17 · Masskrug */
+.ort-pin.burger{color:var(--m-film)}        /* 7,10:1 · H263 · Burger */
 
 /* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
    keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
@@ -479,6 +510,70 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .filter[aria-pressed="false"] .legende-marke{opacity:.32}
 .filter[aria-pressed="false"] .filter-zahl{text-decoration:none}
 
+/* ---------- Suche ueber der Innenstadtkarte ----------
+   Sie steht UEBER der Karte, die Filterleiste gleich darunter, und beide greifen
+   zusammen: der Filter sagt, welche Kuechen gelten, die Suche schraenkt darin
+   ein. Der Zaehler daneben ist Pflicht, nicht Zierde - eine gefilterte Karte
+   sieht sonst aus wie eine leere. */
+.suchleiste{display:grid; grid-template-columns:1fr auto; gap:8px 14px;
+            align-items:center; padding:12px 14px;
+            background:var(--flaeche); color:var(--tinte);
+            border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.such-label{grid-column:1/-1; margin:0; font-family:var(--zahl); font-size:10.5px;
+            letter-spacing:.5px; text-transform:uppercase;
+            color:var(--tinte-leise)}                            /* 7,81:1 */
+/* 16 px ist keine Geschmacksfrage: unter 16 px zoomt iOS beim Hineintippen die
+   ganze Seite auf. min-height statt Innenabstand, damit das Tastziel unabhaengig
+   von der Zeilenhoehe des Geraets steht. */
+.suchfeld{width:100%; min-width:0; min-height:44px; padding:9px 11px;
+          font-family:var(--sans); font-size:16px;
+          color:var(--tinte); background:var(--flaeche-2);      /* 14,02:1 */
+          border:2px solid var(--umriss); border-radius:0; appearance:none}
+.suchfeld::placeholder{color:var(--tinte-leise); opacity:1}      /* 6,50:1 */
+.such-zahl{margin:0; white-space:nowrap; font-family:var(--zahl); font-size:11px;
+           color:var(--tinte)}                                   /* 16,87:1 */
+/* Kein Treffer ist ein ERGEBNIS und wird als solches gesagt. Eine leere Karte
+   ohne diesen Satz sieht aus wie eine kaputte Seite. */
+.such-leer{margin:14px 0 0; padding:12px 14px;
+           background:var(--warn-bg); color:var(--warn);         /* 5,18:1 */
+           border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+           font-size:14px; font-weight:600}
+
+/* ---------- Trefferliste ----------
+   Dieselbe Auswahl wie die Karte, in Worten: was die Suche wegnimmt,
+   verschwindet aus beidem. Die Karte sagt WO, die Liste sagt WAS - Oeffnungs-
+   zeiten und Preise liest man nicht aus einer Marke ab. */
+#gastro-liste{display:grid; gap:14px;
+              grid-template-columns:repeat(auto-fit, minmax(280px, 1fr))}
+.gastro-karte{padding:14px 16px; background:var(--flaeche); color:var(--tinte-leise);
+              border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.gastro-kopf{display:flex; align-items:center; gap:8px; margin:0 0 8px}
+.gastro-kopf .ort-pin{flex:none; filter:none}   /* auf der Tafel traegt kein Saum */
+.gastro-karte h4{margin:0; flex:1 1 auto; font-family:var(--pixel); font-size:17px}
+/* Der Name ist ein Knopf: er schwenkt die Karte auf den Ort und oeffnet seine
+   Sprechblase. Das ist die Verbindung zwischen Liste und Karte - ohne sie waeren
+   es zwei Darstellungen, die nichts voneinander wissen. Unterstrichen, weil ein
+   Knopf, der wie eine Ueberschrift aussieht, sonst keiner ist. */
+.ort-zeigen{display:inline-flex; align-items:center; min-height:32px;
+            padding:0; font:inherit; text-align:left; cursor:pointer;
+            color:var(--tinte); background:transparent; border:0;
+            text-decoration:underline; text-decoration-thickness:2px;
+            text-underline-offset:3px; text-decoration-color:var(--akzent)}
+.ort-zeigen:hover{color:var(--akzent-text)}                      /* 6,12:1 */
+.gastro-note{flex:none; font-family:var(--zahl); font-size:11px; color:var(--tinte)}
+.gastro-fakten{display:grid; grid-template-columns:auto 1fr; gap:4px 10px;
+               margin:0 0 10px; padding:10px 0; font-size:13px;
+               border-top:2px solid var(--linie); border-bottom:2px solid var(--linie)}
+.gastro-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+                  text-transform:uppercase; padding-top:2px}
+.gastro-fakten dd{margin:0; color:var(--tinte)}
+.gastro-notiz{margin:0; font-size:13.5px; line-height:1.55}
+/* Eine Einschraenkung wird nicht kleiner gesetzt als der Wert, den sie
+   einschraenkt - sonst liest man den Wert und die Warnung nicht. */
+.gastro-warnung{margin:10px 0 0; padding:8px 10px; font-size:12.5px;
+                background:var(--warn-bg); color:var(--warn)}    /* 5,18:1 */
+.gastro-karte a{color:var(--akzent-text)}                        /* 6,12:1 */
+
 /* ---------- Quellenfuss ---------- */
 .quellen{margin:28px 0 0; padding:16px 18px;
          background:var(--flaeche-2); color:var(--tinte-leise);
@@ -498,4 +593,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 @media (max-width:520px){
   main{padding:22px 14px 36px}
   .legende{gap:8px 12px}
+  /* Feld und Zaehler untereinander: nebeneinander bleibt fuer das Feld auf
+     320 px keine Breite uebrig, in der man einen Ortsnamen noch liest. */
+  .suchleiste{grid-template-columns:1fr}
 }

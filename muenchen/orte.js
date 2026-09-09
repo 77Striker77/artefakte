@@ -38,6 +38,11 @@ const DATEN = {
    "ansicht": "feld-hotel"
   },
   {
+   "id": "innenstadt",
+   "label": "Innenstadt",
+   "ansicht": "feld-innenstadt"
+  },
+  {
    "id": "bahn",
    "label": "Bahn",
    "ansicht": "feld-bahn"
@@ -1056,6 +1061,1565 @@ const DATEN = {
     "gehweg_m": 1057
    }
   ]
+ },
+ "gastro": {
+  "orte": [
+   {
+    "id": "steinheil-16",
+    "name": "Steinheil 16",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Steinheil",
+    "lat": 48.1498993,
+    "lon": 11.564211,
+    "notiz": "Das Studentenlokal an den Pinakotheken, seit über 20 Jahren für die größten Schnitzel der Stadt bekannt. Täglich bis 1 Uhr.",
+    "adresse": "Steinheilstraße 16, 80333 München-Maxvorstadt",
+    "stadtteil": "Maxvorstadt",
+    "google": {
+     "note": 4.6,
+     "stimmen": 6352,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJRf_Iy-V1nkcRYkahFTv_cv8",
+     "maps": "https://maps.google.com/?cid=18407055256247682658",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "schnitzel",
+     "gericht": "Putenschnitzel Wiener Art, ca. 200 g",
+     "preis": "10,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "6,90",
+     "beispiel": "Hausgemachte Käsespätzle 10,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "restaurantguru.com",
+     "rang": "secondary",
+     "warnung": "Die Einzelpreise stammen NICHT vom Haus: die eigene Website liefert die Karte nur als Download, speisekarte.de blockt mit HTTP 403. Preise vor Ort prüfen."
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–01:00 Uhr",
+     "Dienstag: 11:00–01:00 Uhr",
+     "Mittwoch: 11:00–01:00 Uhr",
+     "Donnerstag: 11:00–01:00 Uhr",
+     "Freitag: 11:00–01:00 Uhr",
+     "Samstag: 11:00–01:00 Uhr",
+     "Sonntag: 11:00–01:00 Uhr"
+    ],
+    "web": "https://www.steinheil16.de/"
+   },
+   {
+    "id": "das-rosi",
+    "name": "Das Rosi",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Rosi",
+    "lat": 48.1313908,
+    "lon": 11.5880649,
+    "notiz": "Frühstück bis Mitternacht, Schnitzel als Spezialität. Am Gasteig, entsprechend gemischtes junges Publikum.",
+    "adresse": "Rosenheimer Str. 2, 81669 München-Au-Haidhausen",
+    "stadtteil": "Haidhausen",
+    "google": {
+     "note": 4.6,
+     "stimmen": 2815,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJpQrSBH3fnUcRKK9lMc7nOGo",
+     "maps": "https://maps.google.com/?cid=7654122439494184744",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "schnitzel",
+     "gericht": "Natur Schnitzel — Putenschnitzel vom Grill mit Kräuterbutter",
+     "preis": "16,90"
+    },
+    "vegetarisch": {
+     "stufe": "ungeprueft",
+     "anzahl": null,
+     "ab": null,
+     "beispiel": "Sellerieschnitzel laut Haus vorhanden, Preis nicht auffindbar"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "rosi-muenchen.de/schnitzelkarte",
+     "rang": "primary",
+     "warnung": "Nur die Schnitzelkarte war abrufbar. Die vegetarischen Gerichte stehen auf der Abend- und Standardkarte, die online nicht ausgeliefert werden."
+    },
+    "oeffnungszeiten": [
+     "Montag: 08:00–00:00 Uhr",
+     "Dienstag: 08:00–00:00 Uhr",
+     "Mittwoch: 08:00–00:00 Uhr",
+     "Donnerstag: 08:00–00:00 Uhr",
+     "Freitag: 08:00–01:00 Uhr",
+     "Samstag: 08:00–01:00 Uhr",
+     "Sonntag: 09:00–00:00 Uhr"
+    ],
+    "web": "https://www.rosi-muenchen.de/"
+   },
+   {
+    "id": "gotthardgarten",
+    "name": "Gasthaus Gotthardgarten",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Gotthard",
+    "lat": 48.1349964,
+    "lon": 11.5090706,
+    "notiz": "Beste Google-Note aller geprüften Häuser. Wirtsgarten, Donnerstag Ruhetag.",
+    "adresse": "Gotthardstraße 1, 80686 München-Laim",
+    "stadtteil": "Laim",
+    "google": {
+     "note": 4.8,
+     "stimmen": 1398,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJlwZWOJvYnUcRbXnzm9CCyy4",
+     "maps": "https://maps.google.com/?cid=3371932578498181485",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "schnitzel",
+     "gericht": "Cordon Bleu von der Hähnchenbrust, gefüllt mit Kochschinken und Käse",
+     "preis": "18,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 1,
+     "ab": "17,90",
+     "beispiel": "Käsespätzle handgeschabt 17,90 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "gotthardgarten.de",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–23:00 Uhr",
+     "Dienstag: 11:00–23:00 Uhr",
+     "Mittwoch: 11:00–23:00 Uhr",
+     "Donnerstag: Geschlossen",
+     "Freitag: 11:00–23:00 Uhr",
+     "Samstag: 11:00–23:00 Uhr",
+     "Sonntag: 11:00–23:00 Uhr"
+    ],
+    "web": "http://gotthardgarten.de/?utm_source=google_business_profile&utm_medium=button&utm_tracking_link_id=e5e68980-f999-436c-a33d-f1e94eb070e3"
+   },
+   {
+    "id": "alois-wirtshaus",
+    "name": "Alois' Wirtshaus",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Alois",
+    "lat": 48.2011769,
+    "lon": 11.6066375,
+    "notiz": "Beste Datenlage der Liste: Geflügelschnitzel und drei fleischlose Gerichte stehen mit Preis auf derselben Karte.",
+    "adresse": "Karl-Köglsperger-Straße 17, Paul-Hindemith-Allee 4, 80939 München",
+    "stadtteil": "Am Hart",
+    "google": {
+     "note": 4.7,
+     "stimmen": 1056,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJQY86vqJ1nkcRVgsXefDgCR0",
+     "maps": "https://maps.google.com/?cid=2092450825318632278",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "schnitzel",
+     "gericht": "Putenschnitzel mit Cornflakes-Panade, Süßkartoffelsticks, Chilisauce",
+     "preis": "19,80"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "14,90",
+     "beispiel": "Thai-Curry vegan 14,90 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "aloiswirtshausmuenchen.de",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 12:00–23:00 Uhr",
+     "Dienstag: 12:00–23:00 Uhr",
+     "Mittwoch: 12:00–23:00 Uhr",
+     "Donnerstag: 12:00–23:00 Uhr",
+     "Freitag: 12:00–23:00 Uhr",
+     "Samstag: 12:00–23:00 Uhr",
+     "Sonntag: 12:00–23:00 Uhr"
+    ],
+    "web": "http://www.aloiswirtshaus.de/"
+   },
+   {
+    "id": "zum-duernbraeu",
+    "name": "Restaurant Zum Dürnbräu - Wirtshaus & Biergarten",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Dürnbräu",
+    "lat": 48.1362726,
+    "lon": 11.5801119,
+    "notiz": "Altstadt, aber mit eigener fleischloser Rubrik „I mog koa Fleisch“ und zwei Geflügelgerichten.",
+    "adresse": "Dürnbräugasse 2, 80331 München-Altstadt-Lehel",
+    "stadtteil": "Altstadt",
+    "google": {
+     "note": 4.5,
+     "stimmen": 4468,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJ2ep6Oop1nkcRb2tlmLPavvk",
+     "maps": "https://maps.google.com/?cid=17996061625909865327",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "hauptgericht",
+     "gericht": "Gebratene Hendlbrust · Backhendl „Steirer Art“",
+     "preis": "21,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 5,
+     "ab": "14,20",
+     "beispiel": "Saure Breznknödel 14,20 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "onecdn.io PDF via zumduernbraeu.de",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–23:00 Uhr",
+     "Dienstag: 11:00–23:00 Uhr",
+     "Mittwoch: 11:00–23:00 Uhr",
+     "Donnerstag: 11:00–23:00 Uhr",
+     "Freitag: 11:00–23:00 Uhr",
+     "Samstag: 11:00–23:00 Uhr",
+     "Sonntag: Geschlossen"
+    ],
+    "web": "http://www.zumduernbraeu.de/"
+   },
+   {
+    "id": "xavers",
+    "name": "Xaver's",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Xaver's",
+    "lat": 48.1341204,
+    "lon": 11.5799085,
+    "notiz": "Junge Wirte, Bio mit benannten Lieferanten, in jeder Münchner Presseliste. Karte 08/2026.",
+    "adresse": "Rumfordstraße 35, 80469 München",
+    "stadtteil": "Glockenbach",
+    "google": {
+     "note": 4.4,
+     "stimmen": 2006,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJAQBw_mHfnUcRbNLX9Gpug4A",
+     "maps": "https://maps.google.com/?cid=9260366664457245292",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "hauptgericht",
+     "gericht": "Halbes Bio-Hendl vom Pichler mit Brennnessel-Süßkartoffelsalat",
+     "preis": "26,50"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 4,
+     "ab": "14,50",
+     "beispiel": "Käsespätzle 14,50 / 18,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "xaver-s.de PDF 08/2026",
+     "rang": "primary",
+     "warnung": "Google führt servesVegetarianFood: false — das Flag ist nachweislich falsch, die Karte hat eine eigene Rubrik VEGETARISCH/VEGAN."
+    },
+    "oeffnungszeiten": [
+     "Montag: 17:00–00:00 Uhr",
+     "Dienstag: 17:00–00:00 Uhr",
+     "Mittwoch: 17:00–00:00 Uhr",
+     "Donnerstag: 12:00–00:00 Uhr",
+     "Freitag: 12:00–00:00 Uhr",
+     "Samstag: 12:00–00:00 Uhr",
+     "Sonntag: 12:00–00:00 Uhr"
+    ],
+    "web": "http://www.xaver-s.de/"
+   },
+   {
+    "id": "servus-heidi",
+    "name": "Servus Heidi",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Heidi",
+    "lat": 48.139694,
+    "lon": 11.537868,
+    "notiz": "Nennt sich Modern Bavarian Wirtshaus. Einziges Haus mit veganem Hendl-Burger neben echtem Backhendl.",
+    "adresse": "Landsberger Str. 73, 80339 München-Schwanthalerhöhe",
+    "stadtteil": "Westend",
+    "google": {
+     "note": 4.5,
+     "stimmen": 1854,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJNynMuAJ2nkcR6X00i_5MLno",
+     "maps": "https://maps.google.com/?cid=8804058977696775657",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "hauptgericht",
+     "gericht": "Steirisches Backhendl, ausgelöste Keulen, Vogerlsalat",
+     "preis": "23,00"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "17,00",
+     "beispiel": "Knödel Trio 17,00 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "servus-heidi.com PDF 07/2026",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:30–23:30 Uhr",
+     "Dienstag: 11:30–23:30 Uhr",
+     "Mittwoch: 11:30–23:30 Uhr",
+     "Donnerstag: 11:30–23:30 Uhr",
+     "Freitag: 17:00–23:30 Uhr",
+     "Samstag: 17:00–23:30 Uhr",
+     "Sonntag: Geschlossen"
+    ],
+    "web": "http://servus-heidi.com/"
+   },
+   {
+    "id": "ayinger-in-der-au",
+    "name": "Ayinger in der Au",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Ayinger",
+    "lat": 48.1262828,
+    "lon": 11.5849848,
+    "notiz": "Bier aus gekühlten Holzfässern. Das einzige Haus mit echter Pute — als Salattopping.",
+    "adresse": "Mariahilfpl. 4, 81541 München-Au-Haidhausen",
+    "stadtteil": "Au",
+    "google": {
+     "note": 4.5,
+     "stimmen": 1046,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJe7duxVXfnUcR6N_h5Q_FmR4",
+     "maps": "https://maps.google.com/?cid=2205010164646535144",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Wirtshaus-Salat mit gebratenen Putenmedaillons (15,00 + 6,00)",
+     "preis": "21,00"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 4,
+     "ab": "16,00",
+     "beispiel": "Käse-Krautspätzle 16,00 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "ayinger-in-der-au.de PDF",
+     "rang": "primary",
+     "warnung": "Das Backhendl für 9,50 € gibt es nur mittwochs als Bayerische Tapas, nicht als reguläres Hauptgericht."
+    },
+    "oeffnungszeiten": [
+     "Montag: Geschlossen",
+     "Dienstag: Geschlossen",
+     "Mittwoch: 17:00–23:30 Uhr",
+     "Donnerstag: 17:00–23:30 Uhr",
+     "Freitag: 11:00–00:00 Uhr",
+     "Samstag: 11:00–00:00 Uhr",
+     "Sonntag: 10:30–23:30 Uhr"
+    ],
+    "web": "https://www.ayinger-in-der-au.de/"
+   },
+   {
+    "id": "obacht",
+    "name": "Wirtshaus Obacht Maxvorstadt",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Obacht",
+    "lat": 48.1535992,
+    "lon": 11.5638146,
+    "notiz": "Süddeutsche Hausmannskost, wechselnde Wochenkarte, kein Ruhetag.",
+    "adresse": "Schwindstraße 20, 80797 München-Maxvorstadt",
+    "stadtteil": "Maxvorstadt",
+    "google": {
+     "note": 4.6,
+     "stimmen": 971,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJLfpRHud1nkcR1HRv0-38Dvs",
+     "maps": "https://maps.google.com/?cid=18090674851578606804",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "hauptgericht",
+     "gericht": "Landhuhn in der Breznpanade, auf Obachtkartoffel oder Blattsalat",
+     "preis": "19,40"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "13,80",
+     "beispiel": "Linse & Spätzle ohne Saitenwürstle 13,80 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "obacht-maxvorstadt.de PDF Sommer 05/2026",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 17:00–00:00 Uhr",
+     "Dienstag: 17:00–00:00 Uhr",
+     "Mittwoch: 17:00–00:00 Uhr",
+     "Donnerstag: 17:00–00:00 Uhr",
+     "Freitag: 17:00–00:00 Uhr",
+     "Samstag: 17:00–00:00 Uhr",
+     "Sonntag: 17:00–00:00 Uhr"
+    ],
+    "web": "https://obacht-maxvorstadt.de/"
+   },
+   {
+    "id": "papa-benz",
+    "name": "Wirtshaus Papa Benz",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Papa Benz",
+    "lat": 48.1579272,
+    "lon": 11.5852595,
+    "notiz": "Offen seit Oktober 2024, bayerisch-österreichisch-südtirolerisch. Der Neuzugang der Liste.",
+    "adresse": "Leopoldstraße 50, 80802 München",
+    "stadtteil": "Schwabing",
+    "google": {
+     "note": 4.6,
+     "stimmen": 431,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJz-RdRV51nkcRDxcQ7Ir01zE",
+     "maps": "https://maps.google.com/?cid=3591608105354401551",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "hauptgericht",
+     "gericht": "Backhendl — Keule eine Nacht im Bier, Kartoffel-Gurken-Salat",
+     "preis": "21,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 2,
+     "ab": "19,50",
+     "beispiel": "Allgäuer Käsespätzle 19,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "assets.papa-benz.de PDF v=20260726",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: Geschlossen",
+     "Dienstag: 16:00–00:00 Uhr",
+     "Mittwoch: 16:00–00:00 Uhr",
+     "Donnerstag: 16:00–00:00 Uhr",
+     "Freitag: 16:00–00:00 Uhr",
+     "Samstag: 10:00–00:00 Uhr",
+     "Sonntag: 10:00–00:00 Uhr"
+    ],
+    "web": "http://www.papa-benz.de/"
+   },
+   {
+    "id": "loewenbraeukeller",
+    "name": "Löwenbräukeller - Das Original",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Löwenbräu",
+    "lat": 48.1479704,
+    "lon": 11.5585074,
+    "notiz": "Seit 1883 am Stiglmaierplatz. Große Halle plus Biergarten, entsprechend gemischtes Publikum.",
+    "adresse": "Stiglmaierplatz, Nymphenburger Str. 2, 80335 München",
+    "stadtteil": "Maxvorstadt",
+    "google": {
+     "note": 4.4,
+     "stimmen": 9853,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJ2eBd1791nkcRD3r4Azrbe-I",
+     "maps": "https://maps.google.com/?cid=16319878716928326159",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Salat Putenbrust — Putenbruststreifen vom Grill",
+     "preis": "18,80"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 4,
+     "ab": "11,50",
+     "beispiel": "Kartoffelgulasch vegan 11,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "loewenbraeukeller.com PDF",
+     "rang": "primary",
+     "warnung": "Das Schnitzel Wiener Art (17,90 €) ist vom Schwein, nicht vom Geflügel."
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–23:00 Uhr",
+     "Dienstag: 11:00–23:00 Uhr",
+     "Mittwoch: 11:00–23:00 Uhr",
+     "Donnerstag: 11:00–23:00 Uhr",
+     "Freitag: 11:00–23:30 Uhr",
+     "Samstag: 11:00–23:30 Uhr",
+     "Sonntag: 11:00–23:00 Uhr"
+    ],
+    "web": "https://loewenbraeukeller.com/de"
+   },
+   {
+    "id": "hofbraeukeller",
+    "name": "Hofbräukeller am Wiener Platz",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Hofbräukeller",
+    "lat": 48.1341766,
+    "lon": 11.5952068,
+    "notiz": "Am Wiener Platz, großer Biergarten, bei Münchnern beliebter als das Hofbräuhaus.",
+    "adresse": "Innere Wiener Straße 19, 81667 München-Au-Haidhausen",
+    "stadtteil": "Haidhausen",
+    "google": {
+     "note": 4.4,
+     "stimmen": 9202,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJ29wi64B1nkcRR5UyRpxvUm4",
+     "maps": "https://maps.google.com/?cid=7949539009245648199",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Backhendlsalat — Hühnerbrust in Kürbiskernpanade",
+     "preis": "17,50"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 4,
+     "ab": "14,90",
+     "beispiel": "Allgäuer Käsespätzle 14,90 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "hofbraeukeller.de",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–23:00 Uhr",
+     "Dienstag: 11:00–23:00 Uhr",
+     "Mittwoch: 11:00–23:00 Uhr",
+     "Donnerstag: 11:00–23:00 Uhr",
+     "Freitag: 11:00–23:00 Uhr",
+     "Samstag: 11:00–23:00 Uhr",
+     "Sonntag: 11:00–23:00 Uhr"
+    ],
+    "web": "http://www.hofbraeukeller.de/"
+   },
+   {
+    "id": "der-pschorr",
+    "name": "Der Pschorr",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Pschorr",
+    "lat": 48.1348159,
+    "lon": 11.5751526,
+    "notiz": "Am Viktualienmarkt, der meistbewertete Wirtshaus-Eintrag dieser Liste. Eigene Rubrik VEGETARISCH UND VEGAN.",
+    "adresse": "Viktualienmarkt 15, 80331 München-Altstadt-Lehel",
+    "stadtteil": "Altstadt",
+    "google": {
+     "note": 4.3,
+     "stimmen": 7677,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJccSCl4p1nkcRzQDgOnxwKdA",
+     "maps": "https://maps.google.com/?cid=14999643712800161997",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Bayerisches Rösti / Caesar Salad / Marktsalat, je mit marinierten Hühnerbruststreifen",
+     "preis": "23,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 5,
+     "ab": "17,90",
+     "beispiel": "Caesar Salad 17,90 €, Feine Nocken 19,90 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "der-pschorr.de PDF Speisekarte 2026",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–23:00 Uhr",
+     "Dienstag: 11:00–23:00 Uhr",
+     "Mittwoch: 11:00–23:00 Uhr",
+     "Donnerstag: 11:00–23:00 Uhr",
+     "Freitag: 11:00–23:00 Uhr",
+     "Samstag: 10:30–23:00 Uhr",
+     "Sonntag: 11:00–23:00 Uhr"
+    ],
+    "web": "https://www.der-pschorr.de/"
+   },
+   {
+    "id": "wirtshaus-in-der-au",
+    "name": "Wirtshaus in der Au",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Au",
+    "lat": 48.1289862,
+    "lon": 11.5864746,
+    "notiz": "Knödel-Spezialist seit 1901, mit eigener Knödelseite und Knödelkochkurs. Bio-zertifiziert.",
+    "adresse": "Lilienstraße 51, 81669 München",
+    "stadtteil": "Au",
+    "google": {
+     "note": 4.5,
+     "stimmen": 6015,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJ2YJ3mHzfnUcRZ8LfM7KI30k",
+     "maps": "https://maps.google.com/?cid=5323123583531074151",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Backhendlsalat — Stückerl vom bayrischen Landhuhn, Caesardressing",
+     "preis": "20,50"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 6,
+     "ab": "15,50",
+     "beispiel": "Dampfkartoffeln mit Kräuterquark 15,50 €, Knödeltrio 20,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "wirtshausinderau.de PDF 05/2026",
+     "rang": "primary",
+     "warnung": null
+    },
+    "oeffnungszeiten": [
+     "Montag: 17:00–23:00 Uhr",
+     "Dienstag: 17:00–23:00 Uhr",
+     "Mittwoch: 17:00–23:00 Uhr",
+     "Donnerstag: 17:00–23:00 Uhr",
+     "Freitag: 17:00–23:00 Uhr",
+     "Samstag: 10:00–23:00 Uhr",
+     "Sonntag: 10:00–23:00 Uhr"
+    ],
+    "web": "https://wirtshausinderau.de/"
+   },
+   {
+    "id": "goerreshof",
+    "name": "Wirtshaus Görreshof",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Görreshof",
+    "lat": 48.156155,
+    "lon": 11.5620609,
+    "notiz": "Augustiner-Traditionswirtschaft seit 1893, Wirtsgarten im Hinterhof, Uni-Nähe, kein Ruhetag.",
+    "adresse": "Görresstraße 38, 80798 München-Maxvorstadt",
+    "stadtteil": "Maxvorstadt",
+    "google": {
+     "note": 4.5,
+     "stimmen": 3740,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJv6cFqOB1nkcRtDDB8nQKndU",
+     "maps": "https://maps.google.com/?cid=15392470598827454644",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Backhendl-Salat mit Kernöl · „Dirndl“ Salat mit Hähnchenbrust",
+     "preis": "18,50"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 5,
+     "ab": "15,50",
+     "beispiel": "Veganer Kurkuma-Linsen-Kartoffel-Eintopf 15,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "goerreshof.de PDF Deutsch 2026 v2",
+     "rang": "primary",
+     "warnung": "Google führt servesVegetarianFood: false — falsch, die Karte hat die Rubrik „Für die, die kein Fleisch wollen“ mit fünf Gerichten."
+    },
+    "oeffnungszeiten": [
+     "Montag: 11:00–23:00 Uhr",
+     "Dienstag: 11:00–00:00 Uhr",
+     "Mittwoch: 11:00–00:00 Uhr",
+     "Donnerstag: 11:00–00:00 Uhr",
+     "Freitag: 11:00–00:00 Uhr",
+     "Samstag: 11:00–00:00 Uhr",
+     "Sonntag: 11:00–23:00 Uhr"
+    ],
+    "web": "https://www.goerreshof.de/"
+   },
+   {
+    "id": "hohenwart",
+    "name": "Wirtshaus Hohenwart",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Hohenwart",
+    "lat": 48.1173803,
+    "lon": 11.5793013,
+    "notiz": "Seit 1896 auf dem Giesinger Berg, renoviert, Kegelbahn. Fällt inhaltlich durch: kein fleischloses Hauptgericht.",
+    "adresse": "Gietlstraße 15, 81541 München-Obergiesing-Fasangarten",
+    "stadtteil": "Obergiesing",
+    "google": {
+     "note": 4.6,
+     "stimmen": 1757,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJJZnxhW3fnUcR6fa8Hp1KHRA",
+     "maps": "https://maps.google.com/?cid=1161166317617477353",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Steirischer Backhendl-Salat in Kürbiskernpanade",
+     "preis": "18,90"
+    },
+    "vegetarisch": {
+     "stufe": "nur-salat",
+     "anzahl": 0,
+     "ab": null,
+     "beispiel": "Ziegenkäsesalat 18,90 €, Salat mit Waldpilzen vegan 17,50 € — beides Salate"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "wirtshaus-hohenwart.de PDF 2025",
+     "rang": "primary",
+     "warnung": "Die Rubrik HAUPTSPEISEN enthält ausschließlich Fleisch und Fisch. Fleischlos gibt es nur unter SALAT."
+    },
+    "oeffnungszeiten": [
+     "Montag: 17:00–23:00 Uhr",
+     "Dienstag: 17:00–23:00 Uhr",
+     "Mittwoch: 17:00–23:00 Uhr",
+     "Donnerstag: 17:00–23:00 Uhr",
+     "Freitag: 17:00–00:00 Uhr",
+     "Samstag: 17:00–00:00 Uhr",
+     "Sonntag: 11:30–22:00 Uhr"
+    ],
+    "web": "https://wirtshaus-hohenwart.de/"
+   },
+   {
+    "id": "max-emanuel",
+    "name": "Max Emanuel Brauerei - Wirtshaus und Biergarten",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Max Emanuel",
+    "lat": 48.1527159,
+    "lon": 11.5764279,
+    "notiz": "Braut seit 1880, Biergarten im Studentenviertel, 2022 neu aufgestellt — die Küche liegt aber deutlich über den anderen.",
+    "adresse": "Adalbertstraße 33, 80799 München-Maxvorstadt",
+    "stadtteil": "Maxvorstadt",
+    "google": {
+     "note": 4.4,
+     "stimmen": 1291,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJRVkOzvV1nkcRXwL--3bFh80",
+     "maps": "https://maps.google.com/?cid=14810023014455706207",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Caesar Salad Supreme mit französischer Perlhuhnbrust in Panko",
+     "preis": "33,00"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "21,90",
+     "beispiel": "Allgäuer Kasspatzen 21,90 €, Spinatknödel 29,00 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "max-emanuel.de PDF 10.08.2026",
+     "rang": "primary",
+     "warnung": "Teuerste Karte der Liste. Ein vegetarischer Knödel kostet hier 29 €, beim Görreshof 16,90 €."
+    },
+    "oeffnungszeiten": [
+     "Montag: 12:00–23:00 Uhr",
+     "Dienstag: 12:00–23:00 Uhr",
+     "Mittwoch: 12:00–23:00 Uhr",
+     "Donnerstag: 12:00–23:00 Uhr",
+     "Freitag: 12:00–00:00 Uhr",
+     "Samstag: 12:00–00:00 Uhr",
+     "Sonntag: 12:00–22:00 Uhr"
+    ],
+    "web": "http://www.max-emanuel.de/"
+   },
+   {
+    "id": "eder",
+    "name": "Wirtshaus Eder",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Eder",
+    "lat": 48.1363547,
+    "lon": 11.5305032,
+    "notiz": "Beste Note bei über tausend Stimmen. Jedes Hauptgericht auch als kleine Portion, 20 % günstiger.",
+    "adresse": "Gollierstraße 83, 80339 München-Schwanthalerhöhe",
+    "stadtteil": "Westend",
+    "google": {
+     "note": 4.7,
+     "stimmen": 1173,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJc0Cj5qbYnUcRMBAiNelvEFA",
+     "maps": "https://maps.google.com/?cid=5769234170071093296",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Bunter Salatteller mit marinierten, gebratenen Hühnerfilets",
+     "preis": "19,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "17,50",
+     "beispiel": "Kaspressknödel 17,50 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "ederwirt.de PDF Sommer 2026",
+     "rang": "primary",
+     "warnung": "Gehört demselben Wirt wie das Fesch (Johann Eder) — steht in Eders eigener Karte. Fast identische Gerichte."
+    },
+    "oeffnungszeiten": [
+     "Montag: Geschlossen",
+     "Dienstag: 17:00–00:00 Uhr",
+     "Mittwoch: 17:00–00:00 Uhr",
+     "Donnerstag: 17:00–00:00 Uhr",
+     "Freitag: 17:00–01:00 Uhr",
+     "Samstag: 17:00–01:00 Uhr",
+     "Sonntag: 17:00–22:00 Uhr"
+    ],
+    "web": "https://www.ederwirt.de/"
+   },
+   {
+    "id": "fesch",
+    "name": "\"fesch\" Wirtshaus & Stehausschank",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Fesch",
+    "lat": 48.1313838,
+    "lon": 11.5712648,
+    "notiz": "Queeres Wirtshaus mit Stehausschank, von den Leuten hinter dem Club Harry Klein. Fr und Sa bis 1 Uhr — jüngstes Publikum der Liste.",
+    "adresse": "Müllerstraße 30, 80469 München",
+    "stadtteil": "Glockenbach",
+    "google": {
+     "note": 4.7,
+     "stimmen": 575,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJ9WQGKADfnUcRs9GQWaq5k0Q",
+     "maps": "https://maps.google.com/?cid=4941497357453808051",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "salat",
+     "gericht": "Bunter Salatteller mit gebratenen Hühnerfilets",
+     "preis": "19,90"
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 3,
+     "ab": "16,90",
+     "beispiel": "Spinat-Kaspressknödel 16,90 €, veganes Tempeh-Schnitzel 19,90 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "wirtshaus-fesch.de/speisekarte",
+     "rang": "primary",
+     "warnung": "Gehört demselben Wirt wie das Wirtshaus Eder."
+    },
+    "oeffnungszeiten": [
+     "Montag: Geschlossen",
+     "Dienstag: 17:00–00:00 Uhr",
+     "Mittwoch: 17:00–00:00 Uhr",
+     "Donnerstag: 17:00–00:00 Uhr",
+     "Freitag: 16:00–01:00 Uhr",
+     "Samstag: 12:00–01:00 Uhr",
+     "Sonntag: 12:00–23:00 Uhr"
+    ],
+    "web": "https://wirtshaus-fesch.de/"
+   },
+   {
+    "id": "trumpf-oder-kritisch",
+    "name": "Trumpf oder Kritisch",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Trumpf",
+    "lat": 48.16106,
+    "lon": 11.58924,
+    "notiz": "Hybrid aus Bar und Wirtshaus an der Münchner Freiheit, Kartenspielen erwünscht. Fällt inhaltlich durch: kein Geflügel.",
+    "adresse": "Feilitzschstraße 14, 80802 München-Schwabing-Freimann",
+    "stadtteil": "Schwabing",
+    "google": {
+     "note": 4.3,
+     "stimmen": 1373,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJn9A-p7l1nkcRbzBLjQloztQ",
+     "maps": "https://maps.google.com/?cid=15334308171477626991",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "keins",
+     "gericht": null,
+     "preis": null
+    },
+    "vegetarisch": {
+     "stufe": "hauptgericht",
+     "anzahl": 4,
+     "ab": "13,00",
+     "beispiel": "Kräuterrahmschwammerl 13,00 €"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "trumpfoderkritischmuenchen.de (Lieferkarte)",
+     "rang": "secondary",
+     "warnung": "Die Karte an der Wand wechselt wöchentlich; geprüft ist die Lieferkarte. Ein Geflügelgericht kann dort zeitweise stehen."
+    },
+    "oeffnungszeiten": [
+     "Montag: 16:00–00:00 Uhr",
+     "Dienstag: 16:00–00:00 Uhr",
+     "Mittwoch: 16:00–00:00 Uhr",
+     "Donnerstag: 16:00–00:00 Uhr",
+     "Freitag: 16:00–00:00 Uhr",
+     "Samstag: 14:00–00:00 Uhr",
+     "Sonntag: 14:00–00:00 Uhr"
+    ],
+    "web": "http://www.trumpf-oder-kritisch.de/"
+   },
+   {
+    "id": "spezlwirtschaft",
+    "name": "Spezlwirtschaft Haidhausen BAR, BISTRO, STAMMLOKAL.",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Spezl",
+    "lat": 48.127765,
+    "lon": 11.599512,
+    "notiz": "Bar, Bistro, Stammlokal — Kaasspatzen trifft Hip-Hop, täglich bis 1 Uhr. Beste Note bei knapp 600 Stimmen.",
+    "adresse": "Pariser Str. 34, 81667 München-Au-Haidhausen",
+    "stadtteil": "Haidhausen",
+    "google": {
+     "note": 4.7,
+     "stimmen": 592,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJS_gMjoHfnUcR9n73bsj3kBI",
+     "maps": "https://maps.google.com/?cid=1337841529556270838",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "ungeprueft",
+     "gericht": "Gebackenes Hendl laut Presse, nicht von der Karte belegt",
+     "preis": null
+    },
+    "vegetarisch": {
+     "stufe": "ungeprueft",
+     "anzahl": null,
+     "ab": null,
+     "beispiel": "laut Presse fester Kartenbestandteil, auch vegan"
+    },
+    "speisekarte": {
+     "geprueft": false,
+     "quelle": "muenchen.mitvergnuegen.com",
+     "rang": "secondary",
+     "warnung": "Die Website liefert auf allen Karten-Pfaden HTTP 404 — die Speisekarte ist online nicht abrufbar. Das ist gemessen, nicht übersprungen."
+    },
+    "oeffnungszeiten": [
+     "Montag: 17:00–01:00 Uhr",
+     "Dienstag: 17:00–01:00 Uhr",
+     "Mittwoch: 17:00–01:00 Uhr",
+     "Donnerstag: 17:00–01:00 Uhr",
+     "Freitag: 17:00–01:00 Uhr",
+     "Samstag: 17:00–01:00 Uhr",
+     "Sonntag: 17:00–01:00 Uhr"
+    ],
+    "web": "https://www.spezlwirtschaft.me/"
+   },
+   {
+    "id": "schnitzel-hendlhaus",
+    "name": "Bayerisches Schnitzel- & Hendlhaus Aubing",
+    "art": "essen",
+    "kueche": "wirtshaus",
+    "kurz": "Hendlhaus",
+    "lat": 48.1477044,
+    "lon": 11.4217607,
+    "notiz": "Das einzige Haus Münchens mit frei wählbarem Puten- UND Hähnchenschnitzel. Stadtrand, Kegelbahn, Reisegruppen — erfüllt die Schnitzelbedingung und verletzt beide anderen.",
+    "adresse": "Limesstraße 63, 81243 München-Aubing-Lochhausen-Langwied",
+    "stadtteil": "Aubing",
+    "google": {
+     "note": 4.1,
+     "stimmen": 1261,
+     "preisstufe": "PRICE_LEVEL_MODERATE",
+     "status": "OPERATIONAL",
+     "place_id": "ChIJFYV6fuDXnUcRcq0oB_pv_V8",
+     "maps": "https://maps.google.com/?cid=6916807722363563378",
+     "abgerufen": "2026-09-09"
+    },
+    "gefluegel": {
+     "stufe": "schnitzel",
+     "gericht": "Gefüllte Schnitzel / Naturschnitzel vom Grill / Naturschnitzel überbacken, je wählbar vom Schwein, der Pute oder dem Hähnchen",
+     "preis": null
+    },
+    "vegetarisch": {
+     "stufe": "keins",
+     "anzahl": 0,
+     "ab": null,
+     "beispiel": "nur Salate und Kartoffelsalat als Beilage"
+    },
+    "speisekarte": {
+     "geprueft": true,
+     "quelle": "schnitzel-und-hendlhaus.de/speisekarte.php",
+     "rang": "primary",
+     "warnung": "Die Karte des Hauses führt keine Preise. Nur zur Vollständigkeit aufgenommen, nicht als Empfehlung."
+    },
+    "oeffnungszeiten": [
+     "Montag: 09:00–23:00 Uhr",
+     "Dienstag: 09:00–23:00 Uhr",
+     "Mittwoch: 09:00–23:00 Uhr",
+     "Donnerstag: 09:00–23:00 Uhr",
+     "Freitag: 09:00–23:00 Uhr",
+     "Samstag: 09:00–23:00 Uhr",
+     "Sonntag: 09:00–23:00 Uhr"
+    ],
+    "web": "http://www.schnitzel-und-hendlhaus.de/"
+   },
+   {
+    "id": "coffee-twins",
+    "name": "Coffee Twins",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Coffee Twins",
+    "lat": 48.121111,
+    "lon": 11.560789,
+    "notiz": "Specialty Coffee von JB Kaffee (Sulzemoos) und eine eigene Backstube unter einem Dach — von den Zwillingen Daniel und Jonas Fondaj 2022 eroeffnet. Theke mit hausgemachtem Kuchen und Gebaeck, veganes Bananenbrot, Hafer- und Sojamilch ohne Aufpreis.",
+    "adresse": "Ehrengutstraße 18, 80469 München",
+    "stadtteil": "Ludwigsvorstadt",
+    "koordinate": "adresse",
+    "osm": "node/2449438248",
+    "gesucht": "Coffee Twins, Ehrengutstraße 18, München",
+    "gefunden_als": "18",
+    "google": {
+     "note": 4.9,
+     "stimmen": 320,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo, Di, Fr 8–17, Sa 9–17; Mi, Do, So geschlossen",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "17:00",
+    "phoenix_naehe": "stark",
+    "warnung": "Nur vier Tage die Woche offen — Mi, Do und So zu.",
+    "beleg": "https://www.coffeetwins.de/"
+   },
+   {
+    "id": "botanista",
+    "name": "Botanista Café Club",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Botanista",
+    "lat": 48.130584,
+    "lon": 11.567119,
+    "notiz": "Urban Jungle: Ziegelwaende, Pflanzendecke, Makramee, gesessen wird zum Teil auf Haengeschaukeln. Bowls, Protein-Shakes, vegane Kuchen, zucker- und glutenfreie Varianten. Am Wochenende reservieren, abends voll.",
+    "adresse": "Pestalozzistraße 20, 80469 München",
+    "stadtteil": "Isarvorstadt",
+    "koordinate": "adresse",
+    "osm": "way/120044968",
+    "gesucht": "Botanista Café Club, Pestalozzistraße 20, München",
+    "gefunden_als": "20",
+    "google": {
+     "note": 4.7,
+     "stimmen": 2539,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo–Do und So 9–23, Fr und Sa 9–24",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "durchgehend",
+    "phoenix_naehe": "mittel",
+    "beleg": "https://www.botanista-muc.de/kontakt/"
+   },
+   {
+    "id": "madam-anna-ekke",
+    "name": "Madam Anna Ekke",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Anna Ekke",
+    "lat": 48.130109,
+    "lon": 11.571682,
+    "notiz": "Die breiteste Fruehstueckskarte im Glockenbach: Shakshuka, Eggs Benedict, vegane Pancakes, French Toast, Hummus Brekkie, Huevos Rancheros. Fairtrade-Kaffee, grosse Fensterfront, Terrasse, Wandillustrationen.",
+    "adresse": "Kolosseumstraße 6, 80469 München",
+    "stadtteil": "Isarvorstadt",
+    "koordinate": "adresse",
+    "osm": "node/1702553913",
+    "gesucht": "Madam Anna Ekke, Kolosseumstraße 6, München",
+    "gefunden_als": "6",
+    "google": {
+     "note": 4.7,
+     "stimmen": 1081,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Di–Sa 9–22, So 9–17:30, Mo Ruhetag",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "14:00",
+    "phoenix_naehe": "mittel",
+    "beleg": "https://muenchen.mitvergnuegen.com/2020/madam-anna-ekke/"
+   },
+   {
+    "id": "das-rosi",
+    "name": "Das Rosi",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Rosi",
+    "lat": 48.131299,
+    "lon": 11.588145,
+    "notiz": "Kaffeehaus und Bar am Gasteig, durchgehend von morgens bis nachts. Die Karte spannt vom Bircher-Muesli bis zur Weisswurst, vegetarisch, vegan und glutenfrei sind ausgewiesen. Lebhaft und laut, zentral, rund 20–30 Euro pro Kopf beim Fruehstueck.",
+    "adresse": "Rosenheimer Straße 2, 81669 München",
+    "stadtteil": "Au",
+    "koordinate": "adresse",
+    "osm": "way/96712898",
+    "gesucht": "Das Rosi, Rosenheimer Straße 2, München",
+    "gefunden_als": "2",
+    "google": {
+     "note": 4.6,
+     "stimmen": 2799,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo–Do 8–24, Fr und Sa 8–1, So 9–24",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "16:00",
+    "phoenix_naehe": "teilweise — grosse Karte statt Vitrine",
+    "beleg": "https://rosi-muenchen.de/fruehstueck/"
+   },
+   {
+    "id": "luffy-pancake",
+    "name": "Luffy Pancake",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Luffy",
+    "lat": 48.130316,
+    "lon": 11.567096,
+    "notiz": "Japanische Souffle-Pancakes, 10–13 Euro, seit 2022 der lauteste Gastro-Hype der Stadt. Am Wochenende steht eine Schlange vor der Tuer; der Betreiber empfiehlt selbst, unter der Woche zu kommen. Monoprodukt — kein Fruehstueckssortiment.",
+    "adresse": "Pestalozzistraße 24, 80469 München",
+    "stadtteil": "Isarvorstadt",
+    "koordinate": "adresse",
+    "osm": "way/120044958",
+    "gesucht": "Luffy Pancake, Pestalozzistraße 24, München",
+    "gefunden_als": "24",
+    "google": {
+     "note": 4.6,
+     "stimmen": 2364,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Di–So 9–20 (Kueche bis 19:30), Mo Ruhetag",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "20:00",
+    "phoenix_naehe": "Hype-Pol",
+    "beleg": "https://www.luffy-pancake.com/"
+   },
+   {
+    "id": "cafe-bla",
+    "name": "Café Blá",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Café Blá",
+    "lat": 48.129309,
+    "lon": 11.58627,
+    "notiz": "Islaendisch: 'Blá' ist Blau, und Blau traegt den ganzen Raum. Specialty Coffee mit Bohnenverkauf, Waffeln suess 5,20 Euro und herzhaft 5,80 Euro, Kuchen und Bowls alles selbst gemacht. Keine Tischreservierung.",
+    "adresse": "Lilienstraße 34, 81669 München",
+    "stadtteil": "Au",
+    "koordinate": "adresse",
+    "osm": "way/96712908",
+    "gesucht": "Café Blá, Lilienstraße 34, München",
+    "gefunden_als": "34",
+    "google": {
+     "note": 4.6,
+     "stimmen": 1538,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo–Fr 11–18, Sa und So 10–18",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "18:00",
+    "phoenix_naehe": "mittel",
+    "warnung": "Oeffnet unter der Woche erst um 11 — als frueher Fruehstuecksort faellt es damit aus.",
+    "beleg": "https://cafebla.de/pages/location-munich"
+   },
+   {
+    "id": "cafe-schuntner",
+    "name": "Café Schuntner",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Schuntner",
+    "lat": 48.121246,
+    "lon": 11.540876,
+    "notiz": "Der strukturelle Zwilling des Phoenix: eigene Kaffeeroestung UND eigene Backstube seit 1947, grosse Torten- und Kuchentheke, ausgiebiges Fruehstueck, dazu ein Kaffeegarten. Sieben Tage offen. Das Publikum ist deutlich aelter als in den Glockenbach-Laeden.",
+    "adresse": "Plinganserstraße 10, 81369 München",
+    "stadtteil": "Sendling",
+    "koordinate": "betrieb",
+    "osm": "node/666750045",
+    "gesucht": "Café Schuntner, Plinganserstraße 10, München",
+    "gefunden_als": "Café Schuntner",
+    "google": {
+     "note": 4.6,
+     "stimmen": 712,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo–So 8–18",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "durchgehend",
+    "phoenix_naehe": "1:1, ausser beim Publikum",
+    "warnung": "Zur Roestung widersprechen sich die Quellen: Mit Vergnuegen schreibt 'eigene Kaffeeroestung', eine zweite Quelle nennt Kaffee der Muenchner Roesterei Emilo. Vor Ort pruefen.",
+    "beleg": "https://muenchen.mitvergnuegen.com/tipps/eigene-kaffeeroestung-und-backstube-im-cafe-schuntner/"
+   },
+   {
+    "id": "standl-20",
+    "name": "Standl 20",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Standl 20",
+    "lat": 48.15677,
+    "lon": 11.574365,
+    "notiz": "Marktstand auf dem Elisabethmarkt, seit 2015. Bohnen von JB Kaffee, alles von Hand gemahlen und gebrueht, dazu hausgemachte Kuchen und Zimtschnecken. Seit 2025 arbeitet hier das Team des bean batter.",
+    "adresse": "Elisabethmarkt, Stand 20, 80796 München",
+    "stadtteil": "Schwabing",
+    "koordinate": "markt",
+    "koordinate_hinweis": "Nominatim liefert den Mittelpunkt des Elisabethmarkts, nicht Stand 20. Auf dem Markt selbst sind es wenige Meter.",
+    "osm": "way/1448291398",
+    "gesucht": "Standl 20, Elisabethmarkt, München",
+    "gefunden_als": "Elisabethmarkt",
+    "google": {
+     "note": 4.6,
+     "stimmen": 506,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo–Fr 8–17, Sa und So 9–17",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "17:00",
+    "phoenix_naehe": "mittel",
+    "warnung": "Das bean batter im Westend (Schwanthalerstr. 123) ist geschlossen — Waffeln und Shakshuka gibt es am Standl NICHT. Redaktionslisten von 2026 fuehren den Laden noch.",
+    "beleg": "https://www.standl20.de/"
+   },
+   {
+    "id": "carlotta",
+    "name": "Carlotta Café & Bistro",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Carlotta",
+    "lat": 48.130066,
+    "lon": 11.567484,
+    "notiz": "Neu im Glockenbach und schnell zum Liebling geworden: italienisches Fruehstueck, franzoesischer Brunch. Hausgemachte Croissants und Brioche brulee, Sauerteigbrot mit Hummus, pochiertem Ei, Avocado oder Caprese. Vegetarisch und vegan taeglich ohne Nachfrage, keine Reservierung noetig.",
+    "adresse": "Holzstraße 18, 80469 München",
+    "stadtteil": "Isarvorstadt",
+    "koordinate": "betrieb",
+    "osm": "node/2335083096",
+    "gesucht": "Carlotta Café & Bistro, Holzstraße 18, München",
+    "gefunden_als": "Carlotta",
+    "google": {
+     "note": 4.6,
+     "stimmen": 111,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo und Do 10–16, Fr–So 10–18, Di und Mi geschlossen",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "durchgehend",
+    "phoenix_naehe": "mittel",
+    "warnung": "Erst 111 Google-Stimmen — die Note traegt weniger als bei den anderen.",
+    "beleg": "https://cafecarlotta.de/"
+   },
+   {
+    "id": "cafe-faber",
+    "name": "Café Faber",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Faber",
+    "lat": 48.125115,
+    "lon": 11.580639,
+    "notiz": "Von Hannah und Leon gefuehrt, Specialty Coffee wechselnder Roestereien (u. a. Stray Coffee aus Muenchen). Die kurze Karte wechselt alle paar Wochen: Eggs Benedict auf Sauerteig mit Chili-Pilzen, veganes Porridge, Grilled Cheese. Hausgebackener Kuchen und Zimtschnecken.",
+    "adresse": "Zeppelinstraße 5, 81541 München",
+    "stadtteil": "Au",
+    "koordinate": "betrieb",
+    "osm": "node/11090437705",
+    "gesucht": "Café Faber, Zeppelinstraße 5, München",
+    "gefunden_als": "Café Faber",
+    "google": {
+     "note": 4.5,
+     "stimmen": 459,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mi–So 10–17, Mo und Di Ruhetag",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "durchgehend",
+    "phoenix_naehe": "stark",
+    "beleg": "https://muenchen.mitvergnuegen.com/2023/cafe-faber-fruehstueck/"
+   },
+   {
+    "id": "marys-coffee-club",
+    "name": "Mary's Coffee Club",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Mary's",
+    "lat": 48.151743,
+    "lon": 11.577851,
+    "notiz": "Muenchens Instagram-Urgestein, 2018 eroeffnet, im Hinterhof der Amalienpassage: dunkelgruene Fliesen, rosa Stuehle, Neonschrift. Fruehstuecksburger, Avocado-Toast, Bowls, Bananenbrot, Bio-Eiskaffee. Schnelles WLAN, viele Arbeitende.",
+    "adresse": "Türkenstraße 86a, 80799 München",
+    "stadtteil": "Maxvorstadt",
+    "koordinate": "betrieb",
+    "osm": "node/3325072061",
+    "gesucht": "Mary's Coffee Club, Türkenstraße 86a, München",
+    "gefunden_als": "Mary’s Coffee Club",
+    "google": {
+     "note": 4.5,
+     "stimmen": 1045,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Mo–So 9–19:30",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "durchgehend (All Day Breakfast)",
+    "phoenix_naehe": "mittel",
+    "warnung": "Tische stehen sehr eng; Service wird in Bewertungen uneinheitlich beurteilt.",
+    "beleg": "https://maryscoffeeclub.com/"
+   },
+   {
+    "id": "cafe-fraeulein",
+    "name": "Café Fräulein",
+    "art": "essen",
+    "kueche": "fruehstueck",
+    "kurz": "Fräulein",
+    "lat": 48.134528,
+    "lon": 11.578172,
+    "notiz": "Am Viktualienmarkt, seit ueber zwoelf Jahren. Alles aus der hauseigenen Kuchenmanufaktur — die warmen Zimtschnecken sind das Markenzeichen, dazu die kleinen 'Fraeulein'-Kuechlein. Vegetarische und vegane Fruehstuecksvarianten gleichwertig. Sehr klein, schnell voll.",
+    "adresse": "Frauenstraße 11, 80469 München",
+    "stadtteil": "Altstadt-Lehel",
+    "koordinate": "betrieb",
+    "osm": "node/1654273145",
+    "gesucht": "Café Fräulein, Frauenstraße 11, München",
+    "gefunden_als": "cafe fräulein",
+    "google": {
+     "note": 4.5,
+     "stimmen": 933,
+     "quelle": "Wanderlog bzw. RestaurantGuru (geben Googles Wert weiter)",
+     "rang": "secondary",
+     "abgerufen": "2026-09-09"
+    },
+    "oeffnungszeiten": "Di und Mi 9–18, Do–Sa 9–22, So 10–18, Mo Ruhetag",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "fruehstueck_bis": "durchgehend",
+    "phoenix_naehe": "stark",
+    "beleg": "https://cafe-fraeulein.de/"
+   },
+   {
+    "id": "saints-burgers",
+    "name": "Saint's Burgers",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Saint's",
+    "lat": 48.1361524,
+    "lon": 11.6078469,
+    "notiz": "Der Laden, den die Münchner Food-Kanäle 2025/26 am häufigsten nennen. Zwei Burger auf der Karte, sonst nichts. Regionales Rindfleisch, Brioche-Buns täglich von der Boulangerie Dompierre. Überwiegend zum Mitnehmen, ein paar Stehtische.",
+    "osm": "node/13098738554",
+    "koordinate": "betrieb",
+    "adresse": "Einsteinstraße 121, 81675 München",
+    "stadtteil": "Haidhausen-Nord",
+    "oeffnungszeiten": "Di–Sa 11:30–15:00 und 18:00–21:30, So und Mo geschlossen",
+    "oeffnungszeiten_stand": "2025-02-20",
+    "preise": "Double 11 €, Double Bacon 13,50 €, Beilagen 3,50–7 €",
+    "preise_stand": "2025-02-20",
+    "preise_hinweis": "Eine zweite Quelle aus derselben Zeit nennt den Double mit 10,50 € — die beiden widersprechen sich, keine gilt als gesichert.",
+    "beleg": "https://geheimtippmuenchen.de/geheimtipp/saints-burgers-muenchens-regionalster-american-smash-burger/"
+   },
+   {
+    "id": "smash-burger-bar",
+    "name": "SMASH – Burger & Bar",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "SMASH",
+    "lat": 48.1358418,
+    "lon": 11.5416375,
+    "notiz": "Vom Burger House Westend. Der einzige der sechs mit Bar und richtigem Sitzplatz statt Fensterverkauf. Handgeschnittene Pommes, hausgemachte Saucen.",
+    "osm": "way/162662075",
+    "koordinate": "adresse",
+    "adresse": "Gollierstraße 30, 80339 München",
+    "stadtteil": "Schwanthalerhöhe (Westend)",
+    "oeffnungszeiten": "unknown",
+    "preise": "unknown",
+    "beleg": "https://www.muenchen-sehen.de/essen-trinken/smash-burger/"
+   },
+   {
+    "id": "smash-it-haidhausen",
+    "name": "SMASH IT! Haidhausen",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "SMASH IT!",
+    "lat": 48.1242738,
+    "lon": 11.5898478,
+    "notiz": "Halal. Fing als reiner Lieferdienst an und verkauft seit Juli 2024 auch am Fenster.",
+    "osm": "way/122858145",
+    "koordinate": "adresse",
+    "adresse": "Gebsattelstraße 15, 81541 München",
+    "stadtteil": "Au",
+    "stadtteil_hinweis": "Der Laden heißt Haidhausen, liegt aber in der Au — beides gehört zum Stadtbezirk Au-Haidhausen. Gemessen über Nominatim, nicht aus dem Namen geschlossen.",
+    "oeffnungszeiten": "täglich 12:00–22:00",
+    "oeffnungszeiten_stand": "2026-09-09",
+    "preise": "unknown",
+    "beleg": "https://www.speisekarte.de/m%C3%BCnchen/restaurant/smash_it_haidhausen"
+   },
+   {
+    "id": "uncle-smash",
+    "name": "Uncle Smash",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Uncle",
+    "lat": 48.1642921,
+    "lon": 11.5741819,
+    "notiz": "Klein und schnell, Patty wahlweise 100 g oder 200 g, dazu Smash Fries.",
+    "osm": "node/3351341119",
+    "koordinate": "adresse",
+    "koordinate_hinweis": "OSM führt unter dieser Adresse den Betrieb „Paradiso“. Der Punkt trifft das Haus; dass Uncle Smash noch darin sitzt, ist nicht gemessen.",
+    "adresse": "Belgradstraße 37, 80796 München",
+    "stadtteil": "Alt-Schwabing",
+    "oeffnungszeiten": "unknown",
+    "preise": "unknown",
+    "beleg": "https://www.muenchen-sehen.de/essen-trinken/smash-burger/"
+   },
+   {
+    "id": "king-loui",
+    "name": "King Loui",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "King Loui",
+    "lat": 48.1345706,
+    "lon": 11.5415269,
+    "notiz": "Hausgemachte Rind- und Veggie-Varianten auf Brioche-Buns.",
+    "osm": "node/2462090192",
+    "koordinate": "adresse",
+    "adresse": "Kazmairstraße 37, 80339 München",
+    "stadtteil": "Schwanthalerhöhe (Westend)",
+    "oeffnungszeiten": "unknown",
+    "preise": "unknown",
+    "beleg": "https://www.muenchen-sehen.de/essen-trinken/smash-burger/"
+   },
+   {
+    "id": "sams-smash-burger",
+    "name": "Sam's Smash Burger",
+    "art": "essen",
+    "kueche": "burger",
+    "kurz": "Sam's",
+    "lat": 48.1829649,
+    "lon": 11.529946,
+    "notiz": "Die breiteste Karte der sechs, mit Falafel- und Champignon-Burger neben dem Rind.",
+    "osm": "node/3054272936",
+    "koordinate": "adresse",
+    "adresse": "Hanauer Straße 71, 80993 München",
+    "stadtteil": "Alt-Moosach",
+    "stadtteil_hinweis": "Die Quelle nennt Berg am Laim. Das ist falsch — die Postleitzahl 80993 und der Nominatim-Treffer liegen beide in Moosach, im Nordwesten.",
+    "oeffnungszeiten": "unknown",
+    "preise": "unknown",
+    "beleg": "https://www.muenchen-sehen.de/essen-trinken/smash-burger/"
+   }
+  ],
+  "quellen": {
+   "wirtshaus": {
+    "name": "Koordinaten, Bewertungen, Adressen und Öffnungszeiten: Google Places API. Gerichte und Preise: die Speisekarten der Häuser selbst, je Eintrag in speisekarte.quelle benannt",
+    "abgerufen": "2026-09-09",
+    "rang": "primary",
+    "lizenz": "Google Places (Koordinaten und Bewertungen)",
+    "datei": "muenchen-wirtshaeuser.json",
+    "anzahl": {
+     "gesamt": 22,
+     "mit_gefluegelschnitzel": 5,
+     "mit_gefluegel_hauptgericht": 5,
+     "gefluegel_nur_salat": 10,
+     "karte_geprueft": 21
+    }
+   },
+   "fruehstueck": {
+    "name": "Koordinaten: OpenStreetMap über Nominatim. Noten: Wanderlog/RestaurantGuru (Googles Wert). Inhalte: Münchner Gastro-Presse und die Häuser selbst, je Eintrag unter beleg",
+    "abgerufen": "2026-09-09",
+    "rang": "secondary",
+    "lizenz": "ODbL (Koordinaten)",
+    "auswahl": "kuratiert im Skript, nicht abgefragt",
+    "massstab": "Phoenix Coffee, Bahnhofplatz 1, 76646 Bruchsal — Google 4,6 aus 899 Stimmen, Platz 2 von 73 Cafés der Stadt",
+    "datei": "muenchen-fruehstueck.json",
+    "anzahl": {
+     "gesamt": 12,
+     "betrieb": 5,
+     "adresse": 6,
+     "markt": 1,
+     "fremder_treffer": 0,
+     "nicht_aufgeloest": 0
+    }
+   },
+   "burger": {
+    "name": "Koordinaten: OpenStreetMap über Nominatim. Inhalte: Münchner Food-Presse, je Eintrag benannt",
+    "abgerufen": "2026-09-09",
+    "rang": "secondary",
+    "lizenz": "ODbL (Koordinaten)",
+    "datei": "muenchen-essen.json",
+    "anzahl": null
+   }
+  },
+  "anzahl": {
+   "wirtshaus": 22,
+   "fruehstueck": 12,
+   "burger": 6,
+   "gesamt": 40
+  }
  },
  "bahn": {
   "quelle": {

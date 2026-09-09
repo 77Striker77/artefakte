@@ -38,6 +38,18 @@
         + '<path d="M7 2v2M11 2v2"/>',
     einkauf: '<path d="M3 7h18l-1.5 12a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z"/>'
            + '<path d="M8 7a4 4 0 0 1 8 0"/>',
+    // Innenstadtkarte: Masskrug und Burger. Sie stehen NEBEN der Gabel (essen)
+    // der Umgebungskarte, statt sie zu ersetzen - ein Wirtshaus mit Schnitzel-
+    // karte und ein Fensterverkauf mit zwei Burgern sind zwei verschiedene
+    // Antworten, und die Farbe traegt hier nicht die Unterscheidung: Orte tragen
+    // ein Zeichen. Henkel und Schaum bzw. Deckel, Belag und Boden reichen dafuer
+    // bei 30 px; mehr Striche werden auf der Kachel zu einem Fleck.
+    wirtshaus: '<path d="M5 10h9v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/>'
+             + '<path d="M14 12h2.5a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H14"/>'
+             + '<path d="M4 10c0-1.7 1.3-3 3-3 .7 0 1.3.2 1.8.6A2.9 2.9 0 0 1 12 6c1.7 0 3 1.4 3 3z"/>',
+    burger: '<path d="M3 11c0-3.3 4-6 9-6s9 2.7 9 6z"/>'
+          + '<path d="M3.5 14.5h17"/>'
+          + '<path d="M21 18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/>',
     park: '<path d="M12 21v-5"/>'
         + '<path d="M12 16a5 5 0 0 0 5-5 4 4 0 0 0-1-2.6A4 4 0 0 0 12 3a4 4 0 0 0-4 5.4A4 4 0 0 0 7 11a5 5 0 0 0 5 5z"/>'
   };
@@ -59,6 +71,29 @@
     ubahn: { kuerzel: "U", label: "U-Bahn" },
     linie: { kuerzel: "T", label: "Tram" }
   };
+
+  // Die drei Kuechen des Innenstadt-Reiters. Sie tragen alle art "essen" und
+  // unterscheiden sich ueber `kueche` - eine Art, drei Zeichen, KEINE neue
+  // Markenfarbe (siehe stil.css).
+  //
+  // DREI, nicht zwei: Fruehstueck und Abendessen waren verlangt, die sechs
+  // Burgerlaeden aus muenchen-essen.json trugen kein `kueche`-Feld. Der Wert war
+  // aber nicht offen, sondern nur nicht eingetragen - der _lies_mich von
+  // muenchen-wirtshaeuser.json nennt "'wirtshaus' bzw. 'burger'", der von
+  // muenchen-fruehstueck.json "drei Schalter". Seit dem 09.09.2026 steht er in
+  // der Quelldatei, und bau-oeffentlich.mjs bricht ab, wenn wieder einer fehlt:
+  // ein Ort ohne Kueche laege auf keiner Filterebene, und die Karte saehe
+  // trotzdem vollstaendig aus.
+  //
+  // Ein Wirtshaus mit Schnitzelkarte und einen Fensterverkauf mit zwei Burgern in
+  // eine Kategorie zu legen, waere die falsche Sparsamkeit: das sind
+  // verschiedene Antworten auf verschiedene Fragen, und offen sind beide, wenn
+  // man Hunger hat.
+  var GASTRO = [
+    { id: "fruehstueck", label: "Frühstück",  symbol: "cafe" },
+    { id: "wirtshaus",   label: "Abendessen", symbol: "wirtshaus" },
+    { id: "burger",      label: "Burger",     symbol: "burger" }
+  ];
 
   var ortSymbol = function (art, gross) {
     return '<i class="ort-pin ' + art + (gross ? " gross" : "") + '">'
@@ -502,6 +537,72 @@
          + "Suche: so fällt auf, wenn etwas anderes gefunden wurde als gemeint war."
     });
   }
+  // Je Bestand eine eigene Karte, nicht eine Sammelkarte "Gastro": die drei
+  // haben verschiedene Quellen, verschiedene Raenge und verschiedene Luecken.
+  // Zusammengeschrieben waere der schlechteste Rang der Sammlung unsichtbar -
+  // und genau der entscheidet, wie sehr man einer Zahl glauben darf.
+  if (DATEN.gastro) {
+    // Die Zahlen in diesen Texten werden GERECHNET, nicht geschrieben. Zwei
+    // Fassungen einer Zahl driften auseinander, und die falsche merkt niemand:
+    // on-site/breakfast.md nannte am 09.09.2026 "elf von zwoelf" Koordinaten
+    // nicht auf dem Betrieb, waehrend die Datei danebenan vier auf dem Betrieb
+    // fuehrte. Was hier steht, kommt aus den Daten, die auch die Karte zeichnet.
+    var gz = function (id, pruef) {
+      return DATEN.gastro.orte.filter(function (o) { return o.kueche === id && pruef(o); }).length;
+    };
+    var ohneBetrieb = function (o) { return o.koordinate && o.koordinate !== "betrieb"; };
+    var keineZeit = function (o) { return !o.oeffnungszeiten || o.oeffnungszeiten === "unknown"; };
+    var wortzahl = ["null", "eine", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht",
+                    "neun", "zehn", "elf", "zwölf"];
+    var wort = function (n) { return wortzahl[n] || String(n); };
+
+    var GASTRO_QUELLTEXT = {
+      wirtshaus: function (n, qq) {
+        return "Die AUSWAHL ist recherchiert, nicht abgefragt. "
+          + (qq.anzahl ? qq.anzahl.karte_geprueft + " der " + n + " Speisekarten sind einzeln "
+            + "geöffnet worden; wo das nicht gelang, steht es in der Sprechblase. " : "")
+          + "„Geflügel“ hat FÜNF Stufen, nicht zwei: schnitzel · hauptgericht · salat · keins · "
+          + "ungeprüft. Ein Haus mit „salat“ erfüllt die Bedingung formal und serviert einen "
+          + "Salatteller — wer ein Hendl wollte, steht dort falsch. Die Stufen zusammenzuwerfen "
+          + "wäre genau die gefüllte Lücke, die wie ein Ergebnis aussieht und nie wieder geprüft "
+          + "wird. Bei " + gz("wirtshaus", function (o) { return o.speisekarte && o.speisekarte.warnung; })
+          + " Häusern stammen die Einzelpreise nicht vom Haus selbst; das steht je Haus dabei.";
+      },
+      fruehstueck: function (n) {
+        return "Kuratiert im Abrufskript, nicht abgefragt — mit einem zweiten, benannten Maßstab "
+          + "statt eines Gefühls. Die Noten sind <em>secondary</em>: sie kommen über Wanderlog "
+          + "bzw. RestaurantGuru, die Googles Wert weitergeben, nicht aus der Places-API — es "
+          + "fehlt die place_id. Bei " + wort(gz("fruehstueck", ohneBetrieb)) + " der " + n
+          + " Orte trifft die Koordinate nicht den Betrieb, sondern das Haus, einen Markt oder "
+          + "sogar einen anderen Laden unter derselben Adresse; welcher Fall vorliegt, sagt jede "
+          + "Sprechblase einzeln. Kein Preis ist von einer Karte vor Ort abgelesen.";
+      },
+      burger: function (n) {
+        return "Smash-Burger-Läden aus der Münchner Food-Presse, je Eintrag mit Beleg. "
+          + "Nur " + wort(n - gz("burger", ohneBetrieb)) + " davon ist in OpenStreetMap als "
+          + "Betrieb verzeichnet, die anderen " + wort(gz("burger", ohneBetrieb)) + " sind "
+          + "Adresspunkte — bei einem führt OSM unter derselben Adresse einen anderen Betrieb. "
+          + wort(gz("burger", keineZeit)).replace(/^./, function (c) { return c.toUpperCase(); })
+          + " der " + wort(n) + " Öffnungszeiten sind <strong>unbekannt</strong> und werden auch "
+          + "so gezeigt, nicht geschätzt. Bei einem Haus widersprechen sich zwei Preisquellen aus "
+          + "derselben Zeit; keine gilt als gesichert.";
+      }
+    };
+    GASTRO.forEach(function (k) {
+      var qq = DATEN.gastro.quellen[k.id];
+      var n = DATEN.gastro.anzahl[k.id] || 0;
+      if (!qq || !n) return;
+      quellen.push({
+        titel: k.label + (k.id === "wirtshaus" ? " (Wirtshäuser)" : ""),
+        menge: n + " Orte",
+        quelle: qq.name,
+        abgerufen: qq.abgerufen,
+        rang: qq.rang,
+        lizenz: qq.lizenz,
+        was: GASTRO_QUELLTEXT[k.id](n, qq)
+      });
+    });
+  }
   if (DATEN.bahn) {
     quellen.push({
       titel: "Bahnhaltestellen",
@@ -768,6 +869,417 @@
       + deutsch(u.quellen.lokale.abgerufen) + ".";
   })();
 
+  // --- Innenstadt: die dritte Karte, mit Suche und Filter -------------------
+  // Sie beantwortet eine andere Frage als die beiden anderen: die Stadtkarte
+  // sagt "wo liegt was in Muenchen", die Umgebungskarte "was erreiche ich vom
+  // Hotel zu Fuss", diese "wo esse ich was". Darum ein eigener Ausschnitt, eine
+  // eigene Legende - und als einzige der drei ein SUCHFELD: 40 Marken auf drei
+  // Kilometern sind mehr, als man durch Hinsehen durchsucht.
+  //
+  // Welche Kategorien es gibt und warum es drei sind, steht oben bei GASTRO -
+  // einmal, nicht hier ein zweites Mal.
+
+  // Die Suche faltet Umlaute in BEIDE Richtungen: wer "fruehstueck" tippt, meint
+  // "Frühstück", und wer "fruhstuck" tippt, auch. Je Ort ein Heuhaufen pro
+  // Faltung ist billiger und durchschaubarer als eine Regel, die beides zugleich
+  // koennen soll.
+  var falte = function (s, lang) {
+    return String(s).toLowerCase()
+      .replace(/ä/g, lang ? "ae" : "a").replace(/ö/g, lang ? "oe" : "o")
+      .replace(/ü/g, lang ? "ue" : "u").replace(/ß/g, "ss")
+      .replace(/[áàâ]/g, "a").replace(/[éèê]/g, "e").replace(/[íìî]/g, "i")
+      .replace(/[óòô]/g, "o").replace(/[úùû]/g, "u");
+  };
+
+  var karteInnen = null;
+  (function () {
+    var g = DATEN.gastro;
+    if (!g || !g.orte.length || !document.getElementById("karte-innenstadt")) return;
+
+    var LABEL = {}, ZEICHEN = {};
+    GASTRO.forEach(function (k) { LABEL[k.id] = k.label; ZEICHEN[k.id] = k.symbol; });
+
+    // Der Marienplatz ist der Bezug des Ausschnitts, aber KEINE Marke: die Karte
+    // traegt genau die 40 Gastro-Punkte, damit der Zaehler "n von m" und das Bild
+    // dasselbe sagen. Ein 41. Punkt in derselben Farbe wie die Wirtshaeuser
+    // (--m-zentrum) waere zusaetzlich eine Verwechslung.
+    var bezug = DATEN.orte.filter(function (o) { return o.art === "zentrum"; })[0]
+             || { name: DATEN.ziel.name, lat: DATEN.ziel.mitte.lat, lon: DATEN.ziel.mitte.lon };
+    var START_ZOOM = 14;
+
+    // Naeherung fuer Stadtmasse, nicht fuer Navigation - und sie ist als
+    // LUFTLINIE ausgewiesen, nicht als Weg. Die Umgebungskarte zeigt, wie weit
+    // die beiden auseinanderliegen: 210 m Luft sind dort 354 m Weg.
+    var meter = function (a, b, c, d) {
+      var R = 6371000, t = Math.PI / 180;
+      var x = (d - b) * t * Math.cos((a + c) / 2 * t), y = (c - a) * t;
+      return Math.round(R * Math.sqrt(x * x + y * y));
+    };
+
+    karteInnen = L.map("karte-innenstadt", { scrollWheelZoom: true })
+      .setView([bezug.lat, bezug.lon], START_ZOOM);
+    // Nur die Strassenkarte, kein Luftbild: ein Luftbild hilft beim Wiedererkennen
+    // eines Gebaeudes, nicht beim Finden eines Wirtshauses - und ein Umschalter,
+    // der nichts beantwortet, ist ein Bedienelement zu viel.
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(karteInnen);
+
+    // gefluegel.stufe hat FUENF Zustaende, nicht zwei. Ein Haus mit 'salat'
+    // erfuellt die Bedingung formal und serviert einen Salatteller - wer ein
+    // Hendl wollte, steht dort falsch. Die Stufen werden darum ausgeschrieben
+    // und nie zu ja/nein zusammengefasst.
+    var GEFLUEGEL = {
+      schnitzel:    "Geflügelschnitzel auf der Karte",
+      hauptgericht: "Geflügel als Hauptgericht",
+      salat:        "Geflügel nur als Salat — kein Hendl",
+      keins:        "kein Geflügel",
+      ungeprueft:   "Geflügel ungeprüft"
+    };
+    var VEGETARISCH = {
+      hauptgericht: "vegetarisches Hauptgericht",
+      "nur-salat":  "vegetarisch nur als Salat",
+      keins:        "nichts Vegetarisches",
+      ungeprueft:   "ungeprüft"
+    };
+    var KOORDINATE = {
+      betrieb: "Der Punkt sitzt auf dem Betrieb selbst.",
+      adresse: "Der Punkt trifft das Haus, nicht den Laden darin.",
+      markt: "Der Punkt ist die Mitte des Marktes, nicht der Stand.",
+      "fremder-treffer": "Unter derselben Adresse steht in OpenStreetMap ein anderer Betrieb — "
+        + "die Marke sitzt am richtigen Gebäude, aber auf dem Nachbarn."
+    };
+
+    // 22 Wirtshaeuser mit je sieben Zeilen waeren 154 Zeilen Oeffnungszeiten in
+    // der Liste. Gleiche Zeiten an aufeinanderfolgenden Tagen werden darum
+    // zusammengefasst - gerechnet aus den Daten, nicht von Hand gekuerzt. Passt
+    // eine Zeile nicht ins Muster, bleibt die Liste unveraendert stehen: eine
+    // Kuerzung, die raet, waere schlimmer als eine lange Zeile.
+    var TAG_KURZ = { Montag: "Mo", Dienstag: "Di", Mittwoch: "Mi", Donnerstag: "Do",
+                     Freitag: "Fr", Samstag: "Sa", Sonntag: "So" };
+    var zeitenKurz = function (arr) {
+      var teile = arr.map(function (z) {
+        var m = /^([^:]+):\s*(.*)$/.exec(z);
+        return m && TAG_KURZ[m[1]] ? { tag: TAG_KURZ[m[1]], zeit: m[2].replace(/\s*Uhr\s*$/, "") } : null;
+      });
+      if (teile.some(function (t) { return !t; })) return arr.join(" · ");
+      var out = [], lauf = null;
+      teile.forEach(function (t) {
+        if (lauf && lauf.zeit === t.zeit) { lauf.bis = t.tag; return; }
+        lauf = { von: t.tag, bis: null, zeit: t.zeit };
+        out.push(lauf);
+      });
+      return out.map(function (b) {
+        return (b.bis ? b.von + "–" + b.bis : b.von) + " " + b.zeit;
+      }).join(" · ");
+    };
+
+    // "unknown" ist kein fehlender Wert, sondern eine Aussage - und wird als
+    // solche gezeigt. Weglassen liesse die Zeile aussehen, als sei sie geprueft.
+    var zeitenText = function (o, kurz) {
+      var z = o.oeffnungszeiten;
+      if (!z) return "unbekannt — nicht erhoben";
+      if (Array.isArray(z)) return kurz ? zeitenKurz(z) : z.join("<br>");
+      return z === "unknown" ? "unbekannt — nicht erhoben" : z;
+    };
+
+    var note = function (o) {
+      if (!o.google || !o.google.note) return "";
+      return String(o.google.note).replace(".", ",") + " ★";
+    };
+    // mapsLink() erwartet das Feld `maps`; die Wirtshaeuser tragen es unter
+    // google.maps, weil es aus der Places-API kommt. Die amtliche URL zeigt auf
+    // DEN Eintrag, die Koordinate nur auf die Stelle - darum hat sie Vorrang.
+    var mapsZiel = function (o) {
+      return { lat: o.lat, lon: o.lon, maps: (o.google && o.google.maps) || o.maps };
+    };
+
+    var sprechblase = function (o) {
+      var z = ["<h3>" + o.name + "</h3>",
+               "<p>" + LABEL[o.kueche] + " · " + o.stadtteil + "</p>"];
+      if (o.google && o.google.note) {
+        z.push('<p class="bewertung"><strong>' + note(o) + "</strong> aus "
+          + o.google.stimmen.toLocaleString("de-DE") + " Bewertungen"
+          + (o.google.rang === "secondary" ? " — weitergegebener Wert, nicht aus der Places-API" : "")
+          + "</p>");
+      }
+      z.push("<p>" + o.notiz + "</p>");
+
+      if (o.gefluegel) {
+        z.push('<p class="popup-fein"><strong>' + GEFLUEGEL[o.gefluegel.stufe] + "</strong>"
+          + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
+          + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "") + "</p>");
+      }
+      if (o.vegetarisch) {
+        z.push('<p class="popup-fein">' + VEGETARISCH[o.vegetarisch.stufe]
+          + (o.vegetarisch.beispiel ? " — " + o.vegetarisch.beispiel : "") + "</p>");
+      }
+      if (o.fruehstueck_bis) {
+        z.push('<p class="popup-fein">Frühstück bis <strong>' + o.fruehstueck_bis + "</strong></p>");
+      }
+      if (o.preise) {
+        z.push('<p class="popup-fein">' + (o.preise === "unknown" ? "Preise unbekannt — nicht erhoben"
+          : o.preise + (o.preise_stand ? " (Stand " + deutsch(o.preise_stand) + ")" : "")) + "</p>");
+      }
+      z.push('<p class="popup-fein">' + zeitenText(o, false)
+        + (o.oeffnungszeiten_stand ? "<br>Stand " + deutsch(o.oeffnungszeiten_stand) : "") + "</p>");
+      if (o.adresse) z.push('<p class="popup-fein">' + o.adresse + "</p>");
+
+      // Jede Einschraenkung steht in der Sprechblase, nicht nur in den Daten.
+      // Ein Wert ohne seine Einschraenkung behauptet mehr, als er weiss.
+      [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis,
+       o.koordinate_hinweis || (o.koordinate && o.koordinate !== "betrieb" ? KOORDINATE[o.koordinate] : ""),
+       o.stadtteil_hinweis
+      ].forEach(function (w) {
+        if (w) z.push('<p class="popup-unbekannt">' + w + "</p>");
+      });
+
+      var ziel = o.web || o.beleg;
+      if (ziel) {
+        z.push('<p class="popup-fein"><a href="' + ziel + '" target="_blank" rel="noopener noreferrer">'
+          + (o.web ? "Website" : "Beleg") + "</a></p>");
+      }
+      z.push(mapsLink(mapsZiel(o)));
+      if (o.osm) z.push('<p class="popup-fein">OSM ' + o.osm + "</p>");
+      return z.join("");
+    };
+
+    // Kuechen in der Reihenfolge des Tages, darin die bessere Note zuerst. Wo
+    // keine Note vorliegt, steht der Ort hinten - und NICHT mit einer geratenen
+    // Null, die wie eine Messung aussaehe.
+    var reihe = GASTRO.map(function (k) { return k.id; });
+    var sortiert = g.orte.slice().sort(function (a, b) {
+      var d = reihe.indexOf(a.kueche) - reihe.indexOf(b.kueche);
+      if (d) return d;
+      var na = (a.google && a.google.note) || 0, nb = (b.google && b.google.note) || 0;
+      if (na !== nb) return nb - na;
+      return a.name.localeCompare(b.name, "de");
+    });
+
+    var ebene = L.layerGroup().addTo(karteInnen);
+    var listeEl = document.getElementById("gastro-liste");
+    var eintraege = [];
+
+    sortiert.forEach(function (o) {
+      var m = L.marker([o.lat, o.lon], {
+        icon: L.divIcon({
+          className: "",
+          html: ortSymbol(ZEICHEN[o.kueche], false),
+          // 34 px MUSS die Kantenlaenge von .ort-pin in stil.css sein: Leaflet
+          // ankert an SEINER Kiste, waehrend das <i> darin seine eigene Groesse
+          // hat - stehen die beiden auseinander, sitzt die Marke daneben.
+          iconSize: [34, 34], iconAnchor: [17, 17]
+        }),
+        title: o.name + " — " + LABEL[o.kueche] + ", " + o.stadtteil
+             + (note(o) ? ", " + note(o) : ""),
+        // keyboard:false - 40 Marken waeren 40 Tab-Stopps vor dem naechsten
+        // Bedienelement. Erreichbar sind die Orte ueber die Liste darunter, und
+        // die ist der bessere Weg: sie zeigt den Inhalt statt nur die Stelle.
+        keyboard: false,
+        riseOnHover: true
+      }).bindPopup(sprechblase(o));
+
+      var art = document.createElement("article");
+      art.className = "gastro-karte";
+      var fakten = [
+        ["Küche", LABEL[o.kueche]],
+        ["Stadtteil", o.stadtteil],
+        ["Offen", zeitenText(o, true)],
+        ["Adresse", o.adresse || "unbekannt"],
+        ["Luftlinie", meter(bezug.lat, bezug.lon, o.lat, o.lon) >= 1000
+          ? (meter(bezug.lat, bezug.lon, o.lat, o.lon) / 1000).toFixed(1).replace(".", ",")
+            + " km zum " + bezug.name
+          : meter(bezug.lat, bezug.lon, o.lat, o.lon) + " m zum " + bezug.name]
+      ];
+      if (o.fruehstueck_bis) fakten.splice(3, 0, ["Frühstück bis", o.fruehstueck_bis]);
+      if (o.gefluegel) fakten.splice(3, 0, ["Geflügel", GEFLUEGEL[o.gefluegel.stufe]]);
+      if (o.preise && o.preise !== "unknown") fakten.splice(3, 0, ["Preise", o.preise]);
+
+      art.innerHTML =
+        '<div class="gastro-kopf">'
+          + '<span aria-hidden="true">' + ortSymbol(ZEICHEN[o.kueche], false) + "</span>"
+          + '<h4><button type="button" class="ort-zeigen">' + o.name + "</button></h4>"
+          + (note(o) ? '<span class="gastro-note">' + note(o) + "</span>" : "")
+        + "</div>"
+        + '<dl class="gastro-fakten">'
+          + fakten.map(function (f) { return "<dt>" + f[0] + "</dt><dd>" + f[1] + "</dd>"; }).join("")
+        + "</dl>"
+        + '<p class="gastro-notiz">' + o.notiz + "</p>"
+        + [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis]
+            .filter(Boolean)
+            .map(function (w) { return '<p class="gastro-warnung">' + w + "</p>"; }).join("");
+
+      // Der Name schwenkt die Karte auf den Ort und oeffnet seine Sprechblase.
+      // Ohne das waeren Liste und Karte zwei Darstellungen, die nichts
+      // voneinander wissen - und die Liste der einzige Weg zu einem Ort, den man
+      // auf der Karte nicht findet.
+      art.querySelector(".ort-zeigen").addEventListener("click", function () {
+        karteInnen.setView([o.lat, o.lon], Math.max(karteInnen.getZoom(), 16));
+        m.openPopup();
+        document.getElementById("karte-innenstadt").scrollIntoView({ block: "center" });
+      });
+
+      listeEl.appendChild(art);
+      var heu = [o.name, o.kurz, LABEL[o.kueche], o.kueche, o.stadtteil].join(" ");
+      eintraege.push({ o: o, m: m, el: art, heu1: falte(heu, false), heu2: falte(heu, true) });
+    });
+
+    // --- Suche und Filter greifen ZUSAMMEN ----------------------------------
+    // Der Filter sagt, welche Kuechen gelten; die Suche schraenkt darin ein.
+    // Nacheinander statt zusammen waere die haeufigere, falsche Bauform: dann
+    // hebt jeder Tastendruck den Filter auf.
+    var an = {};
+    GASTRO.forEach(function (k) { an[k.id] = true; });
+
+    var feld = document.getElementById("gastro-suche");
+    var zahlEl = document.getElementById("gastro-zahl");
+    var leerEl = document.getElementById("gastro-leer");
+
+    function neuZeichnen(springen) {
+      var begriff = feld.value.trim();
+      // Mehrere Woerter sind eine UND-Bedingung: "au wirtshaus" meint beides,
+      // nicht irgendeins davon.
+      var worte = falte(begriff, false).split(/\s+/).filter(Boolean);
+      var sichtbar = [];
+      eintraege.forEach(function (e) {
+        var passt = an[e.o.kueche] && worte.every(function (w) {
+          return e.heu1.indexOf(w) >= 0 || e.heu2.indexOf(w) >= 0;
+        });
+        if (passt) {
+          if (!ebene.hasLayer(e.m)) ebene.addLayer(e.m);
+          sichtbar.push(e);
+        } else if (ebene.hasLayer(e.m)) {
+          ebene.removeLayer(e.m);
+        }
+        e.el.hidden = !passt;
+      });
+
+      zahlEl.textContent = sichtbar.length + " von " + eintraege.length + " Orten";
+      leerEl.hidden = sichtbar.length > 0;
+      if (!sichtbar.length) {
+        var ausGeschaltet = GASTRO.filter(function (k) { return !an[k.id]; })
+          .map(function (k) { return k.label; });
+        leerEl.textContent = begriff
+          ? "Kein Ort passt zu „" + begriff + "“"
+            + (ausGeschaltet.length ? " in den angehakten Kategorien" : "")
+            + ". Gesucht wird in Name, Küche und Stadtteil."
+          : "Alle Kategorien sind ausgeschaltet — kein Ort auf der Karte.";
+      }
+
+      // Der Ausschnitt folgt der SUCHE, nicht dem Filter. Grund: sieben der 40
+      // Haeuser liegen mehr als drei Kilometer vom Marienplatz. Wer "Aubing"
+      // sucht, saehe sonst "1 von 40" und eine leere Innenstadt - genau die
+      // Falle, gegen die der Zaehler gebaut ist. Ein Filter dagegen behaelt den
+      // Ausschnitt: die Karte soll nicht springen, weil man eine Kategorie
+      // ausblendet.
+      if (!springen) return;
+      if (begriff && sichtbar.length) {
+        karteInnen.fitBounds(L.latLngBounds(sichtbar.map(function (e) {
+          return [e.o.lat, e.o.lon];
+        })).pad(0.25), { maxZoom: 16 });
+      } else if (!begriff) {
+        karteInnen.setView([bezug.lat, bezug.lon], START_ZOOM);
+      }
+    }
+
+    // Zaehler und Liste sofort, der Ausschnitt nach der Tippause: eine Karte,
+    // die bei jedem Buchstaben springt, ist nicht zu lesen.
+    var wartend = null;
+    feld.addEventListener("input", function () {
+      neuZeichnen(false);
+      clearTimeout(wartend);
+      wartend = setTimeout(function () { neuZeichnen(true); }, 320);
+    });
+
+    // Die Legende IST der Filter - gleiche Bauform wie auf den beiden anderen
+    // Reitern, damit ein Knopf hier nicht etwas anderes tut als dort.
+    var ulI = document.getElementById("legende-innenstadt");
+    GASTRO.forEach(function (k) {
+      var n = eintraege.filter(function (e) { return e.o.kueche === k.id; }).length;
+      if (!n) return;
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "filter";
+      b.setAttribute("aria-pressed", "true");
+      b.innerHTML = '<span class="legende-marke" aria-hidden="true">'
+          + ortSymbol(k.symbol, false) + "</span>"
+        + '<span class="filter-text">' + k.label
+          + ' <span class="filter-zahl">' + n + "</span></span>";
+      b.addEventListener("click", function () {
+        var jetzt = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", jetzt ? "false" : "true");
+        an[k.id] = !jetzt;
+        neuZeichnen(false);
+      });
+      li.appendChild(b);
+      ulI.appendChild(li);
+    });
+
+    neuZeichnen(false);
+
+    // --- Die Tafel ueber der Karte ------------------------------------------
+    var weit = g.orte.filter(function (o) {
+      return meter(bezug.lat, bezug.lon, o.lat, o.lon) > 3000;
+    });
+    var weitest = g.orte.reduce(function (a, o) {
+      return meter(bezug.lat, bezug.lon, o.lat, o.lon)
+           > meter(bezug.lat, bezug.lon, a.lat, a.lon) ? o : a;
+    }, g.orte[0]);
+    tafel("innenstadt-tafel", [
+      ["Was hier liegt", g.anzahl.gesamt + " Orte — "
+        + GASTRO.map(function (k) { return (g.anzahl[k.id] || 0) + " " + k.label; }).join(", ")],
+      ["Ausschnitt", "Innenstadt um den " + bezug.name + ", Zoom " + START_ZOOM],
+      ["Außerhalb", weit.length + " davon liegen weiter als 3 km vom " + bezug.name
+        + " und beim Aufschlagen außerhalb des Bildes — der weiteste "
+        + (meter(bezug.lat, bezug.lon, weitest.lat, weitest.lon) / 1000).toFixed(1).replace(".", ",")
+        + " km (" + weitest.name + "). Die Suche schwenkt zu ihnen."]
+    ], "Die Auswahl ist recherchiert, nicht abgefragt: was auf eine Reisekarte gehört, ist eine "
+     + "Entscheidung. Frühstück und Wirtshäuser stehen als Liste in ihren Abrufskripten.");
+
+    // --- Was unter der Karte genannt werden MUSS -----------------------------
+    // Jede Quelle mit Rang und Datum, und jede Luecke ausdruecklich: eine
+    // gefilterte, kuratierte Liste ohne diese Zahlen sieht aus wie eine
+    // vollstaendige.
+    var ohneZeit = g.orte.filter(function (o) {
+      return !o.oeffnungszeiten || o.oeffnungszeiten === "unknown";
+    }).length;
+    var mitWarnung = g.orte.filter(function (o) {
+      return (o.speisekarte && o.speisekarte.warnung) || o.warnung || o.preise_hinweis;
+    }).length;
+    var nurAdresse = g.orte.filter(function (o) {
+      return o.koordinate && o.koordinate !== "betrieb";
+    }).length;
+    var q = g.quellen;
+    document.getElementById("gastro-fuss").innerHTML =
+      "<strong>Drei Bestände, drei Ränge — je Ort steht die Quelle in der Sprechblase.</strong> "
+      + GASTRO.map(function (k) {
+          var qq = q[k.id];
+          if (!qq) return "";
+          return k.label + ": " + (g.anzahl[k.id] || 0) + " Orte, " + qq.rang
+               + ", abgerufen " + deutsch(qq.abgerufen);
+        }).filter(Boolean).join(" · ") + ". "
+      + "Die Wirtshäuser sind das einzige der drei mit Bewertungen aus der Places-API; "
+      + "die Frühstücksnoten sind weitergegebene Google-Werte ohne place_id und darum "
+      + "<em>secondary</em>. "
+      + (q.wirtshaus && q.wirtshaus.anzahl
+          ? "Von " + (g.anzahl.wirtshaus || 0) + " Speisekarten sind "
+            + q.wirtshaus.anzahl.karte_geprueft + " einzeln geöffnet worden. "
+            + "„Geflügel“ hat fünf Stufen, nicht zwei: bei "
+            + q.wirtshaus.anzahl.gefluegel_nur_salat + " Häusern kommt es nur als Salat auf den "
+            + "Tisch — wer ein Hendl will, steht dort falsch. "
+          : "")
+      + mitWarnung + " der " + g.anzahl.gesamt + " Orte tragen eine ausdrückliche Einschränkung "
+      + "zu Preis, Karte oder Öffnungszeit; sie steht in der Sprechblase und in der Liste. "
+      + ohneZeit + " Öffnungszeiten sind <strong>unbekannt</strong> und werden auch so gezeigt — "
+      + "nicht geschätzt. Bei " + nurAdresse + " Orten sitzt die Marke <strong>nicht auf dem "
+      + "Betrieb</strong>, sondern auf dem Haus, einem Marktplatz oder sogar einem anderen Laden "
+      + "unter derselben Adresse; welcher Fall vorliegt, sagt jede Sprechblase einzeln. "
+      + "Nicht gemessen: <strong>niemand war vor Ort</strong>, und die Entfernung in der Liste ist "
+      + "Luftlinie, keine Gehzeit.";
+  })();
+
   // --- Menueleiste ---------------------------------------------------------
   // Aufgebaut aus DATEN.menue, nicht aus dem HTML. Ein Eintrag mit `seite` wird
   // ein Link auf eine eigene Datei, einer mit `ansicht` schaltet einen
@@ -797,9 +1309,12 @@
     });
     // Leaflet vermisst seinen Behaelter beim Anlegen. Eine Karte, die in einem
     // ausgeblendeten Abschnitt entstand, bleibt grau, bis invalidateSize() sie
-    // neu vermisst - das gilt fuer BEIDE Karten.
+    // neu vermisst - das gilt fuer ALLE DREI Karten. Wer eine vierte dazustellt
+    // und diese Zeile vergisst, bekommt eine graue Flaeche, die aussieht wie eine
+    // Karte, die noch laedt.
     if (id === "karte") karte.invalidateSize();
     if (id === "hotel" && karteHotel) karteHotel.invalidateSize();
+    if (id === "innenstadt" && karteInnen) karteInnen.invalidateSize();
     // Der Hash macht einen Menuepunkt verlinkbar und ueberlebt ein Neuladen.
     // Das Praefix ist Pflicht, nicht Zierde: ein blankes "#karte" traf die id
     // des Kartenbehaelters, worauf der Browser dorthin sprang und die Seite mit
