@@ -294,6 +294,9 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
           box-shadow:0 0 0 2px var(--umriss)}
 .halt-pin.sbahn{background:var(--p-sbahn)}
 .halt-pin.ubahn{background:var(--p-ubahn)}
+/* Halte einer ausdruecklich aufgenommenen Linie: quadratisch statt rund, damit
+   sie sich auch ohne Farbe von den Netzpunkten unterscheiden (WCAG 1.4.1). */
+.halt-pin.linie{width:12px; height:12px; border-radius:0; background:var(--p-film)}
 
 /* Leaflets eigene Sprechblase traegt die Palette der Seite, sonst steht ein
    weisser Systemkasten mitten in einer durchgestalteten Karte. */

@@ -15,6 +15,12 @@
   };
 
   var deutsch = function (iso) { return iso.split("-").reverse().join("."); };
+  // Leaflet braucht einen echten Farbwert, kein var(). Aus dem Stylesheet holen
+  // statt den Hex-Wert hier zu wiederholen: zwei Fassungen einer Farbe driften
+  // auseinander, und dann stimmt die Legende nicht mehr mit der Karte ueberein.
+  var token = function (name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  };
   var setzeText = function (id, text) { document.getElementById(id).textContent = text; };
 
   // --- Kopf und Titel ------------------------------------------------------
@@ -148,6 +154,47 @@
     schalter["U-Bahn (" + DATEN.bahn.anzahl.ubahn + ")"] = gruppen.ubahn;
   }
 
+  // --- Linien: der Verlauf plus die eigenen Halte -------------------------
+  // Warum ueberhaupt eine Linie und nicht nur Punkte: die Filmstadt liegt in
+  // Gruenwald, also AUSSERHALB der Stadtgrenze, nach der die Haltestellen oben
+  // abgefragt sind - sie hing unverbunden auf der Karte, waehrend die Seite so
+  // aussah, als zeige sie den Nahverkehr vollstaendig. Die Tram 25 ist die
+  // Verbindung, und sie gehoert sichtbar dorthin.
+  if (DATEN.bahn && DATEN.bahn.linien) {
+    DATEN.bahn.linien.forEach(function (linie) {
+      var g = L.layerGroup();
+
+      // Jeder Wegabschnitt eine eigene Polylinie. Zusammengenaeht wuerde ein
+      // falsch sortierter Abschnitt eine kerzengerade Linie quer durch die
+      // Stadt ziehen - und die saehe aus wie eine echte Strecke.
+      linie.verlauf.forEach(function (abschnitt) {
+        L.polyline(abschnitt, {
+          color: token("--p-film"), weight: 4, opacity: 0.95, interactive: false
+        }).addTo(g);
+      });
+
+      linie.halte.forEach(function (h) {
+        L.marker([h.lat, h.lon], {
+          icon: L.divIcon({
+            className: "",
+            html: '<i class="halt-pin linie"></i>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+          }),
+          title: h.name,
+          keyboard: false
+        })
+          .addTo(g)
+          .bindPopup("<h3>" + h.name + "</h3><p>Tram " + linie.ref + " · " +
+            linie.von + " → " + linie.nach + "</p>" +
+            '<p class="popup-fein">OSM ' + h.osm + "</p>");
+      });
+
+      g.addTo(karte);
+      schalter["Tram " + linie.ref + " (" + linie.halte.length + ")"] = g;
+    });
+  }
+
   L.control.layers(ebenen, schalter, { position: "topright" }).addTo(karte);
 
   // Der Ausschnitt kommt aus den Orientierungspunkten, nicht aus einem festen
@@ -177,6 +224,12 @@
   if (DATEN.bahn) {
     eintrag("var(--p-sbahn)", "S-Bahn / DB", true);
     eintrag("var(--p-ubahn)", "U-Bahn", true);
+    // eckig, nicht rund: die Legende muss dieselbe FORM zeigen wie die Karte,
+    // sonst trennt sie die Linienhalte nur ueber die Farbe von den Netzpunkten -
+    // und genau das ist der Fall, den WCAG 1.4.1 ausschliesst.
+    (DATEN.bahn.linien || []).forEach(function (l) {
+      eintrag("var(--p-film)", "Tram " + l.ref + " → Filmstadt", false);
+    });
   }
 
   // --- Quellenreiter -------------------------------------------------------
@@ -205,7 +258,15 @@
       abgerufen: DATEN.bahn.quelle.abgerufen,
       rang: DATEN.bahn.quelle.rang,
       lizenz: DATEN.bahn.quelle.lizenz,
-      was: DATEN.bahn.quelle.abfrage + ". Tram- und Bushaltestellen sind nicht enthalten."
+      was: DATEN.bahn.quelle.abfrage + ". "
+         + (DATEN.bahn.linien && DATEN.bahn.linien.length
+             ? "Dazu " + DATEN.bahn.linien.map(function (l) {
+                 return "Tram " + l.ref + " (" + l.halte.length + " Halte, " + l.zweck.replace(/\.$/, "") + ")";
+               }).join(" und ") + ". "
+             : "")
+         + "LÜCKE, benannt statt verschwiegen: die Haltestellen enden an der Stadtgrenze, "
+         + "und Tram- und Bushaltestellen sind darin nicht enthalten. Was außerhalb liegt, "
+         + "steht nur über eine ausdrücklich aufgenommene Linie auf der Karte."
     });
   }
   quellen.push({
