@@ -53,7 +53,8 @@ const DATEN = {
   {
    "id": "bahn",
    "label": "Bahn",
-   "ansicht": "feld-bahn"
+   "ansicht": "feld-bahn",
+   "reisedaten": false
   },
   {
    "id": "quellen",

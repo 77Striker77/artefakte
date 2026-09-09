@@ -121,6 +121,16 @@
 
 *{box-sizing:border-box}
 
+/* [hidden] muss staerker sein als JEDE eigene display-Regel. Grund, gemessen
+   am 09.09.2026: `#feld-hotel{display:flex}` in der 700px-Abfrage schlug das
+   `[hidden]{display:none}` des Browsers - eine Autoren-Regel gewinnt gegen die
+   Browservorgabe, egal wie spezifisch. Auf dem Handy stand der Hotel-Reiter
+   damit IMMER offen: wer 'Innenstadt' waehlte, sah Hotel UND Innenstadt
+   untereinander. Am Schreibtisch griff die Abfrage nicht und alles sah heil aus.
+   Das !important schliesst die ganze Fehlerklasse: die naechste id-Regel mit
+   display kann den Reiterwechsel nicht mehr aushebeln. */
+[hidden]{display:none !important}
+
 body{
   margin:0; background:var(--grund); color:var(--auf-grund);
   font-family:var(--sans); font-size:16px; line-height:1.6;
@@ -203,7 +213,17 @@ body{
   .menue{margin-left:0; width:100%}
   .menue-liste{width:100%}
   .menue-eintrag{flex:1 1 auto}
-  .menue-seite{text-align:center}
+  /* width:100% ist hier Pflicht, nicht Kosmetik: ein <button> bleibt auch als
+     display:block auf Inhaltsbreite stehen und fuellt sein gedehntes <li>
+     NICHT. Gemessen am 09.09.2026 bei 320px: bis zu 58 px je Eintrag sahen aus
+     wie der Knopf, waren aber tot - der Aktivbalken (er haengt am <li>) lief
+     bis dorthin. Ein Tipp in diese Flaeche fiel entweder ins Leere oder wurde
+     von der Tippkorrektur des Browsers auf den NACHBARN gezogen. */
+  .menue-knopf{width:100%}
+  /* 12 statt 10: 16 px Zeile + 24 Polster + 4 Rand = 44 px, die Untergrenze
+     fuer ein Tastziel (WCAG 2.5.8). Mit 10 blieben es 40 - eng genug, dass die
+     Tippkorrektur bei 6 px Abstand den Nachbarknopf erwischt. */
+  .menue-seite{text-align:center; padding:12px 15px}
 }
 
 main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
@@ -399,8 +419,11 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    waere ein zweiter Kasten im Kasten. */
 .route-links{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
              margin:8px 0 0}
-.route-wort{font-size:12px; letter-spacing:.04em; text-transform:uppercase;
-            color:var(--tinte-leise)}                    /* 7,81:1 */
+/* Eigene Zeile, nicht neben den Knoepfen: die Sprechblase ist rund 250 px
+   breit, und mit dem Wort davor passte nur noch EIN Knopf in die Zeile - der
+   zweite rutschte darunter und sah aus, als gehoere er nicht dazu. */
+.route-wort{flex:0 0 100%; font-size:12px; letter-spacing:.04em;
+            text-transform:uppercase; color:var(--tinte-leise)}   /* 7,81:1 */
 .leaflet-popup-content .route-knopf{
   display:inline-flex; align-items:center; min-height:44px; padding:0 11px;
   font-size:13.5px; font-weight:700; text-decoration:none;
@@ -638,7 +661,19 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .linie--t{background:var(--m-tram);  color:var(--saum)}   /* 6,97:1 */
 .linie--r, .linie--b{background:var(--flaeche-2); color:var(--tinte)}  /* 14,02:1 */
 .leaflet-popup-content a{color:var(--akzent-text)}
-.leaflet-container a.leaflet-popup-close-button{color:var(--tinte-leise)}
+/* Das Schliesskreuz haengt in Leaflets Aufbau NEBEN dem hellen Kasten, nicht
+   darin: es ist ein Geschwister von .leaflet-popup-content-wrapper und erbt
+   darum den Grund der KARTE. Optisch liegt es auf der Sprechblase und liest
+   sich gut - gemessen stand es bei 2,35:1, weil die Messung der Vererbung folgt
+   und nicht dem Augenschein.
+   Der eigene deckende Grund macht beides deckungsgleich. Dieselbe Loesung und
+   dieselbe Begruendung wie bei Leaflets Attributionsleiste weiter oben: ein
+   Kontrast, der von der Lage abhaengt, ist nicht pruefbar.
+   Gefunden am 09.09.2026, als der Pruefstand zum ersten Mal eine Sprechblase
+   aufmachte - vorher konnte er nichts darin sehen. */
+.leaflet-container a.leaflet-popup-close-button{
+  color:var(--tinte-leise);                    /* 7,81:1 auf --flaeche */
+  background:var(--flaeche)}
 
 /* ---------- Filterleiste (zugleich Legende) ----------
    Jeder Eintrag zeigt die Marke, die er bedeutet, und schaltet sie. Sie steht
