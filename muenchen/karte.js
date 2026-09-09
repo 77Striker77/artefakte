@@ -6,12 +6,45 @@
 (function () {
   "use strict";
 
+  // Orte tragen ein SYMBOL, Bahnen eine FARBE. Das ist die Trennung, an der man
+  // die beiden Familien auf einen Blick auseinanderhaelt: ein Ort ist eine helle
+  // Tafel mit dunklem Zeichen, ein Bahnhalt eine farbige Marke mit dem
+  // Kuerzel seines Verkehrsmittels. Vorher trugen beide Farbflaechen - die
+  // Filmstudios und die Tram 25 hatten sogar dieselbe, weil das eine zum
+  // anderen fuehrt, und genau das war nicht mehr auseinanderzuhalten.
+  var SYMBOL = {
+    ankunft: '<rect x="5" y="3" width="14" height="13" rx="3"/><path d="M5 10h14"/>'
+           + '<path d="M8 19l-2 3M16 19l2 3"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/>',
+    zentrum: '<path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-5h4v5"/>',
+    wahrzeichen: '<path d="M3 21h18"/><path d="M6 21V9a2 2 0 0 1 4 0v12"/>'
+               + '<path d="M14 21V9a2 2 0 0 1 4 0v12"/><path d="M10 21v-6h4v6"/>',
+    film: '<path d="M3 10h18v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>'
+        + '<path d="m3 10 1.5-5 4 1L7 11M9 6l4 1-1.5 4M14 7.2l4 1-1.5 3.8"/>',
+    park: '<path d="M12 21v-5"/>'
+        + '<path d="M12 16a5 5 0 0 0 5-5 4 4 0 0 0-1-2.6A4 4 0 0 0 12 3a4 4 0 0 0-4 5.4A4 4 0 0 0 7 11a5 5 0 0 0 5 5z"/>'
+  };
+
   var ARTEN = {
-    ankunft:     { label: "Ankunft",     farbe: "var(--p-ankunft)" },
-    zentrum:     { label: "Zentrum",     farbe: "var(--p-zentrum)" },
-    wahrzeichen: { label: "Wahrzeichen", farbe: "var(--p-wahrzeichen)" },
-    film:        { label: "Filmstudios", farbe: "var(--p-film)" },
-    park:        { label: "Park",        farbe: "var(--p-park)" }
+    ankunft:     { label: "Ankunft" },
+    zentrum:     { label: "Zentrum" },
+    wahrzeichen: { label: "Wahrzeichen" },
+    film:        { label: "Filmstudios" },
+    park:        { label: "Park" }
+  };
+
+  // Kuerzel und Klasse je Verkehrsmittel. Die Form unterscheidet zusaetzlich zur
+  // Farbe (WCAG 1.4.1): S rund, U eckig, Tram auf der Spitze.
+  var VERKEHR = {
+    sbahn: { kuerzel: "S", label: "S-Bahn / DB" },
+    ubahn: { kuerzel: "U", label: "U-Bahn" },
+    linie: { kuerzel: "T", label: "Tram" }
+  };
+
+  var ortSymbol = function (art, gross) {
+    return '<i class="ort-pin' + (gross ? " gross" : "") + '">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+      + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+      + (SYMBOL[art] || "") + "</svg></i>";
   };
 
   var deutsch = function (iso) { return iso.split("-").reverse().join("."); };
@@ -116,22 +149,28 @@
   // keiner der drei war lesbar. Ein Kasten zu verschieben, damit er passt, waere
   // die falsche Loesung: dann zeigt die Marke nicht mehr dorthin, wo der Ort ist.
   var ZOOM_NAMEN = 13;
-  var orientierung = L.layerGroup().addTo(karte);
+
+  // Je Art eine eigene Ebene, damit sich jede Kategorie einzeln abschalten
+  // laesst. Alle sind beim Aufschlagen an - wer die Karte oeffnet, soll sehen,
+  // was es gibt, und nicht erst zusammenklicken muessen.
+  var ortEbenen = {};
   var punkte = [];
+
   DATEN.orte.forEach(function (o) {
+    if (!ortEbenen[o.art]) ortEbenen[o.art] = L.layerGroup().addTo(karte);
     var gross = o.art === "ankunft";
-    var kante = gross ? 26 : 22;
+    var kante = gross ? 32 : 28;
     L.marker([o.lat, o.lon], {
       icon: L.divIcon({
         className: "",
-        html: '<i class="marke-pin ' + o.art + (gross ? " gross" : "") + '"></i>',
+        html: ortSymbol(o.art, gross),
         iconSize: [kante, kante],
         iconAnchor: [kante / 2, kante / 2]
       }),
       title: o.name,
       riseOnHover: true
     })
-      .addTo(orientierung)
+      .addTo(ortEbenen[o.art])
       .bindTooltip(o.kurz, { permanent: true, direction: "right", offset: [kante / 2 - 2, 0],
                              className: "marke-name" })
       .bindPopup(
@@ -143,13 +182,14 @@
     punkte.push([o.lat, o.lon]);
   });
 
-  // Namen erst ab Stadtteil-Zoom. Darunter tragen Farbe und Legende die
-  // Bedeutung - sieben unterscheidbare Farben sind gemessen, sieben ueberlappende
-  // Textkaesten waeren nur Rauschen.
+  // Namen erst ab Stadtteil-Zoom. Darunter tragen Symbol und Legende die
+  // Bedeutung - sechs ueberlappende Textkaesten waeren nur Rauschen.
   function namenSchalten() {
     var an = karte.getZoom() >= ZOOM_NAMEN;
-    orientierung.eachLayer(function (m) {
-      if (an) m.openTooltip(); else m.closeTooltip();
+    Object.keys(ortEbenen).forEach(function (art) {
+      ortEbenen[art].eachLayer(function (m) {
+        if (an) m.openTooltip(); else m.closeTooltip();
+      });
     });
   }
   karte.on("zoomend", namenSchalten);
@@ -159,7 +199,10 @@
   // Orientierungspunkte unauffindbar machen. Der Name steht in der Sprechblase
   // und im title-Attribut, also auch fuer den Screenreader.
   var ebenen = { "Karte": strasse, "Luftbild": luftbild };
-  var schalter = { "Orientierung": orientierung };
+  var schalter = {};
+  Object.keys(ARTEN).forEach(function (art) {
+    if (ortEbenen[art]) schalter[ARTEN[art].label] = ortEbenen[art];
+  });
 
   if (DATEN.bahn) {
     var gruppen = { sbahn: L.layerGroup(), ubahn: L.layerGroup() };
@@ -167,9 +210,12 @@
       L.marker([h.lat, h.lon], {
         icon: L.divIcon({
           className: "",
-          html: '<i class="halt-pin ' + h.art + '"></i>',
-          iconSize: [14, 14],
-          iconAnchor: [7, 7]
+          html: '<i class="halt-pin ' + h.art + '">' + VERKEHR[h.art].kuerzel + "</i>",
+          // Muss zur Kantenlaenge in stil.css passen: Leaflet setzt den Anker
+          // auf DIESE Kiste, waehrend das <i> darin seine eigene Groesse hat -
+          // stehen sie auseinander, sitzt die Marke neben ihrer Koordinate.
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
         }),
         title: h.name,
         // keyboard:false, sonst liegen 143 Haltepunkte in der Tabreihenfolge:
@@ -205,7 +251,7 @@
       // Stadt ziehen - und die saehe aus wie eine echte Strecke.
       linie.verlauf.forEach(function (abschnitt) {
         L.polyline(abschnitt, {
-          color: token("--p-film"), weight: 4, opacity: 0.95, interactive: false
+          color: token("--bahn-t"), weight: 4, opacity: 0.95, interactive: false
         }).addTo(g);
       });
 
@@ -213,9 +259,9 @@
         L.marker([h.lat, h.lon], {
           icon: L.divIcon({
             className: "",
-            html: '<i class="halt-pin linie"></i>',
-            iconSize: [12, 12],
-            iconAnchor: [6, 6]
+            html: '<i class="halt-pin linie"><b>' + VERKEHR.linie.kuerzel + "</b></i>",
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
           }),
           title: h.name,
           keyboard: false
@@ -243,29 +289,30 @@
   namenSchalten();
 
   // --- Legende -------------------------------------------------------------
+  // Sie zeigt die Marke selbst, nicht ein Farbquadrat daneben: seit die Orte ein
+  // Symbol tragen und nur die Bahnen eine Farbe, waere ein reines Farbfeld fuer
+  // einen Ort leer von Information.
   var ul = document.getElementById("legende");
-  var eintrag = function (farbe, text, rund) {
+  var eintrag = function (markeHtml, text) {
     var li = document.createElement("li");
-    var sw = document.createElement("span");
-    sw.className = rund ? "swatch rund" : "swatch";
-    sw.style.background = farbe;
-    li.appendChild(sw);
+    var sp = document.createElement("span");
+    sp.className = "legende-marke";
+    sp.innerHTML = markeHtml;
+    li.appendChild(sp);
     li.appendChild(document.createTextNode(text));
     ul.appendChild(li);
   };
+
   var gezeigt = {};
   DATEN.orte.forEach(function (o) { gezeigt[o.art] = true; });
   Object.keys(ARTEN).forEach(function (art) {
-    if (gezeigt[art]) eintrag(ARTEN[art].farbe, ARTEN[art].label, false);
+    if (gezeigt[art]) eintrag(ortSymbol(art, false), ARTEN[art].label);
   });
   if (DATEN.bahn) {
-    eintrag("var(--p-sbahn)", "S-Bahn / DB", true);
-    eintrag("var(--p-ubahn)", "U-Bahn", true);
-    // eckig, nicht rund: die Legende muss dieselbe FORM zeigen wie die Karte,
-    // sonst trennt sie die Linienhalte nur ueber die Farbe von den Netzpunkten -
-    // und genau das ist der Fall, den WCAG 1.4.1 ausschliesst.
+    eintrag('<i class="halt-pin sbahn">S</i>', VERKEHR.sbahn.label);
+    eintrag('<i class="halt-pin ubahn">U</i>', VERKEHR.ubahn.label);
     (DATEN.bahn.linien || []).forEach(function (l) {
-      eintrag("var(--p-film)", "Tram " + l.ref + " → Filmstadt", false);
+      eintrag('<i class="halt-pin linie"><b>T</b></i>', "Tram " + l.ref + " → Filmstadt");
     });
   }
 
