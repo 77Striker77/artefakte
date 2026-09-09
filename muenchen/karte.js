@@ -670,7 +670,10 @@
 
     var gruppen = {};
     Object.keys(UMG_ARTEN).forEach(function (a) { gruppen[a] = L.layerGroup().addTo(karteHotel); });
-    var halteEbene = L.layerGroup().addTo(karteHotel);
+    // Je Verkehrsmittel eine EIGENE Ebene, nicht eine Sammelebene "Halte":
+    // wer zu Fuss zur Tram will, soll die Busse nicht mit ausschalten muessen.
+    var halteEbenen = {};
+    var ART_LABEL = { sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" };
 
     u.lokale.forEach(function (l) {
       L.marker([l.lat, l.lon], {
@@ -690,19 +693,30 @@
     });
 
     u.halte.forEach(function (h) {
-      L.marker([h.lat, h.lon], {
+      if (!halteEbenen[h.art]) halteEbenen[h.art] = L.layerGroup().addTo(karteHotel);
+      var m = L.marker([h.lat, h.lon], {
         icon: L.divIcon({ className: "",
-          html: '<i class="halt-pin ' + (h.art === "tram" ? "tram" : h.art) + '">'
-              + (HALT_KUERZEL[h.art] || "?") + "</i>",
+          html: '<i class="halt-pin ' + h.art + '">' + (HALT_KUERZEL[h.art] || "?") + "</i>",
           iconSize: [26, 26], iconAnchor: [13, 13] }),
-        title: h.name + " — " + gehText(h), keyboard: false
+        title: h.name + " — " + gehText(h)
+             + (h.linien && h.linien.length ? " — " + h.linien.join(", ") : ""),
+        keyboard: false
       })
-        .addTo(halteEbene)
+        .addTo(halteEbenen[h.art])
         .bindPopup("<h3>" + h.name + "</h3><p>"
-          + ({ sbahn: "S-Bahn / DB", ubahn: "U-Bahn", tram: "Tram", bus: "Bus" }[h.art] || h.art)
-          + " · " + gehText(h) + "</p>"
+          + (ART_LABEL[h.art] || h.art) + " · " + gehText(h) + "</p>"
+          + linienBlock(h)
           + mapsLink(h)
           + '<p class="popup-fein">OSM ' + h.osm + "</p>");
+
+      // Dieselben Linienschilder wie auf der Startseite - hier OHNE Zoomstufe:
+      // diese Karte startet bei Zoom 15 und zeigt einen Kilometer. Da liegt
+      // nichts uebereinander, was bei Stadtzoom uebereinanderlaege.
+      var sch = schild(h);
+      if (sch) {
+        m.bindTooltip(sch, { permanent: true, direction: "right", offset: [14, 0],
+                             className: "halt-schild halt-schild--immer", interactive: false });
+      }
     });
 
     // Eigene Filterleiste, gleiche Bauform wie die der Stadtkarte.
@@ -725,9 +739,13 @@
       var n = u.lokale.filter(function (l) { return l.gruppe === a; }).length;
       if (n) eintragU(ortSymbol(a, false), UMG_ARTEN[a].label, n, gruppen[a]);
     });
-    if (u.halte.length) {
-      eintragU('<i class="halt-pin sbahn">S</i>', "Haltestellen", u.halte.length, halteEbene);
-    }
+    // Ein Eintrag je Verkehrsmittel, in der Reihenfolge, in der man sucht.
+    ["sbahn", "ubahn", "tram", "bus"].forEach(function (a) {
+      if (!halteEbenen[a]) return;
+      var n = u.halte.filter(function (h) { return h.art === a; }).length;
+      eintragU('<i class="halt-pin ' + a + '">' + HALT_KUERZEL[a] + "</i>",
+               ART_LABEL[a], n, halteEbenen[a]);
+    });
 
     // Was der Filter WEGGELASSEN hat, gehoert unter die Karte - eine gefilterte
     // Liste ohne diese Zahl sieht aus wie eine vollstaendige.

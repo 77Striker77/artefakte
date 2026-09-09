@@ -383,6 +383,9 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
 .leaflet-tooltip.halt-schild::before{display:none}
 .leaflet-tooltip.halt-schild{display:none}
 .zeigt-schilder .leaflet-tooltip.halt-schild{display:block}
+/* Auf der Umgebungskarte gibt es keine Zoomstufe zu schalten: sie startet bei
+   Zoom 15 und zeigt einen Kilometer. Die Schilder stehen dort immer. */
+.leaflet-tooltip.halt-schild--immer{display:block}
 .halt-linien{display:inline-flex; gap:2px; align-items:center;
   filter:drop-shadow( 1px 0 0 var(--saum)) drop-shadow(-1px 0 0 var(--saum))
          drop-shadow(0  1px 0 var(--saum)) drop-shadow(0 -1px 0 var(--saum))}

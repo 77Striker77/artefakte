@@ -842,6 +842,15 @@ const DATEN = {
     "lon": 11.593075,
     "osm": "node/2473550316",
     "meter": 363,
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
     "gehzeit_s": 448,
     "gehweg_m": 553
    },
@@ -852,6 +861,7 @@ const DATEN = {
     "lon": 11.593343,
     "osm": "node/11148616544",
     "meter": 367,
+    "linien": [],
     "gehzeit_s": 444,
     "gehweg_m": 549
    },
@@ -862,6 +872,12 @@ const DATEN = {
     "lon": 11.588025,
     "osm": "node/3195931969",
     "meter": 386,
+    "linien": [
+     "Tram 25",
+     "Bus 62",
+     "Tram E7",
+     "Bus N45"
+    ],
     "gehzeit_s": 465,
     "gehweg_m": 569
    },
@@ -872,6 +888,10 @@ const DATEN = {
     "lon": 11.594089,
     "osm": "node/3195933365",
     "meter": 421,
+    "linien": [
+     "Tram 25",
+     "Tram E7"
+    ],
     "gehzeit_s": 531,
     "gehweg_m": 620
    },
@@ -882,6 +902,10 @@ const DATEN = {
     "lon": 11.586237,
     "osm": "node/1072765095",
     "meter": 482,
+    "linien": [
+     "Tram 17",
+     "Tram N17"
+    ],
     "gehzeit_s": 472,
     "gehweg_m": 588
    },
@@ -892,6 +916,9 @@ const DATEN = {
     "lon": 11.585243,
     "osm": "node/2794931543",
     "meter": 596,
+    "linien": [
+     "Bus 132"
+    ],
     "gehzeit_s": 635,
     "gehweg_m": 756
    },
@@ -902,6 +929,10 @@ const DATEN = {
     "lon": 11.591619,
     "osm": "node/3195897262",
     "meter": 604,
+    "linien": [
+     "Tram 17",
+     "Tram N17"
+    ],
     "gehzeit_s": 598,
     "gehweg_m": 718
    },
@@ -912,6 +943,11 @@ const DATEN = {
     "lon": 11.581344,
     "osm": "node/3195960962",
     "meter": 686,
+    "linien": [
+     "Tram 18",
+     "Bus 52",
+     "Tram N27"
+    ],
     "gehzeit_s": 739,
     "gehweg_m": 873
    },
@@ -922,6 +958,7 @@ const DATEN = {
     "lon": 11.58143,
     "osm": "node/10718659630",
     "meter": 702,
+    "linien": [],
     "gehzeit_s": 796,
     "gehweg_m": 918
    },
@@ -932,6 +969,12 @@ const DATEN = {
     "lon": 11.583249,
     "osm": "node/203210007",
     "meter": 736,
+    "linien": [
+     "Tram 16",
+     "Tram 17",
+     "Bus 132",
+     "Tram N17"
+    ],
     "gehzeit_s": 710,
     "gehweg_m": 876
    },
@@ -942,6 +985,13 @@ const DATEN = {
     "lon": 11.585677,
     "osm": "node/6875392408",
     "meter": 740,
+    "linien": [
+     "Tram 25",
+     "Bus 58",
+     "Bus 68",
+     "Tram E7",
+     "Bus N45"
+    ],
     "gehzeit_s": 894,
     "gehweg_m": 1101
    },
@@ -952,6 +1002,10 @@ const DATEN = {
     "lon": 11.578437,
     "osm": "node/1475056046",
     "meter": 780,
+    "linien": [
+     "Tram 18",
+     "Tram N27"
+    ],
     "gehzeit_s": 886,
     "gehweg_m": 1056
    },
@@ -962,6 +1016,12 @@ const DATEN = {
     "lon": 11.597514,
     "osm": "node/3195825666",
     "meter": 798,
+    "linien": [
+     "Tram 21",
+     "Tram 25",
+     "Tram E7",
+     "Tram N19"
+    ],
     "gehzeit_s": 866,
     "gehweg_m": 1041
    },
@@ -972,6 +1032,15 @@ const DATEN = {
     "lon": 11.583136,
     "osm": "node/2473615158",
     "meter": 824,
+    "linien": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6",
+     "S8"
+    ],
     "gehzeit_s": 819,
     "gehweg_m": 986
    },
@@ -982,6 +1051,7 @@ const DATEN = {
     "lon": 11.595785,
     "osm": "node/3195897285",
     "meter": 878,
+    "linien": [],
     "gehzeit_s": 867,
     "gehweg_m": 1057
    }
