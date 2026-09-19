@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Berlin — Reise-Cockpit</title>
+<meta name="description" content="Karte von Berlin mit Ankunftspunkt, Unterkunft, Wahrzeichen, den beiden Terminen und allen Bahnhaltestellen im Stadtgebiet.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700;800&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="stil.css?v=a0cc1245">
+</head>
+<body>
+
+<!-- Der Pixel-Sternenhimmel liegt FEST hinter allem (position:fixed, z-index:-1)
+     und scrollt darum nicht mit: ein mitscrollender Himmel wuerde beim Lesen
+     wandern und genau die Unruhe erzeugen, die hier nicht hingehoert.
+
+     Er war auf der Muenchen-Seite Zierde. Hier ist er es immer noch - aber er
+     passt zum ersten Mal zum Inhalt: zwei der vier Reisetage haengen an einem
+     Planetarium, und die Palette heisst Kosmos und Aurora. Das ist kein Grund,
+     ihn anders zu bauen, sondern nur einer, ihn zu behalten.
+
+     aria-hidden und ohne Tabstopp: er traegt keine Auskunft. Faellt das Skript
+     aus, bleibt der Grund einfarbig - es fehlt nichts als der Effekt. -->
+<canvas id="himmel" aria-hidden="true"></canvas>
+
+<!-- Die Menueleiste wird aus `menue` in bau/reise.json gebaut, nicht hier
+     eingetragen: die Seite waechst, und ein Menue, das in der HTML-Datei steht,
+     muss bei jedem neuen Punkt in JEDER Datei nachgezogen werden.
+
+     SECHS Eintraege. Muenchens cockpit/README.md haelt fest, dass die Leiste
+     bei sechs ueber 320, 360 und 390 px gerade noch nicht ueberhaengt und dass
+     der siebte "nicht mehr gemessen, sondern entschieden" wird. Berlin haette
+     sieben gebraucht - Show und Planetarium getrennt. Entschieden wurde,
+     sie unter "Termine" zusammenzulegen. -->
+<header class="kopf">
+  <div class="kopf-inner">
+    <a class="marke" href="index.html" id="marke">Berlin</a>
+    <span class="eyebrow" id="eyebrow">Reiseziel · Deutschland</span>
+    <nav class="menue" id="menue" aria-label="Hauptmenü"></nav>
+  </div>
+</header>
+
+<main>
+  <h1 class="titel" id="titel">Berlin<em>drei Nächte, zwei Termine, ein Knotenpunkt</em></h1>
+
+  <!-- Die Infobox steht ueber allen Ansichten, nicht in einer: sie ist das, was
+       man beim Aufschlagen wissen will, und soll nicht verschwinden, wenn man
+       einen anderen Menuepunkt oeffnet. Unbekanntes traegt "xx". -->
+  <section class="infobox" aria-labelledby="infobox-titel">
+    <h2 id="infobox-titel">Reisedaten</h2>
+    <dl id="reisedaten"></dl>
+    <p class="infobox-fuss" id="infobox-fuss"></p>
+  </section>
+
+  <section class="ansicht" id="feld-karte" aria-labelledby="menue-karte" tabindex="-1">
+    <div id="karte" role="region" aria-label="Karte von Berlin"></div>
+    <ul class="legende" id="legende"></ul>
+  </section>
+
+  <section class="ansicht" id="feld-hotel" aria-labelledby="menue-hotel" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Hotel</h2>
+    <div id="hotel-tafel"></div>
+
+    <!-- EINE Karte fuer beides. Das Untermenue schaltet den AUSSCHNITT -
+         Umgebung oder ganzer Weg vom Hauptbahnhof -, die Legende darunter
+         schaltet Kartenebenen. Zwei Steuerungen, jede fuer genau eine Sache. -->
+    <h3 class="tafel-titel">Wo es liegt und wie man hin- und zurückkommt</h3>
+    <nav class="untermenue" id="weg-reiter" aria-label="Was die Karte zeigt"></nav>
+    <div id="weg-tafel"></div>
+    <div id="karte-hotel" role="region"
+         aria-label="Karte der Unterkunft, ihrer Umgebung und der Wege vom und zum Hauptbahnhof"></div>
+    <ul class="legende" id="legende-hotel"></ul>
+    <!-- .grund-fuss, NICHT .tafel-fuss: dieser Fuss liegt auf dem dunklen Grund,
+         nicht auf einer hellen Tafel, und braucht darum den anderen Rollensatz. -->
+    <p class="grund-fuss" id="umgebung-fuss"></p>
+  </section>
+
+  <!-- Bahn: ein Untermenue je Fahrt. Die Knoepfe stehen NICHT hier, sondern
+       kommen aus reise.json - eine dritte Fahrt soll ein Datensatz sein und
+       keine HTML-Aenderung.
+
+       Das Streckenband statt einer Tabelle: eine Fahrt ist eine Folge, und eine
+       Folge liest man als Linie. Zeiten links, Gleis rechts, Zwischenhalte
+       leiser - so beantwortet ein Blick "wann bin ich wo", was eine Tabelle
+       erst nach dem Lesen aller Zeilen kann. -->
+  <section class="ansicht" id="feld-bahn" aria-labelledby="menue-bahn" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Bahn</h2>
+    <nav class="untermenue" id="bahn-reiter" aria-label="Welche Fahrt"></nav>
+    <div id="bahn-tafel"></div>
+  </section>
+
+  <!-- Termine: BEIDE untereinander, chronologisch, nicht hinter einem dritten
+       Untermenue.
+
+       Warum nicht geschachtelt: jeder Termin traegt bereits ein Untermenue fuer
+       Hinweg/Rueckweg. Ein zweites darueber waere eine dritte Ebene - Menue,
+       Terminwahl, Richtungswahl -, und auf einem Handy weiss dann niemand mehr,
+       welcher Knopf was tut. Zwei Termine passen untereinander; ein dritter
+       waere der Anlass, diese Entscheidung neu zu treffen, und nicht der
+       Anlass, eine Ebene einzuziehen.
+
+       Die Reihenfolge ist der Kalender: Freitag vor Samstag. Nicht Wichtigkeit,
+       nicht Datenherkunft - wer diesen Reiter oeffnet, sucht "was ist als
+       naechstes".
+
+       KEINE Reisedaten-Infobox oberhalb wird hier abbestellt: anders als bei
+       'Mitte' handelt dieser Reiter sehr wohl von der Buchung. -->
+  <section class="ansicht" id="feld-termine" aria-labelledby="menue-termine" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Die beiden Termine</h2>
+
+    <article class="termin-block">
+      <h3 class="ansicht-titel ansicht-titel--zwei">Freitag · Wer stiehlt mir die Show</h3>
+      <div id="termin-show-tafel"></div>
+      <h4 class="tafel-titel">Hin und zurück</h4>
+      <nav class="untermenue" id="show-reiter" aria-label="Was die Karte zum Studio zeigt"></nav>
+      <div id="show-weg-tafel"></div>
+      <div id="karte-show" role="region"
+           aria-label="Karte des Studios Berlin-Adlershof mit dem Hin- und dem Rückweg zur Unterkunft"></div>
+      <ul class="legende" id="legende-show"></ul>
+      <p class="grund-fuss" id="show-fuss"></p>
+    </article>
+
+    <article class="termin-block">
+      <h3 class="ansicht-titel ansicht-titel--zwei">Samstag · Zweimal Planetarium</h3>
+      <div id="termin-planetarium-tafel"></div>
+      <h4 class="tafel-titel">Hin und zurück</h4>
+      <nav class="untermenue" id="planetarium-reiter" aria-label="Was die Karte zum Planetarium zeigt"></nav>
+      <div id="planetarium-weg-tafel"></div>
+      <div id="karte-planetarium" role="region"
+           aria-label="Karte des Zeiss-Großplanetariums mit dem Hin- und dem Rückweg zur Unterkunft"></div>
+      <ul class="legende" id="legende-planetarium"></ul>
+      <p class="grund-fuss" id="planetarium-fuss"></p>
+    </article>
+  </section>
+
+  <!-- Mitte: die Karte ist der Inhalt, nicht die Illustration.
+       KEINE Reisedaten-Infobox und keine Kennzahlentafel hier: dieser Reiter
+       handelt von der Stadt, nicht von der Buchung. Beides stand bei Muenchen
+       darueber und schob die Karte unter die Falzkante - was oben steht, wird
+       gelesen, und gelesen werden soll hier die Karte.
+
+       ZWEI Steuerungen, jede fuer genau eine Sache: die LEGENDE unter der Karte
+       schaltet Kartenebenen. Das UNTERMENUE ueber der Liste waehlt, was in der
+       Tabelle steht - und seine Knoepfe sind die ZEITFENSTER dieser Reise, nicht
+       Kuechenrichtungen. -->
+  <section class="ansicht" id="feld-mitte" aria-labelledby="menue-mitte" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Mitte</h2>
+
+    <div id="karte-mitte" role="region"
+         aria-label="Karte der Berliner Mitte mit Lokalen, Wahrzeichen und Bahnhalten"></div>
+    <ul class="legende" id="legende-mitte"></ul>
+    <p class="grund-fuss" id="karte-fuss"></p>
+
+    <h3 class="tafel-titel">Die Liste</h3>
+    <nav class="untermenue" id="mitte-reiter" aria-label="Was in der Liste steht"></nav>
+
+    <!-- Der Leseschluessel gehoert zur TABELLE, nicht zur Karte: Wochenstreifen,
+         Notenachse und Fensterprüfung kommen auf der Karte gar nicht vor. -->
+    <ul class="legende" id="listen-schluessel"></ul>
+
+    <p class="such-leer" id="gastro-leer" hidden></p>
+
+    <div id="gastro-liste"></div>
+    <p class="grund-fuss" id="gastro-fuss"></p>
+  </section>
+
+  <section class="ansicht" id="feld-quellen" aria-labelledby="menue-quellen" tabindex="-1" hidden>
+    <h2 class="ansicht-titel">Quellen</h2>
+    <div id="quellen-liste"></div>
+  </section>
+</main>
+
+<script src="vendor/leaflet.js"></script>
+<script src="orte.js?v=a0cc1245"></script>
+<script src="karte.js?v=a0cc1245"></script>
+<!-- Zuletzt und als eigene Datei: der Himmel ist reine Zier und hat mit den
+     Karten nichts zu tun. In karte.js waere er neunzig Zeilen, die beim Suchen
+     nach einem Kartenfehler im Weg stehen. -->
+<script src="himmel.js?v=a0cc1245"></script>
+</body>
+</html>

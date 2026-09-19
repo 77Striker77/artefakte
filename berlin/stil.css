@@ -1,0 +1,2161 @@
+/* Berlin 2026 — Kosmos und Aurora.
+ *
+ * Richtung: der Grund ist ein tiefes Violettschwarz, wie der Himmel ueber einer
+ * Stadt, die im November um halb fuenf dunkel wird; die Inhalte sind helle
+ * Tafeln, die darauf liegen — dicker Umriss, harter Versatz, keine runden Ecken.
+ * Der Akzent ist ein kaltes Aurora-Cyan.
+ *
+ * DIE FORM IST GEERBT, DIE PALETTE NICHT. Gestalt und Regeln stammen ueber
+ * Muenchen von der Kreta-Seite. Getauscht ist nur der Farbkreis: Kreta trug
+ * Hue 195 (Wasser), Muenchen Hue 350-10 (Ziegel), Berlin traegt Hue 255-262
+ * (Violettschwarz) auf den Flaechen und Hue 172 im Akzent.
+ *
+ * WARUM DIESE RICHTUNG UND NICHT EINE ANDERE — begruendbar aus der Reise selbst,
+ * nicht aus Geschmack: beide festen Termine sind Abendtermine im Kunstlicht, und
+ * der eine davon ist zweimal Planetarium. Eine Stadtpalette aus Beton und
+ * Signalrot haette zu Berlin gepasst, aber nicht zu DIESER Reise.
+ *
+ * EINE Palette, kein Umschalter. Die Seite malt ihren Grund selbst und sieht auf
+ * jedem Geraet gleich aus.
+ *
+ * ZWEI Rollen-Saetze, und das ist der Kern: --tinte* steht auf hellen Tafeln,
+ * --auf-grund* steht direkt auf dem dunklen Grund. Wer die verwechselt, schreibt
+ * dunkel auf dunkel. Alle Paare am 19.09.2026 GERECHNET statt gewaehlt — je
+ * Rolle wurde die Helligkeit gesucht, bis der Zielwert gegen den Grund traegt,
+ * auf dem die Farbe TATSAECHLICH steht. Das Rechenblatt dazu stand in
+ * .claude/tmp/palette.mjs und ist nach dem Lauf geloescht; die Zahlen unten sind
+ * sein Ergebnis und werden von pruef-farben.mjs im echten Browser nachgemessen.
+ *
+ * SCHWELLE 5,0 STATT 4,5. Der erste Durchlauf traf alle elf Marken bei
+ * 4,52-4,62:1 — bestanden, aber ohne jeden Spielraum fuer die Rundung der
+ * Browsermessung. Eine Palette, die genau auf der Grenze sitzt, faellt beim
+ * naechsten Feinschliff durch, ohne dass jemand etwas geaendert haette.
+ */
+
+:root{
+  color-scheme: dark;
+
+  /* --- Der Kosmosgrund: Flaeche --- */
+  --grund:#150E2E;          /* Seitengrund */
+  --grund-tief:#0A0618;     /* Kopfleiste, Umriss, tiefste Lage */
+
+  /* --- Die Fenster: helle Tafeln --- */
+  --flaeche:#F4F1FB; --flaeche-2:#E4DEF4;
+
+  /* --- Rollensatz 1: Text auf HELLER Tafel --- */
+  --tinte:#150E2E;          /* 16,60:1 auf --flaeche · 14,15:1 auf --flaeche-2 */
+  --tinte-leise:#65538D;    /*  5,06:1 auf --flaeche-2, dem schlechteren Fall */
+
+  /* --- Rollensatz 2: Text auf DUNKLEM Grund --- */
+  --auf-grund:#F0ECFB;      /* 15,96:1 auf --grund · 17,20:1 auf --grund-tief */
+  /* Gegen den STERNENHIMMEL gemessen, nicht nur gegen den Grund. Das ist hier
+     der entscheidende Punkt und war beim ersten Wurf falsch: das Canvas legt
+     Sternpixel bis #403956 UNTER den Text, und damit hat diese Seite nicht zwei
+     Gruende, sondern drei. Mit 5,03:1 gegen den reinen Grund gerechnet, stand
+     der Wert ueber einem hellen Sternpixel bei 2,93:1 - gemeldet hat das
+     pruef-farben.mjs, weil es den TATSAECHLICHEN Grund jedes Textknotens
+     zusammensetzt statt den vermuteten.
+
+     GERECHNET, NICHT GEMESSEN - und das ist hier der Punkt. pruef-farben.mjs
+     liest den HELLSTEN TATSAECHLICH GEZEICHNETEN Sternpixel aus, und der ist
+     zufaellig: zwei Laeufe hintereinander ergaben 0,196 und 0,204 Deckung. Ein
+     Nachweis, der von einem Zufallswert abhaengt, ist keiner - dieselbe Falle
+     wie ein Kontrast, der vom Kartenausschnitt abhaengt.
+     Der Wert unten ist darum gegen den RECHNERISCH schlechtesten Fall gesetzt:
+     die hellste Palettenfarbe des Himmels (--auf-grund #F0ECFB) bei voller
+     Blockdeckung, ueber den Deckel DECKEL = 0,22 aus himmel.js gelegt, ergibt
+     als Grund #453F5B. Darauf traegt dieser Ton mit 5,09:1.
+     Bei DECKEL = 0,26 faellt er auf 4,43:1 und reisst. Wer den Deckel anhebt,
+     rechnet diesen Wert neu. */
+  --auf-grund-leise:#C0B3E0;/*  9,49:1 auf --grund · 5,09:1 im SCHLECHTESTEN Sternfall */
+
+  /* --- Kanten --- */
+  --umriss:#0A0618;         /* 17,89:1 auf der hellen Tafel */
+  --linie:#B5A9D1;          /* dekorative Trennlinie, WCAG 1.4.11 ausgenommen */
+  /* Der Versatzblock ist auf dunklem Grund HELLER als der Grund — ein dunkler
+     Schatten faellt hier unter 2:1 und verschwindet. 2,19:1 traegt als Flaeche;
+     er ist Dekoration, keine Information. */
+  --schattenfarbe:#5B3B91;
+  --schatten:5px 5px 0 var(--schattenfarbe);
+  --schatten-klein:3px 3px 0 var(--schattenfarbe);
+
+  /* --- Akzent, drei Stufen: eine Stufe kann nicht beide Gruende bedienen --- */
+  --akzent:#3ADFC9;         /* Flaeche, Marke, Rand. Tinte darauf 11,09:1 */
+  /* Gegen die DUNKLERE der beiden Tafeln gemessen. Beim ersten Wurf gegen
+     --flaeche gerechnet (5,03:1) und damit auf --flaeche-2 bei 4,29:1 gelandet -
+     genau die Falle, vor der principles.md warnt: zwei Gruende, und gemessen
+     werden muss gegen den, auf dem die Farbe wirklich steht. */
+  --akzent-text:#03685B;    /*  6,00:1 auf --flaeche · 5,12:1 auf --flaeche-2 */
+  --akzent-hell:#26D9C1;    /* 10,38:1 — Text auf dunklem Grund */
+
+  /* --- Die Marken: NUR Zeichen, keine Flaechen -------------------------
+     Orte tragen ihr Symbol, Bahnen ihren Buchstaben - beide farbig, beide ohne
+     Kasten darunter. Was sie trennt, ist die Zeichenart: gezeichnetes Symbol
+     gegen Buchstabe.
+
+     Der weisse Saum ist keine Zierde, sondern der GRUND, gegen den gemessen
+     wird. Ein Zeichen liegt sonst direkt auf Kartenkacheln, und die wechseln
+     unter ihm - der Kontrast waere eine Zahl, die vom Kartenausschnitt abhaengt
+     und damit nicht pruefbar. Genau dieselbe Falle wie bei Leaflets
+     Attributionsleiste, dort gemessen mit 3,13:1 statt 4,5:1.
+
+     Alle elf gegen den Saum gemessen (19.09.2026), Hue-Abstand zum Nachbarn
+     mindestens 28 Grad, schlechtester Kontrast 5,01:1.
+
+     ANDERS ALS IN MUENCHEN sind die elf Hues nicht nacheinander gewachsen,
+     sondern IN EINEM ZUG auf dem Kreis verteilt worden: 20, 48, 88, 128, 158,
+     190, 218, 258, 292, 322, 352. Muenchen vergab sie einzeln und stand beim
+     elften vor einer Luecke von genau einer Spanne — dort steht seither der
+     Satz, die zwoelfte Farbe gebe es nicht mehr. Gleichmaessig verteilt bleibt
+     hier bei elf Marken derselbe Mindestabstand, aber ohne Restluecke: die
+     zwoelfte Marke erzwingt auch hier eine Entscheidung, nur eine ehrlichere —
+     entweder zwei zusammenlegen oder ueber die FORM trennen statt ueber die
+     Farbe (eckig gegen rund, wie es die Linienhalte schon tun). --- */
+  --saum:#FFFFFF;
+
+  /* --- Zustand: fest oder offen. Jeder Wert gegen SEINEN Chipgrund gemessen,
+         nicht gegen die Tafel darunter. --- */
+  --gut:#0B6B3A;  --gut-bg:#D8F2E4;    /* 5,58:1 */
+  --warn:#9B2C10; --warn-bg:#FDE4DC;   /* 6,27:1 */
+  --m-zentrum:#BA4C15;      /* 5,08:1 · H 20 */
+  --m-ankunft:#866C01;      /* 5,05:1 · H 48 */
+  --m-park:#467B0A;         /* 5,12:1 · H 88 */
+  --m-museum:#128121;       /* 5,01:1 · H128 */
+  --m-sbahn:#017F51;        /* 5,05:1 · H158 — nah an der amtlichen S-Bahn-Farbe */
+  --m-unterkunft:#08788F;   /* 5,13:1 · H190 */
+  --m-ubahn:#1E67E6;        /* 5,07:1 · H218 — nah am amtlichen U-Bahn-Blau */
+  /* Die Termine tragen die Themenfarbe der Seite. Muenchen nannte diese Rolle
+     --m-film, weil es dort genau einen Termin gab; Berlin hat zwei, und der
+     zweite ist kein Film. */
+  --m-termin:#7C52E0;       /* 5,07:1 · H258 */
+  --m-wahrzeichen:#B81ED0;  /* 5,08:1 · H292 */
+  --m-essen:#CF178B;        /* 5,06:1 · H322 */
+  --m-tram:#DA1630;         /* 5,07:1 · H352 */
+
+  /* --- Fokus: zwei Lagen, weil kein einzelner Ring 3:1 gegen BEIDE Gruende
+         schafft — gemessen am 19.09.2026: das Aurora-Cyan traegt auf dem
+         dunklen Grund mit 11,09:1, auf der hellen Tafel nur mit 1,50:1; beim
+         dunklen Ring ist es genau umgekehrt (17,89:1 zu 1,08:1). Erst beide
+         zusammen decken beide Gruende. --- */
+  --fokus-innen:#0A0618;
+  --fokus-aussen:#3ADFC9;
+
+  --rand:3px;
+  --mass:1180px;
+
+  --sans:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --pixel:"Pixelify Sans", "Courier New", monospace;
+  /* Silkscreen ist eine Pixelschrift ohne Unterlaengen. Unter 10 px zerfaellt
+     sie auf einem echten Display; pruef-breite.mjs meldet alles darunter.
+     Kleinste hier verwendete Groesse: 10,5 px. */
+  --zahl:"Silkscreen", "Courier New", monospace;
+  /* WERTE stehen NICHT in einer Pixelschrift. In Pixelify Sans ist die 2 von
+     der 8 kaum zu unterscheiden - "20 min" las sich als "80 min", und ein
+     Datum als Ziffernraetsel. Dieselbe Begruendung, aus der .linie--klein
+     schon auf einen fetten Grotesk gewechselt ist: eine Pixelschrift traegt
+     eine Aufschrift, aber keine Zahl, die stimmen muss.
+     Die Aufteilung seither:
+       --pixel  Ueberschriften und Namen
+       --zahl   kurze Aufschriften in Versalien (ANREISE, DAUER, TAKT)
+       --wert   jede Zahl, jedes Datum, jede Uhrzeit, jede Liniennummer */
+  --wert:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Zeiten tragen eine EIGENE Schrift. Silkscreen ist eine Pixelschrift ohne
+     Unterlaengen; bei 10-13 px sind 3 und 8, 5 und 6 darin kaum zu trennen -
+     und Ziffern sind auf diesem Reiter der Inhalt, nicht die Verzierung.
+     IBM Plex Mono hat von Haus aus tabellarische Ziffern und eine
+     geschlitzte Null. */
+  --uhr:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+
+*{box-sizing:border-box}
+
+/* [hidden] muss staerker sein als JEDE eigene display-Regel. Grund, gemessen
+   am 09.09.2026: `#feld-hotel{display:flex}` in der 700px-Abfrage schlug das
+   `[hidden]{display:none}` des Browsers - eine Autoren-Regel gewinnt gegen die
+   Browservorgabe, egal wie spezifisch. Auf dem Handy stand der Hotel-Reiter
+   damit IMMER offen: wer 'Innenstadt' waehlte, sah Hotel UND Innenstadt
+   untereinander. Am Schreibtisch griff die Abfrage nicht und alles sah heil aus.
+   Das !important schliesst die ganze Fehlerklasse: die naechste id-Regel mit
+   display kann den Reiterwechsel nicht mehr aushebeln. */
+[hidden]{display:none !important}
+
+body{
+  margin:0; background:var(--grund); color:var(--auf-grund);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ---------- Kopf ---------- */
+.kopf{
+  background:var(--grund-tief);
+  border-bottom:var(--rand) solid var(--akzent);
+  padding:18px 20px;
+}
+.kopf-inner{max-width:var(--mass); margin:0 auto;
+            display:flex; align-items:center; gap:10px 14px; flex-wrap:wrap}
+.marke{font-family:var(--pixel); font-size:26px; font-weight:700;
+       color:var(--akzent-hell); letter-spacing:.5px; text-decoration:none}
+.eyebrow{font-family:var(--zahl); font-size:11px; letter-spacing:1px;
+         color:var(--auf-grund-leise); text-transform:uppercase}
+
+/* ---------- Menueleiste ----------
+   Verhalten uebernommen aus glow-menu (Design_AI/artefakt-bausteine): ein --t je
+   Eintrag treibt den Umschlag um die Unterkante, --bewegung ist der eine
+   Schalter fuer alles Bewegte. Die OPTIK der Vorlage ist bewusst NICHT
+   uebernommen - runde Ecken, backdrop-filter und Lichtschein widersprechen der
+   Bildsprache dieses Projekts ("dicker Umriss, harter Versatz, keine runden
+   Ecken", knowledge/design/principles.md). Uebernommen wird das Muster, nicht
+   die Haut.
+
+   Sie sitzt im Kopf und waechst nach rechts; auf schmalen Geraeten umbricht sie
+   in eine zweite Zeile. ACHTUNG beim Wachsen: ab etwa fuenf Eintraegen reicht
+   der Umbruch nicht mehr, dann gehoert auf schmale Geraete etwas anderes hin -
+   Schieben ist ein Notausgang, keine Navigation. */
+@property --t { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+:root{ --bewegung:1 }
+@media (prefers-reduced-motion: reduce){ :root{ --bewegung:0 } }
+
+.menue{margin-left:auto}
+.menue-liste{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0;
+             list-style:none}
+
+.menue-eintrag{--t:0; position:relative;
+  transition:--t calc(var(--bewegung) * 320ms + 1ms) cubic-bezier(.4,0,.2,1)}
+.menue-eintrag:hover, .menue-eintrag:focus-within{--t:1}
+
+.menue-knopf{
+  display:block; margin:0; padding:0; cursor:pointer; text-decoration:none;
+  background:transparent; color:inherit; font:inherit;
+  border:2px solid transparent}
+.menue-knopf[aria-current="page"]{
+  background:var(--flaeche); border-color:var(--umriss)}
+
+/* perspective am Rahmen, nicht an den Seiten: sonst kippt jede Seite um ihre
+   eigene Achse und die beiden laufen auseinander. */
+.menue-flaeche{position:relative; display:block; perspective:600px}
+.menue-seite{
+  display:block; padding:10px 15px;
+  font-family:var(--pixel); font-size:16px; line-height:1; white-space:nowrap;
+  color:var(--auf-grund-leise)}                    /* 9,45:1 auf --grund-tief */
+.menue-seite--vorn{
+  transform:rotateX(calc(var(--t) * var(--bewegung) * -90deg));
+  transform-origin:center bottom;
+  opacity:calc(1 - var(--t) * var(--bewegung))}
+.menue-seite--hinten{
+  position:absolute; inset:0;
+  transform:rotateX(calc((1 - var(--t)) * var(--bewegung) * 90deg));
+  transform-origin:center top;
+  opacity:calc(var(--t) * var(--bewegung));
+  color:var(--auf-grund)}                          /* 16,00:1 auf --grund-tief */
+.menue-knopf[aria-current="page"] .menue-seite{color:var(--tinte)}  /* 16,87:1 */
+
+/* Der Dauerzustand haengt nicht allein an der Farbe (WCAG 1.4.1): die aktive
+   Tafel wechselt den Grund UND traegt diesen Balken. */
+.menue-marke{
+  position:absolute; left:8px; right:8px; bottom:-2px; height:3px;
+  background:var(--akzent); opacity:0; pointer-events:none}
+.menue-eintrag[data-aktiv="true"] .menue-marke{opacity:1}
+
+@media (max-width:640px){
+  .menue{margin-left:0; width:100%}
+  .menue-liste{width:100%}
+  .menue-eintrag{flex:1 1 auto}
+  /* width:100% ist hier Pflicht, nicht Kosmetik: ein <button> bleibt auch als
+     display:block auf Inhaltsbreite stehen und fuellt sein gedehntes <li>
+     NICHT. Gemessen am 09.09.2026 bei 320px: bis zu 58 px je Eintrag sahen aus
+     wie der Knopf, waren aber tot - der Aktivbalken (er haengt am <li>) lief
+     bis dorthin. Ein Tipp in diese Flaeche fiel entweder ins Leere oder wurde
+     von der Tippkorrektur des Browsers auf den NACHBARN gezogen. */
+  .menue-knopf{width:100%}
+  /* 12 statt 10: 16 px Zeile + 24 Polster + 4 Rand = 44 px, die Untergrenze
+     fuer ein Tastziel (WCAG 2.5.8). Mit 10 blieben es 40 - eng genug, dass die
+     Tippkorrektur bei 6 px Abstand den Nachbarknopf erwischt. */
+  .menue-seite{text-align:center; padding:12px 15px}
+}
+
+main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
+
+/* ---------- Titelblock ---------- */
+.titel{font-family:var(--pixel); font-size:clamp(30px,6vw,52px); line-height:1.12;
+       margin:0 0 12px; color:var(--auf-grund); font-weight:700}
+.titel em{font-style:normal; color:var(--akzent-hell); display:block;
+          font-size:.55em; margin-top:6px}
+/* ---------- Infobox: die Reisedaten ----------
+   Sie steht UEBER den Reitern, nicht in einem: das ist, was man beim
+   Aufschlagen wissen will, und es soll nicht verschwinden, wenn man die
+   Quellen aufmacht. */
+.infobox{margin:0 0 24px; padding:16px 18px;
+         background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.infobox h2{margin:0 0 12px; font-family:var(--pixel); font-size:18px;
+            color:var(--tinte)}
+.infobox dl{display:grid; grid-template-columns:auto 1fr; gap:6px 16px;
+            margin:0; align-items:baseline}
+.infobox dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+            color:var(--tinte-leise); text-transform:uppercase}  /* 7,81:1 */
+.infobox dd{margin:0; font-size:16px; font-weight:600}
+/* "xx" ist kein Platzhalter, sondern eine Aussage: der Wert ist unbekannt.
+   Er wird darum sichtbar als offen ausgezeichnet und nicht wie ein Ergebnis
+   gesetzt - ein gefuellt aussehendes Feld wird nie wieder nachgeprueft. */
+.infobox dd.offen{color:var(--akzent-text); font-family:var(--wert); font-weight:800;   /* 6,12:1 */
+                  font-size:13px; letter-spacing:1px}
+.infobox-fuss{margin:14px 0 0; padding-top:12px;
+              border-top:2px solid var(--linie);
+              font-size:13px; color:var(--tinte-leise)}
+
+.ansicht{outline:none}
+.ansicht-titel{margin:0 0 16px; font-family:var(--pixel); font-size:24px;
+               color:var(--auf-grund)}
+
+/* ---------- Tafeln: Hotel und Anreise ----------
+   Dieselbe Bauform wie die Infobox - eine helle Tafel mit Feldpaaren. Sie
+   tragen absichtlich wenig: was fehlt, fehlt aus einem Grund, und der steht im
+   Fuss. */
+.tafel{padding:16px 18px; background:var(--flaeche); color:var(--tinte);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       max-width:70ch}
+.tafel dl{display:grid; grid-template-columns:auto 1fr; gap:8px 16px;
+          margin:0; align-items:baseline}
+.tafel dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+          color:var(--tinte-leise); text-transform:uppercase}   /* 7,81:1 */
+.tafel dd{margin:0; font-size:16px}
+.tafel a{color:var(--akzent-text)}                              /* 6,12:1 */
+.tafel-fein{margin:6px 0 0; font-size:13.5px; color:var(--tinte-leise); max-width:58ch}
+.tafel-fuss{margin:14px 0 0; padding-top:12px;
+            border-top:2px solid var(--linie);
+            font-size:13px; color:var(--tinte-leise)}
+
+/* Derselbe Fussnotenzettel, aber auf dem GRUND statt auf einer Tafel - und
+   darum mit dem anderen Rollensatz. .tafel-fuss trug hier bis zum 09.09.2026
+   --tinte-leise auf --grund und stand damit bei 2,16:1: dunkel auf dunkel, genau
+   die Verwechslung, vor der README.md warnt. Aufgefallen ist es erst, als
+   pruef-farben.mjs anfing, auch die verdeckten Reiter aufzudecken - vorher lag
+   der Fuss der Umgebungskarte in einer Ansicht, die der Pruefstand nie ansah.
+   EIGENE Klasse, kein Zusatz an .tafel-fuss: eine Klasse, die zwei Gruende
+   bedient, ist dieselbe Falle wie .linie an der Tram-Marke. */
+.grund-fuss{margin:14px 0 0; padding-top:12px;
+            border-top:2px solid var(--linie);
+            font-size:13px; color:var(--auf-grund-leise)}   /* 9,45:1 auf --grund */
+.grund-fuss strong{color:var(--auf-grund)}                  /* 16,00:1 */
+.grund-fuss a{color:var(--akzent-hell)}                     /*  8,94:1 */
+
+/* Zustand eines Reiseteils. Nicht allein ueber die Farbe erkennbar (WCAG
+   1.4.1): das Wort steht daneben, die Farbe unterstuetzt es nur. */
+.zustand{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+         padding:4px 7px}
+.zustand--fest{background:var(--gut-bg); color:var(--gut)}      /* 5,25:1 */
+.zustand--offen{background:var(--warn-bg); color:var(--warn)}   /* 5,18:1 */
+
+/* ---------- Quellenansicht ---------- */
+#quellen-liste{display:grid; gap:14px;
+         grid-template-columns:repeat(auto-fit, minmax(280px, 1fr))}
+.quelle{padding:16px 18px; background:var(--flaeche-2); color:var(--tinte-leise);
+        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.quelle-kopf{display:flex; align-items:center; justify-content:space-between;
+             gap:10px; margin-bottom:4px}
+.quelle h3{margin:0; font-family:var(--pixel); font-size:17px; color:var(--tinte)}
+.rang{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+      padding:4px 7px; white-space:nowrap}
+.rang-primary{background:var(--rang-primary-bg); color:var(--rang-primary)}
+.rang-secondary{background:var(--rang-secondary-bg); color:var(--rang-secondary)}
+.rang-unverified{background:var(--rang-unverified-bg); color:var(--rang-unverified)}
+.quelle-menge{margin:0 0 12px; font-family:var(--wert); font-weight:700; font-size:12.5px;
+              color:var(--tinte)}
+.quelle-fakten{display:grid; grid-template-columns:auto 1fr; gap:4px 12px;
+               margin:0 0 12px; padding:12px 0; font-size:13px;
+               border-top:2px solid var(--linie); border-bottom:2px solid var(--linie)}
+.quelle-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+                  text-transform:uppercase; padding-top:2px}
+.quelle-fakten dd{margin:0; color:var(--tinte)}
+.quelle-was{margin:0; font-size:13.5px; line-height:1.55}
+.quelle-hinweis{grid-column:1/-1; margin:0; padding:16px 18px;
+                background:var(--flaeche); color:var(--tinte-leise);
+                border:var(--rand) solid var(--umriss);
+                box-shadow:var(--schatten-klein); font-size:13.5px}
+.quelle-hinweis strong{color:var(--tinte)}
+
+/* ---------- Die Karte ist der Inhalt dieser Seite ----------
+   Muenchen ist rund 20 km breit und 21 km hoch, also nahezu quadratisch — anders
+   als bei einer langgestreckten Insel begrenzt hier weder Breite noch Hoehe
+   allein den Zoom. 62vh fuellt die Flaeche, ohne auf dem Handy die ganze Seite
+   zu uebernehmen. */
+/* Die Umgebungskarte ist flacher als die Stadtkarte: sie zeigt einen Kilometer
+   Umkreis, nicht zwanzig - mehr Hoehe waere leerer Stadtplan. */
+/* Die Bavaria-Karte ist dieselbe Bauart und derselbe Massstab — ein Selektor
+   fuer beide, keine zweite Regel: eine Kopie driftet beim naechsten
+   Nachbessern, und dann sehen die zwei Reiter verschieden aus, ohne dass es
+   jemand entschieden haette. */
+#karte-hotel,#karte-bavaria{height:clamp(340px,46vh,520px); margin:18px 0 0;
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+/* Die Innenstadtkarte zeigt rund drei Kilometer und traegt 40 Marken - zwischen
+   Stadtkarte (zwanzig Kilometer) und Umgebungskarte (einer). Sie ist darum hoeher
+   als die Umgebungskarte: bei 40 Punkten auf engem Raum entscheidet die Hoehe,
+   ob man Nachbarn noch auseinanderhaelt. */
+#karte-innenstadt{height:clamp(380px,54vh,600px);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+.tafel-titel{margin:28px 0 12px; font-family:var(--pixel); font-size:19px;
+             color:var(--auf-grund)}
+/* Die Checkliste des Bavaria-Reiters. Eine Liste und keine Kennzeile, weil sie
+   ABGEHAKT wird und nicht gelesen: ein Haken je Zeile, Zeilen untereinander,
+   keine zweite Spalte. Der Haken ist ::before und kein Zeichen im Text - sonst
+   liest die Vorlesehilfe ihn mit vor. */
+.mitbringen{list-style:none; margin:10px 0 0; padding:0;
+            display:flex; flex-direction:column; gap:7px}
+.mitbringen .mitbring{position:relative; padding-left:26px; color:var(--tinte);
+                      font-size:15px; line-height:1.45}
+.mitbringen .mitbring::before{content:""; position:absolute; left:2px; top:5px;
+       width:13px; height:13px; border:2px solid var(--tinte-leise)}
+/* Ein Satz, der eine Bedingung setzt statt etwas zu erklaeren - er traegt den
+   Akzentbalken, damit er nicht als Kleingedrucktes gelesen wird. Auf heller
+   Tafel, also --tinte, nicht --auf-grund. */
+/* Die zweite Knopfreihe: die Optionen INNERHALB einer Richtung. Sie sitzt in
+   der Tafel und nicht neben dem Untermenue, damit sichtbar bleibt, dass sie
+   eine Ebene tiefer liegt - kleiner, enger, ohne den Versatzschatten der
+   Hauptreihe. */
+/* Die Betriebslage - zweimal derselbe Baustein, einmal in der Sprechblase auf
+   der Karte und einmal unter dem Streckenband. EIN Regelsatz fuer beide, damit
+   sie nicht auseinanderlaufen; der Grund liegt anders (Sprechblase hell,
+   Aufklapper auf heller Tafel), aber beide tragen --tinte. */
+.stoer-blase{margin-top:10px; padding-top:9px; border-top:2px solid var(--umriss)}
+.stoer-blase h4{margin:0 0 6px; font-family:var(--pixel); font-size:14px; color:var(--tinte)}
+.stoer-zeile,.stoer-halte,.stoer-warn{margin:6px 0 0; font-size:12.5px; line-height:1.5;
+       color:var(--tinte)}
+.stoer-halte{color:var(--tinte-leise)}
+/* Der verlegte Halt ist der Satz, an dem man abends scheitert - er bekommt den
+   Balken, den sonst nur der Warnsatz der Tafel traegt. */
+.stoer-warn{padding-left:11px; border-left:var(--rand) solid var(--akzent-text)}
+.quell-klapp.stoerung{margin-top:12px; padding-top:11px}
+.untermenue--optionen{margin:0 0 16px; gap:7px}
+.unterknopf--klein{padding:7px 11px; min-height:44px}
+.unterknopf--klein .unter-zahl{margin-left:8px; font-size:12px}
+.tafel-warnung{margin:16px 0 0; padding:10px 0 10px 13px;
+       border-left:var(--rand) solid var(--akzent-text);
+       color:var(--tinte); font-size:14.5px; line-height:1.5}
+.leaflet-popup-content .bewertung{margin-top:6px; color:var(--tinte)}
+/* Der Maps-Link ist der wahrscheinlichste naechste Schritt aus einer
+   Sprechblase heraus - er steht darum als eigene Zeile da und nicht im
+   Kleingedruckten. */
+.leaflet-popup-content .maps-link{margin-top:10px; font-size:13.5px}
+.leaflet-popup-content .maps-link a{color:var(--akzent-text); font-weight:700}  /* 6,12:1 */
+
+#karte{height:clamp(420px,62vh,660px);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       background:var(--grund-tief); z-index:0}
+.leaflet-container{font-family:var(--sans); background:var(--grund-tief)}
+/* Leaflets Attributionsleiste liegt von Haus aus halbtransparent auf den
+   Kacheln: gemessen 3,13:1 fuer den Link — sie faellt durch, und zwar je nach
+   Kachel unterschiedlich stark. Ein Wert, der vom Kartenausschnitt abhaengt,
+   ist nicht pruefbar; darum bekommt die Leiste einen eigenen, deckenden Grund.
+   Der Selektor muss .leaflet-container mitfuehren: Leaflet setzt den Grund
+   ueber .leaflet-container .leaflet-control-attribution, und ein einstufiger
+   Selektor verliert das Spezifitaetsduell stillschweigend - die Regel steht
+   dann in der Datei und wirkt nicht. */
+.leaflet-container .leaflet-control-attribution{font-size:10.5px;
+  background:var(--flaeche); color:var(--tinte-leise)}
+.leaflet-container .leaflet-control-attribution a{color:var(--akzent-text)}  /* 6,12:1 */
+
+/* ---------- Die zwei Routenknoepfe in jeder Sprechblase ----------
+   Als KNOEPFE und nicht als Textlinks: sie werden unterwegs mit dem Daumen
+   getroffen, waehrend man laeuft. 44 px hoch (WCAG 2.5.8) statt der 16 px, die
+   eine Textzeile hoch waere - der Maps-Link darueber bleibt ein Link, weil er
+   im Sitzen gelesen wird und nicht im Gehen gedrueckt.
+
+   Rahmen statt Flaeche: die Sprechblase ist schon hell, ein gefuellter Knopf
+   waere ein zweiter Kasten im Kasten. */
+.route-links{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+             margin:8px 0 0}
+/* Eigene Zeile, nicht neben den Knoepfen: die Sprechblase ist rund 250 px
+   breit, und mit dem Wort davor passte nur noch EIN Knopf in die Zeile - der
+   zweite rutschte darunter und sah aus, als gehoere er nicht dazu. */
+.route-wort{flex:0 0 100%; font-size:12px; letter-spacing:.04em;
+            text-transform:uppercase; color:var(--tinte-leise)}   /* 7,81:1 */
+.leaflet-popup-content .route-knopf{
+  display:inline-flex; align-items:center; min-height:44px; padding:0 11px;
+  font-size:13.5px; font-weight:700; text-decoration:none;
+  color:var(--akzent-text);                              /* 6,12:1 */
+  border:2px solid var(--linie)}
+.leaflet-popup-content .route-knopf:hover{border-color:var(--akzent-text)}
+
+/* ---------- Der Pixel-Sternenhimmel ----------
+   Fest hinter allem. z-index:-1 legt die Leinwand hinter jeden Inhalt, aber vor
+   den Hintergrund des <body> - genau die Lage, die gemeint ist.
+
+   DAMIT DAS TRAEGT, darf ueber der Leinwand kein Vorfahre einen eigenen
+   Stapelkontext aufmachen (transform, filter, opacity < 1, isolation). Der
+   Himmel verschwindet sonst spurlos hinter dem Grund, und zwar ohne Fehler.
+
+   Die Tafeln, Karten und die Kopfleiste haben eigene DECKENDE Gruende - der
+   Himmel scheint nur dort durch, wo sonst nichts liegt. */
+#himmel{position:fixed; inset:0; width:100%; height:100%;
+        z-index:-1; pointer-events:none}
+
+/* ---------- Mein Standort ----------
+   Der Knopf sitzt UNTEN LINKS: oben links stehen Leaflets Zoomknoepfe, unten
+   rechts die Attributionsleiste. Unten links ist auf dem Handy ausserdem die
+   Ecke, die der Daumen ohne Umgreifen erreicht.
+
+   Deckender Grund, kein halbtransparenter: er liegt auf Kartenkacheln, und die
+   wechseln unter ihm. Ein Kontrast, der vom Kartenausschnitt abhaengt, ist
+   nicht pruefbar - dieselbe Falle wie bei Leaflets Attributionsleiste. */
+.standort-steuer{max-width:min(15rem, 60vw)}
+.standort-knopf{
+  display:flex; align-items:center; gap:7px;
+  min-height:44px; padding:6px 12px 6px 9px; cursor:pointer;
+  font-family:var(--sans); font-size:14px; font-weight:700; line-height:1.15;
+  text-align:left;
+  color:var(--tinte); background:var(--flaeche);       /* 16,87:1 */
+  border:2px solid var(--umriss); box-shadow:var(--schatten-klein)}
+.standort-knopf:hover{background:var(--flaeche-2)}     /* 14,02:1 */
+.standort-knopf svg{flex:none; width:20px; height:20px}
+/* Die Meldung steht UNTER dem Knopf und nicht in ihm: sie wird laenger als er,
+   und ein Knopf, dessen Aufschrift sich mit dem Zustand aufblaeht, wandert
+   unter dem Finger weg. */
+.standort-wort{margin:6px 0 0; padding:6px 8px;
+  font-family:var(--sans); font-size:12px; line-height:1.4;
+  color:var(--tinte-leise);                            /* 7,81:1 auf --flaeche */
+  background:var(--flaeche); border:2px solid var(--linie)}
+.standort-wort--schlecht{color:var(--akzent-text);     /* 6,12:1 */
+  border-color:var(--akzent-text)}
+
+/* Der eigene Standort traegt KEINE der elf Markenfarben. Er ist keine
+   Ortskategorie neben Wirtshaus und Museum, sondern der Betrachter - und der
+   Farbkreis ist ohnehin voll. Die Tinte steht gegen den weissen Saum bei
+   18,26:1 (gemessen 09.09.2026) und ist damit die deutlichste Marke auf der Karte. Das ist richtig so:
+   sie ist die einzige, die man sucht, ohne zu wissen, wo sie liegt. */
+.ort-pin.ich{width:22px; height:22px; border-radius:50%;
+  background:var(--tinte); border:3px solid var(--saum)}
+/* Kein Saum ueber dem Saum: der Ring IST der Saum, und die vier Schlagschatten
+   der Sammelregel wuerden ihn nur verdicken. */
+.ort-pin.ich{filter:none; box-shadow:0 0 0 1.5px var(--umriss)}
+/* Der Genauigkeitskreis ist eine FLAECHE, keine Marke - warme Toene liegen auf
+   dieser Seite als Punkt und Kante vor, nie als Flaeche. Darum die Tinte, sehr
+   leise, mit sichtbarer Kante. */
+.standort-kreis{fill:var(--tinte); fill-opacity:.08;
+  stroke:var(--tinte); stroke-opacity:.45; stroke-width:1.5}
+
+/* ---------- Marken ----------
+   Marken sind divIcons, also normale HTML-Elemente, und gehorchen demselben
+   Stylesheet wie der Rest der Seite. display:flex ist Pflicht: <i> ist inline
+   und wuerde width/height sonst ignorieren.
+
+   Der Saum entsteht aus vier harten Schlagschatten ohne Weichzeichnung - ein
+   weichgezeichneter Schein wuerde die Kanten aufweichen, und die Seite lebt von
+   harten Kanten. */
+.ort-pin, .halt-pin{
+  display:flex; align-items:center; justify-content:center;
+  filter:
+    drop-shadow( 1.6px 0 0 var(--saum)) drop-shadow(-1.6px 0 0 var(--saum))
+    drop-shadow(0  1.6px 0 var(--saum)) drop-shadow(0 -1.6px 0 var(--saum))}
+
+/* ORTE: gezeichnetes Symbol. 34 px Kiste, 30 px Zeichen - gross genug, dass
+   Bahnhof, Rathaus, Kirche, Filmklappe und Baum auf einen Blick zu trennen
+   sind, und ueber der 24-px-Tastschwelle (WCAG 2.5.8). */
+.ort-pin{width:34px; height:34px}
+.ort-pin.gross{width:40px; height:40px}
+.ort-pin svg{width:30px; height:30px; stroke-width:2.3}
+.ort-pin.gross svg{width:36px; height:36px}
+/* ===================== WELCHE FARBE AUF WELCHER KARTE =====================
+   Muenchen vergab die Markenfarben GLOBAL eindeutig und stand darum beim elften
+   Hue vor einer leeren Wand - obwohl mehrere Farben nie gemeinsam sichtbar
+   waren. Hier wird die Eindeutigkeit JE KARTE geprueft, weil genau dort eine
+   Verwechslung entstehen kann: zwei Marken derselben Farbe auf verschiedenen
+   Reitern sind kein Problem, zwei auf demselben schon.
+
+   Diese Seite hat drei Karten, und keine Farbe kommt auf einer davon doppelt vor:
+
+     Stadtkarte (Reiter Karte)   unterkunft 190 · ankunft 48 · zentrum 20 ·
+                                 wahrzeichen 292 · termin 258 · museum 128 ·
+                                 park 88 · sbahn 158 · ubahn 218 · tram 352
+     Umgebung   (Reiter Hotel)   unterkunft 190 · essen 322 · cafe 48 ·
+                                 einkauf 128 · park 88 · sbahn 158 ·
+                                 ubahn 218 · tram 352
+     Mitte      (Reiter Mitte)   imbiss 20 · cafe 48 · burger 88 · museum 128 ·
+                                 essen 322 · wahrzeichen 292 · unterkunft 190 ·
+                                 sbahn 158 · ubahn 218 · tram 352
+
+   Kleinster Abstand auf jeder der drei Karten: 28 Grad. Geliehen wird also
+   reichlich - aber nachweisbar konfliktfrei, statt aus Platznot.
+   ========================================================================= */
+.ort-pin.unterkunft{color:var(--m-unterkunft)}   /* 5,13:1 · H190 */
+.ort-pin.ankunft{color:var(--m-ankunft)}         /* 5,05:1 · H 48 */
+.ort-pin.zentrum{color:var(--m-zentrum)}         /* 5,08:1 · H 20 */
+.ort-pin.wahrzeichen{color:var(--m-wahrzeichen)} /* 5,08:1 · H292 */
+.ort-pin.museum{color:var(--m-museum)}           /* 5,01:1 · H128 */
+.ort-pin.park{color:var(--m-park)}               /* 5,12:1 · H 88 */
+/* Die beiden Termine tragen die Themenfarbe. Sie sind der Grund der Reise, und
+   auf der Stadtkarte ist --m-termin die einzige Marke, die sonst nichts traegt. */
+.ort-pin.termin{color:var(--m-termin)}           /* 5,07:1 · H258 */
+
+/* --- Umgebungskarte (Reiter Hotel) --- */
+.ort-pin.essen{color:var(--m-essen)}             /* 5,06:1 · H322 · Besteck */
+.ort-pin.cafe{color:var(--m-ankunft)}            /* 5,05:1 · H 48 · Tasse */
+.ort-pin.einkauf{color:var(--m-museum)}          /* 5,01:1 · H128 · Korb */
+
+/* --- Innenstadtkarte (Reiter Mitte): drei Kuechen ---
+   Getrennt werden sie ueber das ZEICHEN, nicht ueber die Farbe - so wie es fuer
+   alle Orte auf dieser Seite gilt. Die Farbe ordnet nur zu.
+   Fruehstueck traegt .cafe (Tasse, H48), damit dieselbe Sache auf der
+   Umgebungs- und der Mitte-Karte dieselbe Marke hat. */
+.ort-pin.imbiss{color:var(--m-zentrum)}          /* 5,08:1 · H 20 · Currywurst-Gabel */
+/* GELIEHEN WIRD --m-park, und das ist geprueft, nicht geraten: auf der
+   Mitte-Karte kommt keine Gruenflaeche vor. Auf der Umgebungskarte gibt es
+   .park, aber kein .burger - die beiden treffen sich nirgends. */
+.ort-pin.burger{color:var(--m-park)}             /* 5,12:1 · H 88 · Burger */
+
+/* BAHNEN: der Buchstabe des Verkehrsmittels, in seiner Farbe. Kein Kasten,
+   keine Form - die Zeichen S, U und T unterscheiden sich von sich aus, und ein
+   gefuelltes Viereck neben einem gezeichneten Symbol sah aus wie zwei
+   verschiedene Kartenwerke. 800er Schnitt, weil ein normal starker Buchstabe
+   bei 20 px gegen die Kachelzeichnung untergeht. */
+/* 800 IST JETZT AUCH GELADEN. Bis zum 09.09.2026 stand hier font-weight:800,
+   waehrend die Schrift-URL nur 400;600;700 holte - der Browser nahm also 700
+   oder rechnete sich ein Fett zurecht, und die Buchstaben standen duenner auf
+   der Karte als beabsichtigt. Ein Gewicht, das nicht geladen ist, wirkt nicht:
+   das steht im Stylesheet und faellt trotzdem nicht auf.
+
+   Dazu ein STAERKERER Saum als bei den Ortszeichen: ein Buchstabe hat duennere
+   Striche als ein gezeichnetes Symbol und braucht mehr Rand, um sich vom
+   Kartenbild zu loesen. Vier Schlagschatten bleiben es trotzdem - die Startseite
+   traegt 143 dieser Marken, und jeder weitere Schatten kostet dort. */
+.halt-pin{
+  width:26px; height:26px; font-family:var(--sans); font-style:normal;
+  font-weight:800; font-size:21.5px; line-height:1; letter-spacing:-.02em;
+  filter:
+    drop-shadow( 2.2px 0 0 var(--saum)) drop-shadow(-2.2px 0 0 var(--saum))
+    drop-shadow(0  2.2px 0 var(--saum)) drop-shadow(0 -2.2px 0 var(--saum))}
+.halt-pin.sbahn{color:var(--m-sbahn)}
+.halt-pin.ubahn{color:var(--m-ubahn)}
+/* .tram, NICHT .linie: '.linie' ist die Linienmarke in der Sprechblase, und
+   beide Regeln trafen dieselbe Marke - die Tram-Marke bekam dadurch Kasten,
+   Innenabstand und Umriss und sah aus wie ein Schild statt wie ein Zeichen.
+   Eine Klassenkollision, die kein Pruefskript findet: die Seite war gueltig,
+   nur falsch. */
+.halt-pin.tram{width:24px; height:24px; font-size:18px; color:var(--m-tram)}
+.halt-pin.tram b{font-weight:inherit}
+
+/* Der Ortsname haengt als Tooltip neben der Marke, nicht in ihr - und erst ab
+   Stadtteil-Zoom. Bei Stadtzoom lagen Hauptbahnhof, Marienplatz und
+   Frauenkirche uebereinander und keiner der drei war lesbar. */
+.leaflet-tooltip.marke-name{
+  background:var(--flaeche); color:var(--tinte);          /* 16,87:1 */
+  font-family:var(--wert); font-weight:800; font-size:12px;
+  padding:4px 7px; border:2px solid var(--umriss); border-radius:0;
+  box-shadow:3px 3px 0 rgba(0,0,0,.34); white-space:nowrap}
+.leaflet-tooltip.marke-name::before{display:none}   /* das Pfeilchen entfaellt */
+/* Sichtbar erst ab Stadtteil-Zoom. Gesteuert ueber eine Klasse am
+   Kartenbehaelter, weil Leaflet dauerhafte Tooltips selbsttaetig wieder
+   oeffnet - siehe karte.js. */
+.leaflet-tooltip.marke-name{display:none}
+.zeigt-namen .leaflet-tooltip.marke-name{display:block}
+
+/* Die Linienschilder an den Haltestellen: welche Linien dort halten, als Reihe
+   kleiner farbiger Schilder neben der Marke. Kein Kasten drumherum - sie sollen
+   NEBEN der Marke stehen, nicht auf einer zweiten Tafel. Erst ab Zoom 14, eine
+   Stufe spaeter als die Ortsnamen: an einem Knoten haengen bis zu sieben
+   Schilder, und bei Stadtzoom liegt das uebereinander statt nebeneinander. */
+.leaflet-tooltip.halt-schild{
+  background:none; border:0; box-shadow:none; padding:0; margin:0;
+  white-space:nowrap; pointer-events:none}
+.leaflet-tooltip.halt-schild::before{display:none}
+.leaflet-tooltip.halt-schild{display:none}
+.zeigt-schilder .leaflet-tooltip.halt-schild{display:block}
+/* Auf der Umgebungskarte gibt es keine Zoomstufe zu schalten: sie startet bei
+   Zoom 15 und zeigt einen Kilometer. Die Schilder stehen dort immer. */
+.leaflet-tooltip.halt-schild--immer{display:block}
+.halt-linien{display:inline-flex; gap:2px; align-items:center;
+  filter:drop-shadow( 1px 0 0 var(--saum)) drop-shadow(-1px 0 0 var(--saum))
+         drop-shadow(0  1px 0 var(--saum)) drop-shadow(0 -1px 0 var(--saum))}
+
+/* Leaflets eigene Sprechblase traegt die Palette der Seite, sonst steht ein
+   weisser Systemkasten mitten in einer durchgestalteten Karte. */
+.leaflet-popup-content-wrapper{
+  background:var(--flaeche); color:var(--tinte); border-radius:0;
+  border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.leaflet-popup-tip{background:var(--flaeche);
+                   border:var(--rand) solid var(--umriss)}
+.leaflet-popup-content{margin:12px 14px; font-size:14px; line-height:1.5}
+.leaflet-popup-content h3{margin:0 0 4px; font-family:var(--pixel);
+                          font-size:17px; color:var(--tinte)}
+.leaflet-popup-content p{margin:0; color:var(--tinte-leise)}
+.leaflet-popup-content .popup-fein{margin-top:6px; font-size:12px}
+/* "unbekannt" ist ein offener Posten, kein Nebensatz - es sieht darum aus wie
+   die offenen Felder der Infobox und nicht wie Kleingedrucktes. */
+.leaflet-popup-content .popup-unbekannt{color:var(--akzent-text)}   /* 6,12:1 */
+
+/* ---------- Linienmarken in der Sprechblase ----------
+   Sie tragen dieselben Farben wie die Ebenen auf der Karte, damit "U-Bahn" in
+   der Legende und "U3" in der Sprechblase erkennbar dasselbe meinen. Jede Tinte
+   gegen IHRE Markenflaeche gemessen, nicht gegen die Tafel darunter. */
+.leaflet-popup-content .linien{margin-top:8px; display:flex; flex-wrap:wrap; gap:4px}
+/* Ein Linienschild. Traegt die amtliche Farbe der Linie, wenn OSM eine fuehrt;
+   die Schriftfarbe steht GERECHNET in den Daten daneben. Die Klassen
+   .linie--u/s/t/r/b sind der Rueckfall fuer Linien ohne eigene Farbe. */
+.linie{
+  display:inline-block;
+  font-family:var(--wert); font-weight:800; font-size:11.5px;
+  padding:4px 6px; color:var(--tinte); box-shadow:0 0 0 2px var(--umriss)}
+/* Auf der Karte kleiner als in der Sprechblase: dort ist Platz, hier stehen bis
+   zu sieben nebeneinander an einem Knoten.
+
+   ABER nicht in der Pixelschrift und nicht unter 10 px: Silkscreen hat keine
+   Unterlaengen und zerfaellt darunter - mit 9 px meldete pruef-breite.mjs 327
+   Stellen unter der Schwelle. Ein fetter Grotesk traegt bei 10 px, wo die
+   Pixelschrift es nicht tut. */
+.linie--klein{font-family:var(--sans); font-weight:700; font-size:10px;
+              padding:2px 4px; letter-spacing:0;
+              box-shadow:0 0 0 1.5px var(--umriss)}
+.linie--fern{background:var(--flaeche-2); color:var(--tinte)}   /* 14,02:1 */
+/* Dieselben drei Farben wie auf der Karte, damit "U-Bahn" in der Legende und
+   "U3" in der Sprechblase erkennbar dasselbe meinen. Alles uebrige - Regional,
+   Bus, reine Nummern - liegt auf der hellen Tafel: dort traegt der Text selbst
+   die Unterscheidung, und eine vierte Farbe waere eine Bedeutung, die es nicht
+   gibt. */
+.linie--u{background:var(--m-ubahn); color:var(--saum)}   /* 7,68:1 */
+.linie--s{background:var(--m-sbahn); color:var(--saum)}   /* 6,13:1 */
+.linie--t{background:var(--m-tram);  color:var(--saum)}   /* 6,97:1 */
+.linie--r, .linie--b{background:var(--flaeche-2); color:var(--tinte)}  /* 14,02:1 */
+.leaflet-popup-content a{color:var(--akzent-text)}
+/* Das Schliesskreuz haengt in Leaflets Aufbau NEBEN dem hellen Kasten, nicht
+   darin: es ist ein Geschwister von .leaflet-popup-content-wrapper und erbt
+   darum den Grund der KARTE. Optisch liegt es auf der Sprechblase und liest
+   sich gut - gemessen stand es bei 2,35:1, weil die Messung der Vererbung folgt
+   und nicht dem Augenschein.
+   Der eigene deckende Grund macht beides deckungsgleich. Dieselbe Loesung und
+   dieselbe Begruendung wie bei Leaflets Attributionsleiste weiter oben: ein
+   Kontrast, der von der Lage abhaengt, ist nicht pruefbar.
+   Gefunden am 09.09.2026, als der Pruefstand zum ersten Mal eine Sprechblase
+   aufmachte - vorher konnte er nichts darin sehen. */
+.leaflet-container a.leaflet-popup-close-button{
+  color:var(--tinte-leise);                    /* 7,81:1 auf --flaeche */
+  background:var(--flaeche)}
+
+/* ---------- Filterleiste (zugleich Legende) ----------
+   Jeder Eintrag zeigt die Marke, die er bedeutet, und schaltet sie. Sie steht
+   sichtbar unter der Karte, nicht in Leaflets Ebenenmenue: das klappt zu einem
+   kleinen Symbol zusammen, und was man nicht sieht, benutzt man nicht. */
+.legende{display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 0;
+         padding:10px 12px; list-style:none;
+         background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein)}
+.legende li{display:flex}
+
+.filter{
+  display:flex; align-items:center; gap:7px;
+  padding:5px 10px 5px 5px; cursor:pointer;
+  font-family:var(--sans); font-size:14px; line-height:1;
+  color:var(--tinte); background:transparent;
+  border:2px solid transparent}
+.filter:hover{border-color:var(--linie)}
+
+.legende-marke{flex:none; display:flex; align-items:center; justify-content:center;
+               width:34px; height:32px}
+/* In der Leiste liegen die Marken auf der hellen Tafel, nicht auf Kacheln -
+   der Saum waere dort unsichtbar und kostet nur Rechenzeit. */
+.legende .ort-pin, .legende .halt-pin{filter:none}
+.legende .ort-pin{width:30px; height:30px}
+.legende .ort-pin svg{width:26px; height:26px}
+.legende .halt-pin{width:24px; height:24px; font-size:19px}
+/* Ein Netz ist eine Linie, keine Marke - die Legende zeigt darum einen Strich. */
+.netz-strich{display:block; width:26px; height:4px}
+
+.filter-zahl{font-family:var(--wert); font-weight:700; font-size:12px;
+             font-variant-numeric:tabular-nums; color:var(--tinte-leise)}  /* 7,81:1 */
+
+/* AUS: nicht allein ueber die Farbe erkennbar (WCAG 1.4.1) - der Text ist
+   durchgestrichen, das Zeichen blass, und aria-pressed sagt es der Vorlesehilfe. */
+.filter[aria-pressed="false"]{color:var(--tinte-leise)}
+.filter[aria-pressed="false"] .filter-text{text-decoration:line-through}
+.filter[aria-pressed="false"] .legende-marke{opacity:.32}
+.filter[aria-pressed="false"] .filter-zahl{text-decoration:none}
+
+/* ---------- Die Kopfzeile des Katalogs: Sortieren ----------
+   Sie sitzt IM Katalog, nicht darueber: eine Sortierleiste, die neben der Tafel
+   schwebt, gehoert optisch nicht zu ihr. Nicht auf die Spalten ausgerichtet -
+   die Zeile bricht unter 680 px auf drei Zeilen um, und eine Kopfzeile ueber
+   der falschen Spalte ist schlimmer als gar keine. */
+.katalog-kopf{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px;
+              padding:9px 14px; background:var(--flaeche-2); color:var(--tinte);
+              border-bottom:var(--rand) solid var(--umriss)}
+.katalog-kopf-label{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+                    text-transform:uppercase; color:var(--tinte-leise);
+                    margin-right:4px}                    /* 6,50:1 auf --flaeche-2 */
+.sortknopf{
+  display:inline-flex; align-items:center; gap:5px; min-height:34px;
+  padding:5px 9px; cursor:pointer;
+  font-family:var(--sans); font-size:13.5px; line-height:1;
+  color:var(--tinte); background:transparent;
+  border:2px solid transparent}
+.sortknopf:hover{border-color:var(--linie)}
+/* Die aktive Spalte haengt NICHT allein an der Farbe (WCAG 1.4.1): sie traegt
+   den Umriss, die helle Flaeche UND den Richtungspfeil. */
+.sortknopf[aria-pressed="true"]{
+  background:var(--flaeche); border-color:var(--umriss); font-weight:700}
+.sort-pfeil{font-family:var(--zahl); font-size:10px; color:var(--akzent-text)}  /* 6,12:1 */
+
+/* Kein Treffer ist ein ERGEBNIS und wird als solches gesagt. Eine leere Karte
+   ohne diesen Satz sieht aus wie eine kaputte Seite. Das Suchfeld, das hier bis
+   zum 09.09.2026 stand, ist entfallen - bei 59 Zeilen, die man ganz sieht,
+   beantwortet Sortieren die Frage besser als Tippen. */
+.such-leer{margin:14px 0 0; padding:12px 14px;
+           background:var(--warn-bg); color:var(--warn);         /* 5,18:1 */
+           border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+           font-size:14px; font-weight:600}
+
+/* ---------- Untermenue: waehlt EINE Sache, schaltet Karte UND Liste ----------
+   Nicht dieselbe Form wie die Hauptnavigation im Kopf: die kippt um ihre
+   Unterkante und traegt die Seite, diese hier sitzt im Inhalt und schaltet
+   darin. Zwei Navigationen, die gleich aussehen, sehen aus wie eine kaputte. */
+.untermenue{display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 12px}
+.unterknopf{
+  display:inline-flex; align-items:center; gap:7px; min-height:40px;
+  padding:6px 12px 6px 7px; cursor:pointer;
+  font-family:var(--pixel); font-size:16px; line-height:1;
+  color:var(--auf-grund-leise);                      /* 9,45:1 auf --grund */
+  background:transparent; border:2px solid var(--auf-grund-leise)}
+.unterknopf:hover{color:var(--auf-grund); border-color:var(--auf-grund)}
+/* Der Aktivzustand haengt NICHT allein an der Farbe (WCAG 1.4.1): der Knopf
+   wechselt den Grund und wird zur hellen Tafel - dieselbe Umkehr wie im
+   Hauptmenue, damit "aktiv" auf der Seite ueberall dasselbe heisst. */
+.unterknopf[aria-pressed="true"]{
+  background:var(--flaeche); color:var(--tinte);     /* 16,87:1 */
+  border-color:var(--umriss); box-shadow:var(--schatten-klein)}
+.unter-marke{flex:none; display:flex; align-items:center; width:26px; height:26px}
+.unter-marke .ort-pin{width:26px; height:26px; filter:none}
+.unter-marke .ort-pin svg{width:22px; height:22px}
+.unter-zahl{font-family:var(--wert); font-weight:700; font-size:12px;
+            font-variant-numeric:tabular-nums}
+
+/* ---------- Der Katalog ----------
+   EINE Tafel mit Haarlinien dazwischen, nicht 40 eigene Rahmen: 40 Kaesten mit
+   dickem Umriss und hartem Versatz sind kein Katalog, sondern ein Stapel. Die
+   Zeile traegt Name, Ort, Wochenstreifen und Note; die Prosa liegt in <details>
+   und kommt auf Abruf. Das ist der Unterschied zwischen 19 000 px Scrollhoehe
+   und 2 600 px bei gleichem Inhalt. */
+.katalog{background:var(--flaeche); color:var(--tinte);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+/* Die Zeilen in einem eigenen Behaelter: beim Kategoriewechsel wird nur DIESER
+   ueberblendet, die Kopfzeile mit den Sortierknoepfen bleibt stehen. Eine
+   Deckkraft auf der ganzen Tafel naehme sie mit. */
+.katalog-zeilen{display:block}
+/* KEINE farbige Kante mehr. Sie trug am 09.09.2026 die Kategoriefarbe links an
+   jeder Zeile - und damit dieselbe Auskunft wie das Zeichen zwei Zentimeter
+   daneben. Doppelt gesagt ist nicht deutlicher, sondern eine zweite Sache, die
+   man deuten muss. */
+.ort{border-top:2px solid var(--linie)}
+.ort:first-child{border-top:0}
+
+/* Benannte Felder statt Spaltenzaehlen: die Zeile hat sechs Teile, und einer
+   davon (der Wochenstreifen) fehlt bei Sehenswuertem. Mit reinen Spalten
+   rutschte dort alles um eins nach links und die Noten fluchteten nicht mehr.
+   Der leere Platzhalter kommt aus dem Skript, die Zuordnung von hier. */
+.ort > summary{
+  display:grid; align-items:center; gap:4px 12px; padding:9px 14px;
+  cursor:pointer; list-style:none;
+  grid-template-columns:auto minmax(0,1fr) auto auto auto auto;
+  grid-template-areas:"marke name meta woche note zeichen"}
+.ort-marke{grid-area:marke}
+.ort-name{grid-area:name}
+.ort-meta{grid-area:meta}
+.ort-woche{grid-area:woche}
+.ort-note{grid-area:note}
+.ort > summary::after{grid-area:zeichen}
+.ort > summary::-webkit-details-marker{display:none}
+.ort > summary:hover{background:var(--flaeche-2)}
+/* Das Auf-und-Zu-Zeichen ist ein Zeichen, kein Dreieck: die Seite hat keine
+   runden Formen, und ein gedrehtes Dreieck braucht eine Drehung, die es hier
+   sonst nirgends gibt. */
+.ort > summary::after{
+  content:"+"; font-family:var(--zahl); font-size:14px; color:var(--akzent-text);
+  justify-self:end}                                  /* 6,12:1 */
+.ort[open] > summary::after{content:"–"}
+.ort[open] > summary{background:var(--flaeche-2)}
+
+.ort-marke{flex:none; display:flex; width:30px; height:30px}
+.ort-marke .ort-pin{width:30px; height:30px; filter:none}
+.ort-marke .ort-pin svg{width:26px; height:26px}
+.ort-name{font-family:var(--pixel); font-size:17px; line-height:1.15;
+          overflow-wrap:anywhere}
+.ort-meta{font-size:12.5px; color:var(--tinte-leise); white-space:nowrap}
+.ort-woche{display:flex}
+/* Tabellenziffern: die Noten stehen untereinander und sollen fluchten. */
+.ort-note{display:flex; align-items:center; gap:6px;
+          font-family:var(--wert); font-weight:800; font-size:13.5px;
+          font-variant-numeric:tabular-nums; white-space:nowrap}
+.ort-note--ohne{color:var(--tinte-leise); font-size:10.5px}  /* 6,50:1 */
+
+/* --- Der Wochenstreifen: sieben Spalten, oben und unten Mitternacht ---
+   Drei Zustaende, unterschieden in der FORM und nicht nur in der Farbe
+   (WCAG 1.4.1). Die Bahn dahinter ist Dekoration; was etwas bedeutet - Block,
+   Strich, Punkte - steht in Tinte auf der Tafel: 16,87:1. */
+.woche{display:block; flex:none}
+.wo-bahn{fill:var(--flaeche-2)}
+.wo-offen{fill:var(--tinte)}
+.wo-strich{stroke:var(--tinte-leise); stroke-width:1.2; fill:none}
+.wo-punkt{fill:var(--tinte-leise)}
+
+/* --- Die Notenachse: ein AUSSCHNITT von 4,0 bis 5,0, kein Balken ab null ---
+   Der Punkt ist der Wert, die Achse der Rahmen. Warme Toene sind auf dieser
+   Seite Punkte und Kanten, nie Flaechen - ein Punkt ist genau der Fall. */
+.note-skala{display:block; flex:none}
+.ns-achse{stroke:var(--tinte-leise); stroke-width:1.5; fill:none}
+.ns-tick{stroke:var(--tinte-leise); stroke-width:1; fill:none}
+.ns-punkt{fill:var(--akzent-text)}                   /* 6,12:1 */
+
+/* --- Stufenskala: vier Felder, gefuellt bis zur Stufe --- */
+.stufens, .stufen{display:inline-block; vertical-align:-1px; margin-right:6px}
+.st-feld{fill:none; stroke:var(--tinte-leise); stroke-width:1}
+.st-voll{fill:var(--tinte); stroke:var(--tinte)}
+
+/* --- Der aufgeklappte Teil --- */
+.ort-tief{padding:2px 14px 14px 56px; border-top:2px solid var(--linie)}
+.ort-notiz{margin:10px 0 0; font-size:14px; line-height:1.55;
+           color:var(--tinte-leise); max-width:68ch}   /* Lesemass, ~68 Zeichen */
+/* Wo keine Recherche vorliegt, steht das da - und sieht anders aus als ein Satz,
+   den jemand geschrieben hat. Ein fehlender Befund als Fliesstext getarnt waere
+   genau die gefuellte Luecke aus data-integrity.md. */
+.ort-notiz--ohne{font-style:italic; color:var(--akzent-text)}   /* 6,12:1 */
+.ort-fakten{display:grid; grid-template-columns:auto minmax(0,1fr); gap:5px 12px;
+            margin:12px 0 0; padding:12px 0 0; font-size:13.5px;
+            border-top:2px solid var(--linie)}
+.ort-fakten dt{font-family:var(--zahl); font-size:10.5px; letter-spacing:.5px;
+               text-transform:uppercase; color:var(--tinte-leise); padding-top:3px}
+.ort-fakten dd{margin:0; color:var(--tinte)}
+/* Der Beleg steht unter seiner Aussage, nicht dahinter: eine Quelle in
+   derselben Zeile wird ueberlesen, und dann steht die Aussage allein da. */
+.ort-beleg{display:block; margin-top:2px; font-size:12.5px;
+           color:var(--tinte-leise)}                      /* 6,50:1 */
+.ort-beleg a{color:var(--akzent-text); font-weight:700}   /* 6,12:1 */
+.ort-fakten .rang{margin-left:6px; font-size:9.5px; padding:2px 5px}
+/* Eine Einschraenkung wird nicht kleiner gesetzt als der Wert, den sie
+   einschraenkt - sonst liest man den Wert und die Warnung nicht. */
+.ort-warnung{margin:10px 0 0; padding:8px 10px; font-size:13px;
+             background:var(--warn-bg); color:var(--warn)}   /* 5,18:1 */
+.ort-wege{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px;
+          margin:14px 0 0; font-size:13.5px}
+.ort-wege a{color:var(--akzent-text); font-weight:700}       /* 6,12:1 */
+/* 44 px, nicht 34: der projekteigene Pruefstand misst gegen 44x44 (WCAG 2.5.5),
+   und dieser Knopf ist ein echtes Bedienziel im Fliesstext - anders als eine
+   Kartenmarke, bei der die Seite die Unterschreitung begruendet in Kauf nimmt. */
+.ort-zeigen{
+  min-height:44px; padding:8px 14px; cursor:pointer;
+  font-family:var(--sans); font-size:13.5px; font-weight:700;
+  color:var(--tinte); background:var(--flaeche);
+  border:2px solid var(--umriss); box-shadow:2px 2px 0 var(--schattenfarbe)}
+.ort-zeigen:hover{background:var(--akzent); color:var(--tinte)}  /* 5,95:1 */
+.ort-zeigen:active{box-shadow:none; transform:translate(2px,2px)}
+
+/* ---------- Der Schlüssel zur Tabelle ----------
+   Steht BEI der Tabelle, nicht in der Kartenlegende: Wochenstreifen, Notenachse
+   und Stufenskala kommen auf der Karte nicht vor. Reine Beschriftung — und
+   darum OHNE Rahmen: ein Rahmen verspricht eine Bedienung, die es hier nicht
+   gibt. Genau daran krankte die alte Legende, in der Beschriftung und Schalter
+   gleich aussahen. */
+#listen-schluessel{flex-direction:column; align-items:stretch; gap:8px;
+                   margin:0 0 14px}
+.schluessel-zeichen{display:flex; align-items:center; gap:10px;
+                    font-size:13px; color:var(--tinte)}           /* 16,87:1 */
+.schluessel-zeichen .filter-text{max-width:70ch}
+/* Die Beispielmarken sind breiter als eine 34-px-Ortsmarke - ohne diese Zeile
+   schneidet .legende-marke den Wochenstreifen ab, und das Beispiel zeigt vier
+   Tage statt sieben. */
+.schluessel-zeichen .legende-marke{width:auto; height:auto; flex:none}
+
+/* ---------- Der Fuss: Zahlen als Zeile, Volltext auf Abruf ----------
+   Die Luecken MUESSEN genannt werden. Ein Absatz von zwoelf Zeilen unter der
+   Liste wird aber nicht gelesen und ist damit dieselbe Textwand in klein. */
+.fuss-zahlen{display:flex; flex-wrap:wrap; gap:6px 20px; margin:0 0 10px;
+             font-size:12.5px; align-items:baseline}
+.fuss-zahlen b{font-family:var(--wert); font-weight:800; font-size:16px;
+               color:var(--auf-grund);
+               margin-right:5px; font-variant-numeric:tabular-nums}
+.fuss-zahlen i{font-family:var(--wert); font-weight:700; font-size:11.5px;
+               font-style:normal; margin-left:5px; opacity:.85}
+.fuss-mehr summary{cursor:pointer; font-family:var(--zahl); font-size:10.5px;
+                   letter-spacing:.5px; text-transform:uppercase;
+                   color:var(--akzent-hell)}          /* 8,94:1 auf --grund */
+.fuss-mehr p{margin:10px 0 0; max-width:74ch}
+.fuss-mehr strong, .fuss-mehr em{color:var(--auf-grund)}
+
+/* ---------- Quellenfuss ---------- */
+.quellen{margin:28px 0 0; padding:16px 18px;
+         background:var(--flaeche-2); color:var(--tinte-leise);
+         border:var(--rand) solid var(--umriss); box-shadow:var(--schatten-klein);
+         font-size:13.5px}
+.quellen h2{margin:0 0 6px; font-family:var(--pixel); font-size:16px;
+            color:var(--tinte)}
+.quellen p{margin:0 0 6px}
+.quellen p:last-child{margin-bottom:0}
+.quellen a{color:var(--akzent-text)}
+
+/* ---------- Fokus ---------- */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+  outline:3px solid var(--fokus-innen); outline-offset:0;
+  box-shadow:0 0 0 6px var(--fokus-aussen)}
+
+/* Die Katalogzeile bricht frueher um als die Seite: sechs Teile nebeneinander
+   brauchen rund 680 px, sonst wird der Name auf zwei Zeichen gequetscht. Die
+   Marke steht dann links ueber alle drei Zeilen, die Note rechts daneben. */
+@media (max-width:680px){
+  .ort > summary{
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "marke name  zeichen"
+      "marke meta  note"
+      "marke woche note"}
+  .ort-marke{align-self:start; margin-top:2px}
+  .ort > summary::after{align-self:start}
+  .ort-tief{padding-left:14px}
+}
+
+@media (max-width:520px){
+  main{padding:22px 14px 36px}
+  .legende{gap:8px 12px}
+  .untermenue{gap:6px}
+  .unterknopf{font-size:15px; padding:6px 10px 6px 6px}
+}
+
+/* ===================== Bahn-Reiter =====================================
+   Angehaengt statt eingeordnet: an dieser Datei arbeitet parallel eine zweite
+   Sitzung am Innenstadt-Reiter, und ein Block am Ende laesst sich ohne
+   Konflikt zusammenfuehren. Beim Zusammenlegen wandert er an seinen Platz.
+
+   Keine neue Farbe. Alle Werte stammen aus der gemessenen Palette oben; wo
+   zwei Zustaende sich sonst nur im Farbton unterschieden, trennt sie hier die
+   FORM (gefuellter gegen hohler Punkt, Rand gegen kein Rand). Das ist auch der
+   Grund, warum "faellt aus" denselben Chipgrund traegt wie "offen" - beide
+   sind Warnzustaende, unterschieden werden sie vom Wort darin. */
+
+#bahn-reiter .unterknopf{padding:6px 13px}
+.unterknopf--warn[aria-pressed="false"]{border-color:var(--akzent-hell);
+                                        color:var(--akzent-hell)}   /* 8,94:1 */
+
+/* 92ch statt 70ch. Die BREITE ist der Hebel, nicht die Schriftgroesse: bei
+   einer Skala ueber zwoelf Stunden blieben einem 39-Minuten-Abschnitt auf 70ch
+   keine 35 px, und groessere Schrift macht das schlimmer statt besser. Die
+   Fliesstexte darin tragen ihre eigene max-width und wachsen NICHT mit - eine
+   Zeile ueber 92 Zeichen liest sich schlechter. */
+.fahrt{padding:18px 22px; background:var(--flaeche); color:var(--tinte);
+       border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
+       max-width:92ch}
+.fahrt-kopf{display:flex; flex-wrap:wrap; gap:10px 16px;
+            align-items:flex-start; justify-content:space-between}
+.fahrt-richtung{margin:0; font-family:var(--pixel); font-size:19px}
+.fahrt-tag{margin:3px 0 0; font-family:var(--zahl); font-size:11px;
+           letter-spacing:.5px; color:var(--tinte-leise)}       /* 6,50:1 */
+.zustand--weg{background:var(--warn); color:var(--flaeche);     /* 5,86:1 */
+              border:2px solid var(--warn)}
+.fahrt-meldung{margin:14px 0 0; padding:11px 13px; font-size:14px;
+               max-width:60ch; background:var(--flaeche-2)}
+.fahrt-meldung--ausgefallen{background:var(--warn-bg);
+                            border-left:5px solid var(--warn)}
+
+/* --- Streckenband ---
+   Vier Spalten, feste Zeitspalte: die Zeiten sollen untereinander fluchten,
+   sonst sucht das Auge sie in jeder Zeile neu. Die Spaltenmasse stehen als
+   Variablen, weil die LINIE sie braucht - sie laeuft am Listenelement entlang
+   und muss die Mitte der Punktspalte treffen. Am Punkt selbst hing sie bis zum
+   09.09.2026 und war damit auf dessen Hoehe begrenzt; sobald die Zwischenhalte
+   aufklappen, endete sie nach 13 Pixeln im Nichts. */
+.band{list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0;
+      --sp1:64px; --sp2:22px; --spalt:10px}
+.band-halt{position:relative;
+           display:grid; grid-template-columns:var(--sp1) var(--sp2) minmax(0,1fr) auto;
+           align-items:start; gap:0 var(--spalt); min-height:38px}
+.band-halt:not(:last-child)::before{
+  content:""; position:absolute; top:9px; bottom:-4px; width:3px;
+  left:calc(var(--sp1) + var(--spalt) + var(--sp2) / 2 - 1.5px);
+  background:var(--umriss)}
+.band-zeit{font-family:var(--uhr); font-size:13.5px; font-weight:600;
+           text-align:right; padding-top:1px; white-space:nowrap;
+           font-variant-numeric:tabular-nums}
+.band-bis{opacity:.55; padding:0 1px}
+.band-punkt{position:relative; z-index:1; justify-self:center;
+            width:13px; height:13px; margin-top:3px;
+            border:3px solid var(--umriss); border-radius:50%;
+            background:var(--umriss)}
+.band-ort{font-size:16px; font-weight:700}
+/* Dasselbe Gleis-Chip wie in der Alternativen-Tabelle. Es stand hier als
+   blasse Pixelschrift und dort als Chip - dieselbe Angabe in zwei Formen
+   liest sich wie zwei verschiedene Angaben. */
+.band-gleis{font-family:var(--uhr); font-size:11.5px; font-weight:600;
+            padding:2px 6px; background:var(--flaeche-2);
+            color:var(--tinte); white-space:nowrap;              /* 14,02:1 */
+            justify-self:end; align-self:start}
+
+/* Die Faltung der Zwischenhalte. Zugeklappt sagt sie, WIE VIELE es sind -
+   eine Faltung, die ihren Inhalt verschweigt, wird nicht geoeffnet. Der Punkt
+   daneben ist ein Strich statt eines Kreises: hier haelt kein Zug, hier liegt
+   nur ein Stueck Strecke. */
+.band-halt--gruppe{min-height:32px}
+.band-halt--gruppe .band-punkt{width:3px; height:13px; border:none;
+                               border-radius:0; background:var(--umriss);
+                               margin-top:6px}
+.band-mitte{grid-column:3 / -1; display:flex; flex-wrap:wrap;
+            align-items:center; gap:8px 12px; padding:2px 0}
+.halte-mehr{flex:0 0 auto}
+.halte-mehr > summary{display:inline-flex; align-items:center; gap:7px;
+  cursor:pointer; list-style:none; padding:2px 0;
+  font-family:var(--sans); font-weight:700; font-size:12px;
+  color:var(--tinte-leise)}                                /* 6,50:1 */
+.halte-mehr > summary::-webkit-details-marker{display:none}
+.halte-mehr > summary::after{content:"▾"; font-size:13px; line-height:1}
+.halte-mehr[open] > summary::after{content:"▴"}
+.halte-mehr > summary:hover{color:var(--tinte)}
+/* Die innere Liste ruecht ein und wird leiser: sie ist die Aufklaerung zu
+   EINER Zeile des Bandes, nicht eine zweite Ebene daneben. */
+/* --sp1 ist hier BREITER als im aeusseren Band, nicht schmaler: dort steht je
+   Halt eine Zeit, hier stehen zwei mit Trenner ("14:45-14:51"). Mit den 52 px
+   des aeusseren Masses lief die Ankunftszeit in den Ortsnamen. */
+.band--tief{margin:6px 0 8px; --sp1:82px; --sp2:14px; --spalt:8px}
+.band--tief .band-halt{min-height:30px}
+.band--tief .band-punkt{width:9px; height:9px; border-width:2px;
+                        background:var(--flaeche); margin-top:4px}
+/* Die innere Linie traegt --linie statt --umriss: mit derselben Farbe wie die
+   Punkte verschluckte sie die Punkte, und die Zwischenhalte sahen aus wie ein
+   durchgezogener Strich ohne Halte. Sie ist rein dekorativ - was sie verbindet,
+   steht als Text daneben. */
+.band--tief .band-halt:not(:last-child)::before{top:8px; width:2px;
+  left:calc(var(--sp1) + var(--spalt) + var(--sp2) / 2 - 1px);
+  background:var(--linie)}
+.band--tief .band-ort{font-size:14px; font-weight:400;
+                      color:var(--tinte-leise)}            /* 6,50:1 */
+.band--tief .band-zeit{font-size:11.5px; color:var(--tinte-leise)}
+.band--tief .band-gleis{font-size:10.5px; padding:1px 5px}
+
+/* --- Kacheln: Ticket und Reservierung --- */
+.fahrt-kacheln{display:grid; gap:14px; margin-top:22px; align-items:start;
+               grid-template-columns:repeat(auto-fit, minmax(250px, 1fr))}
+.kachel{padding:13px 15px; background:var(--flaeche-2)}
+.kachel-titel{margin:0 0 10px; font-family:var(--zahl); font-size:10.5px;
+              letter-spacing:.5px; text-transform:uppercase;
+              color:var(--tinte-leise)}                          /* 6,50:1 */
+.kenn{display:grid; grid-template-columns:auto 1fr; gap:6px 14px;
+      margin:0; align-items:baseline}
+.kenn dt{font-family:var(--zahl); font-size:10px; letter-spacing:.5px;
+         text-transform:uppercase; color:var(--tinte-leise)}
+.kenn dd{margin:0; font-size:14.5px}
+
+/* Das Sitzplatzschild. Wagen und Platz sind das Einzige hier, das man im Zug
+   im Stehen mit einem Blick treffen muss - darum die grossen Ziffern. */
+/* Der Wagen. Die Nummer sitzt IM Riss, wie sie am echten Wagen an der Tuer
+   steht - dadurch braucht sie keine Beschriftung "das ist die Wagennummer".
+   Der Riss ist Kontur in currentColor und traegt damit den Rollensatz der
+   Tafel; eine eigene Farbe waere ein vierter gemessener Wert ohne Bedeutung. */
+.wagen{position:relative; color:var(--umriss)}
+.wagen-riss{display:block; width:100%; height:auto}
+/* Label und Zahl NEBENEINANDER, nicht uebereinander: uebereinander drueckten
+   sich beide in das eine freie Feld des Risses und ueberlappten den Rahmen. */
+.wagen-nr{position:absolute; inset:0; display:flex; align-items:center;
+          justify-content:center; gap:7px; padding-bottom:11px;
+          pointer-events:none}
+/* 10,5 px, nicht 9: Silkscreen hat keine Unterlaengen und zerfaellt darunter
+   auf einem echten Display. pruef-breite.mjs meldet jede Stelle unter 10 px -
+   diese hier war beim Aufbau eine davon, aus Muenchen uebernommen. */
+.wagen-nr .platz-kopf{display:inline; font-size:10.5px}
+.wagen-nr .platz-wert{display:inline; margin-top:0; font-size:27px; line-height:1}
+
+.sitze{margin-top:12px}
+.sitz-reihe{display:flex; gap:8px; margin-top:4px}
+/* Zwei Sitze, gezeichnet - aber ohne Ort im Wagen: welche Reihe und ob Fenster
+   oder Gang steht nicht in der Buchung, und ein Sitz an gezeichneter Stelle
+   waere dieselbe Erfindung wie eine geratene Wagenreihe. */
+.sitz{display:inline-flex; align-items:center; gap:6px; padding:5px 10px 5px 7px;
+      background:var(--flaeche); border:2px solid var(--umriss);
+      color:var(--umriss)}
+.sitz svg{width:22px; height:22px; flex:none}
+.sitz b{font-family:var(--uhr); font-weight:600; font-size:16px;
+        color:var(--tinte)}                                      /* 16,87:1 */
+.platz-kopf{display:block; font-family:var(--zahl); font-size:10px;
+            letter-spacing:.5px; text-transform:uppercase;
+            color:var(--tinte-leise)}
+/* --uhr, nicht --pixel: Pixelify Sans setzt 27 und 77 mit so aehnlichen
+   Ziffernformen, dass die Wagennummer im Zug beim schnellen Blick nicht
+   sicher zu lesen ist - und genau dafuer steht sie hier. Dieselbe Ueberlegung
+   wie bei den Fahrplanzeiten, sie war beim ersten Durchgang nur nicht bis in
+   diese Kachel durchgezogen. */
+.platz-wert{display:block; margin-top:3px; font-family:var(--uhr);
+            font-weight:600; font-size:23px; line-height:1.15;
+            letter-spacing:.5px; color:var(--tinte)}              /* 16,87:1 */
+.platz-fuss{margin:11px 0 0; font-size:12.5px; color:var(--tinte-leise)}
+/* Was NICHT auf dieser Seite steht, gehoert genauso hierher wie was darauf
+   steht - sonst sucht man den Bahnsteigabschnitt hier und findet ihn nie. */
+.platz-warn{margin:8px 0 0; padding:8px 10px; font-size:12px;
+            background:var(--flaeche); border-left:4px solid var(--tinte-leise);
+            color:var(--tinte-leise); max-width:44ch}            /* 6,50:1 */
+
+/* --- Alternativen als Zeitband ---
+   Eine Skala fuer alle Verbindungen einer Fahrt, nach der Methode aus
+   diagramm-grundlagen (Design_AI): jede Marke haengt an derselben Achse. Vorher
+   stand hier je Verbindung eine Kopfzeile aus Uhrzeiten und ein Absatz Prosa -
+   das beantwortete "wann" und sonst nichts.
+
+   Keine neue Farbe. Die Segmente nutzen die drei Paare, die die Palette schon
+   gemessen hat: Zug = --flaeche auf --umriss (18,33:1), Umstieg = --tinte-leise
+   auf --flaeche-2 (6,50:1), knapper Umstieg = --warn auf --warn-bg (5,18:1). */
+/* Die Alternativen sitzen IN der Fahrt, nicht daneben - abgesetzt durch eine
+   Linie und eine eigene Ueberschrift, damit die Tafel nicht als eine einzige
+   Flaeche gelesen wird. */
+.alt-block{margin-top:26px; padding-top:20px; border-top:3px solid var(--umriss)}
+.alt-kopfzeile{display:flex; flex-wrap:wrap; align-items:baseline;
+               gap:6px 14px; margin-bottom:14px}
+.alt-titel{margin:0; font-family:var(--pixel); font-size:17px;
+           color:var(--tinte)}                               /* 16,87:1 */
+/* Das Datum stand vorher nur oben an der Fahrt. Wer hierher scrollte, sah
+   sechs Uhrzeiten ohne Tag. */
+.alt-tag{font-family:var(--zahl); font-size:11px; letter-spacing:.5px;
+         padding:3px 7px; background:var(--flaeche-2);
+         color:var(--tinte-leise)}                           /* 6,50:1 */
+
+.regeln{margin:0 0 18px; padding:0 0 0 20px; font-size:13.5px;
+        color:var(--tinte-leise)}
+.regeln li{margin:3px 0}
+
+/* Die Achse traegt die Stundenmarken. Ohne sie ist ein Balken irgendwo, nicht
+   ein Balken um 12:51. Der linke Rand haelt Platz fuer die Beschriftung frei,
+   die sonst aus der Flaeche laeuft - dasselbe Prinzip wie die viewBox-Raender
+   im Diagramm-Baustein. */
+.skala{--spur-links:0px; margin-top:4px}
+/* 14px = 2px Kartenrand + 12px Innenmass der Spur. Ohne das fluchten Achse
+   und Balken nicht, und eine Skala, die neben ihren Marken liegt, ist keine. */
+.achse{position:relative; height:19px; margin:0 16px 6px}
+.achse-tick{position:absolute; top:0; transform:translateX(-50%);
+            font-family:var(--uhr); font-size:12px; letter-spacing:0;
+            color:var(--tinte-leise); white-space:nowrap}     /* 6,50:1 */
+
+.verb{border:2px solid var(--umriss); margin-bottom:10px;
+      background:var(--flaeche)}
+.verb-kopf{display:block; padding:10px 0 2px; cursor:pointer; list-style:none}
+.verb-zeile{display:flex; flex-wrap:wrap; align-items:baseline; gap:5px 14px;
+            padding:0 12px 9px}
+.verb-kopf::-webkit-details-marker{display:none}
+.verb-kopf:hover{background:var(--flaeche-2)}
+.verb-kopf:hover .spur-teil--ums{background:var(--flaeche)}
+.verb-zeit{display:flex; align-items:center; gap:8px}
+.verb-zeit b{font-family:var(--uhr); font-size:16px; font-weight:600;
+             letter-spacing:.5px; padding:4px 8px; background:var(--flaeche-2);
+             border:2px solid var(--umriss); color:var(--tinte)}  /* 14,02:1 */
+.verb-zeit i{font-style:normal; font-size:15px; color:var(--tinte-leise)}
+.verb-dauer{font-family:var(--uhr); font-size:12.5px; font-weight:600}
+.verb-weg{font-size:13.5px; color:var(--tinte-leise)}         /* 6,50:1 */
+.verb-real{font-family:var(--zahl); font-size:10px; font-style:italic;
+           color:var(--tinte-leise)}
+.alt-flagge{margin-left:auto; font-family:var(--zahl); font-size:10px;
+            letter-spacing:.5px; padding:3px 6px; background:var(--flaeche);
+            color:var(--tinte-leise); border:2px solid var(--linie)}
+.alt-flagge--warn{background:var(--warn-bg); color:var(--warn);   /* 5,18:1 */
+                  border-color:var(--warn)}
+
+/* Die Spur. Segmente liegen absolut auf der gemeinsamen Skala - dadurch steht
+   eine Verbindung, die spaeter faehrt, auch weiter rechts, und zwei
+   Verbindungen sind ohne Lesen vergleichbar. */
+.spur{position:relative; height:44px; margin:0 14px 12px}
+.spur-marke{position:absolute; top:-2px; bottom:-2px; width:1px;
+            background:var(--linie)}                       /* dekorativ, 1.4.11 */
+.spur-teil{position:absolute; top:0; height:44px; overflow:hidden;
+           display:flex; align-items:center; gap:7px; padding:0 7px;
+           white-space:nowrap; font-family:var(--uhr); font-size:12.5px;
+           font-weight:600}
+.spur-teil b{font-weight:600}
+.spur-teil i{font-style:normal; opacity:.75}
+/* Ein Fahrtabschnitt sieht aus wie ein Zug, nicht wie ein Rechteck: vorn eine
+   abgeschraegte Nase in Fahrtrichtung (die Zeit laeuft nach rechts, also zeigt
+   der Zug nach rechts), oben ein Fensterband, unten ein Fahrgestell.
+   
+   Das ist FORM, keine Aussage: der Balken behauptet nichts ueber Wagenzahl
+   oder Reihung - die gibt es erst 18 h vor Abfahrt. Er sagt nur, dass hier
+   gefahren und dort gewartet wird, und das sagt eine Zugform schneller als
+   zwei gleich aussehende Kaesten.
+
+   Fenster und Gestell liegen in den aeussersten 5 bzw. 3 px, der Text
+   bleibt mittig auf voller Flaeche - der gemessene Kontrast gilt also
+   unveraendert. */
+.spur-teil--zug{background:var(--umriss); color:var(--flaeche);   /* 18,33:1 */
+  padding-right:19px;
+  clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 40%, 100% 100%, 0 100%)}
+.spur-teil--zug::before{content:""; position:absolute; left:7px; right:22px;
+  top:6px; height:7px; opacity:.34; pointer-events:none;
+  background:repeating-linear-gradient(90deg,
+    currentColor 0 10px, transparent 10px 16px)}
+.spur-teil--zug::after{content:""; position:absolute; left:9px; right:16px;
+  bottom:4px; height:4px; opacity:.42; pointer-events:none;
+  background:repeating-linear-gradient(90deg,
+    transparent 0 9px, currentColor 9px 17px)}
+/* Die Zugart traegt die Farbe - der einzige Ort auf diesem Reiter, an dem
+   Farbe etwas UNTERSCHEIDET statt zu schmuecken. Gruen fuer die S-Bahn ist
+   keine Erfindung: es ist die Farbe, die auf jedem Bahnsteig dafuer steht.
+   Die Zugnummer steht im Balken, die Farbe ist also nie der einzige
+   Traeger der Information (WCAG 1.4.1). */
+.spur-teil--regio{background:var(--m-ubahn); color:var(--saum)}  /*  7,68:1 */
+.spur-teil--sbahn{background:var(--m-sbahn); color:var(--saum)}  /*  6,13:1 */
+.spur-teil--ums{background:var(--flaeche-2); color:var(--tinte);   /* 14,02:1 */
+                top:9px; height:26px; font-size:12px; padding:0 4px;
+                border:2px dashed var(--tinte-leise);
+                justify-content:center}
+/* Die Einheit haengt an der Klasse, nicht an jeder Zahl: schmale Felder
+   zeigen nur den Wert, breite den Wert mit "min". */
+.spur-teil--ums b.mit-einheit::after{content:" min"}
+.spur-teil--knapp{background:var(--warn-bg); color:var(--warn);  /* 5,18:1 */
+                  border-color:var(--warn)}
+.spur-teil--knapp b{font-weight:700}
+
+.verb-tief{padding:12px 12px 12px}
+.verb[open] .verb-kopf{border-bottom:2px solid var(--linie); padding-bottom:4px}
+
+.alt-robust{margin:12px 0 0; font-size:13.5px; color:var(--tinte-leise);
+            max-width:58ch}
+/* Verworfene Optionen bleiben sichtbar, mit ihrem Grund - sonst werden sie in
+   der naechsten Runde neu recherchiert, und die Arbeit sieht aus wie
+   Fortschritt (Projektregel: comparison-method.md). */
+.alt-raus{margin:20px 0 0; padding:12px 14px; font-size:13px;
+          background:var(--flaeche-2); color:var(--tinte-leise); max-width:60ch}
+.alt-raus b{color:var(--tinte)}                              /* 14,02:1 */
+/* Vorgaben und Quellenstand liegen zusammen in einem Aufklapp. Als Liste und
+   Absatz auf der Seite nahmen sie mehr Platz als die Verbindungen, fuer die
+   sie gelten - und beides sind Angaben ueber die RECHERCHE, nicht ueber die
+   Reise. Wer sie braucht, sucht sie; wer fahren will, nicht. */
+.wie{margin:0 0 16px}
+.wie > summary{display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+  list-style:none; padding:4px 9px; background:var(--flaeche-2);
+  font-family:var(--zahl); font-size:10px; letter-spacing:.5px;
+  text-transform:uppercase; color:var(--tinte-leise)}          /* 6,50:1 */
+.wie > summary::-webkit-details-marker{display:none}
+.wie > summary::before{content:"i"; display:inline-flex; align-items:center;
+  justify-content:center; width:14px; height:14px; font-family:var(--sans);
+  font-weight:700; font-size:10px; font-style:italic;
+  background:var(--tinte-leise); color:var(--flaeche)}         /* 6,50:1 */
+.wie > summary:hover{color:var(--tinte)}
+.wie-inhalt{padding:10px 0 0; font-size:13px; color:var(--tinte-leise);
+            max-width:62ch}
+.wie-inhalt ul{margin:0; padding-left:20px}
+.wie-inhalt p{margin:9px 0 0}
+.alt-leer{margin:16px 0 0; font-size:13px; color:var(--tinte-leise)}
+.alt-leer{padding:14px; background:var(--flaeche-2); max-width:58ch}
+
+
+/* --- Weg vom Hauptbahnhof zum Hotel ---------------------------------------
+   Dasselbe Bauprinzip wie das Streckenband des Bahn-Reiters: eine Folge liest
+   man als Linie. Zwei Unterschiede, beide bewusst.
+
+   1. KEINE Uhrzeitspalte. Der Weg ist ein Rezept fuer jeden Tag und keine
+      gebuchte Fahrt - eine Uhrzeit daneben liest sich als Termin. Die Dauer
+      des Abschnitts steht im Text, wo sie hingehoert.
+   2. Die Spur traegt die FARBE des Verkehrsmittels und wechselt sie genau am
+      Halt. Damit ist das Band dieselbe Zeichnung wie die Linie auf der Karte;
+      zwei Darstellungen desselben Wegs, die verschieden aussehen, liest man
+      als zwei Wege.
+
+   Eine Zeile ist EIN Abschnitt und traegt den Halt, an dem er beginnt. Halte
+   und Fahrten als getrennte Zeilen haetten in der Spur an jedem Halt eine Naht
+   hinterlassen - und eine unterbrochene Linie liest man als unterbrochenen
+   Weg. */
+.weg{list-style:none; margin:20px 0 0; padding:0}
+.weg > li{display:grid; grid-template-columns:26px minmax(0,1fr); gap:0 14px}
+.weg-spur{position:relative}
+.weg-haupt{display:block; padding:0 0 20px}
+.weg > li:last-child .weg-haupt{padding-bottom:0}
+
+/* Der Balken laeuft vom eigenen Punkt bis zum Punkt der naechsten Zeile durch.
+   top:11px setzt ihn unter die Mitte des Punkts, bottom:0 an die Zeilenkante -
+   die naechste Zeile setzt dort ihren eigenen an. */
+.weg-teil .weg-spur::before{content:""; position:absolute; left:50%;
+  top:11px; bottom:0; width:9px; margin-left:-4.5px;
+  background:var(--spur,var(--tinte-leise))}
+/* Der Fussweg ist schmaler und gestrichelt - dieselbe Unterscheidung, die die
+   Karte zwischen gefahren und gelaufen macht. */
+.weg-teil--fuss .weg-spur::before{width:5px; margin-left:-2.5px;
+  background:repeating-linear-gradient(var(--spur) 0 6px, transparent 6px 12px)}
+/* --spur setzt das Skript inline auf die AMTLICHE Linienfarbe, wo genau eine
+   Linie die Strecke bedient. Die Klassen sind der Rueckfall: eine Klasse je
+   Liniennummer waere ein Stylesheet, das bei jeder Fahrplanaenderung
+   nachgezogen werden muesste. */
+.weg-teil--fuss{--spur:var(--tinte-leise)}
+.weg-teil--sbahn{--spur:var(--m-sbahn)}
+.weg-teil--ubahn{--spur:var(--m-ubahn)}
+.weg-teil--tram{--spur:var(--m-tram)}
+.weg-teil--bus{--spur:var(--m-ankunft)}
+
+.weg-spur::after{content:""; position:absolute; left:50%; top:4px;
+  width:15px; height:15px; margin-left:-7.5px; border-radius:50%;
+  background:var(--flaeche); border:3px solid var(--umriss); z-index:1}
+/* Start und Ziel sind gefuellt: sie sind die Enden, nicht Zwischenstationen. */
+.weg > li:first-child .weg-spur::after,
+.weg-ziel .weg-spur::after{background:var(--akzent)}
+
+.weg-ort{display:block; font-size:16px; font-weight:700; line-height:1.25;
+  padding-top:1px}
+.weg-ziel .weg-ort, .weg > li:first-child .weg-ort{
+  font-family:var(--pixel); font-size:17px}
+.weg-marken{display:flex; flex-wrap:wrap; gap:4px; margin:7px 0 0}
+.weg-tat{display:block; margin:6px 0 0; font-size:14px; color:var(--tinte-leise)}
+.weg-tat b{font-family:var(--wert); font-weight:800; font-size:14.5px;
+           font-variant-numeric:tabular-nums; color:var(--tinte)}  /* 16,87:1 */
+.weg-fein{display:block; margin:3px 0 0; font-size:12.5px;
+  color:var(--tinte-leise); line-height:1.5}                            /* 6,50:1 */
+
+/* Die drei Kennzahlen ueber dem Band nutzen die Felder des Bahn-Reiters weiter:
+   dieselbe Sache - eine Zahl, die man mit einem Blick treffen will -, also
+   dieselbe Form. Nur die Zeile darunter kommt dazu. */
+.weg-feld-fein{display:block; margin-top:3px; font-family:var(--sans);
+  font-size:11.5px; color:var(--tinte-leise); line-height:1.4}          /* 6,50:1 */
+.platz-felder--um{flex-wrap:wrap}
+
+/* Die Telefonnummer steht als eigenes Ziel im Kopf der Hoteltafel, nicht als
+   Zeile in einer Liste: unterwegs ist sie das Einzige auf diesem Reiter, das
+   man ANTIPPT statt liest. Als dd unter sechs anderen war sie ein 14-px-Link
+   zwischen Fliesstext. */
+.hotel-tel{font-family:var(--wert); font-weight:800; font-size:15px;
+  font-variant-numeric:tabular-nums;
+  color:var(--akzent-text); text-decoration:none;                       /* 6,12:1 */
+  padding:8px 12px; min-height:44px; display:inline-flex; align-items:center;
+  border:2px solid var(--umriss); background:var(--flaeche-2)}
+.hotel-tel:hover{background:var(--akzent); color:var(--tinte)}          /* 5,95:1 */
+.hotel-kenn{margin-top:18px}
+/* Ein unbekannter Wert wird als Aussage gesetzt, nicht als Kleingedrucktes -
+   dieselbe Auszeichnung wie in der Infobox. */
+.kenn-offen{color:var(--akzent-text); font-family:var(--wert); font-weight:800}
+.kenn-fein{color:var(--tinte-leise); font-size:12.5px}             /* 6,50:1 */
+
+/* Telefon, Website und Karte sind ZIELE, keine Zeilen: unterwegs tippt man sie
+   an, statt sie zu lesen. Nebeneinander im Kopf, jedes mit 44 px Tasthoehe. */
+.hotel-ziele{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0}
+.hotel-note{font-size:13px; color:var(--tinte-leise); text-align:right}
+.hotel-note b{display:block; font-family:var(--wert); font-weight:800;
+  font-size:20px; color:var(--tinte); font-variant-numeric:tabular-nums}
+
+/* --- Anbindung ------------------------------------------------------------
+   Je Verkehrsmittel die naechste Haltestelle mit ihren Linien. Zwei, drei
+   Zeilen: die Karte darunter zeigt dasselbe raeumlich, hier steht es zum
+   Ablesen. Die Linienmarken sind die kleinen - an einem Halt haengen bis zu
+   sieben. */
+.lage-titel{margin:22px 0 10px; font-family:var(--zahl); font-size:10.5px;
+  letter-spacing:.5px; text-transform:uppercase; color:var(--tinte-leise)}
+.anbindung{list-style:none; margin:0; padding:0; display:grid; gap:10px}
+.anb-zeile{display:grid; grid-template-columns:26px minmax(0,1fr) auto;
+  align-items:center; gap:4px 12px}
+.anb-marke{display:flex}
+.anb-marke .halt-pin{width:24px; height:24px; filter:none}
+.anb-ort{font-size:15px; font-weight:700; min-width:0}
+.anb-weg{display:block; font-family:var(--wert); font-weight:700;
+  font-size:12.5px; color:var(--tinte-leise);
+  font-variant-numeric:tabular-nums}                               /* 6,50:1 */
+.anb-linien{display:flex; flex-wrap:wrap; gap:3px; justify-content:flex-end}
+
+/* --- Die Quellen hinter einem Aufklapper ----------------------------------
+   Sie MUESSEN da sein, jede Angabe traegt ihre Herkunft. Aber sie sind nichts,
+   was man beim Aufschlagen liest: als Absatz waren sie eine Textwand unter der
+   Tafel, zugeklappt sind sie eine Zeile. */
+.quell-klapp{margin:20px 0 0; padding-top:14px;
+  border-top:2px solid var(--linie)}
+.quell-klapp summary{cursor:pointer; font-family:var(--zahl); font-size:10.5px;
+  letter-spacing:.5px; text-transform:uppercase; color:var(--akzent-text);
+  list-style:none}                                                 /* 6,12:1 */
+.quell-klapp summary::-webkit-details-marker{display:none}
+.quell-klapp summary::after{content:" ▸"; font-family:var(--sans)}
+.quell-klapp[open] summary::after{content:" ▾"}
+.quell-klapp p{margin:10px 0 0; font-size:12.5px; line-height:1.6;
+  color:var(--tinte-leise); max-width:62ch}                        /* 6,50:1 */
+/* Ein unbekannter Wert traegt "xx" und wird als Aussage gesetzt, nicht als
+   Ergebnis - dieselbe Auszeichnung wie in der Infobox. */
+.platz-wert--offen{color:var(--akzent-text)}                            /* 6,12:1 */
+
+/* Der Strich im Unterknopf ist die Legende der Karte: dieselbe Farbe, dieselbe
+   Strichart. Eine zweite Legende unter der Karte waere dieselbe Auskunft ein
+   zweites Mal - und die zweite driftet. */
+.weg-strich{height:5px}
+.weg-strich--voll{background:var(--spur,var(--tinte-leise));
+  border:1px solid var(--umriss)}
+.weg-strich--fuss{background:repeating-linear-gradient(90deg,
+    var(--auf-grund-leise) 0 4px, transparent 4px 9px)}
+.unterknopf[aria-pressed="true"] .weg-strich--fuss{
+  background:repeating-linear-gradient(90deg,
+    var(--tinte-leise) 0 4px, transparent 4px 9px)}
+
+/* --- Takt ueber den Tag ---------------------------------------------------
+   24 Balken, einer je Stunde, ab 04 Uhr geordnet: so liegt die Nachtluecke in
+   einem Stueck und klebt nicht an beiden Raendern. Eine leere Stunde behaelt
+   ihren Platz und bekommt einen Grundstrich - ein weggelassener Balken saehe
+   aus wie ein schmalerer Tag.
+
+   Die Balken sind BEWUSST nicht in der Linienfarbe: die steht hier schon
+   dreimal (Knopf, Spur, Karte) und meint dort die Linie. Am Balken wuerde sie
+   die Menge meinen. */
+.takt{margin:22px 0 0; padding:13px 15px; background:var(--flaeche-2)}
+.takt-kopf{display:flex; flex-wrap:wrap; align-items:baseline;
+  justify-content:space-between; gap:4px 12px; margin-bottom:9px}
+.takt-betrieb{font-family:var(--wert); font-size:13px; color:var(--tinte-leise)}
+.takt-betrieb b{font-weight:800; font-size:15px; color:var(--tinte);
+  font-variant-numeric:tabular-nums}                              /* 14,02:1 */
+/* Skala links: Einheit und Hoechstwert stehen AM Diagramm, nicht in einer
+   Bildunterschrift. Der erste Wurf hatte beides nicht - man konnte raten, was
+   die Hoehe bedeutet. */
+.takt-plot{display:grid; grid-template-columns:auto minmax(0,1fr); gap:0 8px}
+.takt-skala{display:flex; flex-direction:column; justify-content:space-between;
+  height:52px; font-family:var(--wert); font-weight:700; font-size:10.5px;
+  color:var(--tinte-leise); font-variant-numeric:tabular-nums;
+  text-align:right}                                               /* 6,50:1 */
+.takt-streifen{list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(24,1fr); gap:2px;
+  height:52px; align-items:end}
+.takt-stunde{height:100%; display:flex; align-items:flex-end;
+  border-bottom:2px solid var(--tinte-leise)}
+.takt-stunde i{display:block; width:100%; min-height:2px;
+  background:var(--tinte-leise)}                                  /* 6,50:1 */
+/* Eine Stunde ohne Fahrt traegt nichts ueber dem Grundstrich - das Loch IST
+   die Auskunft. */
+.takt-stunde--leer i{background:none; min-height:0}
+
+/* Je Tagesabschnitt ein Feld, so breit wie seine Stunden im Streifen darueber:
+   die Beschriftung sitzt UNTER dem Stueck, das sie beschreibt. Eine Legende
+   daneben muesste man erst zuordnen. */
+.takt-baender{list-style:none; margin:6px 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(24,1fr); gap:2px}
+.takt-baender li{min-width:0; padding:5px 6px; background:var(--flaeche);
+  border-top:3px solid var(--tinte-leise); line-height:1.3}
+.takt-band--leer{opacity:.62}
+.takt-band-name{display:block; font-family:var(--zahl); font-size:10px;
+  letter-spacing:.5px; text-transform:uppercase; color:var(--tinte-leise)}
+.takt-band-zeit{display:block; font-family:var(--wert); font-weight:700;
+  font-size:11px; color:var(--tinte-leise);
+  font-variant-numeric:tabular-nums}                              /* 6,50:1 */
+.takt-band-takt{display:block; margin-top:2px; font-family:var(--wert);
+  font-weight:800; font-size:13px; color:var(--tinte);
+  font-variant-numeric:tabular-nums}                              /* 16,87:1 */
+.takt-einheit{margin:9px 0 0; font-size:12.5px; color:var(--tinte-leise)}
+.takt-einheit b{font-family:var(--wert); font-weight:800; color:var(--tinte)}
+.takt-luecke{margin:11px 0 0; font-size:13.5px; color:var(--tinte-leise)}
+.takt-luecke b{font-family:var(--wert); font-weight:800; color:var(--tinte);
+  font-variant-numeric:tabular-nums}                              /* 14,02:1 */
+
+
+
+@media (max-width:560px){
+  /* Vier Felder nebeneinander sind hier 60 px breit - "alle 4-20 min" passt
+     dort nicht. Untereinander behaelt jedes seine Zahl. */
+  .takt-baender{grid-template-columns:1fr}
+  .takt-baender li{grid-column:1/-1 !important;
+    display:grid; grid-template-columns:auto auto 1fr; align-items:baseline;
+    gap:0 10px; border-top-width:2px}
+  .takt-band-takt{text-align:right}
+  /* Der Halt und seine Linien untereinander: nebeneinander bleiben von den
+     Linienmarken bei 360 px zwei uebrig, der Rest bricht unter die Zeile. */
+  .anb-zeile{grid-template-columns:26px minmax(0,1fr)}
+  .anb-linien{grid-column:2; justify-content:flex-start; margin-top:2px}
+}
+
+@media (max-width:520px){
+  .band-halt{grid-template-columns:52px 20px minmax(0,1fr); gap:0 8px}
+  .band-gleis{grid-column:3; padding-top:1px}
+  .sitz-reihe{flex-wrap:wrap}
+  .fahrt{padding:15px 14px}
+}
+
+/* ===================== Bewegung auf dem Hotel-Reiter =====================
+   DIE REGEL, die hier zweimal Arbeit gespart haette: der Ruhezustand ist der
+   SICHTBARE. Kein Element traegt opacity:0 im Stylesheet - die 0 kommt
+   ausschliesslich aus einem @keyframes mit `backwards`, also nur, solange eine
+   Animation laeuft oder auf ihre Verzoegerung wartet.
+
+   Warum das nicht Geschmack ist: pruef-farben.mjs deckt die Reiter zum Messen
+   auf, ruft aber zeige() nicht - die Klasse .tritt-auf kaeme also nie. Mit
+   opacity:0 als Grundwert waere der halbe Reiter unsichtbar, das Skript
+   ueberspringt alles unter 0,1 Deckkraft, und der Lauf meldete "0 Verstoesse"
+   ueber einer Seite, die es nie angesehen hat. Dieselbe Fehlerklasse wie die
+   vier Reiter, die der Pruefstand monatelang uebersprungen hat.
+
+   --bewegung ist der EINE Faktor (0 bei prefers-reduced-motion). Er steht in
+   jeder Dauer und in jeder Verzoegerung, nicht in einem zweiten Regelsatz.  */
+
+@keyframes tritt-auf{
+  from{ opacity:0; transform:translateY(10px) }
+  to  { opacity:1; transform:none }
+}
+/* Die Spur waechst von oben nach unten - in Fahrtrichtung, wie die Linie auf
+   der Karte. */
+@keyframes spur-waechst{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
+/* Balken wachsen aus der Grundlinie, nicht aus der Mitte. */
+@keyframes balken-waechst{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
+
+/* --- Der Auftritt des Reiters --------------------------------------------
+   Vier Bloecke, gestaffelt in Lesereihenfolge: Tafel, Untermenue, Karte,
+   Legende. 60 ms Abstand - eng genug, dass es eine Bewegung ist und keine
+   Aufzaehlung. */
+.tritt-auf > *{
+  animation:tritt-auf calc(var(--bewegung) * 380ms) cubic-bezier(.2,.7,.3,1) backwards}
+.tritt-auf > *:nth-child(2){ animation-delay:calc(var(--bewegung) *  60ms) }
+.tritt-auf > *:nth-child(3){ animation-delay:calc(var(--bewegung) * 120ms) }
+.tritt-auf > *:nth-child(4){ animation-delay:calc(var(--bewegung) * 180ms) }
+.tritt-auf > *:nth-child(n+5){ animation-delay:calc(var(--bewegung) * 240ms) }
+
+/* --- Die Unterknoepfe laufen von links ein ------------------------------- */
+.tritt-auf .untermenue .unterknopf{
+  animation:tritt-auf calc(var(--bewegung) * 300ms) cubic-bezier(.2,.7,.3,1) backwards}
+.tritt-auf .untermenue .unterknopf:nth-child(1){ animation-delay:calc(var(--bewegung) * 140ms) }
+.tritt-auf .untermenue .unterknopf:nth-child(2){ animation-delay:calc(var(--bewegung) * 190ms) }
+.tritt-auf .untermenue .unterknopf:nth-child(3){ animation-delay:calc(var(--bewegung) * 240ms) }
+.tritt-auf .untermenue .unterknopf:nth-child(n+4){ animation-delay:calc(var(--bewegung) * 290ms) }
+
+/* --- Das Streckenband ----------------------------------------------------
+   Laeuft IMMER, nicht nur beim Reiterwechsel: es wird bei jedem Klick auf
+   einen Unterknopf neu erzeugt, und eine Folge, die einfach dasteht, liest
+   sich nicht als Folge. --i kommt aus dem Skript. */
+.weg > li{
+  animation:tritt-auf calc(var(--bewegung) * 320ms) cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--bewegung) * var(--i) * 90ms)}
+.weg-teil .weg-spur::before{
+  transform-origin:top;
+  animation:spur-waechst calc(var(--bewegung) * 340ms) cubic-bezier(.4,0,.2,1) backwards;
+  animation-delay:calc(var(--bewegung) * (var(--i) * 90ms + 120ms))}
+
+/* --- Die Kennzahlen und die Anbindung ------------------------------------ */
+.fahrt .platz-felder .platz-feld{
+  animation:tritt-auf calc(var(--bewegung) * 320ms) cubic-bezier(.2,.7,.3,1) backwards}
+.fahrt .platz-felder .platz-feld:nth-child(2){ animation-delay:calc(var(--bewegung) * 70ms) }
+.fahrt .platz-felder .platz-feld:nth-child(3){ animation-delay:calc(var(--bewegung) * 140ms) }
+.anb-zeile{
+  animation:tritt-auf calc(var(--bewegung) * 320ms) cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--bewegung) * var(--i) * 80ms)}
+
+/* --- Der Taktstreifen: eine Welle von links nach rechts -------------------
+   24 Balken zu je 22 ms sind 506 ms - lang genug, dass die Welle sichtbar
+   ueber den Tag laeuft, kurz genug, dass niemand darauf wartet. */
+.takt-stunde i{
+  transform-origin:bottom;
+  animation:balken-waechst calc(var(--bewegung) * 300ms) cubic-bezier(.2,.7,.3,1) backwards;
+  animation-delay:calc(var(--bewegung) * var(--i) * 22ms)}
+
+/* --- Die Unterknoepfe reagieren auf den Druck ---------------------------- */
+.unterknopf{
+  transition:transform calc(var(--bewegung) * 120ms) cubic-bezier(.2,.7,.3,1),
+             box-shadow calc(var(--bewegung) * 120ms) cubic-bezier(.2,.7,.3,1)}
+/* Der gedrueckte Knopf sinkt auf seinen Schatten - dieselbe Geste, die die
+   harten Schatten der Seite ohnehin behaupten. */
+.unterknopf:active{ transform:translate(3px,3px) }
+.unterknopf[aria-pressed="true"]:active{ box-shadow:none }
+.hotel-tel{
+  transition:transform calc(var(--bewegung) * 120ms) cubic-bezier(.2,.7,.3,1)}
+.hotel-tel:active{ transform:translate(2px,2px) }
+
+/* ===================== Handy: die Karte nach oben ========================
+   Am Schreibtisch steht das Band ueber der Karte und beide sind zugleich im
+   Bild. Am Handy nicht: Kennzahlen, Band und Taktstreifen sind zusammen rund
+   600 px, die Karte begann also erst nach zweimal Wischen - und der Knopf, den
+   man gerade gedrueckt hat, zeigt seine Wirkung dort unten.
+
+   Darum am Handy: Knoepfe, Karte, Legende - dann erst die Zahlen. Umgesetzt
+   ueber `order`, nicht durch Umbau des Markups: die Lesereihenfolge fuer
+   Vorlesehilfen bleibt damit die des Dokuments, und am Schreibtisch aendert
+   sich nichts. */
+@media (max-width:700px){
+  #feld-hotel{ display:flex; flex-direction:column }
+  #feld-hotel > .ansicht-titel{ order:0 }
+  #feld-hotel > #hotel-tafel{ order:1 }
+  #feld-hotel > .tafel-titel{ order:2 }
+  #feld-hotel > #weg-reiter{ order:3 }
+  #feld-hotel > #karte-hotel{ order:4 }
+  #feld-hotel > #legende-hotel{ order:5 }
+  #feld-hotel > #weg-tafel{ order:6 }
+  #feld-hotel > .grund-fuss{ order:7 }
+  /* Die Karte steht jetzt direkt unter den Knoepfen und braucht den Abstand
+     nach oben, den vorher das Band mitgebracht hat. */
+  #karte-hotel{ margin-top:4px }
+  #weg-tafel{ margin-top:22px }
+}
+                             /* 16,87:1 */
+
+/* Das Zugschild. Bauart von den Linienschildern der Karte uebernommen -
+   kraeftige Flaeche, Umriss-Ring, fetter Grotesk -, damit "ICE 517" hier und
+   "S1" dort erkennbar dieselbe Art Sache sind. NICHT Silkscreen: die Karte hat
+   das fuer kleine Schilder schon verworfen, weil eine Pixelschrift ohne
+   Unterlaengen unter 10 px zerfaellt.
+
+   Die Farbe unterscheidet die Zugart und ist nie ihr einziger Traeger - die
+   Nummer steht daneben (WCAG 1.4.1). Alle drei mit kontrast.mjs gemessen. */
+.zug-schild{display:inline-block; font-family:var(--sans); font-weight:700;
+            font-size:13px; letter-spacing:.2px; padding:3px 8px;
+            white-space:nowrap;
+            background:var(--umriss); color:var(--flaeche);      /* 18,33:1 */
+            box-shadow:0 0 0 2px var(--umriss)}
+.zug-schild--regio{background:var(--m-ubahn); color:var(--saum);  /*  7,68:1 */
+                   box-shadow:0 0 0 2px var(--m-ubahn)}
+.zug-schild--sbahn{background:var(--m-sbahn); color:var(--saum);  /*  6,13:1 */
+                   box-shadow:0 0 0 2px var(--m-sbahn)}
+.zug-schild--klein{font-size:12px; padding:3px 7px; box-shadow:none}
+
+/* Gleis steht jetzt BEI Abfahrt und BEI Ankunft. Als ein Feld "Gl. 3 -> 7"
+   musste der Leser raten, welche Zahl zu welchem Bahnhof gehoert. */
+.gleis{font-family:var(--uhr); font-size:12.5px; padding:2px 7px;
+       background:var(--flaeche-2); color:var(--tinte)}          /* 14,02:1 */
+.gleis--offen{background:none; color:var(--tinte-leise);         /*  6,50:1 */
+              font-style:italic; padding-left:0}
+
+/* --- Etappen einer Ersatzverbindung ---
+   Loest die Abschnittstabelle ab. Die konnte die Zwischenhalte nicht
+   aufnehmen, ohne dass jede Verbindung fuenfzehn Zeilen lang wurde - der S 3
+   nach Mannheim haelt dreizehnmal. Jede Etappe faltet ihre Halte selbst auf
+   und benutzt dafuer dasselbe Band wie die gebuchte Fahrt oben. */
+.etappen{list-style:none; margin:0; padding:0; display:grid; gap:14px}
+.etappe{display:grid; gap:6px}
+.etappe-kopf{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px}
+.etappe-weg{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px;
+            font-size:14px}
+.etappe-halt{display:inline-flex; align-items:center; gap:7px}
+.etappe-halt b{font-family:var(--uhr); font-weight:600; font-size:14px;
+               font-variant-numeric:tabular-nums}
+.etappe-pfeil{font-style:normal; color:var(--tinte-leise)}   /* 6,50:1 */
+.etappe-durch{margin:0 0 0 2px; font-size:12px; font-style:italic;
+              color:var(--tinte-leise)}
+.etappe .halte-mehr{margin-left:2px}
+/* Innerhalb einer Etappe steht das Band schmaler: es haengt an EINER Etappe
+   und soll nicht wie eine zweite, gleichrangige Fahrt aussehen. */
+.etappe .band--tief{margin:2px 0 0; --sp1:74px}
+
+/* ===================== Bewegung im Bahn-Reiter =========================
+   Die Spuren wischen von links auf, gestaffelt von oben nach unten. Das ist
+   nicht Zierde: die Balken liegen auf einer Zeitachse, und eine Bewegung, die
+   der Achse folgt, macht sie in einem Zug begreifbar - man SIEHT die Fahrt als
+   Dauer statt als Rechteck.
+
+   Gestaffelt wird ueber --i im Markup, nicht ueber vierzehn CSS-Regeln: der
+   fuenfzehnte Eintrag waere sonst still unanimiert. Abstand 45 ms, damit die
+   ganze Staffel unter einer Sekunde bleibt - die Faustregel aus Design_AI
+   (bewegungs-werkbank) lautet abstand = 1000 / anzahl, bei 14 Zeilen also
+   hoechstens 70 ms.
+
+   --bewegung ist der EINE Schalter, den diese Seite ohnehin fuehrt (Zeile 140).
+   Als Faktor, nicht als zweiter Regelsatz: bei 0 bleibt 1 ms stehen, und die
+   Animation ist praktisch vorbei, bevor sie beginnt. 'backwards' sorgt dafuer,
+   dass vor dem Verzug der Anfangszustand gilt - ohne das blitzt jede Spur
+   einmal vollstaendig auf, bevor sie sich zusammenzieht. */
+@keyframes spur-auf { from { clip-path:inset(0 100% 0 0) } }
+@keyframes verb-ein {
+  from { transform:translateX(-52px); opacity:0 }
+  to   { transform:none; opacity:1 }
+}
+
+/* Die Zeile faehrt ein, die Spur wischt darin auf. Die erste Fassung hatte nur
+   das Wischen bei 520 ms - beim Laden vorbei, bevor man hinsieht. Jetzt traegt
+   die Zeile eine FEDER, und die Feder ist gerechnet, nicht geraten: eingegeben
+   sind 420 ms gefuehlte Dauer bei bounce 0,14, die Formel aus Design_AIs
+   bewegungs-werkbank liefert dafuer zeta 0,860 und eine SETZZEIT von 840 ms.
+   Das ist der Punkt der Vorlage - eine Feder hat keine Dauer, die man kuerzen
+   kann; die 840 ms sind die Wahrheit, die 420 die Absicht.
+
+   Die Staffelung deckelt bei acht: 14 x 60 ms waeren 840 ms Wartezeit, bevor
+   sich hinten etwas ruehrt, und beim zweiten Ansehen ist das nur noch Warten. */
+.verb{
+  animation:verb-ein calc(var(--bewegung) * 840ms + 1ms)
+            linear(0, 0.1015, 0.3016, 0.5062, 0.6766, 0.803, 0.8892, 0.9438,
+                   0.9759, 0.9932, 1.0014, 1.0045, 1.005, 1.0043, 1.0032,
+                   1.0023, 1.0014, 1.0009, 1.0005, 1.0002, 1.0001, 1, 1, 1, 1)
+            backwards;
+  animation-delay:calc(min(var(--i, 0), 8) * var(--bewegung) * 60ms)}
+.verb .spur{
+  animation:spur-auf calc(var(--bewegung) * 620ms + 1ms)
+            cubic-bezier(.22,.61,.36,1) backwards;
+  animation-delay:calc(min(var(--i, 0), 8) * var(--bewegung) * 60ms + 120ms)}
+
+/* Der Ruhezustand ist vollstaendig: ohne Animation steht die Spur einfach da.
+   Ein Effekt, der ohne Bewegung einen leeren Kasten hinterlaesst, ist keiner. */
+.verb:hover{border-color:var(--akzent-text)}          /* 6,12:1 gegen die Tafel */
+.verb{transition:border-color calc(var(--bewegung) * 140ms + 1ms) ease-out}
+.verb[open]{border-color:var(--umriss)}
+
+/* --- Die Check-in-Marke ---
+   --akzent-text, NICHT --akzent: der helle Akzent misst gegen die Tafel nur
+   2,56:1 und faellt damit unter die 3:1-Schwelle fuer grafische Elemente
+   (WCAG 1.4.11). Gemessen am 09.09.2026 mit kontrast.mjs. */
+.achse{overflow:visible}
+.achse-marke{position:absolute; top:-2px; bottom:-58px; width:2px;
+             background:var(--akzent-text); pointer-events:auto}
+/* --wert, NICHT --zahl: diese Marke traegt eine UHRZEIT ("Check-in möglich
+   15:00"), und die Projektregel dafuer ist eindeutig - eine Pixelschrift traegt
+   eine Aufschrift, aber keine Zahl, die stimmen muss. Silkscreen hat zudem
+   keine Unterlaengen und stand hier bei 9,5 px unter der Zerfallsgrenze.
+   Beides zusammen hat pruef-breite.mjs beim ersten Lauf gemeldet. */
+.achse-marke b{position:absolute; top:-1px; left:5px; white-space:nowrap;
+               font-family:var(--wert); font-size:10.5px; letter-spacing:.2px;
+               font-variant-numeric:tabular-nums;
+               padding:2px 5px; background:var(--akzent-text);
+               color:var(--flaeche); font-weight:700}   /* 6,00:1 gemessen */
+
+/* ===================== Was sich aendert ================================
+   Der Design-Gutachter hat am 09.09.2026 gemessen, woran die Seite tot wirkt,
+   und Bewegung war keine der vier Ursachen. Die erste war: nichts auf der
+   Seite wusste, wie spaet es ist. Eine Staffelung laeuft einmal beim Laden
+   und sagt nichts - ein Wert, der sich aendert, ist der Unterschied zwischen
+   Bewegung und Leben. */
+
+/* Die Zeile, mit der man diesen Reiter am Reisetag aufschlaegt: was faehrt als
+   naechstes. Sie steht auf dem GRUND, nicht auf einer Tafel - darum der andere
+   Rollensatz. Mit --tinte-leise stuende sie hier bei 2,16:1. */
+.jetzt-satz{margin:0 0 18px; padding:11px 15px;
+            background:var(--grund-tief); border-left:5px solid var(--akzent);
+            font-size:15px; color:var(--auf-grund-leise)}   /*  9,45:1 */
+.jetzt-satz b{color:var(--auf-grund)}                       /* 17,39:1 */
+
+/* Die jetzt-Linie laeuft ueber ALLE Zeilen, nicht nur ueber die Achse: sie ist
+   der Bezug fuer vierzehn Balken, nicht fuer einen. Von der Check-in-Marke
+   getrennt durch die FORM - durchgezogen mit Dreieck gegen gestrichelt mit
+   Chip -, nicht durch die Farbe. Zwei Bedeutungen, die sich nur im Farbton
+   unterscheiden, sind eine Bedeutung. */
+.skala{position:relative}
+.jetzt-linie{position:absolute; top:0; bottom:0; width:2px; z-index:2;
+             background:var(--akzent-text); pointer-events:none}  /* 6,12:1 */
+.jetzt-linie::before{content:""; position:absolute; top:0; left:-5px;
+  border-left:6px solid transparent; border-right:6px solid transparent;
+  border-top:8px solid var(--akzent-text)}
+.jetzt-linie b{position:absolute; top:9px; left:5px; white-space:nowrap;
+               font-family:var(--wert); font-size:10.5px; letter-spacing:.2px;
+               font-variant-numeric:tabular-nums;
+               padding:2px 5px; background:var(--akzent-text);
+               color:var(--flaeche); font-weight:700}      /* 6,00:1 */
+
+/* Was vorbei ist, tritt zurueck - und die Tafel schrumpft im Tagesverlauf von
+   vierzehn brauchbaren Verbindungen auf sechs auf zwei, ohne dass jemand sie
+   anfasst. Nicht ausblenden: eine Verbindung, die man gerade verpasst hat,
+   will man noch sehen koennen. */
+.verb--vorbei{opacity:.42}
+.verb--vorbei .verb-zeit b{border-color:var(--linie)}
+.verb--vorbei:hover{opacity:.75}
+
+/* --- Das Urteil traegt Farbe, nicht das Fahrzeug ---
+   Die Zugart steht schon im Schild; ihre Farbe unterscheidet also etwas, das
+   ohnehin dasteht. Nicht eingefaerbt war die Angabe, die es NIRGENDS sonst
+   gibt: die Wertung. Sie stand in 10 px --tinte-leise, der kleinsten und
+   blassesten Type des Reiters, waehrend die Abfahrtszeit ein 16-px-Feld mit
+   Rahmen bekam - die Wertung war als Fussnote gestaltet.
+
+   --gut/--gut-bg ist seit jeher gemessen und wurde auf diesem Reiter nirgends
+   benutzt. */
+.alt-flagge{font-size:11.5px; padding:4px 8px;
+            background:var(--gut-bg); color:var(--gut);      /* 5,25:1 */
+            border:2px solid var(--gut)}
+.alt-flagge--warn{background:var(--warn-bg); color:var(--warn);  /* 5,18:1 */
+                  border-color:var(--warn)}
+
+/* Das rote Dach des ICE. .spur-teil--fern hatte bis heute keine eigene Regel
+   und fiel auf das Schwarz zurueck - 69,5 % der Balkenflaeche lagen damit in
+   DERSELBEN Farbe wie jeder Rahmen der Seite. Das Dach trennt Fern- von
+   Regionalverkehr auf einen Blick, zitiert den Streifen, den ein ICE wirklich
+   traegt, und bringt keine neue Bedeutung mit. 5,95:1 auf --umriss. */
+.spur-teil--fern::before{background:none; height:4px; top:0; left:0; right:14px;
+  opacity:1; background:var(--akzent)}
+
+/* --- Hierarchie: nicht alle vierzehn sind gleich viel wert ---
+   Vierzehn Zeilen, alle exakt 119 px hoch und gleich schwer, boten keinen
+   Einstiegspunkt. Das Gewicht haengt am URTEIL in den Daten, nicht an einer
+   Empfehlung im Stylesheet - sonst zeigt die Seite auf eine Verbindung, die
+   die Daten laengst nicht mehr hergeben. */
+.verb--tipp{border-width:3px; box-shadow:var(--schatten-klein)}
+.verb--tipp .verb-zeit b{font-size:19px}
+
+/* ===================== Was dauerhaft laeuft ============================
+   Vier Bewegungen, die nicht beim Laden aufhoeren. Jede sitzt an einer Stelle,
+   an der sie etwas HEISST - der Gutachter hat drei davon abgelehnt, und seine
+   Gruende stehen bei jeder dabei. Die Entscheidung dagegen fiel bewusst.
+
+   Alle vier haengen am selben --bewegung. Bei prefers-reduced-motion steht
+   jede still, und der Ruhezustand ist vollstaendig: kein leerer Kasten,
+   nirgends. */
+
+/* --- 1. Der Lichtrahmen um die empfohlene Verbindung ---
+   Bauart aus Design_AIs border-beam-panel: der Ring ist ein Kegelverlauf, mit
+   zwei Masken auf den Rahmen beschnitten - deshalb ist die Dicke ein PADDING
+   und keine border-width. Die Glut liegt als zweite, unscharfe Schicht darunter
+   und gehoert AUSSERHALB der Tafel; mit z-index:-1 innerhalb laege sie ueber
+   deren eigener Flaeche.
+
+   Ohne runde Ecken, anders als die Vorlage: die Bildsprache dieses Projekts
+   kennt keine (knowledge/design). Uebernommen wird das Muster, nicht die Haut.
+
+   Welche Zeile ihn traegt, steht in den DATEN (empfohlen: true) - im
+   Stylesheet stuende eine Empfehlung, die die Recherche laengst ueberholt hat. */
+@property --bb-winkel { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes bb-dreht { to { --bb-winkel: 360deg } }
+
+.verb{position:relative}
+.bb-ring, .bb-glut{opacity:0; transition:opacity calc(var(--bewegung) * 400ms + 1ms) ease-out}
+.verb--tipp .bb-ring{opacity:1}
+.bb-ring, .bb-glut{
+  position:absolute; inset:-6px; pointer-events:none; z-index:0;
+  /* Der Komet laeuft von fast nichts in einen harten Kopf und faellt dahinter
+     ab. Die Schweifspitze ist 6 % der Kometenfarbe und NICHT transparent:
+     transparent ist rgba(0,0,0,0), und ein Verlauf dorthin kippt sichtbar ins
+     Graue - der Hinweis stammt aus der Vorlage und stimmt. */
+  background:conic-gradient(from var(--bb-winkel),
+    color-mix(in srgb, var(--akzent) 6%, transparent) 0deg,
+    color-mix(in srgb, var(--akzent) 45%, transparent) 40deg,
+    color-mix(in srgb, var(--akzent) 85%, transparent) 62deg,
+    var(--saum) 72deg,
+    var(--akzent) 78deg,
+    color-mix(in srgb, var(--akzent) 6%, transparent) 96deg,
+    color-mix(in srgb, var(--akzent) 6%, transparent) 360deg);
+  animation:bb-dreht calc(var(--bewegung) * 3800ms + 1ms) linear infinite}
+.bb-ring{
+  padding:6px;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite:exclude}
+.verb--tipp .bb-glut{filter:blur(16px); opacity:.55}
+/* Der Inhalt liegt ueber dem Ring, sonst malt der Kegelverlauf ueber die
+   Tafel statt um sie. */
+.verb--tipp > summary, .verb--tipp > .verb-tief{position:relative; z-index:1}
+@media (forced-colors: active){
+  .bb-ring, .bb-glut{display:none}
+  .verb--tipp{border-color:CanvasText}
+}
+
+/* --- 2. Der Streifen wandert im Zugbalken ---
+   Ein fahrender Zug faehrt. Das Fensterband bewegt sich langsam nach rechts -
+   dieselbe Richtung wie die Zeitachse. 9 s je Durchlauf: schnell genug, um
+   sichtbar zu sein, langsam genug, um beim Lesen nicht zu stoeren. */
+@keyframes zug-faehrt { to { background-position:16px 0 } }
+.spur-teil--zug::before{animation:zug-faehrt calc(var(--bewegung) * 9000ms + 1ms)
+                                  linear infinite}
+
+/* --- 3. Die jetzt-Linie atmet ---
+   Ehrlich, weil dort wirklich etwas laeuft: eine Uhr. Nur die Deckkraft, nicht
+   die Groesse - eine wachsende Linie waere eine Zeitspanne, und das ist sie
+   nicht. Sichtbar erst am Reisetag, vorher liegt jetzt ausserhalb der Skala. */
+@keyframes jetzt-atmet { 50% { opacity:.55 } }
+.jetzt-linie{animation:jetzt-atmet calc(var(--bewegung) * 2400ms + 1ms)
+                       ease-in-out infinite}
+
+/* --- 4. Der Grund bewegt sich ---
+   Der Gutachter lehnt das ab: der Ziegelgrund solle still sein, damit die
+   Tafeln als Papier lesbar bleiben. Dagegen entschieden - aber in der
+   sparsamsten Form, die es gibt: zwei weiche Verlaufsflecken, die wandern.
+   Kein Canvas, keine Bildrate, kein Akku - der Browser bewegt zwei
+   Hintergrundpositionen.
+
+   Nur auf DIESEM Reiter (#feld-bahn), nicht auf der ganzen Seite: die Karte
+   braucht einen ruhigen Grund, damit die Marken darauf lesbar bleiben.
+   Deckkraft so niedrig, dass der Grund messbar --grund bleibt; die Werte
+   darauf sind gegen --grund gemessen und duerfen nicht wandern. */
+@keyframes grund-zieht {
+  to { background-position:120% 40%, -20% 70% }
+}
+#feld-bahn{position:relative; isolation:isolate}
+#feld-bahn::before{
+  /* Seitlich auf 0, nicht auf -20px: der Verlauf schob die Seite bei 320 px
+     um 6 px ueber den Rand. Ein Hintergrund, der die Seite breiter macht,
+     ist keiner. */
+  content:""; position:absolute; inset:-40px 0; z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(38% 30% at 10% 20%,
+      color-mix(in srgb, var(--akzent) 7%, transparent), transparent 70%),
+    radial-gradient(32% 26% at 90% 80%,
+      color-mix(in srgb, var(--m-ubahn) 9%, transparent), transparent 70%);
+  background-repeat:no-repeat;
+  background-position:-20% 20%, 120% 80%;
+  animation:grund-zieht calc(var(--bewegung) * 38000ms + 1ms)
+            ease-in-out infinite alternate}
+
+/* ===================== Hinweise im Popover =============================
+   Die Erklaertexte lagen als Absaetze in der Tafel und machten aus zwoelf
+   Zeilen eine Textwand: der Robustheitsabsatz allein ist je Verbindung rund
+   200 Zeichen. Sie stecken jetzt hinter einem Knopf.
+
+   Natives popover, nicht selbst gebaut: Escape schliesst, ein Klick daneben
+   schliesst, der Fokus kehrt zum Knopf zurueck, und das Panel liegt in der
+   obersten Ebene - es wird also von keiner Tafel und keinem Lichtrahmen
+   ueberdeckt. */
+.info-knopf{
+  display:inline-flex; align-items:center; justify-content:center;
+  /* 28px: WCAG 2.2 verlangt 24, pruef-breite.mjs meldet alles unter 44 als
+     unbequem. 28 ist der Kompromiss - groesser wuerde der Knopf neben einer
+     12px-Flagge zum eigenen Bedienelement statt zur Fussnote. */
+  width:28px; height:28px; flex:none; cursor:pointer;
+  font-family:var(--sans); font-weight:700; font-size:12px; font-style:italic;
+  background:var(--flaeche-2); color:var(--tinte-leise);      /* 6,50:1 */
+  border:2px solid var(--linie)}
+.info-knopf:hover{background:var(--tinte-leise); color:var(--flaeche);
+                  border-color:var(--tinte-leise)}            /* 6,50:1 */
+
+.pop{
+  margin:auto; max-width:46ch; padding:16px 18px;
+  background:var(--flaeche); color:var(--tinte);              /* 16,87:1 */
+  border:var(--rand) solid var(--umriss); box-shadow:var(--schatten)}
+.pop p{margin:0; font-size:14px; line-height:1.55}
+.pop-titel{margin:0 0 8px; font-family:var(--zahl); font-size:10.5px;
+           letter-spacing:.5px; text-transform:uppercase;
+           color:var(--tinte-leise)}                          /* 6,50:1 */
+.pop::backdrop{background:rgba(23, 4, 10, .55)}
+
+/* Ohne Popover-Unterstuetzung bleibt der Text SICHTBAR statt zu verschwinden.
+   Ein Hinweis, den ein aelterer Browser verschluckt, ist schlimmer als einer,
+   der dort einfach als Absatz dasteht - und genau das passiert ohne diese
+   Regel, weil [popover] per Voreinstellung display:none traegt. */
+@supports not selector(:popover-open){
+  .info-knopf{display:none}
+  .pop{display:block; max-width:58ch; margin:12px 0 0; box-shadow:none;
+       border-width:0 0 0 4px; padding:10px 0 10px 14px;
+       background:none}
+}
+
+/* Zustandschip und sein Info-Knopf gehoeren zusammen: der Chip nennt den
+   Zustand, der Knopf erklaert ihn. Getrennt gesetzt wanderten sie auf schmalen
+   Geraeten in verschiedene Zeilen und sahen aus wie zwei Angaben. */
+.kopf-rechts{display:inline-flex; align-items:center; gap:8px}
+
+/* ===================== Auslastung =====================================
+   Drei Balken, gefuellt bis zur Stufe, plus das Wort daneben. Die Farbe ist
+   nie der einzige Traeger (WCAG 1.4.1): die Anzahl gefuellter Balken sagt
+   dasselbe, und wer die Toene nicht unterscheidet, liest die Form.
+
+   Alle drei am 09.09.2026 gegen --flaeche gemessen: gering 5,86:1, mittel
+   5,44:1, hoch 5,86:1. --m-ankunft trug bisher die Ankunftsmarke auf der
+   Karte; hier steht es fuer die mittlere Stufe, und beide Bedeutungen
+   begegnen sich nie auf derselben Flaeche. */
+.last{display:inline-flex; align-items:center; gap:6px;
+      font-family:var(--zahl); font-size:10.5px; letter-spacing:.4px;
+      text-transform:uppercase}
+.last-zeichen{display:inline-flex; align-items:flex-end; gap:2px; height:13px}
+.last-balken{width:4px; background:var(--linie)}
+.last-balken:nth-child(1){height:6px}
+.last-balken:nth-child(2){height:9px}
+.last-balken:nth-child(3){height:13px}
+.last--1{color:var(--gut)}                     /* 5,86:1 */
+.last--1 .last-balken--an{background:var(--gut)}
+.last--2{color:var(--m-ankunft)}               /* 5,44:1 */
+.last--2 .last-balken--an{background:var(--m-ankunft)}
+.last--3{color:var(--warn)}                    /* 5,86:1 */
+.last--3 .last-balken--an{background:var(--warn)}
+
+/* ===================== Der Bahn-Reiter am Telefon ======================
+   Unter 640 px traegt die gemeinsame Zeitachse nicht mehr. Gemessen bei
+   390 px: dreizehn Stundenmarken brauchen 13 x 36 = 468 px, vorhanden sind
+   rund 300 - im Bild steht ein Strich "12:0013:0014:00". Zugnummern brachen
+   zu "ICE 5" ab, und die Tafel lief rechts aus dem Bild.
+
+   Die Achse geht deshalb weg, statt sie zu quetschen. Am Telefon ist der
+   Vergleich ueber zwoelf Zeilen ohnehin nicht die Frage - die Frage ist
+   "welche nehme ich jetzt". Was bleibt, ist eine Liste: Zeiten gross, Dauer
+   und Umstieg darunter, und der Balken als schmaler Streifen, der nur noch
+   Lage und Laenge zeigt. */
+@media (max-width:640px){
+  /* 92ch sind bei 16 px rund 740 px. Der Wert galt fuer die Zeitachse; ohne
+     sie schnuert er die Tafel nur noch ueber den Bildschirmrand hinaus. */
+  .fahrt{max-width:100%; padding:14px 13px; overflow-wrap:anywhere}
+
+  .achse{display:none}
+  .spur{height:14px; margin:0 0 10px}
+  .spur-teil{height:14px; padding:0; gap:0}
+  .spur-teil--zug{padding-right:6px;
+    clip-path:polygon(0 0, calc(100% - 5px) 0, 100% 45%, 100% 100%, 0 100%)}
+  /* Beschriftung raus: bei 300 px Spur ist der laengste Abschnitt 90 px
+     breit, und ein Schild braucht 80. Was drinstuende, waere angeschnitten. */
+  .spur-teil > *{display:none}
+  .spur-teil--zug::before{top:3px; height:3px; left:3px; right:8px}
+  .spur-teil--zug::after{display:none}
+  .spur-teil--ums{top:2px; height:10px; border-width:1px}
+  .spur-marke{display:none}
+  .jetzt-linie b{display:none}
+
+  /* Die Kennzahlen untereinander statt in einer Zeile, die umbricht. */
+  .verb-zeile{padding:0 0 8px; gap:4px 10px}
+  .verb-zeit b{font-size:19px; padding:5px 9px}
+  .verb-weg{flex:0 0 100%; font-size:13px}
+  .alt-flagge{margin-left:0}
+  .verb-kopf{padding:11px 12px 2px}
+  .verb-tief{padding:12px}
+
+  /* Etappen: Zug, Weg und Gleis untereinander - nebeneinander bleiben von
+     "Bruchsal 12:51 Gl. 3" nur noch Fragmente. */
+  .etappe-weg{flex-direction:column; align-items:flex-start; gap:4px}
+  .etappe-halt{flex-wrap:wrap}
+  .band--tief{--sp1:66px; --sp2:12px; --spalt:6px}
+
+  /* Der Wagenriss skaliert mit, die Sitze stehen nebeneinander. */
+  .fahrt-kacheln{grid-template-columns:1fr}
+  .kenn{grid-template-columns:auto minmax(0,1fr)}
+  .kenn dd{overflow-wrap:anywhere}
+
+  /* Das Streckenband der gebuchten Fahrt: schmalere Zeitspalte. */
+  .band{--sp1:52px; --sp2:18px; --spalt:8px}
+  .band-ort{font-size:15px}
+  .band-mitte{gap:6px 8px}
+
+  /* Der Lichtrahmen laeuft am Telefon nicht: er kostet dauerhaft Rechenzeit
+     fuer eine Hervorhebung, die auf 390 px ohnehin die halbe Breite einnimmt.
+     Die markierte Zeile behaelt ihren dicken Rand. */
+  .bb-ring, .bb-glut{display:none}
+  .verb--tipp{border-color:var(--akzent-text)}          /* 6,12:1 */
+}
+
+/* Nachtrag zum Telefon-Block: was innerhalb der Tafel ueberlaeuft.
+   Der Statuschip stand bei 390 px als "FÄLLT" da - abgeschnitten, nicht
+   umgebrochen -, und die Ticketwerte reichten bis an die Kante. Die Tafel
+   selbst war dabei nicht zu breit; ihre KINDER waren es. */
+@media (max-width:640px){
+  /* Kopf untereinander statt nebeneinander: Richtung und Zustand teilen sich
+     sonst 360 px, und beide brauchen mehr. */
+  .fahrt-kopf{flex-direction:column; align-items:flex-start; gap:8px}
+  .kopf-rechts{flex-wrap:wrap}
+  .fahrt-richtung{font-size:17px}
+
+  /* Kein Kind ragt ueber die Tafel hinaus. OHNE min-width:0 und ohne
+     overflow:hidden auf .skala - beides stand hier einen Versuch lang und
+     liess den Reiter leer erscheinen: min-width:0 erlaubt Flex- und
+     Grid-Kindern, auf null zu schrumpfen, und overflow:hidden beschnitt die
+     Zeilen, solange ihre Einfahr-Animation sie noch links ausserhalb haelt. */
+  .fahrt > *, .etappe, .kachel, .platz{max-width:100%}
+  .spur{overflow:hidden}
+
+  /* Die Gleisspalte des Streckenbands faellt unter die Zeile statt eine
+     vierte Spalte zu verlangen. */
+  .band-halt{grid-template-columns:var(--sp1) var(--sp2) minmax(0,1fr)}
+  .band-gleis{grid-column:3; justify-self:start; margin-top:2px}
+
+  /* Lange Werte brechen, statt die Spalte aufzuspannen. */
+  .kenn dt{white-space:normal}
+  .verb-tab, .tab-rahmen{max-width:100%}
+  .alt-stand, .wie-inhalt, .alt-raus{max-width:100%}
+}
+
+/* Die Menueleiste bei sechs Eintraegen ---------------------------------------
+   Der Kommentar oben im Stylesheet sagt es vorher: "ab etwa fuenf Eintraegen
+   reicht der Umbruch nicht mehr". Mit Karte, Hotel, Innenstadt, Bavaria, Bahn
+   und Quellen sind es sechs, und bei 390 px schob die Leiste die GANZE Seite
+   ueber den Rand - jeder Reiter darunter war dadurch nach rechts verschoben,
+   nicht nur der Bahn-Reiter.
+
+   Kein Schieben und kein Ausklappmenue, sondern das Naheliegende: die Schrift
+   wird kleiner und das Innenmass knapper, bis drei Eintraege je Zeile passen.
+   Die Bildsprache bleibt unangetastet. */
+@media (max-width:640px){
+  .menue-liste{gap:4px}
+  .menue-eintrag{flex:1 1 31%}
+  .menue-seite{padding:9px 6px; font-size:14px; white-space:normal;
+               text-align:center}
+}
+@media (max-width:380px){
+  .menue-seite{font-size:13px; padding:8px 4px}
+}
+
+/* ===================== Zwei Termine untereinander =========================
+   Der Termine-Reiter traegt BEIDE Termine, nicht einen hinter einem dritten
+   Untermenue. Die Begruendung steht in index.html; hier steht nur, was sie
+   optisch trennt.
+
+   Getrennt wird ueber ABSTAND und eine Linie, nicht ueber eine zweite
+   Tafelfarbe: beide Termine sind gleichrangig, und zwei verschiedene Gruende
+   wuerden behaupten, einer sei wichtiger. Die Linie ist dekorativ und darum von
+   WCAG 1.4.11 ausgenommen - sie traegt keine Auskunft, die nicht auch in der
+   Ueberschrift stuende. */
+.termin-block + .termin-block{
+  margin-top:3.25rem; padding-top:2.25rem;
+  border-top:var(--rand) solid var(--linie)}
+
+/* Zweite Ebene: kleiner als die Reiterueberschrift, aber deutlich groesser als
+   .tafel-titel darunter. Ohne diese Stufe standen "Die beiden Termine" und
+   "Freitag · Wer stiehlt mir die Show" gleich gross untereinander und sahen
+   aus wie zwei Reiter statt wie Ueberschrift und Abschnitt. */
+.ansicht-titel--zwei{
+  font-size:clamp(1.15rem,3.6vw,1.5rem); margin-top:0; margin-bottom:.9rem;
+  color:var(--auf-grund)}
