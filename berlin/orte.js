@@ -1041,20 +1041,19 @@ const DATEN = {
    }
   },
   "anzahl": {
-   "lokale": 29,
+   "lokale": 27,
    "je_gruppe": {
-    "umkreis": 14,
+    "umkreis": 12,
     "einkauf": 8,
-    "burger": 7
+    "klassiker": 3,
+    "fruehstueck": 1,
+    "spaet": 3
    },
    "halte": 38
   },
   "kuratiert": {
    "dateien": [
-    "berlin-wirtshaeuser.json",
-    "berlin-fruehstueck.json",
-    "berlin-essen.json",
-    "berlin-fastfood.json"
+    "berlin-essen.json"
    ],
    "geprueft": [
     "letzte-instanz",
@@ -1156,7 +1155,7 @@ const DATEN = {
     "gruppe": "umkreis",
     "art": "Historische Sehenswürdigkeit",
     "bewertung": 4.4,
-    "stimmen": 53263,
+    "stimmen": 53265,
     "preis": null,
     "adresse": "Panoramastraße 1A, 10178 Berlin, Deutschland",
     "web": "https://tv-turm.de/?utm_source=google&utm_medium=organic&utm_campaign=gmb-website&utm_content=website_button",
@@ -1170,7 +1169,7 @@ const DATEN = {
    {
     "id": "ChIJ1WEbzyNOqEcRKqrOGWDKPMs",
     "name": "Zur Letzten Instanz",
-    "gruppe": "burger",
+    "gruppe": "klassiker",
     "art": "Deutsches Restaurant",
     "bewertung": 4.2,
     "stimmen": 3519,
@@ -1184,7 +1183,7 @@ const DATEN = {
     "kuratiert": {
      "id": "letzte-instanz",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "klassiker",
      "notiz": "Seit 1621 am selben Ort und damit Berlins älteste Gaststätte — sieben Gehminuten vom Hotel. Berliner Küche in der Form, in der sie gemeint ist: Eisbein, Bulette, Leber Berliner Art."
     },
     "gehzeit_s": 574,
@@ -1227,23 +1226,6 @@ const DATEN = {
    {
     "id": "ChIJ3z5s5B9OqEcRNhTDwzwxE-M",
     "name": "Kaufland Berlin-Mitte",
-    "gruppe": "umkreis",
-    "art": "Supermarkt",
-    "bewertung": 4.2,
-    "stimmen": 5827,
-    "preis": null,
-    "adresse": "Parkplatz über Rochstraße zu erreichen, Karl-Liebknecht-Str. 13, 10178 Berlin, Deutschland",
-    "web": "https://filiale.kaufland.de/service/filiale/berlin-mitte-8920.html?cid=de:loc:google_2000000006525",
-    "maps": "https://maps.google.com/?cid=16362476008219284534&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 52.522327,
-    "lon": 13.40808,
-    "meter": 425,
-    "gehzeit_s": 456,
-    "gehweg_m": 532
-   },
-   {
-    "id": "ChIJ3z5s5B9OqEcRNhTDwzwxE-M",
-    "name": "Kaufland Berlin-Mitte",
     "gruppe": "einkauf",
     "art": "Supermarkt",
     "bewertung": 4.2,
@@ -1278,7 +1260,7 @@ const DATEN = {
    {
     "id": "ChIJbbG87CBOqEcR7bME-DQiD5o",
     "name": "Zum Nußbaum",
-    "gruppe": "burger",
+    "gruppe": "klassiker",
     "art": "Restaurant",
     "bewertung": 4.3,
     "stimmen": 2160,
@@ -1292,7 +1274,7 @@ const DATEN = {
     "kuratiert": {
      "id": "nussbaum",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "klassiker",
      "notiz": "Nachbau der 1571er Eckkneipe im Nikolaiviertel, Stammlokal von Zille und Heinrich Zille zugeschrieben. Klein, voll, kein Platz für Gruppen."
     },
     "gehzeit_s": 535,
@@ -1369,7 +1351,7 @@ const DATEN = {
    {
     "id": "ChIJ9doHMh5OqEcRpBuTy_JIHzY",
     "name": "Dolores Mitte",
-    "gruppe": "burger",
+    "gruppe": "spaet",
     "art": "Burrito-Restaurant",
     "bewertung": 4.3,
     "stimmen": 5982,
@@ -1383,7 +1365,7 @@ const DATEN = {
     "kuratiert": {
      "id": "dolores",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "spaet",
      "notiz": "Burritos zwischen Alexanderplatz und Rosenthaler Platz, schnell und spät."
     },
     "gehzeit_s": 559,
@@ -1409,7 +1391,7 @@ const DATEN = {
    {
     "id": "ChIJg600riBOqEcRzc4UWMI-Ikg",
     "name": "Brauhaus GEORGBRAEU",
-    "gruppe": "burger",
+    "gruppe": "klassiker",
     "art": "Restaurant",
     "bewertung": 4.2,
     "stimmen": 9234,
@@ -1423,7 +1405,7 @@ const DATEN = {
     "kuratiert": {
      "id": "georgbraeu",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "klassiker",
      "notiz": "Hausbrauerei im Nikolaiviertel, direkt an der Spree. Der kürzeste Weg vom Hotel zu einem Bier mit Aussicht."
     },
     "gehzeit_s": 689,
@@ -1432,7 +1414,7 @@ const DATEN = {
    {
     "id": "ChIJA3tAkR5OqEcRHQ3BP-tASds",
     "name": "Hofbräu Wirtshaus Berlin",
-    "gruppe": "burger",
+    "gruppe": "spaet",
     "art": "Deutsches Restaurant",
     "bewertung": 4.3,
     "stimmen": 30231,
@@ -1446,7 +1428,7 @@ const DATEN = {
     "kuratiert": {
      "id": "hofbraeu-berlin",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "spaet",
      "notiz": "Direkt am Alexanderplatz, fünf Gehminuten vom Hotel, große Küche bis spät."
     },
     "gehzeit_s": 742,
@@ -1489,7 +1471,7 @@ const DATEN = {
    {
     "id": "ChIJUzrhW-BRqEcRNf2pK9EYCZ4",
     "name": "Das Lemke - Biergarten, Brauerei, deutsche Küche",
-    "gruppe": "burger",
+    "gruppe": "spaet",
     "art": "Deutsches Restaurant",
     "bewertung": 4.4,
     "stimmen": 4538,
@@ -1503,7 +1485,7 @@ const DATEN = {
     "kuratiert": {
      "id": "brauhaus-lemke",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "spaet",
      "notiz": "Hausbrauerei unter den S-Bahn-Bögen am Alexanderplatz, vier Gehminuten vom Hotel. Eigenes Bier, deftige Karte, spät offen."
     },
     "gehzeit_s": 727,
@@ -1512,24 +1494,7 @@ const DATEN = {
    {
     "id": "ChIJtRsiyuFRqEcRsw5mphvL8Jw",
     "name": "Father Carpenter",
-    "gruppe": "umkreis",
-    "art": "Frühstückslokal",
-    "bewertung": 4.4,
-    "stimmen": 4566,
-    "preis": "PRICE_LEVEL_MODERATE",
-    "adresse": "Münzstraße 21, 10178 Berlin, Deutschland",
-    "web": "http://www.fathercarpenter.com/",
-    "maps": "https://maps.google.com/?cid=11308761983943577267&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-    "lat": 52.524487,
-    "lon": 13.406528,
-    "meter": 677,
-    "gehzeit_s": 750,
-    "gehweg_m": 899
-   },
-   {
-    "id": "ChIJtRsiyuFRqEcRsw5mphvL8Jw",
-    "name": "Father Carpenter",
-    "gruppe": "burger",
+    "gruppe": "fruehstueck",
     "art": "Frühstückslokal",
     "bewertung": 4.4,
     "stimmen": 4566,
@@ -1543,7 +1508,7 @@ const DATEN = {
     "kuratiert": {
      "id": "father-carpenter",
      "datei": "berlin-essen.json",
-     "kueche": "burger",
+     "kategorie": "fruehstueck",
      "notiz": "Im Innenhof hinter der Münzstraße. Kleine Karte, guter Kaffee, im Winter drinnen eng."
     },
     "gehzeit_s": 750,
@@ -21994,19 +21959,16 @@ const DATEN = {
      }
     },
     "anzahl": {
-     "lokale": 18,
+     "lokale": 17,
      "je_gruppe": {
-      "umkreis": 15,
+      "umkreis": 14,
       "einkauf": 3
      },
      "halte": 13
     },
     "kuratiert": {
      "dateien": [
-      "berlin-wirtshaeuser.json",
-      "berlin-fruehstueck.json",
-      "berlin-essen.json",
-      "berlin-fastfood.json"
+      "berlin-essen.json"
      ],
      "geprueft": [],
      "drin": 0,
@@ -22243,23 +22205,6 @@ const DATEN = {
       "meter": 602,
       "gehzeit_s": 758,
       "gehweg_m": 907
-     },
-     {
-      "id": "ChIJC2SkmC9GqEcRwaGDsx9zVFo",
-      "name": "Kaufland Berlin-Adlershof",
-      "gruppe": "umkreis",
-      "art": "Supermarkt",
-      "bewertung": 4.2,
-      "stimmen": 5173,
-      "preis": null,
-      "adresse": "Rudower Ch 12, 12489 Berlin-Bezirk Treptow-Köpenick, Deutschland",
-      "web": "https://filiale.kaufland.de/service/filiale/berlin-adlershof-adlershofer-tor-6750.html?cid=de:loc:google_2000000006525",
-      "maps": "https://maps.google.com/?cid=6508953941450138049&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-      "lat": 52.432928,
-      "lon": 13.5357,
-      "meter": 606,
-      "gehzeit_s": 523,
-      "gehweg_m": 617
      },
      {
       "id": "ChIJC2SkmC9GqEcRwaGDsx9zVFo",
@@ -26404,7 +26349,7 @@ const DATEN = {
      "entspricht": "höchstens 15 Minuten zu Fuß, je Punkt einzeln gemessen",
      "art": "Fußweg",
      "ueber_der_grenze": {
-      "lokale": 24,
+      "lokale": 23,
       "halte": 15
      },
      "ohne_route": 0
@@ -26432,20 +26377,17 @@ const DATEN = {
      }
     },
     "anzahl": {
-     "lokale": 24,
+     "lokale": 19,
      "je_gruppe": {
-      "umkreis": 21,
+      "umkreis": 16,
       "einkauf": 2,
-      "burger": 1
+      "luecke": 1
      },
      "halte": 17
     },
     "kuratiert": {
      "dateien": [
-      "berlin-wirtshaeuser.json",
-      "berlin-fruehstueck.json",
-      "berlin-essen.json",
-      "berlin-fastfood.json"
+      "berlin-essen.json"
      ],
      "geprueft": [
       "schusterjunge",
@@ -26503,23 +26445,6 @@ const DATEN = {
       "gehweg_m": 575
      },
      {
-      "id": "ChIJD7lrP-lNqEcRmLwVuk5crTU",
-      "name": "amatō",
-      "gruppe": "umkreis",
-      "art": "Café",
-      "bewertung": 4.7,
-      "stimmen": 405,
-      "preis": "PRICE_LEVEL_INEXPENSIVE",
-      "adresse": "Dunckerstraße 69, 10437 Berlin, Deutschland",
-      "web": "https://amatoberlin.com/",
-      "maps": "https://maps.google.com/?cid=3867849148180315288&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-      "lat": 52.545179,
-      "lon": 13.422824,
-      "meter": 431,
-      "gehzeit_s": 492,
-      "gehweg_m": 575
-     },
-     {
       "id": "ChIJfwl8AQBNqEcRKDbA_PT74a4",
       "name": "luuv café",
       "gruppe": "umkreis",
@@ -26552,23 +26477,6 @@ const DATEN = {
       "meter": 475,
       "gehzeit_s": 599,
       "gehweg_m": 702
-     },
-     {
-      "id": "ChIJ9de82QNPqEcRynEqJb05UtQ",
-      "name": "Easy Peasy",
-      "gruppe": "umkreis",
-      "art": "Veganes Restaurant",
-      "bewertung": 4.7,
-      "stimmen": 758,
-      "preis": "PRICE_LEVEL_MODERATE",
-      "adresse": "Wichertstraße 33a, 10439 Berlin-Bezirk Pankow, Deutschland",
-      "web": "https://www.easypeasyberlin.de/",
-      "maps": "https://maps.google.com/?cid=15299354368666137034&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-      "lat": 52.546928,
-      "lon": 13.424469,
-      "meter": 498,
-      "gehzeit_s": 545,
-      "gehweg_m": 640
      },
      {
       "id": "ChIJ9de82QNPqEcRynEqJb05UtQ",
@@ -26656,23 +26564,6 @@ const DATEN = {
       "gehweg_m": 864
      },
      {
-      "id": "ChIJkdsxhf9NqEcROqrpU0E2Wdo",
-      "name": "Wohnzimmerbar",
-      "gruppe": "umkreis",
-      "art": "Bar",
-      "bewertung": 4.5,
-      "stimmen": 1517,
-      "preis": "PRICE_LEVEL_MODERATE",
-      "adresse": "Lettestraße 6, 10437 Berlin-Bezirk Pankow, Deutschland",
-      "web": "http://www.wohnzimmer-bar.de/",
-      "maps": "https://maps.google.com/?cid=15733666427404134970&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-      "lat": 52.543472,
-      "lon": 13.419219,
-      "meter": 606,
-      "gehzeit_s": 727,
-      "gehweg_m": 864
-     },
-     {
       "id": "ChIJ2e7PZpJTqEcRpVfEzMBq8os",
       "name": "GEMELLO",
       "gruppe": "umkreis",
@@ -26741,23 +26632,6 @@ const DATEN = {
       "gehweg_m": 965
      },
      {
-      "id": "ChIJNU2eaKxNqEcRFIFM7gsHG_I",
-      "name": "Ewig Freunde",
-      "gruppe": "umkreis",
-      "art": "Restaurant",
-      "bewertung": 4.8,
-      "stimmen": 1368,
-      "preis": "PRICE_LEVEL_MODERATE",
-      "adresse": "Raumerstraße 9, 10437 Berlin, Deutschland",
-      "web": "https://www.ewigfreunde.com/",
-      "maps": "https://maps.google.com/?cid=17445545329373774100&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-      "lat": 52.542794,
-      "lon": 13.418077,
-      "meter": 682,
-      "gehzeit_s": 811,
-      "gehweg_m": 965
-     },
-     {
       "id": "ChIJ27HkwmxTqEcRVwHp-jUo4kY",
       "name": "Café Frieda",
       "gruppe": "umkreis",
@@ -26777,24 +26651,7 @@ const DATEN = {
      {
       "id": "ChIJld4fBgFOqEcR1gR_4gT6sfY",
       "name": "Café Anna Blume",
-      "gruppe": "umkreis",
-      "art": "Café",
-      "bewertung": 4.2,
-      "stimmen": 4171,
-      "preis": "PRICE_LEVEL_MODERATE",
-      "adresse": "Kollwitzstraße 83, 10435 Berlin-Bezirk Pankow, Deutschland",
-      "web": "http://www.cafe-anna-blume.de/",
-      "maps": "https://maps.google.com/?cid=17776264103094846678&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
-      "lat": 52.538057,
-      "lon": 13.41954,
-      "meter": 806,
-      "gehzeit_s": 897,
-      "gehweg_m": 1044
-     },
-     {
-      "id": "ChIJld4fBgFOqEcR1gR_4gT6sfY",
-      "name": "Café Anna Blume",
-      "gruppe": "burger",
+      "gruppe": "luecke",
       "art": "Café",
       "bewertung": 4.2,
       "stimmen": 4171,
@@ -26808,7 +26665,7 @@ const DATEN = {
       "kuratiert": {
        "id": "anna-blume-luecke",
        "datei": "berlin-essen.json",
-       "kueche": "burger",
+       "kategorie": "luecke",
        "notiz": "Auch abends offen, Kuchen und Wein. Der naheliegendste Ort für die Lücke."
       },
       "gehzeit_s": 897,

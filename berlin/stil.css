@@ -2159,3 +2159,12 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
 .ansicht-titel--zwei{
   font-size:clamp(1.15rem,3.6vw,1.5rem); margin-top:0; margin-bottom:.9rem;
   color:var(--auf-grund)}
+
+/* Die Haltestellen erscheinen erst ab Zoom 12 — bei 353 Halten im Stadtgebiet
+   ist das die Bedingung dafuer, dass die Startansicht lesbar bleibt. Die
+   Begruendung samt Messung steht an ZOOM_HALTE in karte.js.
+
+   display:none und nicht opacity oder visibility: eine Marke, die man nicht
+   sieht, aber antippen kann, ist schlimmer als eine sichtbare. Getroffen wird
+   die ganze Leaflet-Marke (.halt-marke), nicht nur das Zeichen darin. */
+.leaflet-container:not(.zeigt-halte) .halt-marke{display:none}

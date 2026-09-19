@@ -91,8 +91,29 @@
   var VERKEHR = {
     sbahn: { kuerzel: "S", label: "S-Bahn / DB" },
     ubahn: { kuerzel: "U", label: "U-Bahn" },
-    linie: { kuerzel: "T", label: "Tram" }
+    tram:  { kuerzel: "T", label: "Tram" }
   };
+
+  // Welches Zeichen und welche Farbe eine BENANNTE Linie traegt, haengt an
+  // ihrer Gattung - nicht an der Annahme, es sei eine Tram.
+  //
+  // Muenchen hatte genau eine benannte Linie, die Tram 25, und hat darum
+  // "T" und --m-tram fest verdrahtet. In Berlin sind es zwei, und eine davon
+  // ist die S9: sie stand dadurch mit rotem T und im Tram-Rot auf der Karte,
+  // also als Strassenbahn. Das ist kein Schoenheitsfehler, sondern eine
+  // falsche Auskunft - wer danach eine Tram sucht, sucht am Alexanderplatz
+  // eine Haltestelle, die es nicht gibt.
+  //
+  // Gefunden auf einem Rendering, nicht von einem Pruefskript: der Kontrast
+  // stimmte, die Marke sass richtig, nur die Gattung war falsch. Dieselbe
+  // Klasse wie die vier gruenen S-Bahn-Linien in Muenchen - ein Wert, der die
+  // Seite nicht leer macht, sondern falsch.
+  var LINIENART = {
+    light_rail: { art: "sbahn", kuerzel: "S", farbe: "--m-sbahn", label: "S-Bahn" },
+    subway:     { art: "ubahn", kuerzel: "U", farbe: "--m-ubahn", label: "U-Bahn" },
+    tram:       { art: "tram",  kuerzel: "T", farbe: "--m-tram",  label: "Tram" }
+  };
+  var linienArt = function (l) { return LINIENART[l.art] || LINIENART.tram; };
 
   // Die vier Gruppen des Mitte-Reiters. Sie tragen alle art "essen" und
   // unterscheiden sich ueber `kategorie` - eine Markenfarbe, vier Zeichen,
@@ -528,8 +549,29 @@
   function schilderSchalten() {
     karte.getContainer().classList.toggle("zeigt-schilder", karte.getZoom() >= ZOOM_LINIEN);
   }
+  // DIE HALTE SELBST erscheinen erst ab Stadtteil-Zoom, und das ist bei Berlin
+  // kein Feinschliff, sondern die Bedingung dafuer, dass die Karte benutzbar
+  // ist. Gemessen am 19.09.2026: 353 Halte im Stadtgebiet gegen Muenchens 143.
+  // Bei der Startzoomstufe 11 - noetig, weil Adlershof sonst aus dem Bild
+  // faellt - lagen die Buchstaben S, U und T in der Innenstadt als
+  // geschlossene Flaeche uebereinander. Weder pruef-farben.mjs noch
+  // pruef-breite.mjs konnten das sehen: die Farben stimmten, der Kontrast
+  // stimmte, es gab keinen Ueberhang und keinen Laufzeitfehler. Sichtbar wurde
+  // es erst auf einem Rendering.
+  //
+  // Das ist dieselbe Lehre, die Muenchens FALLEN.md an zwei Stellen zieht: die
+  // Skripte messen Farbe, Breite und Laufzeitfehler, aber nichts ueber die
+  // Bedienbarkeit einer gefuellten Karte.
+  //
+  // Geschaltet wird ueber eine Klasse am Behaelter, wie bei den Namen und den
+  // Schildern - NICHT ueber removeLayer: die Ebenen haengen an der
+  // Legendenleiste, und wer sie hier anfasst, kaempft beim naechsten Klick
+  // gegen seinen eigenen Zustand.
+  function haltenSchalten() {
+    karte.getContainer().classList.toggle("zeigt-halte", karte.getZoom() >= ZOOM_HALTE);
+  }
 
-  karte.on("zoomend", function () { namenSchalten(); schilderSchalten(); });
+  karte.on("zoomend", function () { namenSchalten(); schilderSchalten(); haltenSchalten(); });
 
   // --- Haltestellen: kleine Punkte, keine Beschriftung ---------------------
   // 143 beschriftete Kaesten wuerden die Karte zudecken und die sechs
@@ -553,6 +595,10 @@
   // Ortsnamen: an einem Knoten haengen bis zu sieben Schilder, und bei
   // Stadtzoom liegt das uebereinander statt nebeneinander.
   var ZOOM_LINIEN = 14;
+  // 12, also eine Stufe ueber dem Startzoom: bei 11 sieht man die Stadt und die
+  // Linienverlaeufe, ab 12 kommen die Halte dazu. Die Grenze ist gesetzt, nicht
+  // gemessen - gemessen ist nur, dass 11 nicht traegt.
+  var ZOOM_HALTE = 12;
   var haltMarken = [];
 
   var schild = function (h) {
@@ -568,7 +614,11 @@
     DATEN.bahn.halte.forEach(function (h) {
       var marke = L.marker([h.lat, h.lon], {
         icon: L.divIcon({
-          className: "",
+          // className statt "" - die ganze Marke muss ansprechbar sein, nicht
+          // nur ihr Inhalt: unter ZOOM_HALTE wird sie ausgeblendet, und ein
+          // verstecktes <i> in einer sichtbaren Kiste liesse eine unsichtbare
+          // Tastflaeche stehen.
+          className: "halt-marke",
           html: '<i class="halt-pin ' + h.art + '">' + VERKEHR[h.art].kuerzel + "</i>",
           // Muss zur Kantenlaenge in stil.css passen: Leaflet setzt den Anker
           // auf DIESE Kiste, waehrend das <i> darin seine eigene Groesse hat -
@@ -653,15 +703,17 @@
       // saehe aus wie eine echte Strecke.
       L.polyline(linie.verlauf, {
         // Dicker als das Netz darunter: die Linie ist hier nicht Orientierung,
-        // sondern die eine Verbindung, um die es geht.
-        color: token("--m-tram"), weight: 4.5, opacity: 1, interactive: false
+        // sondern die eine Verbindung, um die es geht. Die FARBE kommt aus der
+        // Gattung, nicht aus einer Annahme - siehe LINIENART.
+        color: token(linienArt(linie).farbe), weight: 4.5, opacity: 1, interactive: false
       }).addTo(g);
 
       linie.halte.forEach(function (h) {
         var m = L.marker([h.lat, h.lon], {
           icon: L.divIcon({
             className: "",
-            html: '<i class="halt-pin tram"><b>' + VERKEHR.linie.kuerzel + "</b></i>",
+            html: '<i class="halt-pin ' + linienArt(linie).art + '"><b>'
+                + linienArt(linie).kuerzel + "</b></i>",
             iconSize: [24, 24],
             iconAnchor: [12, 12]
           }),
@@ -670,8 +722,8 @@
         });
         m
           .addTo(g)
-          .bindPopup("<h3>" + h.name + "</h3><p>Tram " + linie.ref + " · " +
-            linie.von + " → " + linie.nach + "</p>" +
+          .bindPopup("<h3>" + h.name + "</h3><p>" + linienArt(linie).label + " "
+            + linie.ref + " · " + linie.von + " → " + linie.nach + "</p>" +
             linienBlock(h) +
             mapsLink(h) +
             '<p class="popup-fein">OSM ' + h.osm + "</p>");
@@ -684,9 +736,16 @@
       });
 
       g.addTo(karte);
-      kategorien.push({ id: "tram" + linie.ref, label: "Tram " + linie.ref + " → Filmstadt",
+      // Die Beschriftung nennt die Linie UND wozu sie da ist. Muenchen schrieb
+      // hier "→ Filmstadt" fest hinein; der Zweck steht aber je Linie in den
+      // Daten (`zweck` in berlin-nahverkehr.json) und ist bei zwei Linien
+      // nicht mehr derselbe. Gekuerzt auf das Ziel: die ganze Begruendung
+      // steht im Quellenreiter, eine Legendenzeile traegt sie nicht.
+      kategorien.push({ id: "linie" + linie.ref,
+                        label: linienArt(linie).label + " " + linie.ref + " → " + linie.nach,
                         zahl: linie.halte.length,
-                        marke: '<i class="halt-pin tram"><b>T</b></i>', ebene: g });
+                        marke: '<i class="halt-pin ' + linienArt(linie).art + '"><b>'
+                             + linienArt(linie).kuerzel + "</b></i>", ebene: g });
     });
   }
 
@@ -704,6 +763,7 @@
   if (punkte.length) karte.fitBounds(L.latLngBounds(punkte).pad(0.12));
   namenSchalten();
   schilderSchalten();
+  haltenSchalten();
 
   // --- Filterleiste ---------------------------------------------------------
   // Sie ist zugleich Legende: jeder Eintrag zeigt die Marke, die er auf der
@@ -873,7 +933,8 @@
       was: DATEN.bahn.quelle.abfrage + ". "
          + (DATEN.bahn.linien && DATEN.bahn.linien.length
              ? "Dazu " + DATEN.bahn.linien.map(function (l) {
-                 return "Tram " + l.ref + " (" + l.halte.length + " Halte, " + l.zweck.replace(/\.$/, "") + ")";
+                 var a = LINIENART[l.art] || LINIENART.tram;
+                 return a.label + " " + l.ref + " (" + l.halte.length + " Halte, " + l.zweck.replace(/\.$/, "") + ")";
                }).join(" und ") + ". "
              : "")
          + "Je Halt sind die Linien eingetragen, die dort laut OpenStreetMap halten; "
