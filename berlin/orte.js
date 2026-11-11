@@ -1,4 +1,4 @@
-// ERZEUGT von bau/bau-oeffentlich.mjs am 2026-09-19.
+// ERZEUGT von bau/bau-oeffentlich.mjs am 2026-11-11.
 // Nicht von Hand aendern — Quelle sind die JSON-Dateien in bau/.
 const DATEN = {
  "ziel": {
@@ -197,28 +197,25 @@ const DATEN = {
       "ort": "Mannheim Hbf",
       "an": "12:22",
       "ab": "12:30",
-      "gleis": "3",
+      "gleis": "2",
       "zwischen": true
      },
      {
       "ort": "Frankfurt (Main) Hbf",
       "an": "13:09",
       "ab": "13:15",
-      "gleis": "9",
       "zwischen": true
      },
      {
       "ort": "Hanau Hbf",
       "an": "13:28",
       "ab": "13:30",
-      "gleis": "7",
       "zwischen": true
      },
      {
       "ort": "Fulda",
       "an": "14:11",
       "ab": "14:13",
-      "gleis": "7",
       "zwischen": true
      },
      {
@@ -231,14 +228,6 @@ const DATEN = {
       "ort": "Halle (Saale) Hbf",
       "an": "16:03",
       "ab": "16:05",
-      "gleis": "7",
-      "zwischen": true
-     },
-     {
-      "ort": "Berlin Südkreuz",
-      "an": "17:10",
-      "ab": "17:12",
-      "gleis": "8",
       "zwischen": true
      },
      {
@@ -246,6 +235,13 @@ const DATEN = {
       "an": "17:17",
       "gleis": "7"
      }
+    ],
+    "_halte_11_11": [
+     "Abgleich 11.11.2026 18:16 (Transitous/MOTIS 2, Plandaten): Zeiten unveraendert,",
+     "Mannheim jetzt Gleis 2. Frankfurt, Hanau, Fulda und Halle fuehrt der Feed ohne",
+     "Gleis - die Werte vom 19.09. sind darum entfernt, nicht stehen gelassen.",
+     "Berlin Suedkreuz fehlt im Zuglauf; ob der Zug dort haelt, ist unbekannt, und",
+     "der Halt steht deshalb nicht mehr in der Liste."
     ],
     "ticket": {
      "art": "Super Sparpreis, 2. Klasse",
@@ -261,33 +257,35 @@ const DATEN = {
      "bereich": "Standardbereich"
     },
     "puenktlichkeit": {
-     "quote": 45,
-     "schnitt": "+16 min",
-     "strecke": "Brig – Berlin Hbf",
+     "quote": 32,
+     "schnitt": "+15 min",
+     "strecke": "Interlaken West – Berlin Hbf",
      "fenster": "30 Tage",
      "quelle": "zugfinder.net",
-     "abgerufen": "19.09.2026",
+     "abgerufen": "11.11.2026",
      "rang": "unverified",
-     "deutung": "Der Zug ist in Karlsruhe schon 3 h 55 unterwegs. Jede Störung auf dem Schweizer Abschnitt, an der Grenze in Basel oder auf der Rheinschiene liegt bereits im Zug, bevor wir einsteigen."
+     "deutung": "Der Zug ist in Karlsruhe schon 3 h 55 unterwegs. Jede Störung auf dem Schweizer Abschnitt, an der Grenze in Basel oder auf der Rheinschiene liegt bereits im Zug, bevor wir einsteigen. Am 19.09. waren es noch 45 % und Ø +16 min."
     },
     "alternativen": {
      "titel": "Wenn die Zugbindung fällt",
-     "lage": "Ab 20 Minuten erwarteter Verspätung in Berlin gilt das Ticket in jedem Zug dorthin — ohne Umbuchung, ohne Gebühr, ohne Bescheinigung. Die Reservierung verfällt dabei, der Fahrpreis nicht. Bei 45 % Pünktlichkeit und Ø +16 min ist das kein theoretischer Fall, und die Alternativen gehören deshalb vor die Abfahrt und nicht auf den Bahnsteig.",
+     "lage": "Ab 20 Minuten erwarteter Verspätung in Berlin gilt das Ticket in jedem DB-Zug dorthin — ohne Umbuchung, ohne Gebühr, ohne Bescheinigung. Nicht in FlixTrain. Die Reservierung verfällt, der Fahrpreis nicht. Aber: bis etwa +75 min Prognose ist Sitzenbleiben im ICE 372 schneller als jede Alternative. Die Liste zählt bei Ausfall, Teilausfall oder mehr als +75 min.",
+     "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 11.11.2026 18:15–18:21, Rang secondary · Pünktlichkeit zugfinder.net, 30-Tage-Mittel, abgerufen 11.11.2026, Rang unverified · Nur Plandaten — am Reisetag neu abfragen. Entfallen gegenüber dem 19.09.: ICE 1576 → ICE 751 (ICE 751 nicht mehr im Fahrplan). Störungslage 11.11.: kein Streik (GDL-Friedenspflicht bis 31.03.2028, DB), keine Sperrung auf der Strecke gefunden. Nicht geprüft: Schweizer Abschnitt, DB-Verkehrslage.",
      "marke": {
       "zeit": "15:00",
       "text": "Check-in möglich",
       "grund": "Motel One, Check-in ab 15:00. Keine der Alternativen kommt vorher an — ein Gepäckproblem gibt es am Anreisetag also nicht."
      },
      "regeln": [
-      "Umstieg nur in Frankfurt (Main) Hbf oder Erfurt Hbf",
-      "höchstens zwei Umstiege",
-      "Abfahrt Karlsruhe frühestens 12:00",
-      "nur Züge der DB — Fremdanbieter gelten mit diesem Ticket nicht"
+      "nur Züge der DB — FlixTrain gilt mit diesem Ticket nicht, auch nicht mit aufgehobener Zugbindung",
+      "mindestens 10 Minuten Umstieg",
+      "Umwege über Hannover nur bei Sperrung Fulda–Erfurt — darum nicht in der Liste",
+      "ICE 6 und ICE 370 kommen wie der ICE 372 über die Rheinschiene; unabhängig davon ist nur die S 9"
      ],
      "liste": [
       {
        "ab": "12:37",
        "an": "18:32",
+       "erwartet": "18:54",
        "dauer": "5 h 55",
        "umstiege": 1,
        "abschnitte": [
@@ -295,83 +293,119 @@ const DATEN = {
          "zug": "ICE 6",
          "von": "Karlsruhe Hbf",
          "ab": "12:37",
-         "gleis": "3",
+         "gleis_ab": "3",
          "nach": "Frankfurt (Main) Hbf",
-         "an": "13:40",
-         "gleis_an": "8"
+         "an": "13:40"
         },
         {
          "zug": "ICE 598",
          "von": "Frankfurt (Main) Hbf",
          "ab": "14:15",
-         "gleis": "9",
          "nach": "Berlin Hbf",
          "an": "18:32",
          "gleis_an": "5"
         }
        ],
-       "hinweis": "35 Minuten Umstieg in Frankfurt — die entspannteste der drei."
+       "umstieg": [
+        {
+         "ort": "Frankfurt (Main) Hbf",
+         "minuten": 35
+        }
+       ],
+       "robust": "Erste Wahl bei Ausfall des ICE 372, ab demselben Gleis 3. Umstiegsreserve +22 min (35 min minus Ø +13 des ICE 6). Gleise in Frankfurt nennt der Feed nicht. Kippt der Anschluss: ICE 370 ab Frankfurt 15:15, an 19:17.",
+       "hinweis": "erste Wahl"
       },
       {
        "ab": "12:37",
-       "an": "18:24",
-       "dauer": "5 h 47",
-       "umstiege": 2,
+       "an": "18:32",
+       "erwartet": "18:54",
+       "dauer": "5 h 55",
+       "umstiege": 1,
        "abschnitte": [
         {
          "zug": "ICE 6",
          "von": "Karlsruhe Hbf",
          "ab": "12:37",
-         "gleis": "3",
-         "nach": "Frankfurt (Main) Hbf",
-         "an": "13:40",
-         "gleis_an": "8"
+         "gleis_ab": "3",
+         "nach": "Mannheim Hbf",
+         "an": "13:00",
+         "gleis_an": "2"
         },
         {
          "zug": "ICE 598",
-         "von": "Frankfurt (Main) Hbf",
-         "ab": "14:15",
-         "gleis": "9",
-         "nach": "Erfurt Hbf",
-         "an": "16:27"
-        },
-        {
-         "zug": "ICE 1506",
-         "von": "Erfurt Hbf",
-         "ab": "16:46",
+         "von": "Mannheim Hbf",
+         "ab": "13:29",
+         "gleis_ab": "2",
          "nach": "Berlin Hbf",
-         "an": "18:24",
+         "an": "18:32",
          "gleis_an": "5"
         }
        ],
-       "hinweis": "Acht Minuten früher als die erste, dafür ein Umstieg mehr und nur 19 Minuten in Erfurt."
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 29
+        }
+       ],
+       "robust": "Dieselben Züge, Umstieg schon in Mannheim am selben Gleis 2. Reserve +16 min. Kippt der Anschluss: ICE 370 ab Mannheim 14:30, an 19:17.",
+       "hinweis": "gleiches Gleis"
       },
       {
-       "ab": "12:41",
-       "an": "18:54",
-       "dauer": "6 h 13",
+       "ab": "12:13",
+       "an": "18:32",
+       "erwartet": "18:54",
+       "dauer": "6 h 19",
        "umstiege": 1,
        "abschnitte": [
         {
-         "zug": "ICE 1576",
+         "zug": "S 9",
          "von": "Karlsruhe Hbf",
-         "ab": "12:41",
-         "gleis": "7",
-         "nach": "Frankfurt (Main) Hbf",
-         "an": "14:14",
+         "ab": "12:13",
+         "gleis_ab": "4",
+         "nach": "Mannheim Hbf",
+         "an": "13:08",
          "gleis_an": "11"
         },
         {
-         "zug": "ICE 751",
-         "von": "Frankfurt (Main) Hbf",
-         "ab": "15:02",
-         "gleis": "13",
+         "zug": "ICE 598",
+         "von": "Mannheim Hbf",
+         "ab": "13:29",
+         "gleis_ab": "2",
          "nach": "Berlin Hbf",
-         "an": "18:54",
-         "gleis_an": "6"
+         "an": "18:32",
+         "gleis_an": "5"
         }
        ],
-       "hinweis": "Die langsamste, dafür 48 Minuten Umstieg — der Rückfall, wenn auch der Ersatzzug schon Verspätung hat."
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 21
+        }
+       ],
+       "robust": "Die einzige Route, die nicht über die Rheinschiene kommt. Pünktlichkeit der S 9 unbekannt. Ob der Super Sparpreis bei aufgehobener Zugbindung in der S-Bahn gilt, ist nicht geprüft.",
+       "hinweis": "Gültigkeit unbekannt",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "13:59",
+       "an": "19:17",
+       "erwartet": "19:37",
+       "dauer": "5 h 18",
+       "umstiege": 0,
+       "abschnitte": [
+        {
+         "zug": "ICE 370",
+         "von": "Karlsruhe Hbf",
+         "ab": "13:59",
+         "gleis_ab": "3",
+         "nach": "Berlin Hbf",
+         "an": "19:17",
+         "gleis_an": "7"
+        }
+       ],
+       "robust": "Zweite Wahl: ohne Umstieg, zwei Stunden später. 32 % pünktlich, Ø +20 min. Danach: ICE 278 ab 15:59, an 21:17.",
+       "hinweis": "32 % pünktlich",
+       "hinweis_warn": true
       }
      ],
      "_ausgeschlossen": [
@@ -381,12 +415,29 @@ const DATEN = {
       "DB-Ticket gilt dort nicht - auch nicht mit aufgehobener Zugbindung.",
       "",
       "Sie steht ueberhaupt hier, weil sie bei jeder neuen Abfrage wieder ganz oben",
-      "auftaucht und ohne diese Zeile beim zweiten Mal wieder geprueft wuerde."
+      "auftaucht und ohne diese Zeile beim zweiten Mal wieder geprueft wuerde.",
+      "Volle Liste mit Gruenden: trips/2026-11-berlin/travel.md."
      ],
      "ausgeschlossen": [
       {
        "verbindung": "RE 73 12:15 → Heidelberg → FLX 10, an 18:00",
        "grund": "FlixTrain — das DB-Ticket gilt dort nicht, auch nicht mit aufgehobener Zugbindung."
+      },
+      {
+       "verbindung": "FLX 10 14:23, an 20:00",
+       "grund": "FlixTrain — wie oben."
+      },
+      {
+       "verbindung": "ICE 1576 12:41 → Frankfurt → ICE 751, an 18:54",
+       "grund": "Am 11.11. nicht mehr im Fahrplan."
+      },
+      {
+       "verbindung": "ICE 6 → ICE 598 → Erfurt → ICE 1506, an 18:24",
+       "grund": "8 min Gewinn, zweiter Umstieg mit negativer Reserve."
+      },
+      {
+       "verbindung": "ICE 9583 14:54 → Frankfurt → ICE 596, an 20:33",
+       "grund": "Gültigkeit im DB/SNCF-Zug unbekannt; ICE 370 ist früher und direkt."
       }
      ]
     }
@@ -412,7 +463,6 @@ const DATEN = {
       "ort": "Halle (Saale) Hbf",
       "an": "15:51",
       "ab": "15:53",
-      "gleis": "6",
       "zwischen": true
      },
      {
@@ -425,21 +475,18 @@ const DATEN = {
       "ort": "Fulda",
       "an": "17:44",
       "ab": "17:46",
-      "gleis": "4",
       "zwischen": true
      },
      {
       "ort": "Hanau Hbf",
       "an": "18:26",
       "ab": "18:28",
-      "gleis": "F",
       "zwischen": true
      },
      {
       "ort": "Frankfurt (Main) Hbf",
       "an": "18:44",
       "ab": "18:50",
-      "gleis": "7",
       "zwischen": true
      },
      {
@@ -474,18 +521,155 @@ const DATEN = {
      "bereich": "Handybereich"
     },
     "puenktlichkeit": {
-     "quote": 81,
-     "schnitt": "+3 min",
-     "strecke": "Berlin Hbf – Brig",
+     "quote": 70,
+     "schnitt": "+7 min",
+     "strecke": "Berlin Hbf – Spiez",
      "fenster": "30 Tage",
      "quelle": "zugfinder.net",
-     "abgerufen": "19.09.2026",
+     "abgerufen": "11.11.2026",
      "rang": "unverified",
-     "deutung": "Derselbe Laufweg in der Gegenrichtung, aber 81 statt 45 Prozent: dieser Zug BEGINNT in Berlin. Er fährt pünktlich ab, weil er nirgendwo herkommt. Die Rückfahrt braucht darum keine Ersatzliste."
+     "deutung": "Derselbe Laufweg in der Gegenrichtung, aber 70 statt 32 Prozent: dieser Zug BEGINNT in Berlin. Er fährt pünktlich ab, weil er nirgendwo herkommt. Am 19.09. waren es 81 % und Ø +3 min."
+    },
+    "alternativen": {
+     "titel": "Wenn der Rückzug ausfällt",
+     "lage": "Dieselbe Regel: ab 20 Minuten erwarteter Verspätung in Karlsruhe gilt das Ticket in jedem DB-Zug, nicht in FlixTrain. Weil der ICE 377 in Berlin beginnt, entsteht eine solche Prognose meist erst unterwegs — dann ist Sitzenbleiben fast immer schneller. Die Liste zählt vor allem bei Ausfall vor der Abfahrt.",
+     "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 11.11.2026 18:17, Rang secondary · Pünktlichkeit zugfinder.net, 30-Tage-Mittel, abgerufen 11.11.2026, Rang unverified · Nur Plandaten — am 15.11. vor der Abfahrt neu abfragen. Notnagel außerhalb der Liste: ICE 273 ab Berlin Hbf 00:08 (16.11.), an Karlsruhe 06:59 — DB-Zug, im Gültigkeitsfenster des Tickets bis 16.11. 10:00.",
+     "regeln": [
+      "nur Züge der DB — FlixTrain gilt mit diesem Ticket nicht, auch nicht mit aufgehobener Zugbindung",
+      "mindestens 10 Minuten Umstieg",
+      "Nachtzüge (Nightjet 12N, 43N) ausgelassen: Gültigkeit des Sparpreises dort unbekannt"
+     ],
+     "liste": [
+      {
+       "ab": "15:27",
+       "an": "21:23",
+       "erwartet": "21:38",
+       "dauer": "5 h 56",
+       "umstiege": 1,
+       "abschnitte": [
+        {
+         "zug": "ICE 693",
+         "von": "Berlin Hbf",
+         "ab": "15:27",
+         "gleis_ab": "4",
+         "nach": "Mannheim Hbf",
+         "an": "20:30",
+         "gleis_an": "5"
+        },
+        {
+         "zug": "ICE 9",
+         "von": "Mannheim Hbf",
+         "ab": "21:00",
+         "gleis_ab": "4",
+         "nach": "Karlsruhe Hbf",
+         "an": "21:23",
+         "gleis_an": "2"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 30
+        }
+       ],
+       "robust": "Erste Wahl, wenn der ICE 377 vor der Abfahrt ausfällt. Reserve +9 min (30 min minus Ø +21 des ICE 693). Kippt der Anschluss: ICE 379 ab Mannheim 21:37, an 21:59.",
+       "hinweis": "erste Wahl"
+      },
+      {
+       "ab": "16:43",
+       "an": "21:59",
+       "erwartet": "22:17",
+       "dauer": "5 h 16",
+       "umstiege": 0,
+       "abschnitte": [
+        {
+         "zug": "ICE 379",
+         "von": "Berlin Hbf",
+         "ab": "16:43",
+         "gleis_ab": "3",
+         "nach": "Karlsruhe Hbf",
+         "an": "21:59",
+         "gleis_an": "2"
+        }
+       ],
+       "robust": "Zweite Wahl: ohne Umstieg, zwei Stunden später. 19 % pünktlich, Ø +18 min — der unpünktlichste Zug der Liste.",
+       "hinweis": "19 % pünktlich",
+       "hinweis_warn": true
+      },
+      {
+       "ab": "17:27",
+       "an": "23:23",
+       "erwartet": "23:50",
+       "dauer": "5 h 56",
+       "umstiege": 1,
+       "abschnitte": [
+        {
+         "zug": "ICE 695",
+         "von": "Berlin Hbf",
+         "ab": "17:27",
+         "gleis_ab": "4",
+         "nach": "Mannheim Hbf",
+         "an": "22:30",
+         "gleis_an": "5"
+        },
+        {
+         "zug": "ICE 77",
+         "von": "Mannheim Hbf",
+         "ab": "23:00",
+         "gleis_ab": "4",
+         "nach": "Karlsruhe Hbf",
+         "an": "23:23",
+         "gleis_an": "2"
+        }
+       ],
+       "umstieg": [
+        {
+         "ort": "Mannheim Hbf",
+         "minuten": 30
+        }
+       ],
+       "robust": "Reserve +19 min. Kippt der Anschluss: ICE 677 ab Mannheim 23:37, an 23:59."
+      },
+      {
+       "ab": "18:43",
+       "an": "23:59",
+       "erwartet": "00:14",
+       "dauer": "5 h 16",
+       "umstiege": 0,
+       "abschnitte": [
+        {
+         "zug": "ICE 677",
+         "von": "Berlin Hbf",
+         "ab": "18:43",
+         "gleis_ab": "3",
+         "nach": "Karlsruhe Hbf",
+         "an": "23:59",
+         "gleis_an": "2"
+        }
+       ],
+       "robust": "Die letzte sinnvolle Verbindung am selben Tag, endet in Karlsruhe. 27 % pünktlich, Ø +15 min. Danach nur noch ICE 273 um 00:08.",
+       "hinweis": "letzte am Sonntag",
+       "hinweis_warn": true
+      }
+     ],
+     "ausgeschlossen": [
+      {
+       "verbindung": "FLX 10 13:53, an 19:29",
+       "grund": "FlixTrain — das DB-Ticket gilt dort nicht. Kommt vor dem ICE 377 an und ist darum die naheliegende Versuchung."
+      },
+      {
+       "verbindung": "ICE 1601 15:36 → Erfurt → ICE 693 → ICE 9, an 21:23",
+       "grund": "Dieselbe Ankunft wie die erste Wahl, ein Umstieg mehr."
+      },
+      {
+       "verbindung": "12N 20:52 / ICE 699 → 43N 21:27",
+       "grund": "Nachtzüge — Gültigkeit des Sparpreises unbekannt."
+      }
+     ]
     }
    }
   ],
-  "quelle": "DB-Originalticket, gelesen 19.09.2026 · Zugläufe über api.transitous.org (MOTIS 2, GTFS), abgerufen 19.09.2026 · Pünktlichkeit zugfinder.net, 30-Tage-Fenster, abgerufen 19.09.2026, Rang unverified"
+  "quelle": "DB-Originalticket, gelesen 19.09.2026 · Zugläufe über api.transitous.org (MOTIS 2, GTFS), abgerufen 19.09.2026 und 11.11.2026 · Pünktlichkeit zugfinder.net, 30-Tage-Fenster, abgerufen 11.11.2026, Rang unverified"
  },
  "quelle": {
   "name": "OpenStreetMap über Nominatim · Unterkunft über Google Places (New)",
@@ -8562,13 +8746,13 @@ const DATEN = {
      "id": "garderobe",
      "kopf": "ca. 14:00",
      "wert": "Garderobe",
-     "fein": "Jacke, Tasche, Handy und Kamera abgeben. Ab hier ohne Telefon"
+     "fein": "Jacke, Tasche, Handy und Kamera abgeben, 1 € — oft nur bar. Ab hier ohne Telefon"
     },
     {
      "id": "studio",
-     "kopf": "ca. 15:30",
+     "kopf": "ca. 15:00",
      "wert": "Einlass Studio",
-     "fein": "Aufwärm-Moderator, dann Band. Rund 400 Gäste, sechs Toiletten — davor gehen"
+     "fein": "Veranstalterangabe vom 11.11. Aufwärm-Moderator, dann Band. Rund 400 Gäste, sechs Toiletten — davor gehen"
     },
     {
      "id": "aufnahme",
@@ -8586,6 +8770,7 @@ const DATEN = {
    "mitbringen": [
     "Gültiger Lichtbildausweis — ohne ihn kein Einlass",
     "Das eTicket, auf dem Telefon oder ausgedruckt",
+    "Bargeld — vor Ort geht wegen schwachen Internets oft nur Barzahlung (Garderobe 1 €, Getränke, Snacks)",
     "Ein ordentliches Mittagessen vorher — zwischen 13:30 und ca. 20:30 gibt es planbar nichts",
     "Den Rückweg im Kopf oder auf Papier — das Telefon liegt in der Garderobe"
    ],
@@ -8608,7 +8793,17 @@ const DATEN = {
     {
      "was": "Nicht ins Studio",
      "wert": "Jacken, Taschen, Handys, Kameras",
-     "hinweis": "Sicherheitskontrolle, Garderobe zur Abgabe"
+     "hinweis": "Sicherheitskontrolle, bewachte Garderobe für 1 €"
+    },
+    {
+     "was": "Bezahlen vor Ort",
+     "wert": "oft nur bar",
+     "hinweis": "laut Veranstalter wegen instabiler Internetverbindung"
+    },
+    {
+     "was": "PreCheckin",
+     "wert": "xx",
+     "hinweis": "die Mail vom 11.11. erinnert daran — ob erledigt, ist hier nicht bekannt"
     },
     {
      "was": "Ein Besuch je Person",
@@ -8627,7 +8822,7 @@ const DATEN = {
     }
    ],
    "hinweis": "Das Handy liegt während der Aufzeichnung in der Garderobe. Was für den Rückweg gebraucht wird, muss vorher bekannt sein.",
-   "quelle": "eTicket und Rechnung tvtickets.de, gelesen 19.09.2026 (primary) · Ablaufzeiten teils aus einem Besucherbericht vom April 2026 (secondary) · Koordinate OSM node/1570019792 über Nominatim, abgerufen 19.09.2026",
+   "quelle": "eTicket und Rechnung tvtickets.de, gelesen 19.09.2026 (primary) · Mail „finale Informationen“ von tvtickets.de, gelesen 11.11.2026 (primary) · Ablaufzeiten teils aus einem Besucherbericht vom April 2026 (secondary) · Koordinate OSM node/1570019792 über Nominatim, abgerufen 19.09.2026",
    "weg": {
     "_lies_mich": [
      "ERZEUGT von hol-weg.mjs. Nicht von Hand aendern — der naechste Lauf",
