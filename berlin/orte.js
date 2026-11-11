@@ -130,6 +130,16 @@ const DATEN = {
    }
   ],
   "ausstattung_quelle": "motel-one.com, Hotelseite, gelesen 19.09.2026",
+  "bild": {
+   "datei": "bilder/hotel.jpg",
+   "alt": "Motel One Berlin-Alexanderplatz an der Grunerstraße, dahinter der Fernsehturm",
+   "urheber": "Derbrauni",
+   "lizenz": "CC BY 4.0",
+   "lizenz_url": "https://creativecommons.org/licenses/by/4.0",
+   "quelle_url": "https://commons.wikimedia.org/wiki/File:Hotel_Motel_One_Berlin-Alexanderplatz.jpg",
+   "aufgenommen": "29.01.2025",
+   "abgerufen": "11.11.2026"
+  },
   "quelle": "Buchungsbestätigung CHECK24, gelesen 19.09.2026 · Koordinate Google Places, abgerufen 19.09.2026"
  },
  "bahn_reise": {
@@ -8740,12 +8750,6 @@ const DATEN = {
    "datum": "2026-11-13",
    "ablauf": [
     {
-     "id": "anreise",
-     "kopf": "12:57",
-     "wert": "ab Hotel",
-     "fein": "S9 ab Alexanderplatz 13:02, ohne Umstieg, dann 15 Min. zu Fuß ab S Adlershof"
-    },
-    {
      "id": "abholung",
      "kopf": "13:30",
      "wert": "Kartenabholung",
@@ -8773,7 +8777,7 @@ const DATEN = {
      "id": "ende",
      "kopf": "ca. 20:30",
      "wert": "Ende",
-     "fein": "Veranstalterangabe. Rückweg S9 ab Adlershof, im 20-Minuten-Takt bis weit nach Mitternacht"
+     "fein": "Veranstalterangabe, Verzögerung möglich"
     }
    ],
    "mitbringen": [
@@ -8786,18 +8790,9 @@ const DATEN = {
    "mitbringen_hinweis": "Beide Personen holen die Karten gemeinsam ab; einzelne Tickets sind nicht übertragbar.",
    "kenn": [
     {
-     "was": "Mindestalter",
-     "wert": "16 Jahre"
-    },
-    {
      "was": "Sitzplätze",
      "wert": "werden vor Ort vergeben",
      "hinweis": "keine Garantie für zusammenhängende Plätze, Sichteinschränkungen durch Kameras möglich"
-    },
-    {
-     "was": "Studio G",
-     "wert": "460 Plätze",
-     "hinweis": "zweitgrößtes Fernsehstudio Berlins — adlershof.de, Rang secondary"
     },
     {
      "was": "Nicht ins Studio",
@@ -8813,21 +8808,6 @@ const DATEN = {
      "was": "PreCheckin",
      "wert": "xx",
      "hinweis": "die Mail vom 11.11. erinnert daran — ob erledigt, ist hier nicht bekannt"
-    },
-    {
-     "was": "Ein Besuch je Person",
-     "wert": "pro Staffel",
-     "hinweis": "gilt auch als Begleitperson"
-    },
-    {
-     "was": "Bild und Ton",
-     "wert": "werden übertragen",
-     "hinweis": "AGB § 2 (4) — man kann in der Sendung zu sehen sein"
-    },
-    {
-     "was": "Bestätigungspflicht",
-     "wert": "bis Di 10.11.2026",
-     "hinweis": "3 Arbeitstage vorher an bestaetigung@tvtickets.de — sonst werden die Karten weiterverkauft"
     }
    ],
    "hinweis": "Das Handy liegt während der Aufzeichnung in der Garderobe. Was für den Rückweg gebraucht wird, muss vorher bekannt sein.",
@@ -22696,12 +22676,6 @@ const DATEN = {
    "datum": "2026-11-14",
    "ablauf": [
     {
-     "id": "hin",
-     "kopf": "16:08",
-     "wert": "ab Hotel",
-     "fein": "Tram M2 ab Alexanderplatz/Dircksenstr. 16:12 → Fröbelstr., ohne Umstieg, 17 Min. von Tür zu Tür"
-    },
-    {
      "id": "erste",
      "kopf": "16:45",
      "wert": "Sternstunde",
@@ -22711,19 +22685,13 @@ const DATEN = {
      "id": "luecke",
      "kopf": "17:45",
      "wert": "Zwei Stunden",
-     "fein": "bis 19:45 — zurück ins Hotel und wieder her kostet über die Hälfte davon und lohnt nicht"
+     "fein": "Pause bis 19:45 — in der Nähe bleiben, Lokale im Reiter Mitte"
     },
     {
      "id": "zweite",
      "kopf": "19:45",
      "wert": "Schwarze Löcher",
      "fein": "60 Min., davon 25 Min. Live-Teil. Spätestens 19:40 zurück — nach Beginn kein Einlass"
-    },
-    {
-     "id": "zurueck",
-     "kopf": "ca. 20:53",
-     "wert": "zurück",
-     "fein": "Tram M2 zurück, 17 Min."
     }
    ],
    "mitbringen": [
@@ -22733,24 +22701,9 @@ const DATEN = {
    "mitbringen_hinweis": "Beide Vorstellungen haben dieselben zwei Plätze: Block Nord, Reihe 10.",
    "kenn": [
     {
-     "was": "Sternstunde",
-     "wert": "16:45 · 60 Min.",
-     "hinweis": "live moderiert, deutsch, ab 12 Jahren empfohlen"
-    },
-    {
-     "was": "Schwarze Löcher",
-     "wert": "19:45 · 60 Min.",
-     "hinweis": "Fulldome-Film von Double Dome Films mit 25 Min. Live-Teil"
-    },
-    {
      "was": "Nach Beginn",
      "wert": "kein Einlass",
      "hinweis": "gilt für beide Vorstellungen"
-    },
-    {
-     "was": "Tickets",
-     "wert": "nicht umbuchbar, nicht erstattbar",
-     "hinweis": "auch nicht in Gutscheine wandelbar"
     },
     {
      "was": "Garderobe",

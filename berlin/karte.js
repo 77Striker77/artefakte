@@ -1151,7 +1151,20 @@
                      : null]
       .filter(Boolean).join(" · ");
 
+    // Das Foto ist von Wikimedia Commons (CC BY 4.0) und liegt neben der Seite,
+    // nicht verlinkt: Commons drosselt Fremdabrufe, und ein Bild, das am
+    // Reisetag nicht laedt, ist schlechter als keines. Die Lizenz verlangt die
+    // Namensnennung - sie steht darum direkt unter dem Bild.
+    var bi = ho.bild;
+    var bild = bi ? '<figure class="hotel-bild">'
+      + '<img src="' + bi.datei + '" alt="' + bi.alt + '" width="960" height="1296" loading="lazy">'
+      + '<figcaption class="tafel-fein">Foto: ' + bi.urheber + ", " + bi.aufgenommen + ' · <a href="'
+      + bi.quelle_url + '" target="_blank" rel="noopener noreferrer">Wikimedia Commons</a> · <a href="'
+      + bi.lizenz_url + '" target="_blank" rel="noopener noreferrer">' + bi.lizenz + "</a></figcaption>"
+      + "</figure>" : "";
+
     el.innerHTML = '<div class="fahrt">'
+      + bild
       + '<div class="fahrt-kopf">'
       +   "<div>"
       +     '<p class="fahrt-richtung">' + (ho.name || "Unterkunft unbekannt") + "</p>"
@@ -1225,6 +1238,28 @@
 
     var anschrift = [e.ort, e.adresse].filter(Boolean).join(" · ");
 
+    // Hin und zurueck zum Hotel ganz oben (Nutzerwunsch 11.11.2026). Gezeigt
+    // wird je Richtung die umstiegsaermste gemessene Variante - ohne Handy im
+    // Studio ist "einmal einsteigen" die Form, die man im Kopf behaelt. Alle
+    // Varianten stehen weiter unten auf der Karte.
+    var stationKurz = function (n) {
+      return (n || "").replace(/ \(Berlin\)$/, "").replace(/^S\+U |^S /, "").replace(/ Bhf/, "");
+    };
+    var wegKurz = function (gruppe, kopf) {
+      var v = ((bw && bw.varianten) || []).filter(function (x) {
+        return x.gruppe === gruppe && x.auswahl === "umstiegsarm";
+      })[0];
+      var erste = v && v.abschnitte.filter(function (a) { return a.art !== "fuss"; })[0];
+      if (!erste) return "";
+      return '<div class="platz-feld"><span class="platz-kopf">' + kopf + "</span>"
+        + '<b class="platz-wert">' + erste.ab + " " + erste.linie + "</b>"
+        + '<span class="weg-feld-fein">ab ' + stationKurz(erste.von) + " · " + v.minuten
+        + " min Tür zu Tür" + (v.umstiege ? " · " + v.umstiege + "× umsteigen" : " · ohne Umstieg")
+        + (v.takt ? " · alle " + (v.takt.min === v.takt.max ? v.takt.min
+            : v.takt.min + "–" + v.takt.max) + " min" : "") + "</span></div>";
+    };
+    var wege = wegKurz("hin", "Hin vom Hotel") + wegKurz("rueck", "Zurück zum Hotel");
+
     // Die Checkliste ist eine Liste und keine Kennzeile: sie wird ABGEHAKT,
     // nicht gelesen. Der Satz darunter steht dabei und nicht im Aufklapper -
     // "der Hauptbucher holt fuer alle ab" entscheidet, wer wann losfaehrt.
@@ -1252,6 +1287,8 @@
       +   (e.tag ? '<span class="hotel-note"><b>' + e.tag + "</b></span>" : "")
       + "</div>"
       + (ziele ? '<div class="hotel-ziele">' + ziele + "</div>" : "")
+      + (wege ? '<div class="platz-felder platz-felder--um">' + wege + "</div>" : "")
+      + '<h4 class="lage-titel">Ablauf</h4>'
       + '<div class="platz-felder platz-felder--um">'
       +   (e.ablauf || []).map(feldE).join("")
       + "</div>"
@@ -1264,8 +1301,7 @@
       // der Show in der Garderobe liegt.
       + (e.hinweis ? '<p class="tafel-warnung">' + e.hinweis + "</p>" : "")
       + '<details class="quell-klapp"><summary>Woher diese Angaben kommen</summary>'
-      + "<p>" + quellen
-      + " · Ticket-, Vorgangs- und Stornonummern sowie Namen stehen nicht auf dieser Seite.</p>"
+      + "<p>" + quellen + "</p>"
       + "</details>"
       + "</div>";
   });
