@@ -23,14 +23,15 @@ const DATEN = {
   "marke": "Berlin",
   "eyebrow": "Reiseziel · Deutschland",
   "titel": "Berlin",
-  "titel_betont": "drei Nächte, zwei Termine, ein Knotenpunkt",
+  "titel_betont": "Do 12. – So 15. November 2026",
   "unterzeile": ""
  },
  "menue": [
   {
    "id": "karte",
    "label": "Karte",
-   "ansicht": "feld-karte"
+   "ansicht": "feld-karte",
+   "reisedaten": false
   },
   {
    "id": "hotel",
@@ -124,7 +125,8 @@ const DATEN = {
    {
     "was": "Gepäck nach Check-out",
     "wert": "xx",
-    "hinweis": "nicht veröffentlicht — am Abreisetag entscheidend, siehe Reiter Bahn"
+    "hinweis": "an der Rezeption fragen — Zug erst 14:43",
+    "zeigen": true
    }
   ],
   "ausstattung_quelle": "motel-one.com, Hotelseite, gelesen 19.09.2026",

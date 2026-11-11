@@ -505,11 +505,17 @@
   // was es gibt, und nicht erst zusammenklicken muessen.
   var ortEbenen = {};
   var punkte = [];
+  // Beim Aufschlagen sichtbar: nur was die Reise traegt - Hotel, Ankunft,
+  // die beiden Termine. Alles andere ist in der Filterleiste zuschaltbar.
+  // Bis zum 11.11.2026 war alles an; die Startkarte war ein Teppich aus 400
+  // Marken, in dem das Hotel nicht zu finden war (Nutzerrueckmeldung).
+  var STANDARD_AN = ["unterkunft", "ankunft", "termin"];
 
   DATEN.orte.forEach(function (o) {
     if (!ortEbenen[o.art]) ortEbenen[o.art] = L.layerGroup().addTo(karte);
     var gross = o.art === "ankunft" || o.art === "unterkunft";
-    var kante = gross ? 40 : 34;
+    var haus = o.art === "unterkunft";
+    var kante = haus ? 52 : gross ? 40 : 34;
     L.marker([o.lat, o.lon], {
       icon: L.divIcon({
         className: "",
@@ -518,11 +524,17 @@
         iconAnchor: [kante / 2, kante / 2]
       }),
       title: o.name,
-      riseOnHover: true
+      riseOnHover: true,
+      zIndexOffset: haus ? 2000 : 0
     })
       .addTo(ortEbenen[o.art])
-      .bindTooltip(o.kurz, { permanent: true, direction: "right", offset: [kante / 2 - 2, 0],
-                             className: "marke-name" })
+      // Ankunftspunkte links beschriftet: der Hbf liegt direkt links vom
+      // Hotel, sein Schild rechts deckte die Hotelmarke zu (Rendering 11.11.).
+      .bindTooltip(haus ? "Hotel" : o.kurz, { permanent: true,
+                             direction: o.art === "ankunft" ? "left" : "right",
+                             offset: [o.art === "ankunft" ? -(kante / 2 - 2) : kante / 2 - 2, 0],
+                             className: "marke-name"
+                               + (STANDARD_AN.indexOf(o.art) >= 0 ? " marke-name--immer" : "") })
       .bindPopup(
         "<h3>" + o.name + "</h3><p>" + o.notiz + "</p>" +
         (haltNachOsm[o.osm] ? linienBlock(haltNachOsm[o.osm]) : "") +
@@ -531,7 +543,7 @@
         mapsLink(o) +
         '<p class="popup-fein">OSM ' + o.osm + "</p>"
       );
-    punkte.push([o.lat, o.lon]);
+    if (STANDARD_AN.indexOf(o.art) >= 0) punkte.push([o.lat, o.lon]);
   });
 
   // Namen erst ab Stadtteil-Zoom. Darunter tragen Symbol und Legende die
@@ -760,7 +772,11 @@
   // falsch und niemand merkt es, weil die Karte trotzdem aussieht wie eine Karte.
   // Die Haltestellen bleiben absichtlich draussen — sie enden an der Stadtgrenze
   // und wuerden den Ausschnitt nur aufblaehen.
-  if (punkte.length) karte.fitBounds(L.latLngBounds(punkte).pad(0.12));
+  // Asymmetrischer Rand: die Schilder stehen neben ihren Marken und brauchen
+  // Platz nach rechts (Termine) und links (Ankunft), sonst schneidet der
+  // Kartenrand sie ab.
+  if (punkte.length) karte.fitBounds(L.latLngBounds(punkte),
+    { paddingTopLeft: [90, 40], paddingBottomRight: [130, 40] });
   namenSchalten();
   schilderSchalten();
   haltenSchalten();
@@ -780,7 +796,9 @@
     var b = document.createElement("button");
     b.type = "button";
     b.className = "filter";
-    b.setAttribute("aria-pressed", "true");
+    var startAn = STANDARD_AN.indexOf(k.id) >= 0;
+    b.setAttribute("aria-pressed", startAn ? "true" : "false");
+    if (!startAn) karte.removeLayer(k.ebene);
     // aria-hidden am Zeichen: es wiederholt nur, was der Text daneben sagt.
     // Ohne das liest die Vorlesehilfe "S S-Bahn / DB" - gemessen, nicht vermutet.
     b.innerHTML = '<span class="legende-marke" aria-hidden="true">' + k.marke + "</span>"
@@ -1066,28 +1084,9 @@
   var ho = DATEN.hotel || {};
   var he = DATEN.hotel_eintrag || null;
 
-  // Die Reisedaten kommen ueber ihre id, nicht ueber die Beschriftung: 'feld'
-  // ist die Aufschrift der Infobox, und wer sie umbenennt, will Beschriftung
-  // aendern - nicht hier eine Zeile verschwinden lassen.
-  var reisewert = function (id) {
-    var z = (DATEN.reisedaten || []).filter(function (x) { return x.id === id; })[0];
-    if (!z) return null;
-    // "xx" ist eine Aussage - unbekannt -, kein fehlender Wert. Es wird als
-    // solche gesetzt und nicht stillschweigend weggelassen.
-    return { wert: z.wert, offen: z.wert === "xx" };
-  };
-
   (function () {
     var el = document.getElementById("hotel-tafel");
     if (!el) return;
-
-    var feldH = function (kopf, wert, fein) {
-      if (!wert) return "";
-      return '<div class="platz-feld"><span class="platz-kopf">' + kopf + "</span>"
-        + '<b class="platz-wert' + (wert.offen ? " platz-wert--offen" : "") + '">'
-        + wert.wert + "</b>"
-        + (fein ? '<span class="weg-feld-fein">' + fein + "</span>" : "") + "</div>";
-    };
 
     // Ein unbekannter Wert wird als solcher gesetzt, nicht weggelassen: eine
     // Liste ohne die Zeile sieht vollstaendig aus, und niemand fragt je nach.
@@ -1096,7 +1095,7 @@
       var offen = wert === "xx";
       return "<dt>" + kopf + "</dt><dd"
         + (offen ? ' class="kenn-offen" title="noch nicht bekannt"' : "") + ">"
-        + wert + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "")
+        + (offen ? "unbekannt" : wert) + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "")
         + "</dd>";
     };
 
@@ -1128,23 +1127,17 @@
             ? he.eintrag.stimmen.toLocaleString("de-DE") + " Bewertungen" : "") + "</span>"
       : "";
 
-    var ausstattung = (ho.ausstattung || []).map(function (a) {
-      return zeileH(a.was, a.wert, a.hinweis);
-    }).join("");
+    // Nur was man vor Ort braucht. Ausstattung erscheint nur mit "zeigen":
+    // true in reise.json - WLAN, Dachbar und Vermittler bleiben in den Daten,
+    // stehen aber nicht mehr auf der Tafel (Nutzerwunsch 11.11.2026: fokussierter).
+    var ausstattung = (ho.ausstattung || []).filter(function (a) { return a.zeigen; })
+      .map(function (a) { return zeileH(a.was, a.wert, a.hinweis); }).join("");
 
-    // Check-in und Check-out stehen ZWEIMAL auf der Tafel, und das ist Absicht:
-    // klein unter dem jeweiligen Datum, weil sie dort hingehoeren - Anreisetag
-    // und Einlasszeit sind eine Angabe -, und hier als eigene Zeile, weil man
-    // sie am Reisetag sucht und nicht liest. Die Kleinschrift unter dem Datum
-    // wurde uebersehen; eine Angabe, die man nur findet, wenn man schon weiss,
-    // wo sie steht, ist keine.
-    var kenn = zeileH("Zimmer", ho.zimmer)
-      + zeileH("Check-in", ho.checkin)
+    var kenn = zeileH("Check-in", ho.checkin)
       + zeileH("Check-out", ho.checkout)
+      + zeileH("Zimmer", ho.zimmer)
       + zeileH("Verpflegung", ho.verpflegung)
-      + zeileH("Reisende", (reisewert("reisende") || {}).wert)
-      + ausstattung
-      + zeileH("Gebucht", [ho.vermittelt, ho.bestaetigt].filter(Boolean).join(" · "));
+      + ausstattung;
 
     // Womit man vom Haus wegkommt - die Begruendung steht bei anbindungHtml.
     var anbindung = anbindungHtml(DATEN.umgebung);
@@ -1167,11 +1160,6 @@
       +   note
       + "</div>"
       + (ziele ? '<div class="hotel-ziele">' + ziele + "</div>" : "")
-      + '<div class="platz-felder platz-felder--um">'
-      +   feldH("Anreise", reisewert("hinfahrt"), ho.checkin ? "Check-in " + ho.checkin : "")
-      +   feldH("Nächte", reisewert("naechte"), "")
-      +   feldH("Abreise", reisewert("rueckfahrt"), ho.checkout ? "Check-out " + ho.checkout : "")
-      + "</div>"
       + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")
       + anbindung
       // Die Quellen stehen HINTER einem Aufklapper, nicht als Absatz darunter.
@@ -1180,8 +1168,7 @@
       // Als Block war es eine Textwand unter der Tafel; zugeklappt ist es eine
       // Zeile, die man aufmacht, wenn man fragt "woher wisst ihr das".
       + '<details class="quell-klapp"><summary>Woher diese Angaben kommen</summary>'
-      + "<p>" + quellen
-      + " · Preis, Auftragsnummer und Stornofristen stehen nicht auf dieser Seite.</p>"
+      + "<p>" + quellen + "</p>"
       + "</details>"
       + "</div>";
   }());
@@ -2188,11 +2175,17 @@
     // falsch: hinter der Isar liegt ein Punkt bei 700 m Luftlinie ueber der
     // Grenze, an derselben Strasse einer bei 1100 m darunter.
 
+    var bezugKante = cfg.ziel_art === "unterkunft" ? 52 : 40;
     L.marker([u.bezug.lat, u.bezug.lon], {
       icon: L.divIcon({ className: "", html: ortSymbol(cfg.ziel_art, true),
-                        iconSize: [40, 40], iconAnchor: [20, 20] }),
-      title: u.bezug.name, riseOnHover: true
-    }).addTo(karteHotel).bindPopup("<h3>" + u.bezug.name + "</h3>"
+                        iconSize: [bezugKante, bezugKante],
+                        iconAnchor: [bezugKante / 2, bezugKante / 2] }),
+      title: u.bezug.name, riseOnHover: true, zIndexOffset: 2000
+    }).addTo(karteHotel)
+      .bindTooltip(cfg.ziel_art === "unterkunft" ? "Hotel" : u.bezug.name,
+        { permanent: true, direction: "right", offset: [bezugKante / 2 - 2, 0],
+          className: "marke-name marke-name--immer" })
+      .bindPopup("<h3>" + u.bezug.name + "</h3>"
       + "<p>Der Bezugspunkt dieser Karte.</p>" + mapsLink(u.bezug));
 
     // Gehzeit statt Luftlinie: sie ist gemessen, sie ist die Vorgabe, und sie
@@ -2355,10 +2348,11 @@
     // anklicken muss, verschweigt sie.
     behaelter.classList.add("zeigt-namen");
 
-    // Ab Zoom 15 - dem Umgebungsausschnitt - tragen die Halte ihre Linien.
-    // Eine Stufe darunter faellt das uebereinander.
+    // Linienschilder erst ab Zoom 17. Bei 15, dem Startausschnitt, deckten am
+    // Alexanderplatz rund 60 Schilder das Hotel zu (Rendering 11.11.2026); die
+    // Linien je Halt stehen ohnehin in der Liste "Anbindung" darueber.
     var schilderHotel = function () {
-      behaelter.classList.toggle("zeigt-schilder", karteHotel.getZoom() >= 15);
+      behaelter.classList.toggle("zeigt-schilder", karteHotel.getZoom() >= 17);
     };
     karteHotel.on("zoomend", schilderHotel);
     schilderHotel();

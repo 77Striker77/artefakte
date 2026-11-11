@@ -580,6 +580,13 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    reichlich - aber nachweisbar konfliktfrei, statt aus Platznot.
    ========================================================================= */
 .ort-pin.unterkunft{color:var(--m-unterkunft)}   /* 5,13:1 · H190 */
+/* Die Unterkunft ist der Bezugspunkt jeder Karte: gefuellt statt Kontur,
+   groesser, immer beschriftet, immer obenauf (11.11.2026: "das Hotel auf
+   einen Blick"). Weiss auf --m-unterkunft ist dasselbe Paar wie oben: 5,13:1. */
+.ort-pin.unterkunft.gross{width:52px; height:52px; background:var(--m-unterkunft);
+  color:var(--saum); border:3px solid var(--saum); box-shadow:3px 3px 0 rgba(0,0,0,.45)}
+.ort-pin.unterkunft.gross svg{width:34px; height:34px}
+.leaflet-tooltip.marke-name.marke-name--immer{display:block}
 .ort-pin.ankunft{color:var(--m-ankunft)}         /* 5,05:1 · H 48 */
 .ort-pin.zentrum{color:var(--m-zentrum)}         /* 5,08:1 · H 20 */
 .ort-pin.wahrzeichen{color:var(--m-wahrzeichen)} /* 5,08:1 · H292 */
@@ -810,7 +817,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    darin. Zwei Navigationen, die gleich aussehen, sehen aus wie eine kaputte. */
 .untermenue{display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 12px}
 .unterknopf{
-  display:inline-flex; align-items:center; gap:7px; min-height:40px;
+  display:inline-flex; align-items:center; gap:7px; min-height:44px;
   padding:6px 12px 6px 7px; cursor:pointer;
   font-family:var(--pixel); font-size:16px; line-height:1;
   color:var(--auf-grund-leise);                      /* 9,45:1 auf --grund */
