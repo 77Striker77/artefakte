@@ -1397,8 +1397,7 @@
             }).join("") + "</div></div>"
         : "")
       + (fuss ? '<p class="platz-fuss">' + fuss + "</p>" : "")
-      + bahnHilfe("Wo dieser Wagen am Bahnsteig hält, steht erst rund 18 Stunden "
-          + "vor Abfahrt fest — dann in der DB-App oder am Wagenstandanzeiger.",
+      + bahnHilfe("Wagenposition am Bahnsteig: in der DB-App, ca. 18 h vor Abfahrt.",
           "Wagenreihung")
       + "</div>";
   };
@@ -1410,6 +1409,115 @@
     return '<dl class="kenn">' + z.filter(function (p) { return p[1]; }).map(function (p) {
       return "<dt>" + p[0] + "</dt><dd>" + p[1] + "</dd>";
     }).join("") + "</dl>";
+  };
+
+  // --- Live-Stand des gebuchten Zugs ----------------------------------------
+  // Direkt von api.transitous.org (MOTIS 2, GTFS-Realtime); die API erlaubt
+  // Abrufe von fremden Seiten (CORS *, gemessen 11.11.2026). Ohne Echtzeit
+  // steht "Fahrplan" da, ein gescheiterter Abruf sagt das - nie ein stilles
+  // "puenktlich". Halte werden ueber die DHID erkannt, nicht ueber den Namen:
+  // der Feed nennt Karlsruhe "Karlsruhe Hauptbahnhof", das Ticket "Karlsruhe Hbf".
+  var LIVE_API = "https://api.transitous.org/api/v6";
+  var liveTimer = null;
+  var liveUhr = function (iso) {
+    return iso ? new Date(iso).toLocaleTimeString("de-DE",
+      { timeZone: "Europe/Berlin", hour: "2-digit", minute: "2-digit" }) : "–";
+  };
+  var liveVersatz = function (plan, ist) {
+    return plan && ist ? Math.round((new Date(ist) - new Date(plan)) / 60000) : null;
+  };
+  var liveJson = function (pfad) {
+    return fetch(LIVE_API + pfad, { headers: { accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      });
+  };
+  var liveHole = function (f) {
+    var L = f.live;
+    var ab = new Date(new Date(L.ab).getTime() - 30 * 60000).toISOString();
+    return liveJson("/stoptimes?stopId=" + encodeURIComponent(L.stop) + "&time=" + ab
+        + "&n=20&mode=HIGHSPEED_RAIL,LONG_DISTANCE")
+      .then(function (j) {
+        var e = (j.stopTimes || []).filter(function (x) { return x.displayName === f.zug; })[0];
+        if (!e) throw new Error(f.zug + " nicht in der Abfahrtstafel");
+        return liveJson("/trip?tripId=" + encodeURIComponent(e.tripId));
+      })
+      .then(function (j) {
+        var l = (j.legs || [])[0];
+        if (!l) throw new Error("kein Zuglauf");
+        return l;
+      });
+  };
+  var liveZeile = function (titel, plan, ist, gleis, rt, weg) {
+    var d = liveVersatz(plan, ist);
+    var abw = !rt ? "" : d > 0 ? ' <b class="live-spaet">+' + d + " min</b>"
+      : d < 0 ? " " + d + " min" : " pünktlich";
+    return "<dt>" + titel + "</dt><dd><b>" + liveUhr(rt ? ist : plan) + "</b>" + abw
+      + (rt && d ? " (Plan " + liveUhr(plan) + ")" : "")
+      + (gleis ? " · Gl. " + gleis : "")
+      + (weg ? " · <b>entfällt</b>" : "") + "</dd>";
+  };
+  var liveHtml = function (f, l, fehler) {
+    var kopf = '<h3 class="kachel-titel">' + f.zug + " – jetzt</h3>";
+    if (fehler) {
+      return kopf + '<p class="tafel-warnung">Live-Abfrage fehlgeschlagen (' + fehler
+        + "). Stand unbekannt – DB Navigator öffnen.</p>";
+    }
+    var L = f.live;
+    var halte = [l.from].concat(l.intermediateStops || [], [l.to]).filter(Boolean);
+    var finde = function (dhid) {
+      return halte.filter(function (h) { return (h.stopId || "").indexOf(dhid) >= 0; })[0];
+    };
+    var s = finde(L.start_dhid), z = finde(L.ziel_dhid);
+    if (!s || !z) return liveHtml(f, null, "Halt nicht im Zuglauf");
+    var rt = !!l.realTime, jetzt = Date.now();
+    var dz = rt ? liveVersatz(z.scheduledArrival, z.arrival) : null;
+
+    var wo = "noch nicht unterwegs";
+    var zeitVon = function (iso) { return iso ? new Date(iso).getTime() : null; };
+    halte.forEach(function (h) {
+      var an = zeitVon(h.arrival), ab = zeitVon(h.departure);
+      var d = liveVersatz(h.scheduledDeparture || h.scheduledArrival, h.departure || h.arrival);
+      var plus = rt && d ? " (+" + d + " min)" : "";
+      if (ab !== null && ab <= jetzt) wo = "zuletzt " + h.name + plus;
+      else if (an !== null && an <= jetzt) wo = "hält in " + h.name + plus;
+    });
+    if (z.arrival && new Date(z.arrival).getTime() <= jetzt) wo = "angekommen";
+
+    var warn = "";
+    if (l.cancelled || s.cancelled || z.cancelled) {
+      warn = f.zug + " fällt aus" + (l.cancelled ? "" : " (Teilausfall)")
+        + " – Zugbindung aufgehoben, Alternativen unten.";
+    } else if (dz !== null && dz >= 20) {
+      warn = "+" + dz + " min in " + L.ziel + " erwartet: Zugbindung aufgehoben, jeder DB-Zug gilt."
+        + (L.sitzen ? " " + L.sitzen : "");
+    }
+    return kopf
+      + '<p class="tafel-fein">' + (rt ? "Echtzeit" : "Noch keine Echtzeit – Fahrplan")
+      + ", Stand " + liveUhr(new Date().toISOString()) + "</p>"
+      + (warn ? '<p class="tafel-warnung">' + warn + "</p>" : "")
+      + '<dl class="kenn">'
+      + liveZeile("Ab " + L.start, s.scheduledDeparture, s.departure, s.track, rt, s.cancelled)
+      + liveZeile("An " + L.ziel, z.scheduledArrival, z.arrival, z.track, rt, z.cancelled)
+      + "<dt>Zug</dt><dd>" + wo + "</dd>"
+      + "</dl>";
+  };
+  // Laedt in den Platzhalter der offenen Fahrt. Am Reisetag alle 60 s neu;
+  // davor einmal - dann gibt es ohnehin nur den Fahrplan.
+  var liveStart = function (wurzel, f) {
+    clearInterval(liveTimer);
+    var ziel = wurzel.querySelector(".live");
+    if (!ziel || !f.live) return;
+    var lade = function () {
+      liveHole(f).then(function (l) { ziel.innerHTML = liveHtml(f, l); },
+                       function (e) { ziel.innerHTML = liveHtml(f, null, e.message); });
+    };
+    lade();
+    var d = new Date();
+    var heute = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2)
+      + "-" + ("0" + d.getDate()).slice(-2);
+    if (heute === f.datum) liveTimer = setInterval(lade, 60000);
   };
 
   // --- Die Alternativen als Zeitband ----------------------------------------
@@ -1882,7 +1990,7 @@
       // Alternativen scrollte, sah sechs Uhrzeiten ohne Tag - und die Frage
       // "ist das ueberhaupt mein Reisetag?" blieb offen.
       +   (tag ? '<span class="alt-tag">' + tag + "</span>" : "")
-      +   bahnHilfe(alt.lage, "Warum jede Fahrt umsteigt")
+      +   bahnHilfe(alt.lage, "Wann gilt das")
       + "</div>"
       + ((alt.regeln || alt.stand) ? '<details class="wie"><summary>Wie gesucht wurde'
           + "</summary><div class=\"wie-inhalt\">"
@@ -1909,6 +2017,9 @@
       +   '<span class="kopf-rechts">' + bahnMarke(f.status, f.status_text)
       +     bahnHilfe(f.meldung, f.richtung + ", " + f.tag) + "</span>"
       + "</div>"
+      + (f.live ? '<section class="kachel live" aria-live="polite">'
+          + '<h3 class="kachel-titel">' + f.zug + " – jetzt</h3>"
+          + '<p class="tafel-fein">Wird abgefragt …</p></section>' : "")
       + bahnBand(f.halte, f.zug)
       + '<div class="fahrt-kacheln">'
       +   (f.ticket ? '<section class="kachel"><h3 class="kachel-titel">Ticket</h3>'
@@ -1944,10 +2055,10 @@
       var status = bahnStatus(f);
       zielB.innerHTML = (status ? '<p class="jetzt-satz">' + status + "</p>" : "")
         + (f ? bahnFahrtHtml(f) : "")
-        + '<p class="grund-fuss">' + (bahnDaten.quelle || "")
-        + " · Auftragsnummer und Name stehen nicht auf dieser Seite.</p>";
+        + '<p class="grund-fuss">' + (bahnDaten.quelle || "") + "</p>";
       fallblattAlle(zielB, id);
       bahnVergangen(zielB, f);
+      if (f) liveStart(zielB, f);
     };
     bahnFahrten.forEach(function (f) {
       var b = document.createElement("button");

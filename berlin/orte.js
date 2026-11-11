@@ -143,9 +143,18 @@ const DATEN = {
     "richtung": "Karlsruhe Hbf → Berlin Hbf",
     "status": "gebucht",
     "status_text": "steht",
-    "meldung": "Zugbindung. Die Fahrkarte gilt nur im ICE 372 — es sei denn, für den Zielbahnhof sind 20 Minuten Verspätung oder mehr zu erwarten. Dann ist die Bindung ohne Bescheinigung aufgehoben, und genau dieser Fall ist hier nicht unwahrscheinlich.",
+    "meldung": "Zugbindung. Ab +20 min erwarteter Verspätung in Berlin gilt jeder DB-Zug.",
     "zug": "ICE 372",
     "dauer": "5 h 18",
+    "live": {
+     "stop": "at-Railway-Current-Reference-Data-2026_de:08212:90:2:1",
+     "ab": "2026-11-12T11:59:00+01:00",
+     "start": "Karlsruhe Hbf",
+     "start_dhid": "de:08212:90",
+     "ziel": "Berlin Hbf",
+     "ziel_dhid": "de:11000:900003200",
+     "sitzen": "Bis ca. +75 min ist Sitzenbleiben schneller als jede Alternative."
+    },
     "_halte": [
      "Aus dem REGELFAHRPLAN fuer Do 12.11.2026, abgefragt am 19.09.2026 ueber",
      "api.transitous.org. Anders als bei Muenchen deckt er sich minuten- UND",
@@ -268,19 +277,13 @@ const DATEN = {
     },
     "alternativen": {
      "titel": "Wenn die Zugbindung fällt",
-     "lage": "Ab 20 Minuten erwarteter Verspätung in Berlin gilt das Ticket in jedem DB-Zug dorthin — ohne Umbuchung, ohne Gebühr, ohne Bescheinigung. Nicht in FlixTrain. Die Reservierung verfällt, der Fahrpreis nicht. Aber: bis etwa +75 min Prognose ist Sitzenbleiben im ICE 372 schneller als jede Alternative. Die Liste zählt bei Ausfall, Teilausfall oder mehr als +75 min.",
-     "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 11.11.2026 18:15–18:21, Rang secondary · Pünktlichkeit zugfinder.net, 30-Tage-Mittel, abgerufen 11.11.2026, Rang unverified · Nur Plandaten — am Reisetag neu abfragen. Entfallen gegenüber dem 19.09.: ICE 1576 → ICE 751 (ICE 751 nicht mehr im Fahrplan). Störungslage 11.11.: kein Streik (GDL-Friedenspflicht bis 31.03.2028, DB), keine Sperrung auf der Strecke gefunden. Nicht geprüft: Schweizer Abschnitt, DB-Verkehrslage.",
+     "lage": "Ab +20 min in Berlin gilt jeder DB-Zug, nicht FlixTrain. Bis ca. +75 min ist Sitzenbleiben trotzdem schneller.",
+     "stand": "Fahrplan vom 11.11.2026 (Transitous), Pünktlichkeit zugfinder.net. Am Reisetag gilt die DB-App.",
      "marke": {
       "zeit": "15:00",
       "text": "Check-in möglich",
       "grund": "Motel One, Check-in ab 15:00. Keine der Alternativen kommt vorher an — ein Gepäckproblem gibt es am Anreisetag also nicht."
      },
-     "regeln": [
-      "nur Züge der DB — FlixTrain gilt mit diesem Ticket nicht, auch nicht mit aufgehobener Zugbindung",
-      "mindestens 10 Minuten Umstieg",
-      "Umwege über Hannover nur bei Sperrung Fulda–Erfurt — darum nicht in der Liste",
-      "ICE 6 und ICE 370 kommen wie der ICE 372 über die Rheinschiene; unabhängig davon ist nur die S 9"
-     ],
      "liste": [
       {
        "ab": "12:37",
@@ -312,7 +315,7 @@ const DATEN = {
          "minuten": 35
         }
        ],
-       "robust": "Erste Wahl bei Ausfall des ICE 372, ab demselben Gleis 3. Umstiegsreserve +22 min (35 min minus Ø +13 des ICE 6). Gleise in Frankfurt nennt der Feed nicht. Kippt der Anschluss: ICE 370 ab Frankfurt 15:15, an 19:17.",
+       "robust": "Anschluss weg: ICE 370 ab Frankfurt 15:15, an 19:17.",
        "hinweis": "erste Wahl"
       },
       {
@@ -347,7 +350,7 @@ const DATEN = {
          "minuten": 29
         }
        ],
-       "robust": "Dieselben Züge, Umstieg schon in Mannheim am selben Gleis 2. Reserve +16 min. Kippt der Anschluss: ICE 370 ab Mannheim 14:30, an 19:17.",
+       "robust": "Gleicher Bahnsteig. Anschluss weg: ICE 370 ab Mannheim 14:30, an 19:17.",
        "hinweis": "gleiches Gleis"
       },
       {
@@ -382,7 +385,7 @@ const DATEN = {
          "minuten": 21
         }
        ],
-       "robust": "Die einzige Route, die nicht über die Rheinschiene kommt. Pünktlichkeit der S 9 unbekannt. Ob der Super Sparpreis bei aufgehobener Zugbindung in der S-Bahn gilt, ist nicht geprüft.",
+       "robust": "Nicht über die Rheinschiene. Ob das Ticket in der S-Bahn gilt: unbekannt.",
        "hinweis": "Gültigkeit unbekannt",
        "hinweis_warn": true
       },
@@ -403,7 +406,7 @@ const DATEN = {
          "gleis_an": "7"
         }
        ],
-       "robust": "Zweite Wahl: ohne Umstieg, zwei Stunden später. 32 % pünktlich, Ø +20 min. Danach: ICE 278 ab 15:59, an 21:17.",
+       "robust": "Direkt. Danach: ICE 278 ab 15:59, an 21:17.",
        "hinweis": "32 % pünktlich",
        "hinweis_warn": true
       }
@@ -450,9 +453,18 @@ const DATEN = {
     "richtung": "Berlin Hbf → Karlsruhe Hbf",
     "status": "gebucht",
     "status_text": "steht",
-    "meldung": "Zugbindung. Karlsruhe ist NICHT der Endbahnhof — der Zug hält zwei Minuten und fährt weiter bis Basel SBB.",
+    "meldung": "Zugbindung. Karlsruhe ist nicht Endstation – der Zug fährt weiter nach Basel.",
     "zug": "ICE 377",
     "dauer": "5 h 16",
+    "live": {
+     "stop": "at-Railway-Current-Reference-Data-2026_de:11000:900003200:2:52",
+     "ab": "2026-11-15T14:43:00+01:00",
+     "start": "Berlin Hbf",
+     "start_dhid": "de:11000:900003200",
+     "ziel": "Karlsruhe Hbf",
+     "ziel_dhid": "de:08212:90",
+     "sitzen": "Sitzenbleiben ist fast immer schneller."
+    },
     "halte": [
      {
       "ort": "Berlin Hbf",
@@ -532,13 +544,8 @@ const DATEN = {
     },
     "alternativen": {
      "titel": "Wenn der Rückzug ausfällt",
-     "lage": "Dieselbe Regel: ab 20 Minuten erwarteter Verspätung in Karlsruhe gilt das Ticket in jedem DB-Zug, nicht in FlixTrain. Weil der ICE 377 in Berlin beginnt, entsteht eine solche Prognose meist erst unterwegs — dann ist Sitzenbleiben fast immer schneller. Die Liste zählt vor allem bei Ausfall vor der Abfahrt.",
-     "stand": "api.transitous.org (MOTIS 2, GTFS), abgefragt 11.11.2026 18:17, Rang secondary · Pünktlichkeit zugfinder.net, 30-Tage-Mittel, abgerufen 11.11.2026, Rang unverified · Nur Plandaten — am 15.11. vor der Abfahrt neu abfragen. Notnagel außerhalb der Liste: ICE 273 ab Berlin Hbf 00:08 (16.11.), an Karlsruhe 06:59 — DB-Zug, im Gültigkeitsfenster des Tickets bis 16.11. 10:00.",
-     "regeln": [
-      "nur Züge der DB — FlixTrain gilt mit diesem Ticket nicht, auch nicht mit aufgehobener Zugbindung",
-      "mindestens 10 Minuten Umstieg",
-      "Nachtzüge (Nightjet 12N, 43N) ausgelassen: Gültigkeit des Sparpreises dort unbekannt"
-     ],
+     "lage": "Ab +20 min in Karlsruhe gilt jeder DB-Zug, nicht FlixTrain. Zählt vor allem, wenn der ICE 377 ausfällt.",
+     "stand": "Fahrplan vom 11.11.2026 (Transitous), Pünktlichkeit zugfinder.net. Notnagel: ICE 273 ab 00:08, an 06:59.",
      "liste": [
       {
        "ab": "15:27",
@@ -572,7 +579,7 @@ const DATEN = {
          "minuten": 30
         }
        ],
-       "robust": "Erste Wahl, wenn der ICE 377 vor der Abfahrt ausfällt. Reserve +9 min (30 min minus Ø +21 des ICE 693). Kippt der Anschluss: ICE 379 ab Mannheim 21:37, an 21:59.",
+       "robust": "Anschluss weg: ICE 379 ab Mannheim 21:37, an 21:59.",
        "hinweis": "erste Wahl"
       },
       {
@@ -592,7 +599,7 @@ const DATEN = {
          "gleis_an": "2"
         }
        ],
-       "robust": "Zweite Wahl: ohne Umstieg, zwei Stunden später. 19 % pünktlich, Ø +18 min — der unpünktlichste Zug der Liste.",
+       "robust": "Direkt, aber unpünktlich.",
        "hinweis": "19 % pünktlich",
        "hinweis_warn": true
       },
@@ -628,7 +635,7 @@ const DATEN = {
          "minuten": 30
         }
        ],
-       "robust": "Reserve +19 min. Kippt der Anschluss: ICE 677 ab Mannheim 23:37, an 23:59."
+       "robust": "Anschluss weg: ICE 677 ab Mannheim 23:37, an 23:59."
       },
       {
        "ab": "18:43",
@@ -647,7 +654,7 @@ const DATEN = {
          "gleis_an": "2"
         }
        ],
-       "robust": "Die letzte sinnvolle Verbindung am selben Tag, endet in Karlsruhe. 27 % pünktlich, Ø +15 min. Danach nur noch ICE 273 um 00:08.",
+       "robust": "Letzte Verbindung am Sonntag. Danach nur ICE 273 um 00:08.",
        "hinweis": "letzte am Sonntag",
        "hinweis_warn": true
       }
@@ -669,7 +676,7 @@ const DATEN = {
     }
    }
   ],
-  "quelle": "DB-Originalticket, gelesen 19.09.2026 · Zugläufe über api.transitous.org (MOTIS 2, GTFS), abgerufen 19.09.2026 und 11.11.2026 · Pünktlichkeit zugfinder.net, 30-Tage-Fenster, abgerufen 11.11.2026, Rang unverified"
+  "quelle": "DB-Ticket · Fahrplan Transitous · Pünktlichkeit zugfinder.net · Stand 11.11.2026"
  },
  "quelle": {
   "name": "OpenStreetMap über Nominatim · Unterkunft über Google Places (New)",
