@@ -1084,6 +1084,20 @@
   var ho = DATEN.hotel || {};
   var he = DATEN.hotel_eintrag || null;
 
+  // Fotos von Wikimedia Commons liegen neben der Seite, nicht verlinkt:
+  // Commons drosselt Fremdabrufe, und ein Bild, das am Reisetag nicht laedt,
+  // ist schlechter als keines. Die Lizenzen verlangen die Namensnennung - sie
+  // steht darum direkt unter dem Bild.
+  var bildHtml = function (bi) {
+    if (!bi) return "";
+    return '<figure class="hotel-bild">'
+      + '<img src="' + bi.datei + '" alt="' + bi.alt + '" loading="lazy">'
+      + '<figcaption class="tafel-fein">Foto: ' + bi.urheber + ", " + bi.aufgenommen + ' · <a href="'
+      + bi.quelle_url + '" target="_blank" rel="noopener noreferrer">Wikimedia Commons</a> · <a href="'
+      + bi.lizenz_url + '" target="_blank" rel="noopener noreferrer">' + bi.lizenz + "</a></figcaption>"
+      + "</figure>";
+  };
+
   (function () {
     var el = document.getElementById("hotel-tafel");
     if (!el) return;
@@ -1151,20 +1165,8 @@
                      : null]
       .filter(Boolean).join(" · ");
 
-    // Das Foto ist von Wikimedia Commons (CC BY 4.0) und liegt neben der Seite,
-    // nicht verlinkt: Commons drosselt Fremdabrufe, und ein Bild, das am
-    // Reisetag nicht laedt, ist schlechter als keines. Die Lizenz verlangt die
-    // Namensnennung - sie steht darum direkt unter dem Bild.
-    var bi = ho.bild;
-    var bild = bi ? '<figure class="hotel-bild">'
-      + '<img src="' + bi.datei + '" alt="' + bi.alt + '" width="960" height="1296" loading="lazy">'
-      + '<figcaption class="tafel-fein">Foto: ' + bi.urheber + ", " + bi.aufgenommen + ' · <a href="'
-      + bi.quelle_url + '" target="_blank" rel="noopener noreferrer">Wikimedia Commons</a> · <a href="'
-      + bi.lizenz_url + '" target="_blank" rel="noopener noreferrer">' + bi.lizenz + "</a></figcaption>"
-      + "</figure>" : "";
-
     el.innerHTML = '<div class="fahrt">'
-      + bild
+      + bildHtml(ho.bild)
       + '<div class="fahrt-kopf">'
       +   "<div>"
       +     '<p class="fahrt-richtung">' + (ho.name || "Unterkunft unbekannt") + "</p>"
@@ -1221,7 +1223,8 @@
 
     var zeileE = function (kopf, wert, hinweis) {
       if (!wert) return "";
-      return "<dt>" + kopf + "</dt><dd>" + wert
+      return "<dt>" + kopf + "</dt><dd" + (wert === "xx" ? ' class="kenn-offen"' : "") + ">"
+        + (wert === "xx" ? "unbekannt" : wert)
         + (hinweis ? ' <span class="kenn-fein">' + hinweis + "</span>" : "") + "</dd>";
     };
 
@@ -1279,6 +1282,7 @@
                      : null].filter(Boolean).join(" · ");
 
     el.innerHTML = '<div class="fahrt">'
+      + bildHtml(e.bild)
       + '<div class="fahrt-kopf">'
       +   "<div>"
       +     '<p class="fahrt-richtung">' + e.titel + "</p>"
@@ -1295,7 +1299,8 @@
       + (mit ? '<h4 class="lage-titel">Das muss mit</h4><ul class="mitbringen">' + mit + "</ul>" : "")
       + (e.mitbringen_hinweis ? '<p class="tafel-fein">' + e.mitbringen_hinweis + "</p>" : "")
       + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")
-      + anbindungHtml(e.umgebung)
+      // Die Halte-Liste am Termin ("Anbindung") steht hier nicht mehr: der Weg
+      // oben und die Karte darunter sagen, womit man faehrt (11.11.2026).
       // Der Satz steht als Warnung und nicht im Aufklapper: er entscheidet,
       // wann man diese Seite liest - naemlich vorher, weil das Handy waehrend
       // der Show in der Garderobe liegt.
@@ -2730,7 +2735,11 @@
     var eintraege = [{ id: "umgebung", label: "Umgebung", variante: null }];
     if (wegGruppen) {
       wegGruppen.forEach(function (g) {
-        var erste = varianten.filter(function (v) { return v.gruppe === g.id; })[0];
+        // Bei Terminen die umstiegsaermste Variante zuerst - dieselbe, die
+        // oben in "Hin vom Hotel / Zurueck zum Hotel" steht.
+        var dieser = varianten.filter(function (v) { return v.gruppe === g.id; });
+        var erste = (cfg.ziel_art === "termin"
+          && dieser.filter(function (v) { return v.auswahl === "umstiegsarm"; })[0]) || dieser[0];
         if (erste) eintraege.push({ id: g.id, label: g.label, variante: erste, gruppe: g.id });
       });
     } else {
@@ -2798,7 +2807,7 @@
         : [];
       if (inGruppe.length) {
         var gewaehlt = inGruppe.filter(function (x) { return x.id === vid; })[0];
-        v = gewaehlt || inGruppe[0];
+        v = gewaehlt || e.variante;
         zielW.innerHTML = optionenHtml(inGruppe, v) + tafelHtml(v);
         // Die Knoepfe der zweiten Reihe entstehen mit der Tafel neu und werden
         // darum hier verdrahtet, nicht einmal beim Aufbau.
@@ -2835,7 +2844,10 @@
         knoepfeW.push(b);
         navW.appendChild(b);
       });
-      zeigeW("umgebung");
+      // Bei einem Termin zuerst den Hinweg: dafuer schlaegt man die Karte auf
+      // (11.11.2026). Beim Hotel bleibt es die Umgebung.
+      zeigeW(cfg.ziel_art === "termin"
+        && eintraege.some(function (e) { return e.id === "hin"; }) ? "hin" : "umgebung");
     }
 
     // --- Filterleiste, gleiche Bauform wie die der Stadtkarte -----------------
@@ -2953,6 +2965,45 @@
       gegen_text: "Die Unterkunft — Start des Hinwegs und Ziel des Rückwegs."
     });
   });
+
+  // Untertabs je Termin. Die Karte des gezeigten Termins wird nach dem
+  // Aufdecken neu vermessen: verdeckt hat sie keine Breite, und Leaflet
+  // rechnet sonst mit 0 px. WEG_KARTEN ist nach Termin-id verschluesselt,
+  // nicht nach Reiter - darum ruft zeige() fuer "termine" hierher.
+  var terminAktiv = null;
+  var terminZeigen = (function () {
+    var nav = document.getElementById("termine-reiter");
+    var bloecke = [].slice.call(document.querySelectorAll("#feld-termine .termin-block"));
+    var termine = DATEN.termine || [];
+    if (!nav || !bloecke.length || !termine.length) return null;
+    var knoepfe = [];
+    var zeigeT = function (id) {
+      terminAktiv = id;
+      bloecke.forEach(function (b) { b.hidden = b.dataset.termin !== id; });
+      knoepfe.forEach(function (k) {
+        k.setAttribute("aria-pressed", k.dataset.id === id ? "true" : "false");
+      });
+      var wk = WEG_KARTEN[id];
+      if (wk) { wk.karte.invalidateSize(); if (wk.anpassen) wk.anpassen(); }
+    };
+    termine.forEach(function (t) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "unterknopf";
+      b.dataset.id = t.id;
+      b.textContent = (t.tag || "").split(" ")[0] + " · " + t.label;
+      b.addEventListener("click", function () { zeigeT(t.id); });
+      knoepfe.push(b);
+      nav.appendChild(b);
+    });
+    // Aufgeschlagen wird der naechste Termin, der noch nicht vorbei ist.
+    var d = new Date();
+    var heute = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2)
+      + "-" + ("0" + d.getDate()).slice(-2);
+    var naechster = termine.filter(function (t) { return t.datum >= heute; })[0] || termine[0];
+    zeigeT(naechster.id);
+    return zeigeT;
+  }());
 
 
   // --- Innenstadt -----------------------------------------------------------
@@ -4005,6 +4056,7 @@
       // Erst jetzt hat der Behaelter eine Breite - siehe karteHotelAnpassen.
       if (wk.anpassen) wk.anpassen();
     }
+    if (id === "termine" && terminZeigen && terminAktiv) terminZeigen(terminAktiv);
     if (id === "mitte" && karteInnen) karteInnen.invalidateSize();
     // Der Hash macht einen Menuepunkt verlinkbar und ueberlebt ein Neuladen.
     // Das Praefix ist Pflicht, nicht Zierde: ein blankes "#karte" traf die id

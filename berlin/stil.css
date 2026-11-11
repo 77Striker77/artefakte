@@ -326,6 +326,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    und Fernsehturm. Die Bildunterschrift ist die Namensnennung der Lizenz. */
 .hotel-bild{margin:0 0 16px}
 .hotel-ziele + .platz-felder{margin-top:16px}
+.termin-block[hidden]{display:none}
 .hotel-bild img{display:block; width:100%; height:clamp(180px,28vh,320px);
   object-fit:cover; object-position:50% 40%; border:2px solid var(--umriss)}
 .hotel-bild a{color:var(--akzent-text)}                         /* 6,12:1 wie .tafel a */
@@ -393,7 +394,11 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    fuer beide, keine zweite Regel: eine Kopie driftet beim naechsten
    Nachbessern, und dann sehen die zwei Reiter verschieden aus, ohne dass es
    jemand entschieden haette. */
-#karte-hotel,#karte-bavaria{height:clamp(340px,46vh,520px); margin:18px 0 0;
+/* #karte-show und #karte-planetarium fehlten hier bis zum 11.11.2026 - die
+   Regel nannte noch Muenchens #karte-bavaria, und die Termin-Karten waren
+   0 px hoch. Kein Pruefskript sah es: eine unsichtbare Karte laeuft nicht
+   ueber und wirft keinen Fehler. */
+#karte-hotel,#karte-show,#karte-planetarium{height:clamp(340px,46vh,520px); margin:18px 0 0;
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
        background:var(--grund-tief); z-index:0}
 /* Die Innenstadtkarte zeigt rund drei Kilometer und traegt 40 Marken - zwischen

@@ -8748,6 +8748,16 @@ const DATEN = {
    "lon": 13.5424784,
    "tag": "Fr 13.11.2026",
    "datum": "2026-11-13",
+   "bild": {
+    "datei": "bilder/studio.jpg",
+    "alt": "Studio G von Studio Berlin in Adlershof: Glaseingang mit dem Schild Studio Berlin",
+    "urheber": "Dabbelju",
+    "lizenz": "CC BY 2.5",
+    "lizenz_url": "https://creativecommons.org/licenses/by/2.5",
+    "quelle_url": "https://commons.wikimedia.org/wiki/File:Studio_Berlin_Studio_G.jpg",
+    "aufgenommen": "31.01.2006",
+    "abgerufen": "11.11.2026"
+   },
    "ablauf": [
     {
      "id": "abholung",
@@ -8807,7 +8817,7 @@ const DATEN = {
     {
      "was": "PreCheckin",
      "wert": "xx",
-     "hinweis": "die Mail vom 11.11. erinnert daran — ob erledigt, ist hier nicht bekannt"
+     "hinweis": "laut Mail vom 11.11. nachholen, falls offen"
     }
    ],
    "hinweis": "Das Handy liegt während der Aufzeichnung in der Garderobe. Was für den Rückweg gebraucht wird, muss vorher bekannt sein.",
@@ -22674,6 +22684,16 @@ const DATEN = {
    "lon": 13.4281438,
    "tag": "Sa 14.11.2026",
    "datum": "2026-11-14",
+   "bild": {
+    "datei": "bilder/planetarium.jpg",
+    "alt": "Zeiss-Großplanetarium Berlin mit seiner silbernen Kuppel",
+    "urheber": "Jochen Teufel",
+    "lizenz": "CC BY-SA 3.0",
+    "lizenz_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "quelle_url": "https://commons.wikimedia.org/wiki/File:Zeiss-Gro%C3%9Fplanetarium_Berlin_(2009).jpg",
+    "aufgenommen": "07.07.2009",
+    "abgerufen": "11.11.2026"
+   },
    "ablauf": [
     {
      "id": "erste",
@@ -22708,10 +22728,10 @@ const DATEN = {
     {
      "was": "Garderobe",
      "wert": "xx",
-     "hinweis": "nicht abgefragt — ebenso wenig, ob man zwischen den Vorstellungen im Haus bleiben darf"
+     "hinweis": "nicht abgefragt"
     }
    ],
-   "hinweis": "Die Lücke von 17:45 bis 19:45 ist die einzige Planungsaufgabe dieses Tages — und sie muss zu Fuß vom Planetarium aus lösbar sein.",
+   "hinweis": "17:45–19:45 Pause: Lokale zu Fuß im Reiter Mitte, „Zwischen den Shows“.",
    "quelle": "Vier Einzeltickets der Stiftung Planetarium Berlin, gelesen 19.09.2026 (primary) · Laufzeit, Format, Alter und Preis von planetarium.berlin, abgerufen 19.09.2026 (primary) · Koordinate OSM way/329262981 über Nominatim",
    "weg": {
     "_lies_mich": [

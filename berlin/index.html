@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Pixelify+Sans:wght@400..700&family=Nunito:wght@400;600;700;800&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="vendor/leaflet.css">
-<link rel="stylesheet" href="stil.css?v=ce18bfd0">
+<link rel="stylesheet" href="stil.css?v=aac053d8">
 </head>
 <body>
 
@@ -93,46 +93,34 @@
     <div id="bahn-tafel"></div>
   </section>
 
-  <!-- Termine: BEIDE untereinander, chronologisch, nicht hinter einem dritten
-       Untermenue.
-
-       Warum nicht geschachtelt: jeder Termin traegt bereits ein Untermenue fuer
-       Hinweg/Rueckweg. Ein zweites darueber waere eine dritte Ebene - Menue,
-       Terminwahl, Richtungswahl -, und auf einem Handy weiss dann niemand mehr,
-       welcher Knopf was tut. Zwei Termine passen untereinander; ein dritter
-       waere der Anlass, diese Entscheidung neu zu treffen, und nicht der
-       Anlass, eine Ebene einzuziehen.
-
-       Die Reihenfolge ist der Kalender: Freitag vor Samstag. Nicht Wichtigkeit,
-       nicht Datenherkunft - wer diesen Reiter oeffnet, sucht "was ist als
-       naechstes".
-
-       KEINE Reisedaten-Infobox oberhalb wird hier abbestellt: anders als bei
-       'Mitte' handelt dieser Reiter sehr wohl von der Buchung. -->
+  <!-- Termine: je Termin ein Untertab (11.11.2026, Nutzerwunsch). Untereinander
+       musste man durch den einen Termin scrollen, um zum anderen zu kommen,
+       und die Angaben eines Termins lagen ueber zwei Bildschirme verteilt.
+       Die Untertabs baut karte.js aus reise.json; aufgeschlagen wird der
+       naechste anstehende Termin. -->
   <section class="ansicht" id="feld-termine" aria-labelledby="menue-termine" tabindex="-1" hidden>
-    <h2 class="ansicht-titel">Die beiden Termine</h2>
+    <h2 class="ansicht-titel">Termine</h2>
+    <nav class="untermenue" id="termine-reiter" aria-label="Welcher Termin"></nav>
 
-    <article class="termin-block">
-      <h3 class="ansicht-titel ansicht-titel--zwei">Freitag · Wer stiehlt mir die Show</h3>
+    <article class="termin-block" data-termin="show">
       <div id="termin-show-tafel"></div>
-      <h4 class="tafel-titel">Hin und zurück</h4>
+      <h4 class="tafel-titel">Hin und zurück auf der Karte</h4>
       <nav class="untermenue" id="show-reiter" aria-label="Was die Karte zum Studio zeigt"></nav>
-      <div id="show-weg-tafel"></div>
       <div id="karte-show" role="region"
            aria-label="Karte des Studios Berlin-Adlershof mit dem Hin- und dem Rückweg zur Unterkunft"></div>
       <ul class="legende" id="legende-show"></ul>
+      <div id="show-weg-tafel"></div>
       <p class="grund-fuss" id="show-fuss"></p>
     </article>
 
-    <article class="termin-block">
-      <h3 class="ansicht-titel ansicht-titel--zwei">Samstag · Zweimal Planetarium</h3>
+    <article class="termin-block" data-termin="planetarium" hidden>
       <div id="termin-planetarium-tafel"></div>
-      <h4 class="tafel-titel">Hin und zurück</h4>
+      <h4 class="tafel-titel">Hin und zurück auf der Karte</h4>
       <nav class="untermenue" id="planetarium-reiter" aria-label="Was die Karte zum Planetarium zeigt"></nav>
-      <div id="planetarium-weg-tafel"></div>
       <div id="karte-planetarium" role="region"
            aria-label="Karte des Zeiss-Großplanetariums mit dem Hin- und dem Rückweg zur Unterkunft"></div>
       <ul class="legende" id="legende-planetarium"></ul>
+      <div id="planetarium-weg-tafel"></div>
       <p class="grund-fuss" id="planetarium-fuss"></p>
     </article>
   </section>
@@ -175,11 +163,11 @@
 </main>
 
 <script src="vendor/leaflet.js"></script>
-<script src="orte.js?v=ce18bfd0"></script>
-<script src="karte.js?v=ce18bfd0"></script>
+<script src="orte.js?v=aac053d8"></script>
+<script src="karte.js?v=aac053d8"></script>
 <!-- Zuletzt und als eigene Datei: der Himmel ist reine Zier und hat mit den
      Karten nichts zu tun. In karte.js waere er neunzig Zeilen, die beim Suchen
      nach einem Kartenfehler im Weg stehen. -->
-<script src="himmel.js?v=ce18bfd0"></script>
+<script src="himmel.js?v=aac053d8"></script>
 </body>
 </html>
