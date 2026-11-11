@@ -462,6 +462,19 @@
   //
   // Die Seite bleibt trotzdem scrollbar: ueber der Karte stehen Titel und
   // Infobox, darunter Filterleiste und Quellen.
+  // Sprechblasen: auf dem Handy hoechstens rund 45 % der Karte, laengerer
+  // Inhalt scrollt in der Blase. Gemessen am 11.11.2026 belegten sie bis zu
+  // 100 % (Mitte) - die Karte war dann nur noch ueber das X zu bedienen, und
+  // "+/-" und "Mein Standort" lagen auf der Blase. Der Rand beim Einschwenken
+  // haelt sie von diesen Knoepfen fern (links oben, links unten).
+  var schmal = window.innerWidth < 600;
+  L.Popup.mergeOptions({
+    maxWidth: schmal ? Math.min(250, window.innerWidth - 140) : 300,
+    maxHeight: schmal ? Math.round(Math.min(190, window.innerHeight * 0.23)) : null,
+    autoPanPaddingTopLeft: L.point(56, 12),
+    autoPanPaddingBottomRight: L.point(12, 64)
+  });
+
   var karte = L.map("karte")
     .setView([DATEN.ziel.mitte.lat, DATEN.ziel.mitte.lon], DATEN.ziel.zoom);
 
@@ -540,8 +553,7 @@
         (haltNachOsm[o.osm] ? linienBlock(haltNachOsm[o.osm]) : "") +
         (o.web ? '<p class="popup-fein"><a href="' + o.web + '" target="_blank" rel="noopener noreferrer">'
           + o.web.replace(/^https?:\/\//, "") + "</a></p>" : "") +
-        mapsLink(o) +
-        '<p class="popup-fein">OSM ' + o.osm + "</p>"
+        mapsLink(o)
       );
     if (STANDARD_AN.indexOf(o.art) >= 0) punkte.push([o.lat, o.lon]);
   });
@@ -650,8 +662,7 @@
         .bindPopup("<h3>" + h.name + "</h3>" +
           "<p>" + (h.art === "ubahn" ? "U-Bahn-Station" : "S-Bahn / DB-Halt") + "</p>" +
           linienBlock(h) +
-          mapsLink(h) +
-          '<p class="popup-fein">OSM ' + h.osm + "</p>");
+          mapsLink(h));
 
       var sch = schild(h);
       if (sch) {
@@ -737,8 +748,7 @@
           .bindPopup("<h3>" + h.name + "</h3><p>" + linienArt(linie).label + " "
             + linie.ref + " · " + linie.von + " → " + linie.nach + "</p>" +
             linienBlock(h) +
-            mapsLink(h) +
-            '<p class="popup-fein">OSM ' + h.osm + "</p>");
+            mapsLink(h));
         var sch = schild(h);
         if (sch) {
           m.bindTooltip(sch, { permanent: true, direction: "right", offset: [12, 0],
@@ -2260,10 +2270,6 @@
           // Die Prosa des kuratierten Eintrags. Sie ist der Grund, warum dieser
           // Ort auf der Liste steht - und der Unterschied zu einem Treffer, den
           // nur die Beliebtheitssortierung nach oben gespuelt hat.
-          + (l.kuratiert && l.kuratiert.notiz
-              ? "<p>" + l.kuratiert.notiz + "</p>" : "")
-          + (l.adresse ? '<p class="popup-fein">' + l.adresse + "</p>" : "")
-          + (l.web ? '<p class="popup-fein"><a href="' + l.web + '" target="_blank" rel="noopener noreferrer">Website</a></p>' : "")
           + mapsLink(l));
     });
 
@@ -2281,8 +2287,7 @@
         .bindPopup("<h3>" + h.name + "</h3><p>"
           + (ART_LABEL[h.art] || h.art) + " · " + gehText(h) + "</p>"
           + linienBlock(h)
-          + mapsLink(h)
-          + '<p class="popup-fein">OSM ' + h.osm + "</p>");
+          + mapsLink(h));
 
       // Dieselben Linienschilder wie auf der Startseite - und wie dort ZOOMABHAENGIG.
       // Sie standen hier bis zum 09.09.2026 dauerhaft, mit der Begruendung, diese
@@ -3279,31 +3284,18 @@
       if (e.note) {
         z.push('<p class="bewertung"><strong>' + String(e.note).replace(".", ",") + " ★</strong> aus "
           + o.google.stimmen.toLocaleString("de-DE") + " Bewertungen"
-          + (o.google.rang === "secondary" ? " — weitergegeben, nicht aus der Places-API" : "") + "</p>");
+ + "</p>");
       }
       // Ohne Recherche keine Beschreibung, aber auch kein Schweigen: die sechs
       // Innenstadt-Burger kamen ueber eine Umkreisabfrage dazu, nicht aus der
       // Presse. Ein leerer Absatz saehe aus wie ein Ladefehler, ein erfundener
       // Satz waere schlimmer.
-      if (o.notiz) z.push("<p>" + o.notiz + "</p>");
-      else if (o.auswahl === "abfrage") {
-        z.push('<p class="popup-unbekannt">Über eine Umkreisabfrage gefunden — zu Karte und Küche '
-          + "liegt keine eigene Recherche vor.</p>");
-      }
       if (o.gefluegel) z.push(zeile("popup-fein", "<strong>" + GEFLUEGEL[o.gefluegel.stufe].text
         + "</strong>" + (o.gefluegel.gericht ? " — " + o.gefluegel.gericht : "")
         + (o.gefluegel.preis ? " (" + o.gefluegel.preis + " €)" : "")));
       if (e.w) z.push(zeile("popup-fein", zeitenKurz(e.w)));
-      if (o.adresse) z.push(zeile("popup-fein", o.adresse));
-      [o.speisekarte && o.speisekarte.warnung, o.warnung, o.preise_hinweis,
-       namensWarnung(o), o.adress_hinweis, o.stadtteil_hinweis].forEach(function (wn) {
-        if (wn) z.push(zeile("popup-unbekannt", wn));
-      });
-      var ziel = o.web || o.beleg;
-      if (ziel) z.push('<p class="popup-fein"><a href="' + ziel + '" target="_blank" '
-        + 'rel="noopener noreferrer">' + (o.web ? "Website" : "Beleg") + "</a></p>");
+      if (o.warnung) z.push(zeile("popup-unbekannt", o.warnung));
       z.push(mapsLink(mapsZiel(o)));
-      if (o.osm) z.push(zeile("popup-fein", "OSM " + o.osm));
       return z.join("");
     };
 
@@ -3354,8 +3346,7 @@
         + "<p>Die Unterkunft. Die Entfernungen in der Liste sind zum "
         + bezug.name + " gerechnet, nicht hierher.</p>"
         + (haus.notiz ? "<p>" + haus.notiz + "</p>" : "")
-        + mapsLink(haus)
-        + (haus.osm ? '<p class="popup-fein">OSM ' + haus.osm + "</p>" : ""));
+        + mapsLink(haus));
       hausEbene.addTo(karteInnen);
     }
 
@@ -3374,7 +3365,7 @@
           keyboard: false
         }).addTo(halteEbenen[h.art]).bindPopup("<h3>" + h.name + "</h3><p>"
           + (h.art === "ubahn" ? "U-Bahn-Station" : "S-Bahn / DB-Halt") + "</p>"
-          + linienBlock(h) + mapsLink(h) + zeile("popup-fein", "OSM " + h.osm));
+          + linienBlock(h) + mapsLink(h));
       });
     }
 
