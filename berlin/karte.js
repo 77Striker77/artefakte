@@ -1241,10 +1241,11 @@
 
     var anschrift = [e.ort, e.adresse].filter(Boolean).join(" · ");
 
-    // Hin und zurueck zum Hotel ganz oben (Nutzerwunsch 11.11.2026). Gezeigt
-    // wird je Richtung die umstiegsaermste gemessene Variante - ohne Handy im
-    // Studio ist "einmal einsteigen" die Form, die man im Kopf behaelt. Alle
-    // Varianten stehen weiter unten auf der Karte.
+    // Verbindungen vom und zum Hotel: KLEIN und unter den Terminzeiten. Oben
+    // stehen die Fakten des Termins; eine Abfahrt ist nur eine Moeglichkeit
+    // (Fahrplan, Takt), und gleich gross daneben sah sie aus wie ein Termin
+    // (Nutzerrueckmeldung 11.11.2026). Je Richtung die umstiegsaermste Variante,
+    // dieselbe, die die Karte unten zuerst zeigt.
     var stationKurz = function (n) {
       return (n || "").replace(/ \(Berlin\)$/, "").replace(/^S\+U |^S /, "").replace(/ Bhf/, "");
     };
@@ -1254,12 +1255,11 @@
       })[0];
       var erste = v && v.abschnitte.filter(function (a) { return a.art !== "fuss"; })[0];
       if (!erste) return "";
-      return '<div class="platz-feld"><span class="platz-kopf">' + kopf + "</span>"
-        + '<b class="platz-wert">' + erste.ab + " " + erste.linie + "</b>"
-        + '<span class="weg-feld-fein">ab ' + stationKurz(erste.von) + " · " + v.minuten
-        + " min Tür zu Tür" + (v.umstiege ? " · " + v.umstiege + "× umsteigen" : " · ohne Umstieg")
+      return zeileE(kopf, erste.linie + " ab " + stationKurz(erste.von),
+        v.minuten + " min Tür zu Tür"
         + (v.takt ? " · alle " + (v.takt.min === v.takt.max ? v.takt.min
-            : v.takt.min + "–" + v.takt.max) + " min" : "") + "</span></div>";
+            : v.takt.min + "–" + v.takt.max) + " min" : "")
+        + " · z. B. " + erste.ab);
     };
     var wege = wegKurz("hin", "Hin vom Hotel") + wegKurz("rueck", "Zurück zum Hotel");
 
@@ -1291,11 +1291,11 @@
       +   (e.tag ? '<span class="hotel-note"><b>' + e.tag + "</b></span>" : "")
       + "</div>"
       + (ziele ? '<div class="hotel-ziele">' + ziele + "</div>" : "")
-      + (wege ? '<div class="platz-felder platz-felder--um">' + wege + "</div>" : "")
-      + '<h4 class="lage-titel">Ablauf</h4>'
       + '<div class="platz-felder platz-felder--um">'
       +   (e.ablauf || []).map(feldE).join("")
       + "</div>"
+      + (wege ? '<h4 class="lage-titel">Verbindung (Fahrplan)</h4>'
+          + '<dl class="kenn hotel-kenn">' + wege + "</dl>" : "")
       + (mit ? '<h4 class="lage-titel">Das muss mit</h4><ul class="mitbringen">' + mit + "</ul>" : "")
       + (e.mitbringen_hinweis ? '<p class="tafel-fein">' + e.mitbringen_hinweis + "</p>" : "")
       + (kenn ? '<dl class="kenn hotel-kenn">' + kenn + "</dl>" : "")

@@ -326,6 +326,7 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    und Fernsehturm. Die Bildunterschrift ist die Namensnennung der Lizenz. */
 .hotel-bild{margin:0 0 16px}
 .hotel-ziele + .platz-felder{margin-top:16px}
+.platz-felder + .lage-titel{margin-top:22px}
 .termin-block[hidden]{display:none}
 .hotel-bild img{display:block; width:100%; height:clamp(180px,28vh,320px);
   object-fit:cover; object-position:50% 40%; border:2px solid var(--umriss)}
@@ -405,7 +406,10 @@ main{max-width:var(--mass); margin:0 auto; padding:28px 20px 44px}
    Stadtkarte (zwanzig Kilometer) und Umgebungskarte (einer). Sie ist darum hoeher
    als die Umgebungskarte: bei 40 Punkten auf engem Raum entscheidet die Hoehe,
    ob man Nachbarn noch auseinanderhaelt. */
-#karte-innenstadt{height:clamp(380px,54vh,600px);
+/* Hiess bis zum 11.11.2026 #karte-innenstadt (Muenchen); die Berliner Karte
+   heisst karte-mitte und war seit dem 19.09. 0 px hoch. pruef-breite.mjs
+   misst seitdem jede Karte auf Hoehe. */
+#karte-mitte{height:clamp(380px,54vh,600px);
        border:var(--rand) solid var(--umriss); box-shadow:var(--schatten);
        background:var(--grund-tief); z-index:0}
 .tafel-titel{margin:28px 0 12px; font-family:var(--pixel); font-size:19px;

@@ -8761,27 +8761,15 @@ const DATEN = {
    "ablauf": [
     {
      "id": "abholung",
-     "kopf": "13:30",
+     "kopf": "13:30–15:00",
      "wert": "Kartenabholung",
-     "fein": "bis 15:00. Bei verspäteter Ankunft kein garantierter Einlass — beide Personen gemeinsam zum Counter"
-    },
-    {
-     "id": "garderobe",
-     "kopf": "ca. 14:00",
-     "wert": "Garderobe",
-     "fein": "Jacke, Tasche, Handy und Kamera abgeben, 1 € — oft nur bar. Ab hier ohne Telefon"
+     "fein": "beide gemeinsam, mit Ausweis und eTicket — danach kein garantierter Einlass"
     },
     {
      "id": "studio",
      "kopf": "ca. 15:00",
      "wert": "Einlass Studio",
-     "fein": "Veranstalterangabe vom 11.11. Aufwärm-Moderator, dann Band. Rund 400 Gäste, sechs Toiletten — davor gehen"
-    },
-    {
-     "id": "aufnahme",
-     "kopf": "ca. 16:00",
-     "wert": "Aufzeichnung",
-     "fein": "rund 3½ Stunden ohne nennenswerte Pause"
+     "fein": "Veranstalterangabe"
     },
     {
      "id": "ende",
@@ -22699,19 +22687,13 @@ const DATEN = {
      "id": "erste",
      "kopf": "16:45",
      "wert": "Sternstunde",
-     "fein": "60 Min., live moderiert, Block Nord, Reihe 10"
-    },
-    {
-     "id": "luecke",
-     "kopf": "17:45",
-     "wert": "Zwei Stunden",
-     "fein": "Pause bis 19:45 — in der Nähe bleiben, Lokale im Reiter Mitte"
+     "fein": "60 Min. · Block Nord, Reihe 10"
     },
     {
      "id": "zweite",
      "kopf": "19:45",
      "wert": "Schwarze Löcher",
-     "fein": "60 Min., davon 25 Min. Live-Teil. Spätestens 19:40 zurück — nach Beginn kein Einlass"
+     "fein": "60 Min. · nach Beginn kein Einlass"
     }
    ],
    "mitbringen": [
@@ -22731,7 +22713,6 @@ const DATEN = {
      "hinweis": "nicht abgefragt"
     }
    ],
-   "hinweis": "17:45–19:45 Pause: Lokale zu Fuß im Reiter Mitte, „Zwischen den Shows“.",
    "quelle": "Vier Einzeltickets der Stiftung Planetarium Berlin, gelesen 19.09.2026 (primary) · Laufzeit, Format, Alter und Preis von planetarium.berlin, abgerufen 19.09.2026 (primary) · Koordinate OSM way/329262981 über Nominatim",
    "weg": {
     "_lies_mich": [
