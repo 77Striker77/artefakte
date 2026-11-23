@@ -55,10 +55,12 @@
   @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
   /* Info badge */
-  .info{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
-    background:var(--info-bg);color:var(--info);font-size:10px;font-weight:800;font-family:var(--serif);
-    cursor:help;vertical-align:middle;border:1px solid var(--info-line);flex:none}
-  .info:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
+  /* Trefferfläche 44 px (Hausregel), sichtbar bleibt der 15-px-Kreis; der negative Rand hält den Zeilenfluss. */
+  .info{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;margin:-14.5px;
+    color:var(--info);font-size:10px;font-weight:800;font-family:var(--serif);
+    cursor:help;vertical-align:middle;flex:none;border-radius:50%;isolation:isolate}
+  .info::before{content:"";position:absolute;inset:14.5px;border-radius:50%;background:var(--info-bg);border:1px solid var(--info-line);z-index:-1}
+  .info:focus-visible{outline:2px solid var(--brand-bright);outline-offset:-12px}
 
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:26px 0 8px}
   .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -262,6 +264,10 @@
   .tt-pop.wide{white-space:normal;max-width:290px;line-height:1.45;font-variant-numeric:normal}
   @media(max-width:820px){.tiles,.years,.fcgrid{grid-template-columns:1fr}}
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  /* Bedienziele mindestens 44 px hoch (Hausregel, wie im Vermieter-Cockpit). */
+  nav.secnav button,.seg button,.printbtn,.pii-btn,.pii-lock,.expand,.resetbtn,.chip-tog{min-height:44px}
+  .pii-btn,.pii-lock,.chip-tog{display:inline-flex;align-items:center}
+  input[type=range]{min-height:44px}
   /* Unter erzwungenen Farben verschwinden Hintergrundflächen — der aktive Zustand braucht eine Kontur. */
   @media(forced-colors:active){nav.secnav button.on,.seg button.on{outline:2px solid CanvasText;outline-offset:-2px}}
 </style>
