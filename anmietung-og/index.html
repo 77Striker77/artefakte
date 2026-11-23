@@ -1,5 +1,14 @@
+<!doctype html>
+<html lang="de">
 <title>Objekt-Cockpit · Anmietung OG</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+  /* @grund-hell: #EEF1F5 */
+  /* Kategorien Wärme, Wasser, Betrieb, Abgaben — stehen gemeinsam in Balken und Legende. */
+  /* @serien-hell: #B26A26, #2E5C8A, #52958C, #74375A */
+  /* @generisch-ok: typo-akzentwort — das hervorgehobene Wort ist die Info-Plakette „i“ hinter der Überschrift, kein Akzentwort */
+  /* @generisch-ok: typo-gesperrte-versalien — Kachel- und Reglerbeschriftungen folgen bewusst dem Stil gedruckter Abrechnungen, festgehalten in der DESIGN.md */
+  /* @generisch-ok: layout-karten-in-karten — die Kacheln liegen in einem ungestylten Reiter-Panel, die gestrichelte Ablagefläche ist ein Bedienziel im Schlüssel-Panel */
   :root{
     --ground:#EEF1F5; --surface:#FFFFFF; --surface-2:#F7F9FB;
     --ink:#16233A; --ink-soft:#4A5A72; --ink-faint:#5C6B83;
@@ -9,8 +18,8 @@
     --crit:#A8432E; --crit-bg:#F6E3DC;
     --warn:#8F5F14; --warn-bg:#F8EFDC;
     --info:#3F5E80; --info-bg:#E7EDF4; --info-line:#CBD8E6;
-    --ochre:#C77D33;
-    --kat-waerme:#C77D33; --kat-wasser:#2E5C8A; --kat-betrieb:#4B8A9A; --kat-abgaben:#8A6D9E;
+    --ochre:#B26A26;
+    --kat-waerme:#B26A26; --kat-wasser:#2E5C8A; --kat-betrieb:#52958C; --kat-abgaben:#74375A;
     --radius:14px; --radius-s:9px;
     --serif:"Cambria","Georgia","Times New Roman",serif;
     --sans:"Calibri","Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
@@ -95,7 +104,7 @@
   .rowbar .rl b{width:9px;height:9px;border-radius:2px;flex:none}
   .rowbar .rl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .track{height:20px;background:var(--surface-2);border-radius:5px;overflow:hidden}
-  .track i{display:block;height:100%;border-radius:5px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+  .track i{display:block;height:100%;border-radius:5px}
   .rowbar .rv{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px}
   .hintline{font-size:12px;color:var(--ink-faint);padding:6px 22px 16px;border-top:1px solid var(--line-soft);margin-top:8px}
   @media(max-width:640px){.rowbar{grid-template-columns:130px 1fr 74px}}
@@ -132,8 +141,9 @@
   .caption{font-size:11.5px;color:var(--ink-faint);padding-top:8px}
   .pii-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:14px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--ink-soft)}
   .pii-item b{color:var(--ink);font-weight:600}
-  .pii-lock{margin-left:auto;cursor:pointer;font-weight:600;color:var(--brand-bright);user-select:none;white-space:nowrap}
+  .pii-lock{margin-left:auto;cursor:pointer;font:inherit;font-weight:600;color:var(--brand-bright);background:none;border:0;padding:0;user-select:none;white-space:nowrap}
   .pii-lock:hover{text-decoration:underline}
+  .pii-lock:focus-visible{outline:2px solid var(--brand-bright);outline-offset:2px}
   .pii-panel{margin-top:10px;padding:16px 18px;background:var(--surface);border:1px solid var(--info-line);border-radius:12px}
   .pii-panel h3{font-size:15px;margin-bottom:4px} .pii-panel p{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
   .pii-drop{border:1.5px dashed var(--line);border-radius:10px;padding:14px;text-align:center;font-size:13px;color:var(--ink-soft);background:var(--surface-2)}
@@ -237,7 +247,7 @@
   .fc-meta .k{color:var(--ink-soft);display:flex;align-items:center;gap:5px} .fc-meta .v{font-variant-numeric:tabular-nums;font-weight:600}
   .resetbtn{margin-top:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--brand-bright);font-family:var(--sans);font-weight:600;font-size:12.5px;padding:7px 12px;border-radius:8px;cursor:pointer}
   .notes{padding:18px 22px}
-  .notes h3{font-size:15px;margin-bottom:10px}
+  .notes h2,.notes h3{font-size:15px;margin-bottom:10px}
   .note-item{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
   .note-item:last-child{border-bottom:none}
   .note-item .ic{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex:none}
@@ -252,9 +262,11 @@
   .tt-pop.wide{white-space:normal;max-width:290px;line-height:1.45;font-variant-numeric:normal}
   @media(max-width:820px){.tiles,.years,.fcgrid{grid-template-columns:1fr}}
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  /* Unter erzwungenen Farben verschwinden Hintergrundflächen — der aktive Zustand braucht eine Kontur. */
+  @media(forced-colors:active){nav.secnav button.on,.seg button.on{outline:2px solid CanvasText;outline-offset:-2px}}
 </style>
 
-<div class="wrap">
+<main class="wrap">
   <header class="top">
     <div>
       <div class="eyebrow">Anmietung Obergeschoss · Mietersicht</div>
@@ -263,29 +275,29 @@
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
       <div class="roletag">Ich = Mieter</div>
-      <button class="printbtn" onclick="window.print()">⎙ Drucken / PDF</button>
+      <button type="button" class="printbtn" onclick="window.print()">⎙ Drucken / PDF</button>
     </div>
   </header>
 
   <nav class="secnav" aria-label="Bereiche" id="tabbar" role="tablist">
-    <button data-tab="uebersicht" class="on" role="tab" aria-selected="true">Übersicht</button>
-    <button data-tab="vertrag" role="tab" aria-selected="false">Vertrag &amp; Miete</button>
-    <button data-tab="nk" role="tab" aria-selected="false">Nebenkosten &amp; Prognose</button>
-    <button data-tab="zaehler" role="tab" aria-selected="false">Zähler &amp; Verbrauch</button>
+    <button type="button" data-tab="uebersicht" class="on" role="tab" aria-selected="true">Übersicht</button>
+    <button type="button" data-tab="vertrag" role="tab" aria-selected="false">Vertrag &amp; Miete</button>
+    <button type="button" data-tab="nk" role="tab" aria-selected="false">Nebenkosten &amp; Prognose</button>
+    <button type="button" data-tab="zaehler" role="tab" aria-selected="false">Zähler &amp; Verbrauch</button>
   </nav>
 
   <div class="pii-strip">
     <span class="pii-item">Objekt: <b data-pii="objekt">XX</b></span>
     <span class="pii-item">Vermieter: <b data-pii="vermieter">XX</b></span>
     <span class="pii-item">Mieter: <b data-pii="mieter">XX</b></span>
-    <span class="pii-lock" id="piiToggle">🔓 Schlüssel laden</span>
+    <button type="button" class="pii-lock" id="piiToggle">🔓 Schlüssel laden</button>
   </div>
   <div class="pii-panel" id="piiPanel" hidden>
     <h3>Persönliche Angaben lokal einblenden</h3>
-    <p>Lade deine Schlüssel-Datei (JSON) oder füge sie ein — sie bleibt nur in diesem Browser-Tab, nichts wird hochgeladen oder gespeichert. Beim Neuladen der Seite ist alles wieder „XX".</p>
+    <p>Lade deine Schlüssel-Datei (JSON) oder füge sie ein — sie bleibt nur in diesem Browser-Tab, nichts wird hochgeladen oder gespeichert. Beim Neuladen der Seite ist alles wieder „XX“.</p>
     <div class="pii-drop" id="piiDrop">Schlüssel-Datei hierher ziehen oder <label class="pii-btn">Datei wählen<input type="file" id="piiFile" accept=".json,application/json" hidden></label></div>
-    <textarea id="piiText" placeholder='{ "objekt": "…", "vermieter": "…", "mieter": "…", "zaehlernr_allgemein": "…" }'></textarea>
-    <div class="pii-actions"><button class="pii-btn primary" id="piiApply">Einblenden</button><button class="pii-btn" id="piiClear">Wieder verbergen (XX)</button></div>
+    <textarea id="piiText" aria-label="Schlüssel-Datei als JSON einfügen" placeholder='{ "objekt": "…", "vermieter": "…", "mieter": "…", "zaehlernr_allgemein": "…" }'></textarea>
+    <div class="pii-actions"><button type="button" class="pii-btn primary" id="piiApply">Einblenden</button><button type="button" class="pii-btn" id="piiClear">Wieder verbergen (XX)</button></div>
     <div class="pii-err" id="piiErr"></div>
   </div>
   <div id="lawBanner"></div>
@@ -317,11 +329,11 @@
   <section style="margin-top:24px">
     <div class="fcgrid">
       <div class="card notes">
-        <h3>Offene Punkte <span class="info" tabindex="0" data-tip="Konkrete Prüf- und Streitpunkte dieser Anmietung mit Betrag und nächstem Schritt. Geklärte Punkte bleiben mit Ergebnis stehen.">i</span></h3>
+        <h2>Offene Punkte <span class="info" tabindex="0" data-tip="Konkrete Prüf- und Streitpunkte dieser Anmietung mit Betrag und nächstem Schritt. Geklärte Punkte bleiben mit Ergebnis stehen.">i</span></h2>
         <div id="opList"></div>
       </div>
       <div class="card notes">
-        <h3>Nächste Termine</h3>
+        <h2>Nächste Termine</h2>
         <div id="termList"></div>
         <div class="stand" id="standLine"></div>
       </div>
@@ -440,7 +452,7 @@
           <div class="ctl"><span class="lb">Kennzahl <span class="info" tabindex="0" data-tip="Womit die Höhe gemessen wird: dein Anteil in €, € pro m², dein Prozent-Anteil an den Jahres-NK, oder die Gesamtkosten der Liegenschaft.">i</span></span><div class="seg" id="bigMetric"></div></div>
           <div class="ctl"><span class="lb">Chart <span class="info" tabindex="0" data-tip="Gestapelt: alle gewählten Positionen übereinander pro Jahr — zeigt die Zusammensetzung. Linien: jede Position als eigene Linie — zeigt den Verlauf einzelner Kostenarten.">i</span></span><div class="seg" id="bigType"></div></div>
           <div class="ctl" style="margin-left:auto"><span class="lb">Auswahl</span>
-            <div class="seg"><button id="bgSelAll">Alle</button><button id="bgSelTop">Top 5 (Linien)</button><button id="bgSelNone">Keine</button></div></div>
+            <div class="seg"><button type="button" id="bgSelAll">Alle</button><button type="button" id="bgSelTop">Top 5 (Linien)</button><button type="button" id="bgSelNone">Keine</button></div></div>
         </div>
         <div style="padding:12px 20px 0"><div class="chips" id="bigChips"></div></div>
         <div class="bigchart" id="bigChart"></div>
@@ -472,13 +484,13 @@
         <div class="fc-big" id="fcResult">–</div>
         <div class="fc-sub" id="fcResultSub"></div>
 
-        <div class="sliderrow"><label><span class="lt">Gaspreis <span class="info" tabindex="0" data-tip="Reiner Brennstoffpreis pro m³ Gas (Rechnungsbetrag ÷ Menge). Historisch: 2022 1,12 · 2023 1,71 · 2024 1,67 €/m³.">i</span></span><span class="rv" id="gpV">1,67 €/m³</span></label>
+        <div class="sliderrow"><label for="gp"><span class="lt">Gaspreis <span class="info" tabindex="0" data-tip="Reiner Brennstoffpreis pro m³ Gas (Rechnungsbetrag ÷ Menge). Historisch: 2022 1,12 · 2023 1,71 · 2024 1,67 €/m³.">i</span></span><span class="rv" id="gpV">1,67 €/m³</span></label>
           <input type="range" id="gp" min="1.00" max="2.50" step="0.01" value="1.67"></div>
-        <div class="sliderrow"><label><span class="lt">Gasverbrauch Haus <span class="info" tabindex="0" data-tip="Gasverbrauch des ganzen Hauses in m³ — stark wetterabhängig. 2022 2.235 · 2023 1.714 · 2024 2.125 m³.">i</span></span><span class="rv" id="gvV">2.125 m³</span></label>
+        <div class="sliderrow"><label for="gv"><span class="lt">Gasverbrauch Haus <span class="info" tabindex="0" data-tip="Gasverbrauch des ganzen Hauses in m³ — stark wetterabhängig. 2022 2.235 · 2023 1.714 · 2024 2.125 m³.">i</span></span><span class="rv" id="gvV">2.125 m³</span></label>
           <input type="range" id="gv" min="1500" max="2800" step="25" value="2125"></div>
-        <div class="sliderrow"><label><span class="lt">Übrige Kosten ggü. 2024 <span class="info" tabindex="0" data-tip="Prozentuale Änderung aller Nicht-Wärme-Kosten außer Grundsteuer (Wasser, Reinigung, Grundstückspflege, Müll, Allgemeinstrom, Versicherung, Haftpflicht) gegenüber 2024.">i</span></span><span class="rv" id="uebV">+3 %</span></label>
+        <div class="sliderrow"><label for="ueb"><span class="lt">Übrige Kosten ggü. 2024 <span class="info" tabindex="0" data-tip="Prozentuale Änderung aller Nicht-Wärme-Kosten außer Grundsteuer (Wasser, Reinigung, Grundstückspflege, Müll, Allgemeinstrom, Versicherung, Haftpflicht) gegenüber 2024.">i</span></span><span class="rv" id="uebV">+3 %</span></label>
           <input type="range" id="ueb" min="-10" max="15" step="1" value="3"></div>
-        <div class="sliderrow"><label><span class="lt">Grundsteuer (dein Anteil) <span class="info" tabindex="0" data-tip="Dein Grundsteuer-Anteil 2025 in Euro. Separat einstellbar wegen der Grundsteuerreform ab 01.01.2025. 2024 waren es 138,40 €.">i</span></span><span class="rv" id="gsV">138 €</span></label>
+        <div class="sliderrow"><label for="gs"><span class="lt">Grundsteuer (dein Anteil) <span class="info" tabindex="0" data-tip="Dein Grundsteuer-Anteil 2025 in Euro. Separat einstellbar wegen der Grundsteuerreform ab 01.01.2025. 2024 waren es 138,40 €.">i</span></span><span class="rv" id="gsV">138 €</span></label>
           <input type="range" id="gs" min="0" max="250" step="5" value="138"></div>
 
         <div class="fc-derive">
@@ -489,7 +501,7 @@
           <div class="fc-meta"><span class="k">Vorauszahlung 2025 (182,60 €/Mon.)</span><span class="v">2.191,20 €</span></div>
         </div>
         <div class="fc-reco" id="fcReco"></div>
-        <button class="resetbtn" id="fcReset">Annahmen auf 2024-Stand zurücksetzen</button>
+        <button type="button" class="resetbtn" id="fcReset">Annahmen auf 2024-Stand zurücksetzen</button>
       </div>
       <div class="card notes">
         <h3>Was du für 2025 im Blick behalten solltest</h3>
@@ -514,7 +526,7 @@
 
     <div class="card" style="padding:18px 22px">
       <div class="chart-head" style="margin-bottom:12px"><h3>Verbrauch je Einheit — durchschaltbar
-        <span class="info" tabindex="0" data-tip="Wähle oben die Einheit. Alle Zähler derselben Einheit teilen sich eine Grafik und dieselbe echte Skala — das ist ohne Normierung korrekt. „≈"/gestrichelt = Strom, aus Ablesungen geschätzt.">i</span></h3></div>
+        <span class="info" tabindex="0" data-tip="Wähle oben die Einheit. Alle Zähler derselben Einheit teilen sich eine Grafik und dieselbe echte Skala — das ist ohne Normierung korrekt. „≈“/gestrichelt = Strom, aus Ablesungen geschätzt.">i</span></h3></div>
       <div class="controls" style="border:0;background:transparent;padding:0 0 12px">
         <div class="ctl"><span class="lb">Einheit</span><div class="seg" id="meterTabs"></div></div>
         <div class="legend" id="meterLegend" style="margin-left:auto;align-self:flex-end"></div>
@@ -553,9 +565,8 @@
   </div>
 
   <footer id="foot"></footer>
-</div>
-
-<div class="tt-pop" id="pop"></div>
+  <div class="tt-pop" id="pop"></div>
+</main>
 
 <script>
 const DATEN = {
@@ -841,7 +852,7 @@ DATEN.jahr.forEach((j,yi)=>{
       '<div class="row total '+(credit?'credit':'due')+'"><span class="k">'+(credit?'Guthaben':'Nachzahlung')+
         '<span class="saldotag '+(credit?'credit':'due')+'">'+(credit?'zurück':'zu zahlen')+'</span></span><span class="v num">'+eur(Math.abs(j.saldo))+'</span></div></div>'+
     '<div class="srcline">Gesamtkosten Liegenschaft '+eur(j.gesamt)+' '+ii("Gesamtkosten aller Positionen fürs ganze Haus. Dein Anteil ("+eur(j.anteil)+") entsteht durch Verteilung nach Fläche bzw. Verbrauch.")+'</div>'+
-    '<div class="foot"><button class="expand" aria-expanded="false" data-t="bd'+j.jahr+'">Verbrauch &amp; Positionen <span class="chev">▾</span></button></div>'+
+    '<div class="foot"><button type="button" class="expand" aria-expanded="false" data-t="bd'+j.jahr+'">Verbrauch &amp; Positionen <span class="chev">▾</span></button></div>'+
     '<div class="breakdown" id="bd'+j.jahr+'">'+
       '<div class="facts">'+
         '<div>Gasverbrauch <b>'+j.v.gas.toLocaleString("de-DE")+' m³</b></div>'+
@@ -1182,11 +1193,11 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
       '<div id="mwGauge" style="margin-top:14px"></div>'+
       '<div class="mw-sim">'+
         '<div class="cap" style="font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint);font-weight:600">Was wäre bei einem neuen Mietspiegel? <span class="simbadge" id="mwSimBadge" hidden>Simulation aktiv</span></div>'+
-        '<div class="sliderrow" style="margin-top:8px"><label><span class="lt">Vergleichsmiete <span class="info" tabindex="0" data-tip="Ortsübliche Vergleichsmiete in €/m². Startwert 12,65 = Mietspiegel 2024 (aus dem Erhöhungsschreiben 2025). Verschieben spielt einen künftigen Mietspiegel durch — Urteil, Termin-Zeile und Skala rechnen live mit.">i</span></span><span class="rv" id="msimV">12,65 €/m²</span></label>'+
+        '<div class="sliderrow" style="margin-top:8px"><label for="msim"><span class="lt">Vergleichsmiete <span class="info" tabindex="0" data-tip="Ortsübliche Vergleichsmiete in €/m². Startwert 12,65 = Mietspiegel 2024 (aus dem Erhöhungsschreiben 2025). Verschieben spielt einen künftigen Mietspiegel durch — Urteil, Termin-Zeile und Skala rechnen live mit.">i</span></span><span class="rv" id="msimV">12,65 €/m²</span></label>'+
         '<input type="range" id="msim" min="11.50" max="15.00" step="0.05" value="12.65"></div>'+
-        '<button class="resetbtn" id="mwSimReset" hidden>Zurück zum Mietspiegel 2024 (12,65 €/m²)</button>'+
+        '<button type="button" class="resetbtn" id="mwSimReset" hidden>Zurück zum Mietspiegel 2024 (12,65 €/m²)</button>'+
       '</div>'+
-      '<div style="margin-top:14px"><button class="expand" aria-expanded="false" data-t="mwCalc">Rechenweg &amp; Sperrfristen <span class="chev">▾</span></button></div>'+
+      '<div style="margin-top:14px"><button type="button" class="expand" aria-expanded="false" data-t="mwCalc">Rechenweg &amp; Sperrfristen <span class="chev">▾</span></button></div>'+
       '<div class="breakdown" id="mwCalc" style="padding:6px 0 0"></div>'+
       '<div class="caption" style="padding-top:12px">Rechnet mit dem Anzeigedatum weiter: Kappungsbasis = Kaltmiete vor 36 Monaten laut Historie. Die 15 % gelten, solange die Gemeinde in der BW-Gebietskulisse liegt (Verordnung zunächst bis Ende 2026); außerhalb der Kulisse gälten 20 % ('+eur(basisHeute*1.2)+'). Rechtsstand geprüft am '+RECHTSSTAND.geprueft+'.</div>';
     function gauge(spiegelDeckel,max){
@@ -1209,7 +1220,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
       s+=lab(cur.kalt,14,"var(--brand)","Deine Miete: "+eur0(cur.kalt)+" €");
       s+='</svg>';
       const host=document.getElementById("mwGauge");
-      host.innerHTML=s+'<div class="caption" style="padding-top:2px">Grün = Bereich, in dem eine neue Kaltmiete heute zulässig wäre (bis zum niedrigeren der beiden Deckel). Liegt „Deine Miete" rechts vom grünen Bereich, gibt es keinen Spielraum.</div>';
+      host.innerHTML=s+'<div class="caption" style="padding-top:2px">Grün = Bereich, in dem eine neue Kaltmiete heute zulässig wäre (bis zum niedrigeren der beiden Deckel). Liegt „Deine Miete“ rechts vom grünen Bereich, gibt es keinen Spielraum.</div>';
       host.querySelectorAll("[data-svgtip]").forEach(nd=>{nd.style.cursor="pointer";
         nd.addEventListener("mousemove",e=>showPop(e,"<b>"+nd.getAttribute("data-svgtip")+"</b>"));nd.addEventListener("mouseleave",hidePop);});
     }
@@ -1258,7 +1269,7 @@ NOTES.forEach(n=>{const it=el("div","note-item");it.innerHTML='<div class="ic se
   })();
 })();
 
-document.getElementById("foot").innerHTML="Vertrag &amp; Miete aus Mietvertrag, Anlagen und Mieterhöhungsschreiben; Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer, Bankverbindung) erscheinen als „XX\" und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.<br>Datenstand: "+DATENSTAND+".";
+document.getElementById("foot").innerHTML="Vertrag &amp; Miete aus Mietvertrag, Anlagen und Mieterhöhungsschreiben; Abrechnungswerte 2022–2024 aus den finalen Nebenkostenabrechnungen; Prognose 2025 = Schätzung; Zähler-/Stromdaten aus eigener Erfassung. Personenbezogene Angaben (Objekt, Namen, Zählernummer, Bankverbindung) erscheinen als „XX“ und lassen sich nur lokal per Schlüssel-Datei einblenden — nichts davon ist im Artefakt gespeichert.<br>Datenstand: "+DATENSTAND+".";
 
 // Tabs — Bereiche als Panels; alte Anker (#miete, #prognose, …) werden auf ihren Tab gemappt
 const TABMAP={uebersicht:"panel-uebersicht",vertrag:"panel-vertrag",nk:"panel-nk",zaehler:"panel-zaehler"};
